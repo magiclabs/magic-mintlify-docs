@@ -2,46 +2,45 @@
 title: Key Export
 ---
 
-### Dedicated Wallet
-
 ### SDK Method
 
 <Note>
 
 This method is currently only available through our [web](/docs/api/client-side-sdks/web#revealprivatekey), [React Native](/docs/api/client-side-sdks/react-native#revealprivatekey), and [Android](/docs/api/client-side-sdks/android#revealprivatekey) SDKs. For all other SDKs, refer to our [Reveal Page](/docs/wallets/features/key-export#reveal-page) section below.
+
 </Note>
 
 <Info>
 **Important**
 
 Implementing this SDK method will allow your end users to access their private key. Be sure to read through this document carefully before implementing.
+
 </Info>
 
 <Frame>
-  <img src="/images/pk-reveal-updated.webp" alt="pk-reveal-updated"/>
+  <img src="/images/pk-reveal-updated.webp" alt="pk-reveal-updated" />
 </Frame>
 
-
-For Dedicated Wallet apps, you can use Magic's [`user.revealPrivateKey`](/docs/api/client-side-sdks/web#revealprivatekey) method to allow your users to view their private keys. Implementing this method will allow your end users to back up their private keys or take them to another wallet. **Neither Magic nor the developer can see this key; only the end user can.**
+You can use Magic's [`user.revealPrivateKey`](/docs/api/client-side-sdks/web#revealprivatekey) method to allow your users to view their private keys. Implementing this method will allow your end users to back up their private keys or take them to another wallet. **Neither Magic nor the developer can see this key; only the end user can.**
 
 ### Usage
 
 Once you have verified the correct setup of the Magic SDK and successfully authenticated the user, the reveal private key modal can then be displayed by calling the `revealPrivateKey` method:
 
-
 <Tabs>
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
+import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-  await magic.user.revealPrivateKey();
+await magic.user.revealPrivateKey();
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
+
 ```
 </Tab>
 </Tabs>
@@ -62,21 +61,11 @@ If you would like your users to be able to view and export their private key, pl
 
 The login methods available on your reveal page will match the login methods that you have activated in your [Magic developer dashboard](https://dashboard.magic.link/) (found under "Passwordless Login" and "Social Login").
 
-note
-
+<Note>
 Please make sure to deactivate any login methods that you are not using. Login methods can be added and removed at any point and changes will be immediately visible on your reveal page.
+</Note>
 
 The look of the UI for your reveal page will also match the settings configured within the "branding" section of your developer dashboard. This includes the logo shown, the primary color, as well as choosing between light/dark mode. More details on branding and UI customization can be [found here](/docs/wallets/customization/brand-and-theme).
 
-### Universal Wallet
 
-<Info>
-**Restricted Availability**
-
-Universal wallets will soon be merged with Dedicated Wallets into a single product line. Universal apps created before February 7, 2024 will work as expected with no change. See our [blog post](https://magic.link/posts/unifyingwaas) to learn more.
-</Info>
-
-
-For Universal Wallet apps, users can view their seed phrase directly through [wallet.magic.link](https://wallet.magic.link/).
-
-Once signed in, click on the profile icon in the top left corner and then select "Wallet Secret Phrase".
+```

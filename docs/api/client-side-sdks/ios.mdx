@@ -25,17 +25,16 @@ We use service workers for for better performance on web3 operations. If you'd l
 
 ### `Magic()`
 
-|     |     |     |
-| --- | --- | --- |
-| Parameter | Type | Definition |
-| `apiKey` | String | Your **publishable** API Key retrieved from the Magic Dashboard. |
+|            |                                           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Parameter  | Type                                      | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `apiKey`   | String                                    | Your **publishable** API Key retrieved from the Magic Dashboard.                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `network?` | `EthNetwork` \| `CustomNodeConfiguration` | (`EthNetwork`): A representation of the connected Ethereum network (`.mainnet` or `.goerli`).<br/><br/>⁠(`CustomNodeConfiguration`): A custom Ethereum Node configuration with the following shape:<br/><br/>`rpcUrl` (String): A URL pointing to your custom Ethereum Node.<br/><br/>⁠`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer. |
-| `locale?` | `Locale` | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/docs/authentication/customization/localization) for more. |
+| `locale?`  | `Locale`                                  | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/docs/authentication/customization/localization) for more.                                                                                                                                                                                                                                                                                                                    |
 
 ### Initialization
 
 In `AppDelegate`
-
 
 <Tabs>
 <Tab title="Swift">
@@ -45,7 +44,7 @@ import MagicSDK
 import UIKit
 
 @UIApplicationMain
-func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+func application(\_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
     // assign the newly created Magic instance to shared property
     // Test key defaults to "goerli", live key defaults to "mainnet"
@@ -59,8 +58,10 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
       Magic.shared = Magic(apiKey: "PUBLISHABLE_API_KEY", locale: "es")
 
     return true
+
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -79,7 +80,8 @@ let magic = Magic.shared
 magic.auth;
 magic.auth.loginWithSMS;
 magic.auth.loginWithEmailOTP;
-```
+````
+
 </Tab>
 </Tabs>
 
@@ -87,21 +89,21 @@ magic.auth.loginWithEmailOTP;
 
 Authenticate a user passwordlessly using a one-time code sent to the specified phone number.
 
-[List of Currently Blocked Country Codes](/docs/home/faq/dedicated-wallet#questions-around-sms)
+[List of Currently Blocked Country Codes](/docs/home/faq#questions-around-sms)
 
-### Arguments
+#### Arguments
 
-* `configuration` (LoginWithSMSConfiguration):
-    * `phoneNumber` (string): The user phone number to log in with
-    * `showUI` (boolean): If `true`, show an out-of-the-box pending UI while the request is in flight
+- `configuration` (LoginWithSMSConfiguration):
+  - `phoneNumber` (string): The user phone number to log in with
+  - `showUI` (boolean): If `true`, show an out-of-the-box pending UI while the request is in flight
 
-### Returns
+#### Returns
 
-* `Promise<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
+- `Promise<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
-### Example
+#### Example
 
-#### Closure
+**Closure**
 
 <Tabs>
 <Tab title="Swift">
@@ -126,12 +128,14 @@ class LoginViewController: UIViewController {
             print("Result", token)
         })
     }
+
 }
-```
+
+````
 </Tab>
 </Tabs>
 
-#### Promise
+**Promise**
 
 <Tabs>
 <Tab title="Swift">
@@ -156,7 +160,8 @@ class LoginViewController: UIViewController {
         })
     }
 }
-```
+````
+
 </Tab>
 </Tabs>
 
@@ -164,18 +169,18 @@ class LoginViewController: UIViewController {
 
 Authenticate a user passwordlessly using an email one-time code sent to the specified user's email address.
 
-### Arguments
+#### Arguments
 
-* `configuration` (LoginWithEmailOTPConfiguration):
-    * `email` (string): The user email to log in with
+- `configuration` (LoginWithEmailOTPConfiguration):
+  - `email` (string): The user email to log in with
 
-### Returns
+#### Returns
 
-* `Promise<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
+- `Promise<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
-### Example
+#### Example
 
-#### Closure
+**Closure**
 
 <Tabs>
 <Tab title="Swift">
@@ -200,12 +205,14 @@ class LoginViewController: UIViewController {
             print("Result", token)
         })
     }
+
 }
-```
+
+````
 </Tab>
 </Tabs>
 
-#### Promise
+**Promise**
 
 <Tabs>
 <Tab title="Swift">
@@ -230,14 +237,14 @@ class LoginViewController: UIViewController {
         })
     }
 }
-```
+````
+
 </Tab>
 </Tabs>
 
 ## Wallet Module
 
 The Wallet Module and its members are accessible on the Magic SDK instance by the `wallet` property.
-
 
 <Tabs>
 <Tab title="Typescript">
@@ -250,8 +257,8 @@ let magic = Magic.shared
 magic.wallet
 magic.wallet.connectWithUI
 magic.wallet.showUI
-magic.wallet.requestUserInfoWithUI
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -259,15 +266,15 @@ magic.wallet.requestUserInfoWithUI
 
 Renders a simple login form UI to collect the user's email address and authenticate them passwordlessly using a one-time passcode (OTP) sent to their email address they input.
 
-### Arguments
+#### Arguments
 
 * None
 
-### Returns
+#### Returns
 
 * A `promiEvent` which returns an `String[]` when resolved: An array of user accounts that are connected, with the first element being the current public address of the user. You can read more on PromiEvents [here](#promievents).
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Swift">
@@ -289,23 +296,24 @@ class MagicViewController: UIViewController {
         })
     }
 }
-```
+````
+
 </Tab>
 </Tabs>
 
 ### `showUI`
 
-Displays the fully [navigable wallet](/docs/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google and not third party wallets such as metamask. User must be signed in for this method to return or else it will throw an error.
+Displays the fully [navigable wallet](/docs/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google. User must be signed in for this method to return or else it will throw an error.
 
-### Arguments
+#### Arguments
 
-* None
+- None
 
-### Returns
+#### Returns
 
-* `Promise` which resolves when the user closes the window
+- `Promise` which resolves when the user closes the window
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Swift">
@@ -326,52 +334,13 @@ class MagicViewController: UIViewController {
             print("Result", result)
         })
     }
+
 }
-```
+
+````
 </Tab>
 </Tabs>
 
-[#`requestUserInfoWithUI`](#requestuserinfowithui)
---------------------------------------------------
-
-Displays the wallet widget within an iframe that prompts the user to consent to sharing information with the requesting dApp with OpenID profile scopes. Currently, the only profile scope that can be requested is a verified email. Collecting a verified email address from third-party wallet users (MetaMask, Coinbase Wallet, etc.) is a premium feature but included in the free trial period (see [pricing](https://magic.link/pricing)). User must be signed in for this method to return or else it will throw an error.
-
-### Arguments
-
-* `configuration` (RequestUserInfoWithUIConfiguration):
-    * `email` (str): The user email to log in with
-
-### Returns
-
-* `Promise` which resolves when the user closes the window
-
-### Example
-
-<Tabs>
-<Tab title="Swift">
-```json
-import MagicSDK
-
-class MagicViewController: UIViewController {
-
-    let magic = Magic.shared
-
-    func logout() {
-        guard let magic = magic else { return }
-
-        // Assuming user is logged in
-        let config = RequestUserInfoWithUIConfiguration(scope = WalletUserInfoScope(email = "user_email@example.com"))
-
-        magic.wallet.requestUserInfoWithUI(configuration, response: { response in
-            guard let result = response.result
-                else { return print("Error:", response.error.debugDescription) }
-            print("Result", result)
-        })
-    }
-}
-```
-</Tab>
-</Tabs>
 
 ## User Module
 
@@ -395,7 +364,9 @@ magic.user.logout
 magic.user.showSettings
 magic.user.updatePhoneNumber
 magic.user.recoverAccount
-```
+
+````
+
 </Tab>
 </Tabs>
 
@@ -403,17 +374,17 @@ magic.user.recoverAccount
 
 Initiates the update email flow that allows a user to change to a new email.
 
-### Arguments
+#### Arguments
 
-* `configuration` (UpdateEmailConfiguration):
-    * `email` (string): The user email to update with
-    * `showUI` (boolean): If `true`, show an out-of-the-box pending UI while the request is in flight
+- `configuration` (UpdateEmailConfiguration):
+  - `email` (string): The user email to update with
+  - `showUI` (boolean): If `true`, show an out-of-the-box pending UI while the request is in flight
 
-### Returns
+#### Returns
 
-* `Promise<Bool>`: The promise resolves with a true boolean value if update email is successful and rejects with a specific error code if the request fails
+- `Promise<Bool>`: The promise resolves with a true boolean value if update email is successful and rejects with a specific error code if the request fails
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Swift">
@@ -438,8 +409,11 @@ class MagicViewController: UIViewController {
             print("Result", result)
         })
     }
+
 }
-```
+
+````
+
 </Tab>
 </Tabs>
 
@@ -447,16 +421,16 @@ class MagicViewController: UIViewController {
 
 Generates a Decentralized Id Token which acts as a proof of authentication to resource servers.
 
-### Arguments
+#### Arguments
 
-* `configuration` (GetIdTokenConfiguration):
-    * `lifespan` (number): will set the lifespan of the generated token. Defaults to 900s (15 mins).
+- `configuration` (GetIdTokenConfiguration):
+  - `lifespan` (number): will set the lifespan of the generated token. Defaults to 900s (15 mins).
 
-### Returns
+#### Returns
 
-* `Promise<String>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
+- `Promise<String>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Swift">
@@ -480,8 +454,11 @@ class MagicViewController: UIViewController {
             print(token)
         })
     }
+
 }
-```
+
+````
+
 </Tab>
 </Tabs>
 
@@ -489,17 +466,17 @@ class MagicViewController: UIViewController {
 
 Generates a Decentralized Id Token with optional serialized data.
 
-### Arguments
+#### Arguments
 
-* `configuration` (GenerateIdTokenConfiguration):
-    * `lifespan` (number): will set the lifespan of the generated token. Defaults to 900s (15 mins).
-    * `attachment` (str): will set a signature of serialized data in the generated token. Defaults to `"none"`.
+- `configuration` (GenerateIdTokenConfiguration):
+  - `lifespan` (number): will set the lifespan of the generated token. Defaults to 900s (15 mins).
+  - `attachment` (str): will set a signature of serialized data in the generated token. Defaults to `"none"`.
 
-### Returns
+#### Returns
 
-* `Promise<String>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
+- `Promise<String>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Swift">
@@ -523,8 +500,11 @@ class MagicViewController: UIViewController {
             print("Result", token)
         })
     }
+
 }
-```
+
+````
+
 </Tab>
 </Tabs>
 
@@ -532,23 +512,24 @@ class MagicViewController: UIViewController {
 
 Retrieves information for the authenticated user.
 
-### Arguments
+#### Arguments
 
-* _None_
+- _None_
 
-### Returns
+#### Returns
 
-* `Promise<UserInfo>` \- The issuer, email and cryptographic [public address](https://support.blockchain.com/hc/en-us/articles/4417082520724-What-are-public-and-private-keys-and-how-do-they-work-) of the authenticated user.
-    * `issuer` (string): The Decentralized ID of the user. In server-side use-cases, we recommend this value to be used as the user ID in your own tables.
-    * `email` (string): Email address of the authenticated user
-    * `phoneNumber` (string): Phone number of the authenticated user
-    * `publicAddress` (string): The authenticated user's public address (a.k.a.: public key). Currently, this value is associated with the Ethereum blockchain.
-    * `isMfaEnabled` (boolean): A boolean indicating if user has multi-factor authentication enabled
-    * `recoveryFactors` (RecoveryFactor):
-        * `value` (string): Recovery value such as phone number
-        * `type` (RecoveryMethodType): The method used for account recovery
+- `Promise<UserInfo>` \- The issuer, email and cryptographic [public address](https://support.blockchain.com/hc/en-us/articles/4417082520724-What-are-public-and-private-keys-and-how-do-they-work-) of the authenticated user.
+  - `issuer` (string): The Decentralized ID of the user. In server-side use-cases, we recommend this value to be used as the user ID in your own tables.
+  - `email` (string): Email address of the authenticated user
+  - `phoneNumber` (string): Phone number of the authenticated user
+  - `publicAddress` (string): The authenticated user's public address (a.k.a.: public key). Currently, this value is associated with the Ethereum blockchain.
+  - `isMfaEnabled` (boolean): A boolean indicating if user has multi-factor authentication enabled
+  - `recoveryFactors` (RecoveryFactor):
+    - `value` (string): Recovery value such as phone number
+    - `type` (RecoveryMethodType): The method used for account recovery
 
-### Example
+#### Example
+
 <Tabs>
 <Tab title="Swift">
 ```json
@@ -569,8 +550,11 @@ class MagicViewController: UIViewController {
             print("Result", metadata)
         })
     }
+
 }
-```
+
+````
+
 </Tab>
 </Tabs>
 
@@ -578,15 +562,16 @@ class MagicViewController: UIViewController {
 
 Checks if a user is currently logged in to the Magic SDK.
 
-### Arguments
+#### Arguments
 
-* _None_
+- _None_
 
-### Returns
+#### Returns
 
-* `Promise<Bool>`: A boolean value indicating if a user is logged in
+- `Promise<Bool>`: A boolean value indicating if a user is logged in
 
-### Example
+#### Example
+
 <Tabs>
 <Tab title="Swift">
 ```json
@@ -606,8 +591,11 @@ class MagicViewController: UIViewController {
             print("Result", result)
         })
     }
+
 }
-```
+
+````
+
 </Tab>
 </Tabs>
 
@@ -615,15 +603,15 @@ class MagicViewController: UIViewController {
 
 Logs out the currently authenticated Magic user.
 
-### Arguments
+#### Arguments
 
-* _None_
+- _None_
 
-### Returns
+#### Returns
 
-* `Promise<Bool>`: A boolean value indicating if a user has been logged out
+- `Promise<Bool>`: A boolean value indicating if a user has been logged out
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Swift">
@@ -645,8 +633,11 @@ class MagicViewController: UIViewController {
             print("Result", result)
         })
     }
+
 }
-```
+
+````
+
 </Tab>
 </Tabs>
 
@@ -655,17 +646,18 @@ class MagicViewController: UIViewController {
 Displays an iframe with the current user’s settings. Allows for users to update their email address, enable multi-factor authentication, and add a recovery factor.
 
 <Note>
-Only available with Dedicated Wallet. Access to [MFA](/docs/authentication/features/mfa) and [account recovery](docs/authentication/features/account-recovery) require paid add-ons.
+  Access to [MFA](/docs/authentication/features/mfa) and [account
+  recovery](docs/authentication/features/account-recovery) require paid add-ons.
 </Note>
-### Arguments
+#### Arguments
 
-* None
+- None
 
-### Returns
+#### Returns
 
-* `Promise` which resolves when the user closes the window
+- `Promise` which resolves when the user closes the window
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Swift">
@@ -686,8 +678,11 @@ class MagicViewController: UIViewController {
             print("Result", result)
         })
     }
+
 }
-```
+
+````
+
 </Tab>
 </Tabs>
 
@@ -695,16 +690,16 @@ class MagicViewController: UIViewController {
 
 Initiates the update phone number flow that allows a user to change their phone number.
 
-### Arguments
+#### Arguments
 
-* `configuration`:
-    * `phoneNumber` (str): The user phone number to update with
+- `configuration`:
+  - `phoneNumber` (str): The user phone number to update with
 
-### Returns
+#### Returns
 
-* `PromiEvent<boolean>`: The promise resolves with a true boolean value if update email is successful and rejects with a specific error code if the request fails
+- `PromiEvent<boolean>`: The promise resolves with a true boolean value if update email is successful and rejects with a specific error code if the request fails
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Swift">
@@ -726,8 +721,11 @@ class MagicViewController: UIViewController {
             print("Result", result)
         })
     }
+
 }
-```
+
+````
+
 </Tab>
 </Tabs>
 
@@ -735,16 +733,16 @@ class MagicViewController: UIViewController {
 
 Initiates the account recovery flow that allows a user to recover their account using their email address.
 
-### Arguments
+#### Arguments
 
-* `configuration` (RecoverAccountConfiguration):
-    * `email` (str): The user email address to recover account with
+- `configuration` (RecoverAccountConfiguration):
+  - `email` (str): The user email address to recover account with
 
-### Returns
+#### Returns
 
-* `PromiEvent<boolean>`: The promise resolves with a true boolean value if the account recovery is successful and rejects with a specific error code if the request fails
+- `PromiEvent<boolean>`: The promise resolves with a true boolean value if the account recovery is successful and rejects with a specific error code if the request fails
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Swift">
@@ -766,15 +764,19 @@ class MagicViewController: UIViewController {
             print("Result", result)
         })
     }
+
 }
-```
+
+````
+
 </Tab>
 </Tabs>
 
 ## OpenID Module
 
 <Note>
-This module requires an enterprise agreement. For more details [click here](docs/authentication/login/idp).
+  This module requires an enterprise agreement. For more details [click
+  here](docs/authentication/login/idp).
 </Note>
 
 The OpenID Module and it's members are accessible on the Magic SDK instance by the `openid` property.
@@ -786,16 +788,21 @@ To use the OpenID Module in your application, install `MagicExt-OIDC` along wit
 ```json
 
 # Cocoapods, in Podfile
+
 ⁠pod 'MagicSDK'⁠
 pod 'MagicExt-OIDC'
 ⁠
+
 # SPM⁠
+
 Add magic-ios-ext ⁠
 Add magic-ios
 
 magic.openid;
 magic.openid.loginWithOIDC;
-```
+
+````
+
 </Tab>
 </Tabs>
 
@@ -803,23 +810,17 @@ magic.openid.loginWithOIDC;
 
 Authenticate users via your preferred OIDC client.
 
+#### Arguments
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
-### Arguments
+- `jwt` (String): The OIDC token from your identity provider
 
-* `jwt` (String): The OIDC token from your identity provider
+- `providerId` (String): An alphanumeric ID provided by Magic after successful configuration of your identity provider
 
-* `providerId` (String): An alphanumeric ID provided by Magic after successful configuration of your identity provider
+#### Returns
 
+- `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
-### Returns
-
-* `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
-
-
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Swift">
@@ -833,14 +834,16 @@ magic = Magic(apiKey: '<your_magic_api_key>')
 ⁠func handleOpenIdLogin() {
 ⁠    guard let magic = magic else { return }
 
-⁠    let config = OpenIdConfiguration(jwt: jwt, providerId: providerId)
-    magic.openid.loginWithOIDC(config, response: {res in
-     if (res.status.isSuccess) {
-        print(res.result ?? "nil")
-     }
-  })
+⁠ let config = OpenIdConfiguration(jwt: jwt, providerId: providerId)
+magic.openid.loginWithOIDC(config, response: {res in
+if (res.status.isSuccess) {
+print(res.result ?? "nil")
 }
-```
+})
+}
+
+````
+
 </Tab>
 </Tabs>
 
@@ -896,7 +899,7 @@ enum Error: Swift.Error{
 
 ## Resources
 
-* [GitHub](https://github.com/magiclabs/magic-ios)
-* [Demo](https://github.com/magiclabs/magic-ios-demo)
-* [Goerli Testnet Faucet](https://goerlifaucet.com)
-
+- [GitHub](https://github.com/magiclabs/magic-ios)
+- [Demo](https://github.com/magiclabs/magic-ios-demo)
+- [Goerli Testnet Faucet](https://goerlifaucet.com)
+````

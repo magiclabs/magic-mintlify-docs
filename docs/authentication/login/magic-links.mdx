@@ -4,62 +4,48 @@ title: Magic Links
 
 ## Overview
 
-
 Authenticate a user passwordlessly using a "magic link" sent to the specified user's email address.
 
 ### Compatibility
-
-<Note>
-Only available with [Dedicated Wallet](/docs/wallets/wallet-types#dedicated-wallet).
-</Note>
 
 Magic link SDK methods are available via the [Web client-side SDK](/docs/api/client-side-sdks/web). These methods are deprecated on all mobile SDKs.
 
 ## Usage
 
-
 The `loginWithMagicLink` function sends an authentication request to the user. The resolved value is a Decentralized ID token with a default 15-minute lifespan. **Refer to the **[**API documentation**](/docs/api/overview) **for information on how to install and initialize Magic.**
-
 
 <Tabs>
 <Tab title="Javascript">
 ```json
 import  {  Magic  }  from  'magic-sdk';
 
-
-
-// must use a Dedicated Wallet API Key
-
-const magic =  new  Magic('API_KEY');
-
-
+const magic = new Magic('API_KEY');
 
 // log in a user by their email
 
-try  {
+try {
 
-  await magic.auth.loginWithMagicLink({ email:  'hello@example.com'  });
+await magic.auth.loginWithMagicLink({ email: 'hello@example.com' });
 
-}  catch  {
+} catch {
 
-  // Handle errors if required!
+// Handle errors if required!
 
 }
-
-
 
 // log in a user by their email, without showing an out-of-the box UI.
 
-try  {
+try {
 
-  await magic.auth.loginWithMagicLink({ email:  'hello@example.com', showUI:  false  });
+await magic.auth.loginWithMagicLink({ email: 'hello@example.com', showUI: false });
 
-}  catch  {
+} catch {
 
-  // Handle errors if required!
+// Handle errors if required!
 
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -96,7 +82,7 @@ try  {
 
   case  RPCErrorCode.UserAlreadyLoggedIn:
 
-  // Handle errors accordingly :)
+  // Handle errors accordingly
 
   break;
 
@@ -105,12 +91,12 @@ try  {
   }
 
 }
-```
+````
+
 </Tab>
 </Tabs>
 
 ## Test Mode
-
 
 Magic's client-side Web SDK provides **Test Mode** as a quick way to test your integration locally by asserting specific error codes or bypassing the magic link flow completely. Test Mode only works when logging in with Magic links. As the name suggests, **this is for testing**. Users and wallets created in test mode should not be treated as secure or production-ready. Data surfaced while in Test Mode should not be considered secure, accurate, or production-ready.
 
@@ -121,14 +107,13 @@ To enable Test Mode, provide `testMode: true` to the SDK constructor.
 ```json
 import  {  Magic  }  from  'magic-sdk';
 
+const magic = new Magic('YOUR_API_KEY', {
 
-
-const magic =  new  Magic('YOUR\_API\_KEY',  {
-
- testMode:  true,
+testMode: true,
 
 });
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -144,28 +129,31 @@ With Test Mode enabled, you can assert the desired behavior through the email ad
 <Tab title="Succeed">
 ```json
 magic.auth.loginWithMagicLink({ email: 'test+success@magic.link' });
-```
+````
+
 </Tab>
 <Tab title="Fail">
 ```json
 magic.auth.loginWithMagicLink({ email: 'test+fail@magic.link' });
 
-```
+````
 </Tab>
 <Tab title="Fail With Error">
 ```json
 import { RPCErrorCode } from 'magic-sdk';
 
 magic.auth.loginWithMagicLink({ email: `test+fail_with_{${RPCErrorCode.MagicLinkFailedVerification}}@magic.link` });
-```
+````
+
 </Tab>
 </Tabs>
 
 Web3 and blockchain use-cases sometimes require access to deterministic key-pairs so that testnet funds are available at runtime. To enable this, users can explicitly specify the key-pair associated to a test user with the following email: `test+success_with_{PUBLIC_KEY:PRIVATE_KEY}@magic.link`.
 
-
 <Info>
-The key-pair provided in the email address during test mode is not protected by Magic's delegated key management system. These keys should not be considered secure or private. Never store mainnet funds with these keys!
+  The key-pair provided in the email address during test mode is not protected
+  by Magic's delegated key management system. These keys should not be
+  considered secure or private. Never store mainnet funds with these keys!
 </Info>
 
 In practice, you can assert a successful login with:
@@ -190,12 +178,13 @@ In the example above, we encode an Ethereum-compatible key-pair in the test user
 Magic’s top priority is ensuring secure authentication for your end users in your app. Magic recently implemented and added a layer of security for all login flows with email magic link. Specifically, the change ensures that the IP address associated with the device that a user enters their email address on matches the IP address associated with the device that clicks the magic link. If the IP address does not match, the following error is shown to the user when they click on the magic link.
 
 <Frame>
-  <img src="/images/ip-mismatch.webp" alt=""/>
+  <img src="/images/ip-mismatch.webp" alt="" />
 </Frame>
 
 In addition, for desktop web users, magic links will now authenticate the session clicked from a user’s email. This means that the session or browser tab where the user first enters their email address will no longer sign the user in. This will help ensure that users remain secure in an evolving threat environment, while still delivering a smooth sign-in experience. For customers using the web SDK, there are no code changes required.
 
 ## Mobile Support
+
 Magic Links are no longer supported on mobile as of June 20th, 2023. We advise customers to switch over to Email OTP instead. Please refer to the documentation below on how to implement OTP on mobile.
 
 [How to add OTP email login on iOS](/docs/api/client-side-sdks/ios#loginwithemailotp)
@@ -210,6 +199,4 @@ Magic Links are no longer supported on mobile as of June 20th, 2023. We advise c
 
 ## Resources
 
-
-* [Error Codes](/docs/api/client-side-sdks/web#error-codes)
-
+- [Error Codes](/docs/api/client-side-sdks/web#error-codes)

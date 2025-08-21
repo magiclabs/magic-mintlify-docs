@@ -2,16 +2,12 @@
 title: Generalized Delegated Key Management Service
 ---
 
-import { Button } from '/snippets/button.mdx';
+import { Button } from "/snippets/button.mdx";
 
-<Card
-
->
-⁠This feature requires an enterprise agreement
-<br/>
-<Button href="https://magic.link/contact">
-Contact Sales
-</Button>
+<Card>
+  ⁠This feature requires an enterprise agreement
+  <br />
+  <Button href="https://magic.link/contact">Contact Sales</Button>
 </Card>
 
 ### Overview
@@ -20,17 +16,11 @@ Generalized Delegated Key Management Service, or G-DKMS for short, provides deve
 
 ### Compatibility
 
-<Note>
-
-Only available in Dedicated Wallet.
-</Note>
-
 G-DKMS SDK methods are available via the [Web client-side SDK](/docs/api/client-side-sdks/web).
 
 ### Usage
 
 To leverage G-DKMS a developer can call the following two methods after a user has been logged in:
-
 
 <Tabs>
 <Tab title="Javascript">
@@ -40,8 +30,10 @@ const cipherText = await magic.gdkms.encryptWithPrivateKey('hello world');
 
 const message = await magic.gdkms.decryptWithPrivateKey('U2FsdGVkX19CZ2XlS839ihS7J9cXPw8cTzCVabagdGw=');
 // <- "hello world"
+
 ```
 </Tab>
 </Tabs>
 
 This is an Enterprise only feature - please [reach out](https://magic.link/contact) if you’re interested to learn more.
+```

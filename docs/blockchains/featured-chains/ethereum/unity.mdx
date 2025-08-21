@@ -20,15 +20,15 @@ using UnityEngine;
 
 public class MagicUnity : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        Magic magic = new Magic("YOUR_PUBLISHABLE_KEY");
-        Magic.Instance = magic;
-    }
+// Start is called before the first frame update
+void Start()
+{
+Magic magic = new Magic("YOUR_PUBLISHABLE_KEY");
+Magic.Instance = magic;
+}
 }
 
-```
+````
 </Tab>
 </Tabs>
 
@@ -45,18 +45,20 @@ Goerli Block Explorer: [https://goerli.etherscan.io](https://etherscan.io/)
 ```json
 
 Magic magic = new Magic("YOUR_PUBLISHABLE_KEY", EthNetwork.Goerli);
-```
+````
+
 </Tab>
 </Tabs>
 
 ### Custom Node
 
-You can allow specific URLs to interact with the Magic SDK, such as a custom RPC URL to send transactions to your node. The Content Security Policy (CSP) of a browser dictates what resources can be loaded. If you're used a dedicated wallet, you can update the policy in the settings page of the dashboard with your custom URL. If you're using a universal wallet, please reach out to support to get your URL added.
+You can allow specific URLs to interact with the Magic SDK, such as a custom RPC URL to send transactions to your node. The Content Security Policy (CSP) of a browser dictates what resources can be loaded. You can update the policy in the settings page of the dashboard with your custom URL.
 
 <Note>
 
 **Note**
 Note: the use of a custom node will require the RPC URL to the project's Content Security Policy from your [Magic dashboard](https://dashboard.magic.link/). Refer to the [CSP documentation](/docs/wallets/security/content-security-policy).
+
 </Note>
 
 <Tabs>
@@ -65,7 +67,8 @@ Note: the use of a custom node will require the RPC URL to the project's Content
 
 var config = new CustomNodeConfiguration(rpcUrl: "https://alchemy.io")
 Magic magic = new Magic("YOUR_PUBLISHABLE_KEY", config);
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -90,7 +93,8 @@ Do **not** set the custom nodes to local IP address (E.x. [http://127.0.0.1](htt
  enum class EthNetwork {
         Mainnet, Goerli
  }
-```
+````
+
 </Tab>
 </Tabs>
 
@@ -101,24 +105,20 @@ There are two ways to set the wallet provider to Magic in Nethereum
 1\. Construct an ethApiService and pass Magic provider to it
 
 <Tabs>
-<Tab title="C#">
-```json
-var ethApiService = new EthApiService(Magic.Instance.Provider);
-var accounts = await ethApiService.Accounts.SendRequestAsync();
-var balance = await ethApiService.GetBalance.SendRequestAsync(accounts[0]);
-```
-</Tab>
+  <Tab title="C#">
+    ```json var ethApiService = new EthApiService(Magic.Instance.Provider); var
+    accounts = await ethApiService.Accounts.SendRequestAsync(); var balance =
+    await ethApiService.GetBalance.SendRequestAsync(accounts[0]); ```
+  </Tab>
 </Tabs>
 
 2\. By directly passing Magic provider to each of the Nethereum RPC methods
 
 <Tabs>
-<Tab title="C#">
-```json
-var ethAccounts = new EthAccounts(Magic.Instance.Provider);
-var accounts = await ethAccounts.SendRequestAsync();
-```
-</Tab>
+  <Tab title="C#">
+    ```json var ethAccounts = new EthAccounts(Magic.Instance.Provider); var
+    accounts = await ethAccounts.SendRequestAsync(); ```
+  </Tab>
 </Tabs>
 
 ### Common Methods
@@ -140,13 +140,15 @@ public class MagicUnityButton : MonoBehaviour
         var transaction = new EthSendTransaction(Magic.Instance.Provider);
         var transactionInput = new TransactionInput
             { To = accounts[0], Value = new HexBigInteger(10), From = accounts[0]};
+
 ⁠
-        // Send the transaction
-        var hash = await transaction.SendRequestAsync(transactionInput);
-        Debug.Log(hash);
-    }
+// Send the transaction
+var hash = await transaction.SendRequestAsync(transactionInput);
+Debug.Log(hash);
 }
-```
+}
+
+````
 </Tab>
 </Tabs>
 
@@ -167,7 +169,8 @@ public class MagicUnityButton : MonoBehaviour
         Debug.Log(signedResult);
     }
 }
-```
+````
+
 </Tab>
 </Tabs>
 
@@ -192,4 +195,4 @@ public class MagicUnityButton : MonoBehaviour
 
 ### Resources
 
-* [Magic Unity SDK](https://github.com/magiclabs/magic-unity)
+- [Magic Unity SDK](https://github.com/magiclabs/magic-unity)

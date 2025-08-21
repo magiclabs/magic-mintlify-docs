@@ -2,24 +2,18 @@
 title: Custom Email Template
 ---
 
+import { Button } from "/snippets/button.mdx";
 
-import { Button } from '/snippets/button.mdx';
-
-<Card
-
->
-This feature requires a subscription
-<br/>
-<Button href="https://magic.link/pricing#features">
-View pricing
-</Button>
+<Card>
+  This feature requires a subscription
+  <br />
+  <Button href="https://magic.link/pricing#features">View pricing</Button>
 </Card>
-
 
 ## Overview
 
 <Frame>
-  <img src="/images/image.png"/>
+  <img src="/images/image.png" />
 </Frame>
 
 Magic's Custom Email Template feature allows you to fully tailor your app's login email using your own custom HTML. With this feature, developers can customize emails that use one-time passcodes or magic links.
@@ -28,22 +22,20 @@ Magic's Custom Email Template feature allows you to fully tailor your app's logi
 
 ### Configuration
 
-
 Custom Email Templates can be figured in the [Magic dashboard](https://dashboard.magic.link). Navigate to **Customization**, then **Email** to create and edit templates.
 
 The following is a list of variables that can be used when creating a custom email template in Magic. From the dashboard editor, variables must be wrapped in `{{}}` in order to be resolved to their value. For example, to use the one-time passcode, insert `{{otp}}` into the template.
 
-* `otp`: One-time passcode. Example: 412320
-* `magic_link`: Magic link URL. Example: “https://auth.magic.link/confirm?tlt=eyJh…”
-* `app.name`: The name of the application. Example: “My test app”
-* `user.email`: Email address of the user receiving the login email. Example: joe@magic.link
-* `template.locale`: Language of the user receiving the login email. Example: en_US
-* `login.device.browser`: Browser of the user receiving the login email. Example: Chrome
-* `login.device.os`: Operating system of the user receiving the login email. Example: MacOS
-* `login.timestamp`: Timestamp of when email was requested
+- `otp`: One-time passcode. Example: 412320
+- `magic_link`: Magic link URL. Example: “https://auth.magic.link/confirm?tlt=eyJh…”
+- `app.name`: The name of the application. Example: “My test app”
+- `user.email`: Email address of the user receiving the login email. Example: joe@magic.link
+- `template.locale`: Language of the user receiving the login email. Example: en_US
+- `login.device.browser`: Browser of the user receiving the login email. Example: Chrome
+- `login.device.os`: Operating system of the user receiving the login email. Example: MacOS
+- `login.timestamp`: Timestamp of when email was requested
 
 ## Usage
-
 
 > ⁠**ℹ️** **This feature is supported in Magic SDK 21.1.0 and above.**
 
@@ -73,10 +65,10 @@ magic.auth.loginWithEmailOTP({
 
 //magic link⁠
 magic.auth.loginWithMagicLink({
-  email: 'john@example.com',
-  overrides: {
-    variation: 'template name',
-  }
+email: 'john@example.com',
+overrides: {
+variation: 'template name',
+}
 })
 ⁠
 
@@ -85,3 +77,4 @@ magic.auth.loginWithMagicLink({
 </Tabs>
 
 
+```

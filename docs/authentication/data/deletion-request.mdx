@@ -2,21 +2,18 @@
 title: GDPR Deletion Request
 ---
 
-
 <Warning>
-Once a deletion request is submitted, the user will permanently lose access to their wallet and cannot be recovered.
+  Once a deletion request is submitted, the user will permanently lose access to
+  their wallet and cannot be recovered.
 </Warning>
 
-<Note>
-Available to Dedicated applications and users whose primary login is an email.
-</Note>
+<Note>Available to users whose primary login is an email.</Note>
 
 ## Overview
 
 The **Deletion Request API** enables developers to delete users' information in compliance with GDPR. This API is designed for applications that require bulk deletion operations and supports authentication using the application's secret key.
 
 ## Usage
-
 
 ### Request
 
@@ -31,14 +28,14 @@ curl --location 'https://api.magic.link/v1/api/auth_user/deletion_request' \
 }'
 ```
 
-### [#Response](#response)
+### Response
 
 #### Success
 
 Upon successful request processing, the API returns a response with lists of processed and unprocessed emails.
 
-* `processed`: An array of emails that have been queued for deletion.
-* `unprocessed`: An array of emails that were not found and hence not processed.
+- `processed`: An array of emails that have been queued for deletion.
+- `unprocessed`: An array of emails that were not found and hence not processed.
 
 ```json
 {
@@ -51,7 +48,6 @@ Upon successful request processing, the API returns a response with lists of pro
 
 In the event of an error, the API will return an error code and message.
 
-* `400 Bad Request`: Your request is invalid. This often occurs due to missing the `emails` field in the request body.
-* `401 Unauthorized`: Your authorization token is missing or invalid.
-* `429 Too Many Requests`: You have hit the rate limit for deletion requests. Please wait before sending more requests.
-
+- `400 Bad Request`: Your request is invalid. This often occurs due to missing the `emails` field in the request body.
+- `401 Unauthorized`: Your authorization token is missing or invalid.
+- `429 Too Many Requests`: You have hit the rate limit for deletion requests. Please wait before sending more requests.
