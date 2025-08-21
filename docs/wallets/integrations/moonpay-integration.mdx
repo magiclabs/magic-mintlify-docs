@@ -1,0 +1,239 @@
+---
+title: MoonPay crypto onramping
+---
+
+Learn how to integrate Magic with MoonPay cryptocurrency onramping
+
+Lowering the barrier to entry in cryptocurrency is one of the most vital pieces to onboarding the next generation of users and consumers. Traditionally, acquiring specific tokens involved interacting directly with centralized and decentralized exchanges. This can be a confusing and costly experience for some given that you have to take into account gas payments, security concerns and bad user experiences.
+
+Crypto onramping tools such as MoonPay alleviate a lot of these concerns by providing a smooth and straight-forward process to buying cryptocurrency using debit or credit cards. A user can simply:
+
+* Select the cryptocurrency they want to purchase in their preferred currency
+* Add the preferred wallet address
+* Add some personal details for KYC (such as address)
+* Add payment details
+* Submit the transaction
+* Receive the cryptocurrency
+
+This guide will walk through integrating the MoonPay onramp widget with a Next.js dApp created from the Magic CLI. We will be utilizing the MoonPay React library to purchase cryptocurrency in a sandbox environment.
+
+## Project prerequisites
+
+To follow along with this guide, you’ll need three things:
+
+1.  A Magic **Publishable** API Key
+2.  A web client
+3.  MoonPay business account
+
+You can get your **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link/).
+
+You can sign up and get a MoonPay [business account](https://dashboard.moonpay.com/signup) to acquire the API keys needed to set up a sandbox environment for MoonPay and start testing onramping.
+
+We’ll use the `make-scoped-magic-app` CLI tool to bootstrap a Next.js app with Magic authentication already baked into the client. You’re welcome to use your own client, but this tutorial and its accompanying code snippets assume the output of the `make-scoped-magic-app` CLI as the starting point.
+
+The `make-scoped-magic-app` CLI tool is an easy way to bootstrap new projects with Magic. To get started, simply run the command below in the shell of your choice. Be sure to replace `<YOUR_PUBLISHABLE_API_KEY>` with the **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link/).
+
+<Tabs>
+<Tab title="Bash">
+```json
+npx make-scoped-magic-app \
+    --template nextjs-dedicated-wallet \
+    --network ethereum-sepolia \
+    --login-methods EmailOTP \
+    --publishable-api-key <YOUR_PUBLISHABLE_API_KEY>
+```
+</Tab>
+</Tabs>
+
+
+This will bootstrap the starting point of the tutorial for you. In the scaffolded project, be sure to add your Magic **Publishable** API Key to the `.env` as `NEXT_PUBLIC_MAGIC_API_KEY` if you didn’t add it to the CLI command above.
+
+From your MoonPay business dashboard, click on the "Developers" tab on the left hand side navigation. Copy the **publishable** key and add it to your `.env` as `NEXT_PUBLIC_MOONPAY_API_KEY`.
+
+<Tabs>
+<Tab title=".env">
+```json
+// Publishable API Key found in the Magic Dashboard
+NEXT_PUBLIC_MAGIC_API_KEY=pk_live_1234567890
+
+// The RPC URL for the blockchain network
+NEXT_PUBLIC_BLOCKCHAIN_NETWORK=ethereum-sepolia
+
+NEXT_PUBLIC_MOONPAY_API_KEY=pk_test_12345678901234567890
+
+```
+</Tab>
+</Tabs>
+
+
+### Install additional project dependencies
+
+In addition to the packages included in the scaffold produced by the `make-scoped-magic-app` CLI, you’ll also need to install `@moonpay/moonpay-react` to have access to the MoonPay onramping components.
+
+Run the following command to install the required dependencies:
+
+<Tabs>
+<Tab title="NPM">
+```json
+npm install @moonpay/moonpay-react
+
+```
+</Tab>
+<Tab title="Yarn">
+```json
+yarn add @moonpay/moonpay-react
+
+```
+</Tab>
+</Tabs>
+
+### Initialize MoonPay provider
+
+Inside of `src/pages/index.tsx`, we need to wrap our application with the MoonPay provider. We do this by importing the `MoonPayProvider` and nesting it underneath the existing `MagicProvider`.
+
+Since we’re using Next.js, it is recommended to import the provider dynamically. We will need to utilize `dynamic` from `next/dynamic` to do this. Inside the `Home` function, create a variable named `MoonPayProvider`:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+import dynamic from 'next/dynamic';
+
+const MoonPayProvider = dynamic(
+  () => import('@moonpay/moonpay-react').then((mod) => mod.MoonPayProvider),
+  { ssr: false },
+);
+
+```
+</Tab>
+</Tabs>
+
+
+
+Inside the return statement and below the Magic provider, wrap the rest of the application with the MoonPay provider:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+
+<MagicProvider>
+  <MoonPayProvider
+    apiKey={process.env.NEXT_PUBLIC_MOONPAY_API_KEY || ""}
+    debug
+  >
+    // other components
+  </MoonPayProvider>
+</MagicProvider>
+
+```
+</Tab>
+</Tabs>
+
+
+
+### Add MoonPayBuyWidget to UI
+
+Now that we have MoonPay configured, we can now add the ability to use the onramping widget.
+
+Similarly to the provider we created in the previous step, it is recommended to import the component dynamically to avoid errors. At the top of the `src/components/magic/cards/SendTransactionCard.tsx`, below the rest of the existing imports, add the following:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+import dynamic from 'next/dynamic';
+
+const MoonPayBuyWidget = dynamic(
+  () => import('@moonpay/moonpay-react').then((mod) => mod.MoonPayBuyWidget),
+  { ssr: false },
+);
+
+```
+</Tab>
+</Tabs>
+
+
+
+The widget itself can take a variety of props such as themes, currency codes and languages. To find out more on what customization is possible with the MoonPay buy widget, visit the [onramp params page](https://dev.moonpay.com/docs/ramps-sdk-buy-params).
+
+The first thing we need to do is create a variable named `isVisible`. This will determine if the onramp overlay is displayed. Underneath the other variables, add the following:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+const [isVisible, setIsVisible] = useState<boolean>(false)
+```
+</Tab>
+</Tabs>
+
+
+
+The component provides 4 different visual variants:
+
+* `overlay`: Overlays the widget on your existing interface
+* `embedded`: Embeds the widget into your existing interface
+* `newTab`: Opens in new tab
+* `newWindow`: Opens in new window
+
+Lets add a button that will allow us to display the MoonPay widget and onramp some sandbox cryptocurrency.
+
+In the return statement of the `SendTransaction` card, inside the `getFaucetUrl() &&` conditional, replace the div with the following:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+<div className="flex flex-col gap-2">
+  <a href={getFaucetUrl()} target="_blank" rel="noreferrer">
+    <FormButton onClick={() => null} disabled={false}>
+      Get Test {getNetworkToken()}
+      <Image src={Link} alt="link-icon" className="ml-[3px]" />
+    </FormButton>
+  </a>
+  <FormButton onClick={() => setIsVisible(true)} disabled={false}>
+    Buy Crypto with MoonPay
+    <Image src={Link} alt="link-icon" className="ml-[3px]" />
+  </FormButton>
+  <MoonPayBuyWidget
+    variant="overlay"
+    baseCurrencyCode="usd" // Currency to pay
+    baseCurrencyAmount="100" // Pre-populated buy amount
+    defaultCurrencyCode="eth" // Default crypto selection
+    visible={isVisible}
+    onCloseOverlay={() => setIsVisible(!isVisible)}
+  />
+  <Divider />
+</div>
+
+```
+</Tab>
+</Tabs>
+
+
+
+### Test MoonPay widget
+
+Now that we’ve configured MoonPay and added the widget to our UI, we are ready to test the functionality in the provided sandbox environment.
+
+Start your local development server and run through the Magic email OTP flow to log in. Once logged in you will notice a card displayed with the header “**Send Transaction”.** Click on this button to display the onramp widget. You will be instructed to select a cryptocurrency to buy along with the amount you want to buy and the preferred currency to pay for it.
+
+For the sake of this guide, we will be purchasing some ETH. Once you have made your selections and clicked “Continue”, you will be prompted to either connect to the site using your browser wallet, or to paste in the wallet address you wish to receive the crypto for.
+
+The following prompt will be to add the payment details. MoonPay provides us with dummy credit card information. Use the following card number, expiry date and CVC:
+
+* Credit card number: 4485 0403 7153 6584
+* Expiry date: 12/2030
+* CVC: 123
+
+Follow through the steps to add credit card details and address.
+
+Note: If you use a United States of America address you may be asked to add a Social Security Number. Please do not use a genuine SSN. Any 9 digit dummy value will work.
+
+Once you’ve added this information we can now confirm the order. If successful, we will see the button text changes to display “View on block explorer”, meaning that the test transaction has been executed.
+
+### Next Steps
+
+You now know how to integrate MoonPay with Magic and include the following features:
+
+1.  Simple authentication with Email OTP
+2.  Buy funds using MoonPay onramp
+
+Feel free to take a look at our [final code solution](https://github.com/magiclabs/example-moonpay-onramp) or tinker with it directly in [Codesandbox](https://codesandbox.io/s/github/magiclabs/example-moonpay-onramp). Take a look at the MoonPay [React docs](https://dev.moonpay.com/docs/ramps-sdk-install-react) for more information on what is possible with Magic and MoonPay.
+

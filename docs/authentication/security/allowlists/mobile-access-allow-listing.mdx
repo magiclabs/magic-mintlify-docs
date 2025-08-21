@@ -1,0 +1,70 @@
+---
+title: Mobile Access Allow Listing
+---
+
+## Overview
+
+Mobile Access Allow listing manages the apps that are allowed to access Magic. Adding your **App ID** (**Bundle Identifier** from iOS or **Application ID** from Android) to the mobile app allow list will stop all the traffic from unknown mobile sources.
+
+### Prerequisites
+
+Ensure your mobile SDK has been updated to the desired version to enable this feature.
+
+* **iOS**: since 3.2.0
+* **Android**: since 2.2.0
+* **Flutter**: since 1.1.0
+* **Unity**: since 0.2.0
+* **React Native Bare / Expo: **since 13.0.0
+
+### Allow an App ID
+
+In your Dashboard, turn on the Allow List toggle, enter the App ID you want to allow, then click **Add**. This App ID will come from your mobile app settings and must follow the naming rules set by Apple and Android:
+
+* It must have at least two segments (one or more dots)
+
+* All characters must be alphanumeric \[a-zA-Z0-9\] or an `-` or `_`
+
+
+<Frame>
+  <img src="/images/image-mobile-access.webp" alt="image-mobile-access"/>
+</Frame>
+
+After you add the **App ID**, traffic from unauthorized sources is blocked. Users from unauthorized apps will see the message below when they try to log in. If this happens unexpectedly, add the App ID in the message to unblock these users.
+
+<Frame>
+  <img src="/images/verified-bundle-id-error_v2.webp" alt=""/>
+</Frame>
+
+### Find Your App ID
+
+The App ID is represented by the bundle identifier on iOS and the applicationId on Android. See below for help finding each of these.
+
+### iOS
+
+Appl uses bundle identifiers (bundle IDs) to uniquely identifiy an application in Apple's ecosystem. These IDs are usually written in reverse DNS notation, e.g. `link.magic.ios`.
+
+Your iOS bundle Identifier can be found in **Target -> Signing & Capabilities -> Bundle Identifier**
+
+<Frame>
+  <img src="/images/image-mobile-access-2.webp" alt=""/>
+</Frame>
+
+### Android
+
+Your Android App ID is defined by the `applicationId` property in your module's `build.gradle` file, as shown here:
+
+```json
+android {
+    defaultConfig {
+        applicationId = "link.magic.android"
+        minSdk = 24
+        targetSdk = 31
+        versionCode = 1
+        versionName = "1.0"
+    }
+    ...
+}
+```
+
+For more detail about Application ID in Android, please refer to the [Official documentation.](https://developer.android.com/studio/build/configure-app-module#set_the_application_id)
+

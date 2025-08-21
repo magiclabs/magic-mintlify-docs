@@ -1,0 +1,70 @@
+---
+title: Binance Smart Chain
+sidebarTitle: Binance
+---
+
+import { Button } from '/snippets/button.mdx';
+
+<Card
+    title="Binance implementation guide"
+>
+How to Build a Decentralized App on Binance Smart Chain with Magic
+
+<Button href="/posts/magic-binance-smart-chain">
+View guide
+</Button>
+</Card>
+
+
+## Overview
+
+[Binance Smart Chain](https://www.bnbchain.org/en/bnb-smart-chain) is a Layer 1 blockchain network that's compatible with the Ethereum Virtual Machine (EVM), specifically designed to revolutionize the world of sports. Through the Magic SDK, users can easily create wallets and engage with Binance Smart Chain, enabling teams, fans, and developers to craft Web3 products and experiences that unite fans and brands like never before.
+
+**As Binance Smart Chain is EVM compatible**, you can follow the [Ethereum](/docs/blockchains/featured-chains/ethereum/javascript) documentation to send your first transaction and utilize all other features.
+
+## Configure Binance Smart Chain
+
+### Smart Chain
+
+Mainnet Block Explorer URL: [https://bscscan.com](https://bscscan.com)
+
+```javascript Javascript
+
+const BSCOptions = {
+  rpcUrl: 'https://bsc-dataseed.binance.org/', // Smart Chain RPC URL
+  chainId: 56, // Smart Chain chain id
+};
+
+// Setting network to Smart Chain
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: BSCOptions });
+```
+### Smart Chain - Testnet
+
+Testnet Block Explorer URL: [https://testnet.bscscan.com](https://testnet.bscscan.com)
+
+```javascript Javascript
+
+const BSCOptions = {
+  rpcUrl: 'https://data-seed-prebsc-1-s1.binance.org:8545/', // Smart Chain - Testnet RPC URL
+  chainId: 97, // Smart Chain - Testnet chain id
+};
+
+// Setting network to Smart Chain - Testnet
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: BSCOptions });
+```
+## Compatibility
+
+* All `Auth`, `User` and most `Wallet` module methods* for [Dedicated Wallets](/docs/wallets/wallet-types#dedicated-wallet-white-labeled-wallets)
+* All EVM Provider functionality to respond to supported [RPC methods](/docs/api/client-side-sdks/web#evm-rpc-methods)
+
+_*Some features are not yet compatible such as NFT Viewer and Fiat On-ramps._
+
+_Need a feature or see a problem?_ File an issue on our [github repo](https://github.com/magiclabs/magic-js).
+
+## Resources & Tools
+
+* Documentation: [https://docs.bnbchain.org/](https://docs.bnbchain.org/)
+* Block Explorer:
+    * [https://bscscan.com/](https://bscscan.com/) (Mainnet)
+    * [https://testnet.bscscan.com/](https://testnet.bscscan.com/) (Testnet)
+* Testnet Faucet: [https://www.bnbchain.org/en/testnet-faucet](https://www.bnbchain.org/en/testnet-faucet)

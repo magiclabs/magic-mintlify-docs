@@ -1,0 +1,184 @@
+---
+title: Wallet Pregeneration (Beta)
+---
+
+### Overview
+
+<Note>
+
+This feature is currently in beta. Please reach out for early access.
+</Note>
+
+Magic offers Wallet Pregeneration, a feature that allows you to create non-custodial wallets programmatically without requiring end users to start or complete an authentication flow. After the wallet is generated, a user can claim their pregenerated wallet by authenticating through your application.
+
+**Neither Magic nor the developer can access the wallet's private key; it can only be accessed by the end user after claiming the wallet.**
+
+### Usage
+
+### Create Wallet
+
+You can make the API call below to pregenerate wallets.
+
+* POST Endpoint: `https://api.magic.link/v1/api/wallet_pregen/create_wallets`
+
+#### **Input Parameters**
+
+**Request Headers**
+
+* X-Magic-Secret-Key: The secret API key obtained from [Magic Dashboard](https://dashboard.magic.link/).
+
+**Request Body**
+
+* identifiers: A list containing "identifier_payload" objects.
+
+_**identifier_payload**_
+
+* identifier: A string representing the identifier (e.g., email address).
+* identifier\_type: A string constant. For now, this should be set to "email\_address".
+
+
+<Tabs>
+<Tab title="Curl">
+```json
+
+curl --request POST \
+  --url 'https://api.magic.link/v1/api/wallet_pregen/create_wallets' \
+  --header 'X-Magic-Secret-Key: <your_magic_secret_api_key>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "identifiers": [
+      {
+⁠        "identifier": "user1@example.com",
+        "identifier_type": "email_address"
+      },
+      {
+⁠        "identifier": "user2@example.com",
+        "identifier_type": "email_address"
+      },
+      {
+⁠        "identifier": "user3@example.com",
+        "identifier_type": "email_address"
+      },
+    ]
+  }'
+
+// Responds 200 OK with job_id
+{
+    "data": {
+        "job_id": "a622f0e5-2766-4e5d-bdf5-8c523ccc03a4"
+    },
+    "error_code": "",
+    "message": "",
+    "status": "ok"
+}
+```
+</Tab>
+</Tabs>
+
+### Query Job Status
+
+You can use this query to check which users have claimed their pregenerated wallet.
+
+* POST Endpoint: `https://api.magic.link/v1/api/wallet_pregen/get_job_status`
+
+#### **Input Parameters**
+
+**Request Headers**
+
+* X-Magic-Secret-Key: The secret API key obtained from [Magic Dashboard](https://dashboard.magic.link/).
+
+**Request Body**
+
+* job_id: The returned UUID from `create_wallets`.
+
+<Tabs>
+<Tab title="Curl">
+```json
+
+curl --request POST \
+  --url 'https://api.magic.link/v1/api/wallet_pregen/get_job_status' \
+  --header 'X-Magic-Secret-Key: <your_magic_secret_api_key>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "job_id": "91a5be54-61bf-4761-e89k-b7f35ace81d3"
+  }'
+
+// Responds 200 OK with job status object
+{
+    "data": {
+        "client_id": "A5cJpjmJk3eQq4PXC9uJuoWESlcD3_CIwZgvDVdY0wg=",
+        "created_at": 1716331284,
+        "expires_at": 1718923161,
+        "job_id": "91a5be54-61bf-4761-e89k-b7f35ace81d3",
+        "key_generation_stats": {
+            "errors": 0,
+            "processed": 1,
+            "total": 1
+        },
+        "status": "SUCCESS",
+        "updated_at": 1716331161
+    },
+    "error_code": "",
+    "message": "",
+    "status": "ok"
+}
+```
+</Tab>
+</Tabs>
+
+### Query Wallet Identifiers
+
+You can use this query to check which identifier (e.g., email address) is tied to a pregenerated wallet public address.
+
+* POST Endpoint: `https://api.magic.link/v1/api/wallet_pregen/get_identifiers`
+
+#### **Input Parameters**
+
+**Request Headers**
+
+* X-Magic-Secret-Key: The secret API key obtained from [Magic Dashboard](https://dashboard.magic.link/).
+
+**Request Body**
+
+* job_id: The returned UUID from `create_wallets`.
+* claimed \[optional\]: JSON boolean, filters the result by claimed status.
+* limit \[optional\]: The maximum number of results to return.
+
+
+<Tabs>
+<Tab title="Curl">
+```json
+
+curl --request POST \
+  --url 'https://api.magic.link/v1/api/wallet_pregen/get_identifiers' \
+  --header 'X-Magic-Secret-Key: <your_magic_secret_api_key>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "job_id": "91a5be54-61bf-4761-e89k-b7f35ace81d3",
+    "claimed": false, // optional
+    "limit": 10 // optional
+  }'
+
+// Responds 200 OK with identifiers information
+{
+    "data": {
+        "identifiers": [
+            {
+                "claimed": false,
+                "expires_at": 1718925889,
+                "identifier": "youremail@example.com",
+                "identifier_type": "email_address",
+                "job_id": "91a5be54-61bf-4761-e89k-b7f35ace81d3",
+                "public_address": "0xBAcFD5E443eFDFECb9850a9d8a23C33701E66742",
+                "status": "success",
+                "status_detail": "Successfully generated wallet"
+            }
+        ],
+    },
+    "error_code": "",
+    "message": "",
+    "status": "ok"
+}
+```
+</Tab>
+</Tabs>

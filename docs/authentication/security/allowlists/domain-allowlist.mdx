@@ -1,0 +1,97 @@
+---
+title: Domain Allowlist
+description: "Domain Allowlist allows your application to be secure-by-default, meaning that it establishes a strong security posture right from the start, and only permits communication with specific domains and redirect URIs that have been explicitly approved."
+---
+
+## Overview
+
+Magic will reject all requests from domains and redirect URIs that are not part of the allowlist. This protects your public API keys from unauthorized usage.
+
+## Usage
+
+
+Navigate to the [Magic dashboard](https://dashboard.magic.link/) and select the application in which you need to add domains to the allowlist. Inside the dashboard, go to the "Settings" tab of your selected application and scroll "Allowed Origins & Redirects". In this section, you'll find a toggle button that allows you to manage the allowlist.
+
+Once the feature is on, a text input field will be displayed. Here, you can input the domains that you want to add to the allowlist.
+
+### New Projects
+
+For new applications, the Domain Allowlist feature **is mandatory**. By default, the `localhost` domain is included for convenience. However, any additional domains that will make requests to Magic **must be explicitly added to the allowlist.**
+
+<Frame>
+  <img src="/images/Configuration-view.webp" alt=""/>
+</Frame>
+
+
+### Existing Projects
+
+For any existing applications created prior to December, 15 2023, the Domain Allowlist feature will not be enforced, however warning messages will appear if the domain allowlist feature is not toggled on.
+
+While it's not mandatory to turn on this feature and add domains for existing apps, it is highly recommended. **Without enabling the Domain Allowlist, your API keys remain vulnerable to unauthorized usage.**
+
+<Frame>
+  <img src="/images/Allowlist-entry-point.webp" alt=""/>
+</Frame>
+
+<Note>
+If a project attempts to utilize a public key on a domain not included in the application's allowlist, a modal will appear. This modal will notify the user that an unauthorized domain is being used and that access has not been approved for that specific domain by the application.
+</Note>
+
+<Frame>
+  <img src="/images/Blocked-domain.webp" alt=""/>
+</Frame>
+
+
+### Programmatic Configuration
+
+Alternatively, domains can be added to your applications allowlist using Curl. In order to interact with the email access control list for your application using Curl, you will need a Secret Key and Client ID.
+
+To obtain the required information, follow the steps below:
+
+1.  On the Dashboard landing page, right-click anywhere and select **Inspect**
+2.  Navigate to the **Network** tab and look for `info?magic_client_id=<CLIENT_ID>`
+3.  Navigate to the **Response** tab and extract `live_secret_key` as your **Secret Key** and `magic_client_id` as your **Client ID**
+
+Provide the Secret Key and/or Client ID in your Curl commands, along with the chosen domains for the interaction:
+
+<Tabs>
+<Tab title="Add">
+```json
+curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allowlist/add' \
+--header 'X-Magic-Secret-Key: sk_live_06FC010DA25ED4F2' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "access_type": "domain",
+    "target_client_id": "etjubJsY5Cvn6ukDzJYpd3MEAtgw45oetxxoX1PxvP4=",
+    "value": "https://magic.link"
+}'
+
+```
+</Tab>
+<Tab title="Remove">
+```json
+curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allowlist/remove' \
+--header 'X-Magic-Secret-Key: sk_live_06FC010DA25ED4F2' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "access_type": "domain",
+    "target_client_id": "etjubJsY5Cvn6ukDzJYpd3MEAtgw45oetxxoX1PxvP4=",
+    "value": "https://magic.link"
+}'
+
+```
+</Tab>
+<Tab title="Retrieve">
+```json
+curl --location --request GET 'https://api.magic.link/v2/api/magic_client/allowlist' \
+--header 'X-Magic-Secret-Key: sk_live_3DACC9A06D5CDC09' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: __cf_bm=w34mWVZYeODU83q0alw17X408w8BxmxR8i3YTTQYVls-1669063237-0-AYuG2UZfC1uZavFSBmkMR092XzNTyfIDwEjYgxh0F3lFI5onOggETiTGpKZ3mPadfzv9MhA2e0Ie7YirysS73TA=; __cfruid=5727be2dcf833d7240c9a02a6f3c9d8b6853c6e3-1669063237' \
+--data-raw '{
+    "target_client_id": "cdoE6PoD1Kp5I4Jr_gZGAZ2-qDnYaI9Zroj6DqTV1gI="
+}'
+```
+</Tab>
+</Tabs>
+
+

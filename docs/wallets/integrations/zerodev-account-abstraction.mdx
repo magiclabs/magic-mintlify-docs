@@ -1,0 +1,296 @@
+---
+title: ZeroDev Account Abstraction
+---
+
+ZeroDev’s Account Abstraction tooling makes it possible to quickly spin up Smart Contract Accounts tied to your Magic wallet. The guide below walks through adding account abstraction to a simple Magic project using ZeroDev. We’ll leverage a project pointed at the Ethereum Sepolia test network, but you can use any network supported by both Magic and ZeroDev. The code snippets provided are based on a Next.js web app but can be modified to work with virtually any JavaScript framework.
+
+**To learn more about ZeroDev, visit their** [**documentation**](https://docs.zerodev.app/)**.**
+
+**Project prerequisites**
+
+To follow along with this guide, you’ll need three things:
+
+1.  A Magic **Publishable** API Key
+2.  A ZeroDev Project ID
+3.  A web client
+
+You can get your **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link/).
+
+You can get your ZeroDev Project ID (for Ethereum Sepolia) from your [ZeroDev Dashboard](https://dashboard.zerodev.app/).
+
+We’ll use the `make-scoped-magic-app` CLI tool to bootstrap a Next.js app with Magic authentication already baked into the client. You’re welcome to use your own client, but this tutorial and its accompanying code snippets assume the output of the `make-scoped-magic-app` CLI as the starting point.
+
+The `make-scoped-magic-app` CLI tool is an easy way to bootstrap new projects with Magic. To get started, simply run the command below in the shell of your choice. Be sure to replace `<YOUR_PUBLISHABLE_API_KEY>` with the **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link/).
+
+<Tabs>
+<Tab title="Bash">
+```json
+npx make-scoped-magic-app \\
+    --template nextjs-dedicated-wallet \\
+    --network ethereum-sepolia \\
+    --login-methods EmailOTP \\
+    --publishable-api-key <YOUR_PUBLISHABLE_API_KEY>
+
+```
+</Tab>
+</Tabs>
+
+
+
+This will bootstrap the starting point of the tutorial for you. In the scaffolded project, be sure to add your Magic Publishable API Key and ZeroDev project ID to the `.env` as `NEXT_PUBLIC_MAGIC_API_KEY` and `NEXT_PUBLIC_ZERODEV_SEPOLIA_PROJECT_ID`, respectively.
+
+<Tabs>
+<Tab title="Plaintext">
+```json
+// Publishable API Key found in the Magic Dashboard
+NEXT_PUBLIC_MAGIC_API_KEY=pk_live_FF619AE0AEC9D473
+
+// The RPC URL for the blockchain network
+NEXT_PUBLIC_BLOCKCHAIN_NETWORK=ethereum-sepolia
+
+// The ZeroDev project id for the Sepolia blockchain network
+NEXT_PUBLIC_ZERODEV_SEPOLIA_PROJECT_ID=<ZERODEV_PROJECT_ID>
+
+```
+</Tab>
+</Tabs>
+
+
+
+## Install additional project dependencies
+
+
+In addition to the packages included in the scaffold produced by the `make-scoped-magic-app` CLI, you’ll need a number of packages related to ZeroDev and their account abstraction tools. You’ll also need to install `viem` for EVM-related types and transaction convenience methods.
+
+Run the following command to install the required dependencies:
+
+<Tabs>
+<Tab title="NPM">
+```json
+npm install @zerodev/sdk @zerodev/presets @zerodev/ecdsa-validator viem permissionless
+
+```
+</Tab>
+<Tab title="Yarn">
+```json
+yarn add @zerodev/sdk @zerodev/presets @zerodev/ecdsa-validator viem permissionless
+
+```
+</Tab>
+</Tabs>
+
+
+## Initialize ZeroDev smart contract accounts
+
+
+To establish a connection between Magic and ZeroDev smart accounts, we create a ZeroDev kernel client. [Kernel](https://github.com/zerodevapp/kernel) is ZeroDev’s ERC-4337-compatible smart contract account. It’s customizable, modular, and comes equipped with a number of plugin capabilities. We won’t go into the specifics of how it works, but feel free to look at the [GitHub repo for more information](https://github.com/zerodevapp/kernel).
+
+Inside of `src/components`, create a directory named `zeroDev`. Inside that directory create a file named `useZeroDevKernelClient.tsx`.
+
+This file will contain a hook that will surface the ZeroDev kernel client to the rest of the app. It’ll also observe when users log in or out and connect and disconnect to the corresponding smart contract account accordingly. We’ll go through each of these three separately, then show the code for the entire file.
+
+## Initialize `useZeroDevKernelClient`
+
+
+When a user logs in with Magic, we need to associate their Magic account with a smart contract account through ZeroDev. Just as Magic handles the creation of user wallets, ZeroDev handles the creation of smart contract accounts associated with the wallet.
+
+To initialize the kernel client, first we must declare the magic provider and pass it to the `providerToSmartAccountSigner` function provided by ZeroDev. This will associate the Magic account as the signer of the smart contract account.
+
+Next, we create the kernel client by calling `createEcdsaKernelAccountClient` and passing the following values as arguments:
+
+1.  `chain`: The chain to point to. We’ll be using Sepolia.
+2.  `projectId`: This comes from the ZeroDev project created earlier.
+3.  `signer`: The `smartAccountSigner` we create using the Magic provider and `providerToSmartAccountSigner` function.
+4.  `paymaster?`: Sponsoring gas paymaster. This is optional but allows you to pay transaction fees on behalf of your users.
+
+<Tabs>
+<Tab title="Typescript">
+```json
+const magicProvider = await magic?.wallet.getProvider();
+const smartAccountSigner = await providerToSmartAccountSigner(magicProvider);
+
+const client = await createEcdsaKernelAccountClient({
+  chain: sepolia,
+  projectId: process.env.NEXT_PUBLIC_ZERODEV_SEPOLIA_PROJECT_ID!,
+  signer: smartAccountSigner,
+  paymaster: "SPONSOR" // defaults to "SPONSOR". Use "NONE" if no policy is required.
+});
+
+```
+</Tab>
+</Tabs>
+
+
+
+## Paymaster
+
+Account abstraction enables you to cover gas fees on behalf of users, eliminating the need for them to obtain native tokens to engage with your DApp. ZeroDev makes sponsoring gas straight-forward in a few steps.
+
+
+<Note>
+For this guide we are using testnet tokens. If you're on planning on using mainnet you will need to make a payment for your gas policy to be applied.
+</Note>
+
+Head to your [ZeroDev dashboard](https://dashboard.zerodev.app/) and navigate to the Sepolia project created earlier. On the left hand navigation, select "Gas Policies" and click the "New" button.
+
+<Frame>
+  <img src="/images/zerodev-add-policy.webp" alt=""/>
+</Frame>
+
+
+A display will pop up allowing you to set the type, amount and interval amount for your gas policy.
+
+<Frame>
+  <img src="/images/zerodev-add-policy-2.webp" alt=""/>
+</Frame>
+
+
+Once the gas policy has been added to your ZeroDev project, the user's gas will be subsidized so long as the value set has not been exceeded within the interval.
+
+Now when a user logs in with Magic, their account is associated with the ZeroDev kernel as the smart account signer and their gas has been sponsored.
+
+## Completed `useZeroDevKernelClient` code
+
+
+<Tabs>
+<Tab title="Typescript">
+```json
+```
+</Tab>
+</Tabs>
+
+
+
+Notice that our hook returns both the client and the smart contract account address. This will allow us to use destructuring to access either or both from the rest of our code.
+
+## Update UI Components
+
+Now that the project successfully creates and connects to users’ smart contract accounts with ZeroDev, we can update the UI to show the smart account address, its balance, and enable sending transactions from the smart contract account. These changes take place in the `UserInfoCard` and the `SendTransactionCard`.
+
+## Update `UserInfoCard`
+
+### Update state items
+
+First things first. Open `src/components/magic/cards/UserInfoCard.tsx` and make the following changes:
+
+1.  Update the state declaration of `balance`, `setBalance`, and `publicAddress` to `magicBalance`, `setMagicBalance`, and `magicAddress`
+2.  Import our `useZeroDevKernelClient` hook and call it to get access to `scaAddress`
+3.  Add a state declaration for `scaBalance` and `setScaBalance` to store the smart contract account balance.
+
+<Tabs>
+<Tab title="Typescript">
+```json
+```
+</Tab>
+</Tabs>
+
+
+
+### Update `getBalance`
+
+Next, update the `getBalance` function to set both balances:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+```
+</Tab>
+</Tabs>
+
+
+### Update balance display
+
+Next, update the TSX for displaying the balance to show both balances:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+```
+</Tab>
+</Tabs>
+
+
+
+### Update initial showBalances
+
+The only remaining balance reference is to set the initial balance while loading to `"..."`. This is in a short `useEffect` that calls `setBalance`. Update this `useEffect` to set both balances:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+```
+</Tab>
+</Tabs>
+
+
+
+### Update address display
+
+Now find the `CardLabel` and div that displays the address and modify it to use the new naming for `magicAddress` and also display the `scaAddress`.
+
+<Tabs>
+<Tab title="Typescript">
+```json
+```
+</Tab>
+</Tabs>
+
+
+
+### Update `copy` function
+
+Lastly, update the `copy` function to reference `magicAddress` instead of `publicAddress`, otherwise you’ll get an error.
+
+Typescript
+
+<Tabs>
+<Tab title="">
+```json
+```
+</Tab>
+</Tabs>
+
+
+
+Now when a user logs in using Magic, both their Magic and smart contract account address and balances will be displayed!
+
+### Update `SendTransactionCard`
+
+To send a transaction from your smart contract account, you will need to initiate a transaction by calling the `sendTransaction` method on the ZeroDev `kernelClient` object. This transaction requires the following arguments:
+
+1.  `target` \- The recipient’s wallet address
+2.  `data` \- Data associated with the transaction. Since we’re just transferring tokens, there is no data and you should put `"0x"`
+3.  `value` \- the amount of tokens to send in `wei`.
+
+In `src/components/magic/cards/SendTransactionCard.tsx`, import the the `kernelClient` from `useZeroDevKernelClient` hook and replace the code for `sendTransaction` with the code below.
+
+
+<Note>
+To transfer funds from your smart contract account, ensure you have enough test tokens to send. You can get some test Sepolia tokens [here](https://sepoliafaucet.com/).
+</Note>
+
+Typescript
+
+<Tabs>
+<Tab title="">
+```json
+```
+</Tab>
+</Tabs>
+
+
+
+Thats it! Go ahead and run the project to test it out. Then you can test out transferring tokens from your smart contract account. ⁠ ⁠**Note:** If you set up a paymaster earlier, then this transaction won't cost the user any gas. To be sure, try changing the `value` to `0` and send a transaction - you will notice that your ZeroDev account's balance didn't change at all.
+
+## Next Steps
+
+
+You now know how to integrate Magic with a smart contract account and include the following features:
+
+1.  Simple authentication with Email OTP
+2.  Automatic smart contract account creation for first-time users
+3.  Ability to have Magic users interact with their smart contract accounts
+4.  Transfer funds from your smart contract account
+
+Feel free to take a look at our [final solution code](https://github.com/magiclabs/example-zerodev-account-abstraction) or tinker with it directly in [Codesandbox](https://codesandbox.io/p/devbox/github/magiclabs/example-zerodev-account-abstraction). Take a look at the ZeroDev [smart account](https://docs.zerodev.app/) docs for more information on what is possible with Magic and smart accounts.
+

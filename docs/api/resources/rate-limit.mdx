@@ -1,0 +1,20 @@
+---
+title: Rate Limit
+---
+
+### What is an API rate limit?
+
+A rate limit is a measure put in place that enforces a maximum number of API requests per minute to Magic’s services. They exist to prevent bad actors from misusing the endpoints while also helping Magic manage infrastructure load. The default rate limit for each application is 500 requests per minute (excludes contracts with custom rate limits). While the default rate limit of 500 requests per minute should capture most scenarios, it’s possible for applications to reach this limit through normal traffic growth or through traffic surges from an NFT drop. 
+
+If your application needs a higher limit, please [contact sales](https://magic.link/contact) for a custom rate limit.
+
+### What happens if my application surpasses the rate limit?
+
+If your application’s rate limit is exceeded, then each subsequent API request past the limit will return an error code of `429`. Please note that the number of API requests made per login can vary depending on which login providers are configured in the admin dashboard.
+
+### Notify Magic about high-volume events
+
+Give advance notice to Magic of high-traffic events (e.g. NFT drops, major product launches) so we can help evaluate your rate limit usage and support needs. By informing our team, we can help make preparations to ensure your launch goes smoothly. Here are some services we offer: launch checklists, VIP support, drop support, consultations, and API rate limit upgrades. 
+
+We’ve found that 2-4 weeks notice works best to ensure preparation time for both parties.
+

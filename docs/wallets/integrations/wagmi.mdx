@@ -1,0 +1,213 @@
+---
+title: WAGMI
+---
+
+## Overview
+
+WAGMI is a development library that streamlines Ethereum development. Popular among developers for its ease in managing multiple wallets, it becomes even more powerful when combined with Magic. This integration streamlines user interactions across various wallets while leveraging Magic's blazing-fast and secure passwordless login. This guide details the integration process using Magic's `DedicatedWalletConnector`. For an immediate hands-on experience, explore our [demo on GitHub](https://github.com/magiclabs/wagmi-magic-connector-demo).
+
+## Installation
+
+Add `wagmi` and `@magiclabs/wagmi-connector` using your chosen package manager.
+
+<Tabs>
+<Tab title="NPM">
+```json
+npm install wagmi @magiclabs/wagmi-connector
+```
+</Tab>
+<Tab title="Yarn">
+```json
+yarn add wagmi @magiclabs/wagmi-connector
+```
+</Tab>
+</Tabs>
+
+
+## Initialization
+
+To initialize, import the necessary dependencies from Magic and WAGMI in your root file (i.e.  `App.tsx`). ⁠ ⁠Next, add the Magic `DedicatedWalletConnector` and its configuration as the `connectors` value of the config.
+
+Finally, pass the configuration to the `WagmiConfig` component to make WAGMI hooks available across the whole application.
+
+<Tabs>
+<Tab title="Javascript">
+```json
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
+import { mainnet } from "wagmi/chains";
+import { publicProvider } from "wagmi/providers/public";
+import { DedicatedWalletConnector } from "@magiclabs/wagmi-connector";
+import Dashboard from "./components/Dashboard";
+
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [mainnet],
+  [publicProvider()]
+);
+
+const config = createConfig({
+  autoConnect: true,
+  publicClient,
+  webSocketPublicClient,
+  connectors: [
+    new DedicatedWalletConnector({
+      chains,
+      options: {
+        apiKey: "PUBLISHABLE_API_KEY",
+        isDarkMode: true,
+        /* If using OAuth, make sure to enable OAuth options from magic dashboard */
+        oauthOptions: {
+          providers: [""],
+        },
+        magicSdkConfiguration: {
+          network: {
+            rpcUrl: RPC_URL,
+            chainId: CHAIN_ID,
+          },
+        },
+      },
+    }),
+  ],
+});
+
+function App() {
+  return (
+    <WagmiConfig config={config}>
+      <Dashboard />
+    </WagmiConfig>
+  );
+}
+
+export default App;
+```
+</Tab>
+</Tabs>
+
+
+
+## Usage
+
+
+With the Magic connector added, you can use WAGMI hooks for everything else per their [documentation](https://wagmi.sh/react/getting-started).
+
+### Connect to the network
+
+
+<Tabs>
+<Tab title="Typescript">
+```json
+import { useConnect } from 'wagmi'
+
+const SignIn = () => {
+  const { connect, connectors, isLoading, isIdle } = useConnect()
+
+  return (
+    <div className="sign-in-container">
+      <button
+        onClick={() => connect({ connector: connectors[0] })}
+      >
+        {isLoading ? "Loading..." : isIdle ? "Connect" : "Connecting..."}
+      </button>
+    </div>
+  )
+}
+
+export default SignIn
+```
+</Tab>
+</Tabs>
+
+
+
+### Sign message
+
+<Tabs>
+<Tab title="Javascript">
+```json
+import { useSignMessage } from 'wagmi'
+
+function Component() {
+  const { data, isError, isLoading, isSuccess, signMessage } = useSignMessage({
+    message: 'Signed from Magic',
+  })
+
+  return (
+    <div>
+      <button disabled={isLoading} onClick={() => signMessage()}>
+        Sign message
+      </button>
+      {isSuccess && <div>Signature: {data}</div>}
+      {isError && <div>Error signing message</div>}
+    </div>
+  )
+}
+```
+</Tab>
+</Tabs>
+
+
+
+### Send transaction
+
+<Tabs>
+<Tab title="Javascript">
+```json
+import { useSendTransaction } from 'wagmi'
+⁠import { parseEther } from "ethers/lib/utils"
+
+function Component() {
+  const { data, isIdle, isError, isLoading, isSuccess, sendTransaction } =
+    useSendTransaction({
+      to: 'example.eth',
+      value: parseEther("1"),
+    })
+
+  return (
+    <div>
+      {isIdle && (
+        <button disabled={isLoading} onClick={() => sendTransaction()}>
+          Send Transaction
+        </button>
+      )}
+      {isLoading && <div>Check Wallet</div>}
+      {isSuccess && <div>Transaction: {JSON.stringify(data)}</div>}
+      {isError && <div>Error sending transaction</div>}
+    </div>
+  )
+}
+```
+</Tab>
+</Tabs>
+
+
+
+### Check balance
+
+<Tabs>
+<Tab title="Javascript">
+```json
+import { useBalance } from 'wagmi'
+
+function Component() {
+  const { data, isError, isLoading } = useBalance({
+    address: 'example.eth',
+  })
+
+  if (isLoading) return <div>Fetching balance…</div>
+  if (isError) return <div>Error fetching balance</div>
+  return (
+    <div>
+      Balance: {data?.formatted} {data?.symbol}
+    </div>
+  )
+}
+```
+</Tab>
+</Tabs>
+
+
+## Resources
+
+* [WAGMI Docs](https://wagmi.sh/react/getting-started)
+* [Demo](https://github.com/magiclabs/wagmi-magic-connector-demo)
+
+

@@ -1,0 +1,334 @@
+---
+title: ZkSync with Zyfi Account Abstraction
+---
+
+[Zyfi](https://www.zyfi.org/) is a gas abstraction layer on the [zkSync network](https://zksync.io/). Zyfi is effectively a “Paymaster-As-A-Service,” providing developer tools that enable end users to cover gas fees with **any** ERC-20 token (~80 tokens).
+
+Zyfi’s interface aims for simplicity when it comes to dApp integration and only requires a single API call to use. As a developer you maintain full control and are provided the flexibility to adopt any desired model without the need for changes to the smart contract. Some of the many benefits of using Zyfi include:
+
+* The user knows the fee amount when signing, and is allowing the paymaster only that
+* Any gas that isn't spent is refunded to the user in the fee token itself
+* The smart contracts are audited, immutable and verified
+
+In the future, Zyfi will release a new paymaster and endpoint that allows the custom sponsorhip whereby protocols can use off-chain logic to decide to sponsor part or all of each transaction.
+
+This guide will walk through using zkSync's native account abstraction primitives and integrating Zyfi with an existing Next.js dApp created from the Magic CLI. We will utilize the Zyfi paymaster API and all transaction fees will be paid using a testnet ERC-20 token.
+
+## Project prerequisites
+
+To follow along with this guide, you’ll need three things:
+
+1.  A Magic **Publishable** API Key
+2.  A web client
+3.  zkSync Sepolia tokens
+
+You can get your **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link/).
+
+You can get a small amount of zkSync Sepolia tokens from the [QuickNode faucet](https://faucet.quicknode.com/zksync/sepolia). Alternatively, you can bridge Sepolia ETH to zkSync Sepolia using the [zkSync bridge](https://portal.zksync.io/bridge/?network=sepolia).
+
+We’ll use the `make-scoped-magic-app` CLI tool to bootstrap a Next.js app with Magic authentication already baked into the client. You’re welcome to use your own client, but this tutorial and its accompanying code snippets assume the output of the `make-scoped-magic-app` CLI as the starting point.
+
+The `make-scoped-magic-app` CLI tool is an easy way to bootstrap new projects with Magic. To get started, simply run the command below in the shell of your choice. Be sure to replace `<YOUR_PUBLISHABLE_API_KEY>` with the **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link/).
+
+<Tabs>
+<Tab title="Bash">
+```json
+npx make-scoped-magic-app \\\\
+    --template nextjs-dedicated-wallet \\\\
+    --network zksync-sepolia \\\\
+    --login-methods EmailOTP \\\\
+    --publishable-api-key <YOUR_PUBLISHABLE_API_KEY>
+
+```
+</Tab>
+</Tabs>
+
+
+
+This will bootstrap the starting point of the tutorial for you. In the scaffolded project, be sure to add your Magic Publishable API Key to the `.env` as `NEXT_PUBLIC_MAGIC_API_KEY` if you didn’t add it to the CLI command above
+
+<Tabs>
+<Tab title="Plaintext">
+```json
+// Publishable API Key found in the Magic Dashboard
+NEXT_PUBLIC_MAGIC_API_KEY=pk_live_1234567890
+
+// The RPC URL for the blockchain network
+NEXT_PUBLIC_BLOCKCHAIN_NETWORK=zksync-sepolia
+```
+</Tab>
+</Tabs>
+
+
+
+## Install additional project dependencies
+
+In addition to the packages included in the scaffold produced by the `make-scoped-magic-app` CLI, you’ll also need to install `viem` for EVM-related types and transaction convenience methods.
+
+Run the following command to install the required dependencies:
+
+<Tabs>
+<Tab title="NPM">
+```json
+npm install viem
+
+```
+</Tab>
+<Tab title="Yarn">
+```json
+yarn add viem
+```
+</Tab>
+</Tabs>
+
+
+
+## Initialize wallet client
+
+The code snippets provided below outline the process of initializing the `walletClient` within the application. This client serves as an interface for the application to interact with the zkSync network, minimizing the complexities of direct communication and transaction handling.
+
+Inside of `src/components/magic/MagicProvider.tsx`, import the following from Viem:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+import { Client, createWalletClient, custom } from 'viem';
+import { zkSyncSepoliaTestnet } from 'viem/chains';
+import { eip712WalletActions } from "viem/zksync"
+```
+</Tab>
+</Tabs>
+
+
+
+Next, create the wallet client state that will be used when we send the transaction:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+const [walletClient, setWalletClient] = useState<Client | null>(null);
+```
+</Tab>
+</Tabs>
+
+
+We must then create the wallet client inside of our useEffect hook that initializes the Magic provider and Web3 instance. Viem provides a function named `createWalletClient`. This function returns an object that acts as an interface for interacting with Ethereum wallets. It takes in the following arguments:
+
+* `chain`: The network that the wallet client is connecting to. In this case `zkSyncSepoliaTestnet`.
+* `account`: Ethereum address of the connected user. In this case it is the Magic user that has logged in using Email OTP.
+* `transport`: Acts as the intermediary layer tasked with handling outbound requests, such as RPC requests
+
+The client is also initialized with EIP712 transaction support using `eip712WalletActions`. This is a [suite of Wallet Actions](https://viem.sh/zksync/client#eip712walletactions) for developing with zkSync chains.
+
+Inside the useEffect underneath the `magic` variable declaration, add the following function and invocation:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+const initializeWalletClient = async () => {
+  const provider = await magic?.wallet.getProvider()
+  const walletClient = createWalletClient({
+    chain?: zkSyncSepoliaTestnet,
+    account?: localStorage.getItem("user") as `0x${string}`,
+    transport: custom(provider),
+  }).extend(eip712WalletActions());
+  setWalletClient(walletClient)
+}
+
+initializeWalletClient();
+// rest of the code
+```
+</Tab>
+</Tabs>
+
+
+
+Now that we’ve created and set the wallet client, we want to export it so we gain global access to the client. Update the `useMemo` hook and add `walletClient`:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+const value = useMemo(() => {
+  return {
+    magic,
+    web3,
+    walletClient
+  };
+}, [magic, web3, walletClient]);
+```
+</Tab>
+</Tabs>
+
+
+## Mint testnet tokens
+
+In this guide, we're utilizing a testnet token called `ERC20Mock` to cover gas fees. This requires minting tokens to the wallet associated with the Magic user currently logged in, ensuring sufficient funds are available for gas expenses.
+
+Here's a step-by-step guide:
+
+1.  **Start Your Development Server**: Begin by launching your development server.
+2.  **Login via Email OTP**: Proceed through the Email OTP login flow to authenticate.
+3.  **Copy Your Wallet Address**: Once logged in, locate the wallet component on your dashboard. Copy the address displayed there.
+4.  **Access the ERC20Mock Contract**: Visit the [ERC20Mock contract page on the Sepolia Explorer](https://sepolia.explorer.zksync.io/address/0xFD1fBFf2E1bAa053C927dc513579a8B2727233D8#contract).
+5.  Navigate to the "Write" tab.
+6.  **Minting Tokens**: Scroll to the "mint" function. Here, paste the wallet address you copied earlier into the designated field. We'll be minting an equivalent of 0.1 ETH worth of tokens. In the amount input, enter `100000000000000000` (representing 0.1 ETH in wei, the smallest unit of ether). Click on the "Write" button and follow the on-screen prompts to complete the process.
+
+If minting was successful, your wallet should reflect a balance increase of 0.1 ERC20Mock tokens, ensuring you have the necessary funds to cover gas fees.
+
+## Call to Zyfi paymaster API
+
+Zyfi has created a straightforward API modeled after the standard transaction format. First send the transaction object to their provided paymaster endpoint. Their server will generate and return the required payload to submit to the network.
+
+See the steps below on how to use Zyfi:
+
+1.  The frontend calls the paymaster API, which then processes transaction details and incorporates paymaster-specific information, such as the fee charged in ERC-20 tokens to cover gas expenses
+2.  The user starts a transaction, choosing a paymaster for gas fees and granting it an ERC-20 token allowance. The bootloader checks with the paymaster on-chain, which confirms the user's intent and collects the token. Once validated, the paymaster covers the transaction's costs, executed by the bootloader. Unused gas gets refunded to the paymaster, who then returns it to the user in the ERC-20 token, making the process efficient and free of direct gas charges for the user.
+3.  Following this, the Zyfi paymaster collects the ERC-20 token fee, which enables it to validate and carry out the transaction on behalf of the user, covering the necessary ETH gas costs
+4.  The transaction is then verified and submitted to the network
+
+We've created and exported the `walletClient` that is vital for processing transactions. Before this client handles the transaction data, it needs to incorporate the paymaster details, including the fee charged in ERC-20 tokens.
+
+Go to `src/components/magic/cards/SendTransactionCard.tsx` and take a look at the `sendTransaction` function. This is where we will simulate a transaction for transferring testnet ETH to another wallet.
+
+Inside this function is where the POST request is sent to Zyfi with the required payload which includes the following:
+
+* `feeTokenAddress`: The ERC-20 token address used to pay for gas
+* `isTestnet`: Boolean indicating if the transaction is executed on the zkSync Sepolia chain
+* `txData`: Transaction data. In this case it is the sender, transfer recipient, and transfer amount.
+
+After the first conditionals, add the following API call to Zyfi:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+const res = await fetch('<https://api.zyfi.org/api/erc20_paymaster/v1>', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    "feeTokenAddress": "0xFD1fBFf2E1bAa053C927dc513579a8B2727233D8",
+    "gasLimit": "500000",
+    "isTestnet": true,
+    "txData": {
+      "from": publicAddress,
+      "to": toAddress,
+      "value": web3.utils.toWei(amount, 'ether'),
+      "data": "0x"
+    }
+  })
+})
+
+```
+</Tab>
+</Tabs>
+
+
+
+This API call will retrieve the transaction request, estimate gas fees, and determine the ERC-20 token price for gas. The API then finalizes the transaction details, including the gas fee, and prepares it for user approval by signing it. This process ensures that transactions are ready and optimized for the network.
+
+Below is a sample response from the Zyfi API which is signed by the user. Take notice of the `customData` attribute. It includes the paymaster address and `paymasterInput`, which includes the following values:
+
+* `0x949431dc`: Specifies that this is an approval flow, where the user pays with a given token
+* `fd1fbff2e1baa053c927dc513579a8b2727233d8`: Fee token address, which in this case is the ERC20Mock token
+* `1d54c9cb44`: Fee token amount that the user allows to the paymaster for payment. This is calculated off-chain and enables gas savings since the gas used for modifying the allowance storage slot is entirely reimbursed at the transaction's conclusion, due to the slot's value changing from zero to a specific value and back to zero.
+* `18e2f1dcacf`: block.timestamp at which the transaction expires
+* `41fffe1f0df68221efb3c42f18bcbd7762e22a7d1e2a86441e0eb74515bc6eedb677756f3656b03d39ea1490d29940e083c5224af228983678009b07e215f9707e1c`: Message signed by Zyfi API
+
+It also contains additional data pertaining to the Zyfi request, not all of which needs to be included in the final transaction, but can be used in the UI or for validation.
+
+<Tabs>
+<Tab title="Json">
+```json
+{
+    // signed by the user
+    "txData": {
+        "chainId": 300,
+        "from": "0xae37E4c7b3AD318E7d381804C9eAC15636e82079",
+        "to": "0x765fEB3FB358867453B26c715a29BDbbC10Be772",
+        "value": "10000000000000",
+        "data": "0x",
+        "customData": {
+            "paymasterParams": {
+                "paymaster": "0xEcacba301285cE4308aAFc71319F9a670fdd1C7a",
+                "paymasterInput": "0x949431dc000000000000000000000000fd1fbff2e1baa053c927dc513579a8b2727233d80000000000000000000000000000000000000000000000000001d54c9cb44000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000018e2f1dcacf00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000041fffe1f0df68221efb3c42f18bcbd7762e22a7d1e2a86441e0eb74515bc6eedb677756f3656b03d39ea1490d29940e083c5224af228983678009b07e215f9707e1c00000000000000000000000000000000000000000000000000000000000000"
+            },
+            "gasPerPubdata": 50000
+        },
+        "maxFeePerGas": "100000000",
+        "gasLimit": 1245000
+    },
+    "gasLimit": "1245000",
+    "gasPrice": "100000000",
+    "tokenAddress": "0xFD1fBFf2E1bAa053C927dc513579a8B2727233D8",
+    "tokenPrice": "10",
+    "feeTokenAmount": "516000000000000",
+    "feeTokendecimals": "18",
+    "feeUSD": "0.005160000000000001",
+    "markup": "-20%",
+    "expirationTime": "1710187465423",
+    "expiresIn": "1 hour"
+}
+
+```
+</Tab>
+</Tabs>
+
+
+
+## Sending the transaction
+
+Once you receive the response, you can use destructuring assignment to extract the `txData` property from the JSON response. Next, format the transaction data necessary for submission, including key details like the account address, recipient, value, chain specifications, gas limits, and paymaster information. This structured data is tailored specifically for the transaction and ensures that all necessary parameters are correctly set for processing the transaction properly.
+
+<Tabs>
+<Tab title="Typescript">
+```json
+const { txData: apiTxData } = await res.json()
+
+const paymasterTxData = {
+  account: publicAddress as `0x${string}`,
+  to: apiTxData.to,
+  value: BigInt(apiTxData.value),
+  chain: zkSyncSepoliaTestnet,
+  gas: BigInt(apiTxData.gasLimit),
+  gasPerPubdata: BigInt(apiTxData.customData.gasPerPubdata),
+  maxFeePerGas: BigInt(apiTxData.maxFeePerGas),
+  maxPriorityFeePerGas: BigInt(0),
+  data: apiTxData.data,
+  paymaster: apiTxData.customData.paymasterParams.paymaster,
+  paymasterInput: apiTxData.customData.paymasterParams.paymasterInput,
+}
+```
+</Tab>
+</Tabs>
+
+
+
+The data is correctly formatted and the transaction is ready to submit to the network. Add the following `try/catch` for sending the transaction beneath the rest of the code:
+
+<Tabs>
+<Tab title="Typescript">
+```json
+try {
+  const hash = await walletClient?.sendTransaction(paymasterTxData)
+  setHash(hash)
+} catch (err) {
+  console.log("Something went wrong: ", err)
+}
+```
+</Tab>
+</Tabs>
+
+
+
+That's it! You should have now successfully transferred the desired amount, all while covering the gas fees using the testnet ERC-20 token. Click the "Transaction history" button to view the transaction on the zkSync block explorer.
+
+## Next Steps
+
+You now know how to integrate Zyfi with Magic and include the following features:
+
+1.  Simple authentication with Email OTP
+2.  Transfer funds using Zyfi paymaster to pay for gas using any ERC-20 token
+
+Feel free to take a look at our [final solution code](https://github.com/magiclabs/example-zyfi-zksync-paymaster) or tinker with it directly in [Codesandbox](https://codesandbox.io/s/github/magiclabs/example-zyfi-zksync-paymaster). You can also check out the Zyfi [paymaster docs](https://docs.zyfi.org/) for more information on what is possible with Magic and Zyfi.
+

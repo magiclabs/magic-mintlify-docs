@@ -1,0 +1,52 @@
+---
+title: SMS Login
+description: 'With Magic, you can use SMS one-time codes as an authentication mechanism, giving users a simple way to log in using their phones.'
+---
+### Compatibility
+
+<Note>
+**NOTE**
+
+This feature can only be utilized with [Dedicated Wallet](/docs/wallets/wallet-types#dedicated-wallet) apps. See our [FAQ's](/docs/home/faq/dedicated-wallet#questions-around-sms) on supported country codes.
+
+</Note>
+SMS Login SDK methods are available on all [client-side SDKs](/docs/api/overview#client-side-sdk).
+
+## Use Cases
+
+* Log in and create wallets for end users with a one-time code sent by SMS to their phone number.
+
+## Usage
+
+You can use SMS login by creating a project with our [CLI tool](/docs/home/quickstart) and picking 'SMS' when prompted. Alternatively, you can directly integrate it into your existing projects using the sample below. **Refer to the** [**API documentation**](/docs/api/overview) **for information on how to install and initialize Magic for your existing project.**
+
+Once you've created a Magic instance, log users in using `loginWithSMS`. Once logged in, you will receive a DID token that can be used with our [Admin SDK](/docs/api/server-side-sdks/node#token-module) to verify the user's information and wallet address on the backend. You can also retrieve the user's wallet address and email using the `user` module's [`getInfo`](/docs/api/client-side-sdks/web#getinfo) function for Web/React Native and `getMetadata` for iOS, Android and Flutter.
+
+```Javascript Javascript
+
+// Assumes you've initialized a `Magic` instance with a Dedicated Wallet API Key
+const login = async (phoneNumber) => {
+     try {
+        const did = await magic.auth.loginWithSMS({
+          phoneNumber: phoneNumber,
+        });
+        console.log(`DID Token: ${did}`);
+
+        const userInfo = await magic.user.getInfo();
+        console.log(`UserInfo: ${userInfo}`);
+
+⁠        // Handle user information as needed
+     } catch {
+       // Handle errors as required
+     }
+}
+```
+## Resources
+
+* [Web API documentation](/docs/api/client-side-sdks/web#loginwithsms)
+* [React Native API documentation](/docs/api/client-side-sdks/react-native#loginwithsms)
+* [iOS API documentation](/docs/api/client-side-sdks/ios#loginwithsms)
+* [Android API documentation](/docs/api/client-side-sdks/android#loginwithsms)
+* [Flutter API documentation](/docs/api/client-side-sdks/flutter#loginwithsms)
+* [Unity API documentation](/docs/api/client-side-sdks/unity#loginwithsms)
+

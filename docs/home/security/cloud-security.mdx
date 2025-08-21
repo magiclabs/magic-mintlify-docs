@@ -1,0 +1,27 @@
+---
+title: Cloud Security
+---
+
+# Background
+
+## E2E TLS Encryption
+
+
+Transport Layer Security (TLS) is the standard protocol for encrypting data on the internet. At Magic, all service communication is forced to be on TLS. Regardless of whether the data transported between Magic servers and the user’s browser is sensitive or not, it is encrypted end-to-end. This also applies to the 3rd-party services that we make available to end-users. In the event that Magic servers are infiltrated, none of the sensitive data transported on the internal network is visible in plaintext.
+
+By implementing end-to-end TLS encryption, Magic and its users are protected from man-in-the-middle attacks.
+
+## Network Setup
+
+Magic has deployed its services within virtual private clouds (VPCs). Each environment, whether that's production or non-production, resides in its own account. Each of these accounts contains a dedicated VPC that only allows traffic within that VPC. Magic maintains access to these VPCs by enforcing multiple layers of access control (RBAC, SSO and Zero-Trust solutions). In addition, each VPC is separated into public and private subnets. Public subnets contain servers that are publicly accessible, while private subnets only contain systems that aren't publicly accessible. 
+
+By setting up our network in this way, we can protect the systems running our core business logic while still providing public access to our service offerings.
+
+## Intrusion Detection Setup
+
+Magic deploys intrusion detection systems in its cloud environment. We analyze all of our VPC logs, DNS logs and service logs to detect threats and any unauthorized access. We continuously monitor the traffic and take action when needed.
+
+## Data Encryption at Rest
+
+Magic encrypts all of its databases, volumes, snapshots, automated backups, and replicas with the industry-standard AES-256 encryption algorithm. Encryption and decryption are handled automatically at the hardware level, which prevents Magic and its users from experiencing performance impacts when encrypting or decrypting data.
+

@@ -1,0 +1,57 @@
+---
+title: Astar zkEVM
+---
+
+
+## Overview
+
+[Astar zkEVM](https://astar.network/) is an Ethereum layer-2 blockchain that leverages zero-knowledge proofs to increase scalability and lower transaction costs, powered by Polygon.
+
+**As Astar zkEVM is EVM compatible**, you can follow the [Ethereum](/docs/blockchains/featured-chains/ethereum/javascript) documentation to send your first transaction and utilize all other wallet features.
+
+## Configure Astar
+
+Ensure you have installed the Magic SDK and have access to your API key, follow the [quickstart](/docs/home/quickstart/cli) to get started.
+
+<Tabs>
+    <Tab title="Testnet">
+```js
+// Setting network to point to Astar zKyoto testnet
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
+  network: {
+    rpcUrl: 'https://rpc.startale.com/zkyoto',
+    chainId: 6038361,
+  },
+});
+
+```
+    </Tab>
+    <Tab title="Mainnet">
+```js
+// Setting network to point to Astar zkEVM mainnet
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
+  network: {
+    rpcUrl: 'https://rpc.startale.com/astar-zkevm',
+    chainId: 3776,
+  },
+});
+```
+    </Tab>
+</Tabs>
+
+## Compatibility
+
+* All `Auth`, `User` and `Wallet` module methods for [Dedicated Wallets](/docs/wallets/wallet-types#dedicated-wallet-white-labeled-wallets)
+* All EVM Provider functionality to respond to supported [RPC methods](/docs/api/client-side-sdks/web#evm-rpc-methods)
+
+_Need a feature or see a problem?_ File an issue on our [github repo](https://github.com/magiclabs/magic-js).
+
+## Resources & Tools
+
+* Documentation: [https://docs.astar.network/docs/build/zkEVM/quickstart](https://docs.astar.network/docs/build/zkEVM/quickstart)
+* Block Explorer:
+    * [https://zkyoto.explorer.startale.com/](https://zkyoto.explorer.startale.com/) (Testnet)
+    * [https://astar-zkevm.explorer.startale.com/](https://astar-zkevm.explorer.startale.com/) (Mainnet)
+
+* Bridge: [https://docs.astar.network/docs/build/zkEVM/bridge-to-zkevm](https://docs.astar.network/docs/build/zkEVM/bridge-to-zkevm)
+* Faucet: [https://docs.astar.network/docs/build/zkEVM/zkevm-faucet](https://docs.astar.network/docs/build/zkEVM/zkevm-faucet)

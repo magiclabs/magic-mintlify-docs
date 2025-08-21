@@ -1,0 +1,87 @@
+---
+title: Custom Email Template
+---
+
+
+import { Button } from '/snippets/button.mdx';
+
+<Card
+
+>
+This feature requires a subscription
+<br/>
+<Button href="https://magic.link/pricing#features">
+View pricing
+</Button>
+</Card>
+
+
+## Overview
+
+<Frame>
+  <img src="/images/image.png"/>
+</Frame>
+
+Magic's Custom Email Template feature allows you to fully tailor your app's login email using your own custom HTML. With this feature, developers can customize emails that use one-time passcodes or magic links.
+
+**Note: Custom email templates require using your own existing email provider.** You can register a custom email provider through the Settings page in the Magic dashboard. This feature is available to developers on our Growth or Enterprise Plans - you can head [here](https://magic.link/pricing) to learn more.
+
+### Configuration
+
+
+Custom Email Templates can be figured in the [Magic dashboard](https://dashboard.magic.link). Navigate to **Customization**, then **Email** to create and edit templates.
+
+The following is a list of variables that can be used when creating a custom email template in Magic. From the dashboard editor, variables must be wrapped in `{{}}` in order to be resolved to their value. For example, to use the one-time passcode, insert `{{otp}}` into the template.
+
+* `otp`: One-time passcode. Example: 412320
+* `magic_link`: Magic link URL. Example: “https://auth.magic.link/confirm?tlt=eyJh…”
+* `app.name`: The name of the application. Example: “My test app”
+* `user.email`: Email address of the user receiving the login email. Example: joe@magic.link
+* `template.locale`: Language of the user receiving the login email. Example: en_US
+* `login.device.browser`: Browser of the user receiving the login email. Example: Chrome
+* `login.device.os`: Operating system of the user receiving the login email. Example: MacOS
+* `login.timestamp`: Timestamp of when email was requested
+
+## Usage
+
+
+> ⁠**ℹ️** **This feature is supported in Magic SDK 21.1.0 and above.**
+
+### Testing
+
+Once a template has been created, you can use the **Send Test** button at the bottom of the customization page to send an email to the account that is currently logged in. Note that test emails will contain placeholder values for `otp` and `magic_link`.
+
+You can also view a live preview of your email in a separate browser window by selecting **Preview** from the overflow menu at the top of the page.
+
+Testing the full end-to-end user experience will require publishing your template to a live development environment. To ensure the best results, we recommend utilizing a dedicated email testing service such as [Litmus](https://www.litmus.com/).
+
+### Production
+
+In order to use the newly created template, the `template name` must be passed in as an argument into the login method.
+
+<Tabs>
+<Tab title="Javascript">
+```json
+⁠
+⁠//one-time passcode
+magic.auth.loginWithEmailOTP({
+  email: 'john@example.com',
+  overrides: {
+    variation: 'template name',
+  }
+})⁠
+
+//magic link⁠
+magic.auth.loginWithMagicLink({
+  email: 'john@example.com',
+  overrides: {
+    variation: 'template name',
+  }
+})
+⁠
+
+```
+</Tab>
+</Tabs>
+
+
