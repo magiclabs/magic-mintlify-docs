@@ -109,7 +109,9 @@ magic.preload;
 
 ```
 
-#### `loginWithMagicLink`
+## Auth Module
+
+### `loginWithMagicLink`
 
 Authenticate a user passwordlessly using a "magic link" sent to the specified user's email address.
 
@@ -120,7 +122,7 @@ Only available with Dedicated Wallet.
 
 </Note>
 
-####Arguments
+#### Arguments
 
 - `email` (String): The user email to log in with
 - `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
@@ -193,12 +195,12 @@ try {
 | `email-sent`            | Dispatched when the magic link email has been successfully sent from the Magic Link server. |
 | `retry`                 | Dispatched when the user restarts the flow. This can only happen if `showUI: true`.         |
 
-#### `loginWithEmailOTP`
+### `loginWithEmailOTP`
 
 Authenticate a user passwordlessly using an email one-time code sent to the specified user's email address.
 
 <Note>Only available with Dedicated Wallet.</Note>
-### arguments
+#### arguments
 
 - `email` (String): The user email to log in with
 - `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
@@ -209,11 +211,11 @@ Authenticate a user passwordlessly using an email one-time code sent to the spec
 
 Available from `magic-sdk@19.1.0`
 
-### Returns
+#### Returns
 
 - `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -243,7 +245,7 @@ await magic.auth.loginWithEmailOTP({ email: 'hello@example.com', showUI: false }
 
 
 
-### [#Event Handling](#event-handling)
+#### [#Event Handling](#event-handling)
 
 [Relevant Events](#events-0)
 
@@ -350,7 +352,7 @@ try {
 </Tab>
 </Tabs>
 
-### Event Enums
+#### Event Enums
 
 **Email OTP**
 
@@ -373,7 +375,7 @@ try {
 | `device-verification-link-expired` | Dispatched when the email verification email has expired              |
 | `device-retry`                     | Emit to restart the device registration flow                          |
 
-### Error Handling
+#### Error Handling
 
 To achieve a fully white-labeled experience, you will need to implement some custom error handling according to your UI needs. Here's a short example to illustrate how errors can be caught and identified by their code:
 
@@ -414,16 +416,16 @@ Authenticate a user passwordlessly using a one-time code sent to the specified p
 <Note>
 Only available with Dedicated Wallet.
 </Note>
-### Arguments
+#### Arguments
 
 * `phoneNumber` (String): E.164 formatted phone number
 * `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
 
-### Returns
+#### Returns
 
 * `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -444,7 +446,7 @@ try {
 </Tab>
 </Tabs>
 
-### Error Handling
+#### Error Handling
 
 **Relevant Error Codes**
 
@@ -488,15 +490,15 @@ If given **no arguments**, this method will parse the credential token automatic
 <Note>
 Only available with Dedicated Wallet.
 </Note>
-### Arguments
+#### Arguments
 
 * `credentialOrQueryString` (String): A credential token _or_ a valid query string (prefixed with `?` or `#`). By default, this method will look for the a credential token on the `magic_credential` key of `window.location.search`
 
-### Returns
+#### Returns
 
 * `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
-### Example
+#### Example
 
 From your login page:
 
@@ -559,7 +561,7 @@ await magic.auth.loginWithCredential(window.location.search);
 </Tabs>
 
 
-#### `updateEmailWithUI`
+### `updateEmailWithUI`
 
 
 Initiates the update email flow that allows a user to change their email address.
@@ -569,19 +571,19 @@ Initiates the update email flow that allows a user to change their email address
 Only available with Dedicated Wallet.
 </Note>
 
-### Arguments
+#### Arguments
 
 * `email` (String): The new email to update to
 
 * `showUI?` (Boolean): If `true`, shows an out-of-the-box pending UI which includes instructions on which step of the confirmation process the user is on. Dismisses automatically when the process is complete
 
 
-### Returns
+#### Returns
 
 * `PromiEvent<boolean>`: The promise resolves with a true boolean value if update email is successful and rejects with a specific error code if the request fails
 
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -615,7 +617,7 @@ try {
 </Tab>
 </Tabs>
 
-### Event Handling
+#### Event Handling
 
 A white-label update email flow is available when passing `showUI: false` to this method. **The white-label flow is only supported in Magic SDK v22.0.0 and above**. Here's a short example to illustrate listening for and emitting events during the flow:
 
@@ -783,7 +785,7 @@ alert('Email Updated');
 
 
 
-### Error Handling
+#### Error Handling
 
 ﻿[Relevant Error Codes](/docs/api/client-side-sdks/web#error-codes)﻿
 
@@ -843,15 +845,15 @@ magic.wallet.showOnRamp; // enterprise only
 
 Renders a simple login form UI to collect the user's email address and authenticate them passwordlessly using a one-time passcode (OTP) sent to their email address they input.
 
-### Arguments
+#### Arguments
 
 * _None_
 
-### Returns
+#### Returns
 
 * A `promiEvent` which returns an `String[]` when resolved: An array of user accounts that are connected, with the first element being the current public address of the user. You can read more on PromiEvents [here](#promievents).
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -868,17 +870,17 @@ const accounts = await magic.wallet.connectWithUI();
 
 Displays the fully [navigable wallet](/docs/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google. User must be signed in for this method to return or else it will throw an error.
 
-### Arguments
+#### Arguments
 
 - _None_
 
-### Returns
+#### Returns
 
 - `Promise` which resolves when the user closes the window
 
 ⁠Optionally, add a `.on()` handler to catch the `disconnect` event emitted when the user logs out from the wallet widget.
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -900,15 +902,15 @@ await magic.wallet.showUI()
 
 Displays an iframe with the current user’s wallet address in a QR Code.
 
-### Arguments
+#### Arguments
 
 * _None_
 
-### Returns
+#### Returns
 
 * `Promise` which resolves when the user closes the window
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -928,15 +930,15 @@ await magic.wallet.showAddress()
 
 Displays an iframe that displays the user’s token balances from the currently connected network.
 
-### Arguments
+#### Arguments
 
 - _None_
 
-### Returns
+#### Returns
 
 - `Promise` which resolves when the user closes the window
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -957,15 +959,15 @@ await magic.wallet.showBalances()
 
 Displays an iframe that shows the user’s NFTs in both an aggregated and detailed individual view. **Supported only on Ethereum and Polygon.** Ensure this is enabled in your developer dashboard via the ‘Widget UI’ tab.
 
-### Arguments
+#### Arguments
 
 * _None_
 
-### Returns
+#### Returns
 
 * `Promise` which resolves when the user closes the window
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -985,15 +987,15 @@ await magic.wallet.showNFTs()
 
 Displays an iframe with UI to help the user transfer tokens from their account to another address.
 
-### Arguments
+#### Arguments
 
 - _None_
 
-### Returns
+#### Returns
 
 - `Promise` which resolves when the user closes the window
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1016,15 +1018,15 @@ Displays an iframe modal with various on ramp providers for the user to purchase
 
 To use the fiat on ramp for Dedicated Wallet apps, **you will need to contact us to KYB with the payment provider prior to use.** Once approved, ensure this toggle is enabled in your developer dashboard via the ‘Widget UI’ tab.
 
-### Arguments
+#### Arguments
 
 * _None_
 
-### Returns
+#### Returns
 
 * `Promise` which resolves when the user closes the window
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1076,15 +1078,15 @@ Generates a [Decentralized Id Token](/docs/authentication/features/decentralized
 <Note>
 Only available with Dedicated Wallet.
 </Note>
-### Arguments
+#### Arguments
 
 * `lifespan?` (Number): Will set the lifespan of the generated token. Defaults to 900s (15 mins)
 
-### Returns
+#### Returns
 
 * `PromiEvent<string>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1111,16 +1113,16 @@ Generates a [Decentralized ID token](/docs/authentication/features/decentralized
 
 <Note>Only available with Dedicated Wallet.</Note>
 
-### Arguments
+#### Arguments
 
 - `lifespan?` (Number): Will set the lifespan of the generated token. Defaults to 900s (15 mins)
 - `attachment?` (String): Will set a signature of serialized data in the generated token. Defaults to `"none"`
 
-### Returns
+#### Returns
 
 - `PromiEvent<string>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1146,11 +1148,11 @@ const idToken = await magic.user.generateIdToken({ attachment: 'SERVER_SECRET' }
 
 Retrieves information for the authenticated user.
 
-### Arguments
+#### Arguments
 
 * _None_
 
-### Returns
+#### Returns
 
 * `PromiEvent<string>`:
     * `issuer` (String): The Decentralized ID of the user. In server-side use-cases, we recommend this value to be used as the user ID in your own tables.
@@ -1160,7 +1162,7 @@ Retrieves information for the authenticated user.
     * `isMfaEnabled` (Boolean): Whether or not multi-factor authentication is enabled for the user
     * `recoveryFactors` (Array): Any recovery methods that have been enabled (ex. `[{ type: 'phone_number', value: '+99999999' }]`)
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1185,15 +1187,15 @@ try {
 
 Checks if a user is currently logged in to the Magic SDK.
 
-### Arguments
+#### Arguments
 
 - _None_
 
-### Returns
+#### Returns
 
 - `PromiEvent<boolean>`
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1221,15 +1223,15 @@ console.log(isLoggedIn); // => `true` or `false`
 
 Logs out the currently authenticated Magic user
 
-### Arguments
+#### Arguments
 
 * _None_
 
-### Returns
+#### Returns
 
 * `PromiEvent<boolean>`
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1260,15 +1262,15 @@ Displays an iframe with the current user’s settings. Allows for users to updat
   recovery](docs/authentication/features/account-recovery) require paid add-ons.
 </Note>
 
-### Arguments
+#### Arguments
 
 - `page?` (String): Optional argument to deeplink to a specific page (`'mfa' | 'update-email' | 'recovery'`)
 
-### Returns
+#### Returns
 
 - `Promise` which resolves when the user closes the window
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1296,7 +1298,7 @@ await magic.user.showSettings({ page: 'mfa' });
 </Tabs>
 
 
-### `showSettings({ showUI: false, page: 'recovery' })`
+#### Whitelabel
 
 
 Whitelabel the flow starting from where the user needs to add a recovery factor phone number. This allows you to implement your own UI, but you will need to implement some custom event handling according to your needs.
@@ -1306,16 +1308,16 @@ Only available with Dedicated Wallet.
 </Note>
 Access to [account recovery](docs/authentication/features/account-recovery) require paid add-ons.
 
-### Arguments
+**Arguments**
 
 * `page` (String): `'recovery'`
 * `showUI` (Boolean): `false`
 
-### Returns
+**Returns**
 
 * `Promise` which resolves when the user closes the window
 
-### Example
+**Example**
 
 <Tabs>
 <Tab title="Javascript">
@@ -1396,7 +1398,7 @@ try {
 </Tab>
 </Tabs>
 
-### `recoverAccount()`
+### `recoverAccount`
 
 A user can recover their email account if they've setup a phone number as a recovery factor. Calling this method will display a modal for the user to submit the sent SMS OTP.
 
@@ -1404,15 +1406,15 @@ A user can recover their email account if they've setup a phone number as a reco
 Access to [account recovery](docs/authentication/features/account-recovery) require
 paid add-ons.
 
-### Arguments
+#### Arguments
 
 - `email` (String): The email address (primary auth factor) of the user
 
-### Returns
+#### Returns
 
 - `PromiEvent<boolean>`: The promise resolves with a true boolean value if the recovery is successful and rejects if the request fails
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1441,15 +1443,15 @@ Displays an iframe deep linked to the beginning of the enable MFA flow. This is 
 <Note>
 Only available with Dedicated Wallet. Access to [MFA](/docs/authentication/features/mfa) require paid add-ons. Available as of `magic-sdk v28.11.0`
 </Note>
-### Arguments
+#### Arguments
 
 * `showUI?` (Boolean): If `true`, show an out-of-the-box UI to take user through flow to enable MFA. Defaults to `true`
 
-### Returns
+#### Returns
 
 * `Promise` which resolves when the user closes the window
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1504,7 +1506,7 @@ try {
 </Tab>
 </Tabs>
 
-### Events
+#### Events
 
 |                        |                                                            |
 | ---------------------- | ---------------------------------------------------------- |
@@ -1523,15 +1525,15 @@ Displays an iframe deep linked to the beginning of the disable MFA flow. This me
 Access to [MFA](/docs/authentication/features/mfa) require paid add-ons. Available
 as of `magic-sdk v28.11.0`
 
-### Arguments
+#### Arguments
 
 - `showUI?` (Boolean): If `true`, show an out-of-the-box UI to take user through flow to disable MFA. Defaults to `true`
 
-### Returns
+#### Returns
 
 - `Promise` which resolves when the user closes the window
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1596,7 +1598,7 @@ handle.emit(DisableMFAEventEmit.Cancel);
 </Tabs>
 
 
-### Events
+#### Events
 
 |     |     |
 | --- | --- |
@@ -1615,15 +1617,15 @@ Displays an iframe revealing the current user’s private key. Allows for users 
 <Note>
 Only available with Dedicated Wallet.
 </Note>
-### Arguments
+#### Arguments
 
 * _None_
 
-### Returns
+#### Returns
 
 * `Promise` which resolves when the user closes the window
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1650,15 +1652,15 @@ When the useStorageCache is enabled, there might be situations where the isLogge
 <Note>
   Only necessary with when the `useStorageCache` option is set to `true`.
 </Note>
-### Arguments
+#### Arguments
 
 - `callback` (`(isLoggedOut: boolean) => void`): The callback function when the event is emitted
 
-### Returns
+#### Returns
 
 - A `function` that can be called to unsubscribe from the event
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1681,7 +1683,7 @@ navigation.navigate('LoginScreen')
 </Tab>
 </Tabs>
 
-### OAuth Module
+## OAuth Module
 
 The OAuth Module and it's members are accessible on the Magic SDK instance by the `oauth2` property.
 
@@ -1707,22 +1709,22 @@ magic.oauth2.getRedirectResult;
 </Tab>
 </Tabs>
 
-#### `loginWithRedirect`
+### `loginWithRedirect`
 
 Starts the OAuth 2.0 login flow.
 
 <Note>Only available with Dedicated Wallet.</Note>
-### Arguments
+#### Arguments
 
 - `provider` (String): The OAuth provider being used for login
 - `redirectURI` (String): A URL a user is sent to after they successfully log in
 - `scope?` (Array): Defines the specific permissions an application requests from a user
 
-### Returns
+#### Returns
 
 - _None_
 
-### Valid Providers
+#### Valid Providers
 
 |           |               |                                                          |
 | --------- | ------------- | -------------------------------------------------------- |
@@ -1739,7 +1741,7 @@ Starts the OAuth 2.0 login flow.
 | Twitch    | `'twitch'`    | [Twitch demo](https://magic-oauth-v2-dun.vercel.app/)    |
 | Microsoft | `'microsoft'` | [Microsoft demo](https://magic-oauth-v2-dun.vercel.app/) |
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1768,17 +1770,17 @@ scope: ['user:email'] /_ optional _/,
 Returns the final OAuth 2.0 result.
 
 <Note>Only available with Dedicated Wallet.</Note>
-### Arguments
+#### Arguments
 
 - `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
 
-### Returns
+#### Returns
 
 - `PromiEvent<object>`:
   - ⁠`magic` (Object): Information about the authenticated Magic user. Comprised of `idToken` and `userMetadata`.
   - `oauth` (Object): Information about the authenticated OAuth user. Comprised of `accessToken`, `provider`, `scope`, `userHandle`, and `userInfo`.
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1814,7 +1816,7 @@ userInfo: ...;
 </Tab>
 </Tabs>
 
-### OpenID Module
+## OpenID Module
 
 <Note>
   This module requires an enterprise agreement. For more details [click
@@ -1850,17 +1852,17 @@ Authenticate users via your preferred OIDC client.
 
 <Note>Only available with Dedicated Wallet.</Note>
 
-### Arguments
+#### Arguments
 
 - `jwt` (String): The OIDC token from your identity provider.
 - `providerId` (String): An alphanumeric ID provided by Magic after successful configuration of your identity provider.
 - `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
 
-### Returns
+#### Returns
 
 - `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1887,7 +1889,7 @@ lifespan: number
 </Tab>
 </Tabs>
 
-### WebAuthn Module
+## WebAuthn Module
 
 The WebAuthn Module and it's members are accessible on the Magic SDK instance by the `webauthn` property.
 
@@ -1922,16 +1924,16 @@ magic.webauthn.unregisterDevice;
 Registers a new WebAuthn user.
 
 <Note>Only available with Dedicated Wallet.</Note>
-### Arguments
+#### Arguments
 
 - `username` (String): The username to register with
 - `nickname?` (String): The nickname of the WebAuthn device the user wants to set
 
-### Returns
+#### Returns
 
 - `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
-### example
+#### example
 
 <Tabs>
 <Tab title="Javascript">
@@ -1963,7 +1965,7 @@ const token = await magic.webauthn.registerNewUser({ username: 'username', nickn
 </Tab>
 </Tabs>
 
-### Error
+#### Error
 
 <Tabs>
 <Tab title="Javascript">
@@ -1999,15 +2001,15 @@ break;
 Logs in a registered WebAuthn user.
 
 <Note>Only available with Dedicated Wallet.</Note>
-### Arguments
+#### Arguments
 
 - `username` (String): The username to log in with
 
-### Returns
+#### Returns
 
 - `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -2032,7 +2034,7 @@ const token = await magic.webauthn.login({ username: 'username' });
 </Tab>
 </Tabs>
 
-### Error
+#### Error
 
 <Tabs>
 <Tab title="Javascript">
@@ -2068,17 +2070,17 @@ break;
 Returns information about the currently logged in user.
 
 <Note>Only available with Dedicated Wallet.</Note>
-### Arguments
+#### Arguments
 
 - _None_
 
-### Returns
+#### Returns
 
 - `PromiEvent<object | null>`: an object containing the WebAuthn devices information and username of the authenticated user
   - `devicesInfo` (Array): List of devices info contains device ID, device nickname, transport, user agent
   - `username` (String): Username of the authenticated user
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -2122,15 +2124,15 @@ _/
 Registers a new WebAuthn device.
 
 <Note>Only available with Dedicated Wallet.</Note>
-### Arguments
+#### Arguments
 
 - `nickname` (String): The nickname of the WebAuthn device the user wants to set
 
-### Returns
+#### Returns
 
 - `PromiEvent<boolean>`: The promise resolves with a true boolean value if register webauthn device is successful and rejects with a specific error code if the request fails.
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -2155,7 +2157,7 @@ await magic.webauthn.registerNewDevice('new device nickname');
 </Tab>
 </Tabs>
 
-### Error
+#### Error
 
 <Tabs>
 <Tab title="Javascript">
@@ -2191,16 +2193,16 @@ break;
 Allows a user to update their device nickname.
 
 <Note>Only available with Dedicated Wallet.</Note>
-### Arguments
+#### Arguments
 
 - `nickname` (String): The nickname of the WebAuthn device the user wants to set
 - `id` (String): The WebAuthn ID returned from `getMetaData` function's `devicesInfo` field
 
-### Returns
+#### Returns
 
 - `PromiEvent<boolean>`: The promise resolves with a true boolean value if update webauthn device nickname is successful and rejects with a specific error code if the request fails
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
@@ -2230,15 +2232,15 @@ await magic.webauthn.updateInfo({ id, nickname });
 Unregisters a user's device.
 
 <Note>Only available with Dedicated Wallet.</Note>
-### Arguments
+#### Arguments
 
 - `id` (String): The WebAuthn ID returned from `getMetaData` function's `devicesInfo` field
 
-### Returns
+#### Returns
 
 - `PromiEvent<boolean>`: The promise resolves with a true boolean value if unregister webauthn device is successful and rejects with a specific error code if the request fails
 
-### Example
+#### Example
 
 <Tabs>
 <Tab title="Javascript">
