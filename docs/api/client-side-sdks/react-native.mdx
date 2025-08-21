@@ -353,7 +353,7 @@ if (err instanceof RPCError) {
 switch (err.code) {
 case RPCErrorCode.MagicLinkExpired
 case RPCErrorCode.UserAlreadyLoggedIn:
-// Handle errors accordingly :)
+// Handle errors accordingly
 break;
 }
 }
@@ -426,7 +426,7 @@ switch (err.code) {
 case RPCErrorCode.AccessDeniedToUser:
 case RPCErrorCode.MagicLinkRateLimited:
 case RPCErrorCode.UserAlreadyLoggedIn:
-// Handle errors accordingly :)
+// Handle errors accordingly
 break;
 }
 }
@@ -509,7 +509,7 @@ await magic.auth.updateEmailWithUI({ email: 'hello@example.com', showUI: false }
 if (err instanceof RPCError) {
 switch (err.code) {
 case RPCErrorCode.UpdateEmailFailed:
-// Handle errors accordingly :)
+// Handle errors accordingly
 break;
 }
 }
@@ -1485,11 +1485,11 @@ import { Magic } from "@magic-sdk/react-native-bare";
 const req = magic.auth.loginWithEmailOTP({ email: 'hello@magic.link' });
 
 req
-.on('email-sent', () => {/* ... */})
-.then(DIDToken => {/* ... */})
-.once('email-not-deliverable', () => {/* ... */})
-.catch(error => {/* ... */})
-.on('error', error => {/* ... */});
+.on('email-sent', () => {/_ ... _/})
+.then(DIDToken => {/_ ... _/})
+.once('email-not-deliverable', () => {/_ ... _/})
+.catch(error => {/_ ... _/})
+.on('error', error => {/_ ... _/});
 
 ````
 </Tab>
@@ -1575,7 +1575,7 @@ It's good practice to use [@react-native-community/netinfo](https://www.npmjs.co
 import { useInternetConnection } from '@magic-sdk/react-native-expo';
 
 export default function App() {
-  const magic = new Magic('PUBLISHABLE_API_KEY');
+const magic = new Magic('PUBLISHABLE_API_KEY');
 
 const connected = useInternetConnection()
 
@@ -1592,9 +1592,10 @@ return <>
 {...}
 </SafeAreaProvider>
 
-  </>
+</>
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -1630,14 +1631,16 @@ const didToken = await magic.user.getIdToken();
 const user = await magic.auth.loginWithEmailOTP({ email });
 }
 
-```
+````
+
 </Tab>
 </Tabs>
 
 ## Resources
 
-* [Demo](https://github.com/magiclabs/react-native-demo)
-* [GitHub Repository](https://github.com/magiclabs/magic-js/blob/master/packages/%40magic-sdk/react-native-bare/README.md)
+- [Demo](https://github.com/magiclabs/react-native-demo)
+- [GitHub Repository](https://github.com/magiclabs/magic-js/blob/master/packages/%40magic-sdk/react-native-bare/README.md)
 
+```
 
 ```

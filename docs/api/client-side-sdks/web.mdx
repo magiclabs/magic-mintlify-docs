@@ -172,7 +172,7 @@ try {
       case RPCErrorCode.MagicLinkExpired:
       case RPCErrorCode.MagicLinkRateLimited:
       case RPCErrorCode.UserAlreadyLoggedIn:
-        // Handle errors accordingly :)
+        // Handle errors accordingly
         break;
     }
   }
@@ -386,7 +386,7 @@ if (err instanceof RPCError) {
 switch (err.code) {
 case RPCErrorCode.MagicLinkExpired
 case RPCErrorCode.UserAlreadyLoggedIn:
-// Handle errors accordingly :)
+// Handle errors accordingly
 break;
 }
 }
@@ -457,7 +457,7 @@ switch (err.code) {
 case RPCErrorCode.AccessDeniedToUser:
 case RPCErrorCode.MagicLinkRateLimited:
 case RPCErrorCode.UserAlreadyLoggedIn:
-// Handle errors accordingly :)
+// Handle errors accordingly
 break;
 }
 }
@@ -609,11 +609,11 @@ A white-label update email flow is available when passing `showUI: false` to thi
 ```json
 
 import {
-  Magic,
-  RecencyCheckEventOnReceived,
-  RecencyCheckEventEmit,
-  UpdateEmailEventOnReceived,
-  UpdateEmailEventEmit,
+Magic,
+RecencyCheckEventOnReceived,
+RecencyCheckEventEmit,
+UpdateEmailEventOnReceived,
+UpdateEmailEventEmit,
 } from "magic-sdk";
 
 const magic = new Magic('API_KEY');
@@ -788,7 +788,7 @@ try {
   if (err instanceof RPCError) {
     switch (err.code) {
       case RPCErrorCode.UpdateEmailFailed:
-        // Handle errors accordingly :)
+        // Handle errors accordingly
         break;
     }
   }
@@ -1950,7 +1950,7 @@ if (err instanceof SDKErrorCode) {
 switch (err.code) {
 case SDKErrorCode.WebAuthnNotSupported:
 case SDKErrorCode.WebAuthnCreateCredentialError:
-// Handle errors accordingly :)
+// Handle errors accordingly
 break;
 }
 }
@@ -2018,7 +2018,7 @@ if (err instanceof SDKErrorCode) {
 switch (err.code) {
 case SDKErrorCode.WebAuthnNotSupported:
 case SDKErrorCode.WebAuthnCreateCredentialError:
-// Handle errors accordingly :)
+// Handle errors accordingly
 break;
 }
 }
@@ -2139,7 +2139,7 @@ if (err instanceof SDKErrorCode) {
 switch (err.code) {
 case SDKErrorCode.WebAuthnNotSupported:
 case SDKErrorCode.WebAuthnCreateCredentialError:
-// Handle errors accordingly :)
+// Handle errors accordingly
 break;
 }
 }
