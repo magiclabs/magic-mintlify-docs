@@ -1,0 +1,331 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "MagicLink",
+  "logo": {
+    "dark": "/logo/dark.png",
+    "light": "/logo/light.png"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#6851ff",
+    "light": "#6851ff",
+    "dark": "#6851ff",
+    "anchors": {
+      "from": "#6851ff",
+      "to": "#251368"
+    }
+  },
+  "layout": "sidenav",
+  "topbarLinks": [
+    {
+      "name": "Contact Sales",
+      "url": "https://magic.link/contact"
+    },
+
+    {
+      "name": "Log In",
+      "url": "https://dashboard.magic.link/login"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Start now",
+    "url": "https://dashboard.magic.link/signup",
+    "arrow": false,
+    "style": "pill"
+  },
+  "primaryTab": { "name": "Home" },
+  "tabs": [
+    {
+      "name": "Authentication",
+      "url": "docs/authentication"
+    },
+    {
+      "name": "Wallets",
+      "url": "docs/wallets"
+    },
+    {
+      "name": "SDK",
+      "url": "docs/api"
+    },
+    {
+      "name": "Blockchains",
+      "url": "docs/blockchains"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "Guides",
+      "icon": "book-open-cover",
+      "url": "https://magic.link/guides"
+    },
+    {
+      "name": "Community",
+      "icon": "discord",
+      "url": "https://discord.gg/magiclabs"
+    },
+    {
+      "name": "Blog",
+      "icon": "newspaper",
+      "url": "https://magic.link/blogs"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "docs/home/welcome",
+        "docs/home/quickstart/cli",
+        {
+          "group": "Security",
+          "pages": [
+            "docs/home/security/product-security",
+            "docs/home/security/security-compliance",
+            "docs/home/security/cloud-security"
+          ]
+        },
+        "docs/home/teams",
+        {
+          "group": "FAQ",
+          "pages": [
+            "docs/home/faq/dedicated-wallet",
+            "docs/home/faq/wallet-end-users"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Authentication",
+      "pages": ["docs/authentication/overview"]
+    },
+    {
+      "group": "Login",
+      "pages": [
+        "docs/authentication/login/email-otp",
+        "docs/authentication/login/magic-links",
+        "docs/authentication/login/sms-login",
+        {
+          "group": "Social Logins",
+          "pages": [
+            "docs/authentication/login/social-logins/oauth-implementation",
+            {
+              "group": "Social Providers",
+              "pages": [
+                "docs/authentication/login/social-logins/social-providers/google",
+                "docs/authentication/login/social-logins/social-providers/facebook",
+                "docs/authentication/login/social-logins/social-providers/twitter",
+                "docs/authentication/login/social-logins/social-providers/apple",
+                "docs/authentication/login/social-logins/social-providers/discord",
+                "docs/authentication/login/social-logins/social-providers/github",
+                "docs/authentication/login/social-logins/social-providers/linkedin",
+                "docs/authentication/login/social-logins/social-providers/bitbucket",
+                "docs/authentication/login/social-logins/social-providers/twitch",
+                "docs/authentication/login/social-logins/social-providers/microsoft",
+                "docs/authentication/login/social-logins/social-providers/gitlab"
+              ]
+            }
+          ]
+        },
+        "docs/authentication/login/farcaster",
+        "docs/authentication/login/webauthn",
+        "docs/authentication/login/idp"
+      ]
+    },
+    {
+      "group": "Features",
+      "pages": [
+        "docs/authentication/features/mfa",
+        "docs/authentication/features/advanced-mfa",
+        "docs/authentication/features/account-recovery",
+        "docs/authentication/features/account-linking",
+        "docs/authentication/features/decentralized-id"
+      ]
+    },
+    {
+      "group": "Customization",
+      "pages": [
+        "docs/authentication/customization/login-ui",
+        "docs/authentication/customization/localization",
+        "docs/authentication/customization/custom-smtp",
+        "docs/authentication/customization/custom-email-template"
+      ]
+    },
+    {
+      "group": "Data",
+      "pages": [
+        "docs/authentication/data/data-export",
+        "docs/authentication/data/email-logs",
+        "docs/authentication/data/deletion-request"
+      ]
+    },
+    {
+      "group": "Security",
+      "pages": [
+        "docs/authentication/security/access-control",
+        {
+          "group": "Allowlists",
+          "pages": [
+            "docs/authentication/security/allowlists/domain-allowlist",
+            "docs/authentication/security/allowlists/redirect-allowlist",
+            "docs/authentication/security/allowlists/mobile-access-allow-listing"
+          ]
+        },
+        "docs/authentication/security/device-registration",
+        "docs/authentication/security/session-management",
+        "docs/authentication/security/magic-link-security-check"
+      ]
+    },
+    {
+      "group": "Wallets",
+      "pages": ["docs/wallets/overview", "docs/wallets/wallet-types"]
+    },
+    {
+      "group": "Features",
+      "pages": [
+        "docs/wallets/features/transaction-signing",
+        "docs/wallets/features/personal-signatures",
+        "docs/wallets/features/fiat-on-ramps",
+        "docs/wallets/features/email-collection",
+        "docs/wallets/features/third-party-wallets",
+        "docs/wallets/features/key-export",
+        "docs/wallets/features/wallet-pregen"
+      ]
+    },
+    {
+      "group": "Enterprise Features",
+      "pages": ["docs/wallets/enterprise-features/generalized-dkms"]
+    },
+    {
+      "group": "Security",
+      "pages": [
+        "docs/wallets/security/content-security-policy",
+        "docs/wallets/security/sign-confirmation"
+      ]
+    },
+    {
+      "group": "Customization",
+      "pages": [
+        "docs/wallets/customization/brand-and-theme",
+        "docs/wallets/customization/widget-ui"
+      ]
+    },
+    {
+      "group": "Integration",
+      "pages": [
+        "docs/wallets/integrations/zerodev-account-abstraction",
+        "docs/wallets/integrations/alchemy-account-abstraction",
+        "docs/wallets/integrations/zksync-zyfi-integration",
+        "docs/wallets/integrations/wagmi",
+        "docs/wallets/integrations/moonpay-integration"
+      ]
+    },
+    {
+      "group": "SDK",
+      "pages": ["docs/api/overview"]
+    },
+    {
+      "group": "Client Side SDKs",
+      "pages": [
+        "docs/api/client-side-sdks/web",
+        "docs/api/client-side-sdks/react-native",
+        "docs/api/client-side-sdks/android",
+        "docs/api/client-side-sdks/ios",
+        "docs/api/client-side-sdks/flutter",
+        "docs/api/client-side-sdks/unity"
+      ]
+    },
+    {
+      "group": "Server-side SDKs",
+      "pages": [
+        "docs/api/server-side-sdks/overview",
+        "docs/api/server-side-sdks/ruby",
+        "docs/api/server-side-sdks/python",
+        "docs/api/server-side-sdks/php",
+        "docs/api/server-side-sdks/laravel",
+        "docs/api/server-side-sdks/node",
+        "docs/api/server-side-sdks/go"
+      ]
+    },
+    {
+      "group": "Resources",
+      "pages": ["docs/api/resources/rate-limit", "docs/api/resources/types"]
+    },
+    {
+      "group": "Blockchains",
+      "pages": ["docs/blockchains/overview"]
+    },
+    {
+      "group": "Featured Chains",
+      "pages": [
+        "docs/blockchains/featured-chains/polygon",
+        {
+          "group": "Ethereum",
+          "pages": [
+            "docs/blockchains/featured-chains/ethereum/javascript",
+            "docs/blockchains/featured-chains/ethereum/flutter",
+            "docs/blockchains/featured-chains/ethereum/ios",
+            "docs/blockchains/featured-chains/ethereum/android",
+            "docs/blockchains/featured-chains/ethereum/unity"
+          ]
+        },
+        "docs/blockchains/featured-chains/tezos",
+        "docs/blockchains/featured-chains/solana"
+      ]
+    },
+    {
+      "group": "Supported Chains",
+      "pages": [
+        {
+          "group": "EVM",
+          "pages": [
+            "docs/blockchains/other-chains/evm/arbitrum",
+            "docs/blockchains/other-chains/evm/astar-zkevm",
+            "docs/blockchains/other-chains/evm/base",
+            "docs/blockchains/other-chains/evm/berachain",
+            "docs/blockchains/other-chains/evm/binance-smart-chain",
+            "docs/blockchains/other-chains/evm/celo",
+            "docs/blockchains/other-chains/evm/chiliz",
+            "docs/blockchains/other-chains/evm/cronos",
+            "docs/blockchains/other-chains/evm/etherlink",
+            "docs/blockchains/other-chains/evm/fantom",
+            "docs/blockchains/other-chains/evm/flare",
+            "docs/blockchains/other-chains/evm/harmony",
+            "docs/blockchains/other-chains/evm/hedera",
+            "docs/blockchains/other-chains/evm/horizen-eon",
+            "docs/blockchains/other-chains/evm/loopring",
+            "docs/blockchains/other-chains/evm/moonbeam",
+            "docs/blockchains/other-chains/evm/optimism",
+            "docs/blockchains/other-chains/evm/rari-chain",
+            "docs/blockchains/other-chains/evm/sei",
+            "docs/blockchains/other-chains/evm/soneium",
+            "docs/blockchains/other-chains/evm/stability",
+            "docs/blockchains/other-chains/evm/xdc-network",
+            "docs/blockchains/other-chains/evm/zetachain",
+            "docs/blockchains/other-chains/evm/zksync"
+          ]
+        },
+        {
+          "group": "Non-EVM",
+          "pages": [
+            "docs/blockchains/other-chains/other/algorand",
+            "docs/blockchains/other-chains/other/aptos",
+            "docs/blockchains/other-chains/other/avalanche",
+            "docs/blockchains/other-chains/other/bitcoin",
+            "docs/blockchains/other-chains/other/cosmos",
+            "docs/blockchains/other-chains/other/flow",
+            "docs/blockchains/other-chains/other/icon",
+            "docs/blockchains/other-chains/other/near",
+            "docs/blockchains/other-chains/other/polkadot",
+            "docs/blockchains/other-chains/other/zilliqa"
+          ]
+        }
+      ]
+    }
+  ],
+  "footerSocials": {
+    "x": "https://twitter.com/magic_labs",
+    "discord": "https://discord.gg/magiclabs",
+    "github": "https://github.com/MagicLabs",
+    "linkedin": "https://www.linkedin.com/company/magiclabs-inc/",
+    "youtube": "https://www.youtube.com/channel/UCe9Itc4HfUnqXO4wJk9mo3Q/"
+  }
+}

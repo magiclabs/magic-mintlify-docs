@@ -1,0 +1,94 @@
+---
+title: Account Recovery
+descriptio: "Magic allows users to recover their account if they can no longer access the email associated with their account. This is made possible via the Account Recovery feature, which is enabled via the user's phone through SMS. Upon recovering the account, the user is prompted to change their email address."
+---
+
+import { Button } from '/snippets/button.mdx';
+
+<Card
+
+>
+This feature requires a subscription to Startup or Growth Plan
+<br/>
+<Button href="https://magic.link/pricing#features">
+View pricing
+</Button>
+</Card>
+
+
+## Overview
+
+
+This feature requires two prerequisites:
+
+1.  The primary login factor is an email (this includes `loginWithMagicLink` and `loginWithEmailOTP` implementations)
+
+2.  The user can prove ownership of a phone number, which will be used as the recovery factor
+
+
+### Compatibility
+
+<Note>
+Only available with [Dedicated Wallet](/docs/wallets/wallet-types#dedicated-wallet).
+</Note>
+Account recovery methods are available on the following client-side SDKs:
+
+* [Web](/docs/api/client-side-sdks/web)
+* [React Native](/docs/api/client-side-sdks/react-native)
+* [iOS](/docs/api/client-side-sdks/ios)
+* [Android](/docs/api/client-side-sdks/android)
+
+## Usage
+
+
+## Enabling Account Recovery
+
+<Frame>
+  <img src="/images/01_enable-recovery-method.webp" alt=""/>
+</Frame>
+
+To enable SMS recovery for your users:
+
+<Tabs>
+<Tab title="Javascript">
+```json
+⁠magic.user.showSettings();
+```
+</Tab>
+</Tabs>
+
+
+This will display a settings modal where users will be able to add a recovery factor.
+
+Additionally, Magic supports a deep linking flow where you can send users straight to adding a recovery factor. [The flow can also be whitelabeled](/docs/api/client-side-sdks/web#show-settings-show-ui-false-page-recovery):
+
+
+
+<Tabs>
+<Tab title="Javascript">
+```json
+magic.user.showSettings({ page:'recovery'  });
+```
+</Tab>
+</Tabs>
+
+## Recover Account
+
+![](https://media.graphcms.com/resize=w:20,h:20,fit:crop/blur=amount:2/compress/https://media.graphassets.com/tOThMoDTl2yw3khiJTyQ "00_use-recovery method.png")
+
+Once a recovery factor is a set up, a user can recover their account. To enable this, the developer should call the following:
+
+<Tabs>
+<Tab title="Javascript">
+```json
+magic.user.recoverAccount({ email: email })
+```
+</Tab>
+</Tabs>
+
+
+
+<Note>
+It’s important to note that updating the recovery factor is a security sensitive operation so users will first be prompted to demonstrate account ownership by authenticating their email via a one-time-passcode before they are able to add a recovery phone number.
+
+</Note>

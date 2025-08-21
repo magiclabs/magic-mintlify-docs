@@ -1,0 +1,147 @@
+---
+title: Solana
+---
+
+### Installation
+
+To get started, install the following dependencies for your project:
+
+<Tabs>
+<Tab title="NPM">
+```json
+npm install @magic-ext/solana @solana/web3.js magic-sdk
+
+```
+</Tab>
+<Tab title="Yarn">
+```json
+yarn add @magic-ext/solana @solana/web3.js magic-sdk
+```
+</Tab>
+</Tabs>
+
+### Initialization
+
+The Magic class is the entry-point to the Magic SDK. It must be instantiated with a Magic **publishable** key.
+
+### ES Modules/TypeScript
+
+<Tabs>
+<Tab title="Typescript">
+```json
+
+import { Magic } from 'magic-sdk';
+import { SolanaExtension } from '@magic-ext/solana';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new SolanaExtension({
+      rpcUrl: 'SOLANA_RPC_NODE_URL',
+    }),
+  ],
+});
+```
+</Tab>
+</Tabs>
+
+### CDN
+
+<Tabs>
+<Tab title="Javascript">
+```json
+
+<script src="https://auth.magic.link/sdk"></script>
+<script type="text/javascript" src="https://auth.magic.link/sdk/extension/solana"></script>
+
+<script>
+  const magic = new window.Magic("YOUR_API_KEY", {
+      extensions: [
+        new SolanaExtension({
+          rpcUrl: 'SOLANA_RPC_NODE_URL'
+        })
+      ]
+  });
+</script>
+```
+</Tab>
+</Tabs>
+
+### Common Methods
+
+Note that the Magic Solana extension follows the method names and conventions by [**Solana's Javascript SDK**](https://solana.com/docs/clients/javascript).
+
+### Sign and Send Transaction
+
+### ES Modules/TypeScript
+
+To sign a standard Solana blockchain transaction, call the `magic.solana.signTransaction` method. Note that you must sign with the Magic SDK method but send the transaction using the `@solana/web3.js` method `connection.sendRawTransaction`.
+
+<Tabs>
+<Tab title="Typescript">
+```json
+import * as web3 from "@solana/web3.js";
+
+// Ensure you have Magic initialized with the Solana extension
+// Ensure that user is already authenticated
+
+const connection = new web3.Connection(clusterApiUrl("devnet"))
+
+const metadata = await magic.user.getMetadata();
+const userPublicKey = new web3.PublicKey(metadata.publicAddress);
+const recipientPubkey = new web3.Keypair.generate().publicKey;
+
+const blockhash = await connection?.getLatestBlockhash();
+if (!blockhash) return;
+
+const transaction = new web3.Transaction({
+  ...blockhash,
+  feePayer: userPublicKey,
+}).add(
+  web3.SystemProgram.transfer({
+    fromPubkey: userPublicKey,
+    toPubkey: recipientPubkey,
+    lamports: web3.LAMPORTS_PER_SOL * 0.01,
+  })
+);
+
+const signedTransaction = await magic?.solana.signTransaction(
+  transaction,
+  {
+    requireAllSignatures: false,
+    verifySignatures: true,
+  }
+);
+
+const signature = await connection?.sendRawTransaction(
+  Buffer.from(signedTransaction?.rawTransaction as string, "base64")
+)⁠;
+
+⁠console.log(signature);
+```
+</Tab>
+</Tabs>
+
+### Sign Message
+
+### ES Modules/TypeScript
+
+<Tabs>
+<Tab title="Typescript">
+```json
+
+// Ensure you have Magic initialized with the Solana extension
+// Ensure that user is already authenticated
+
+const signedMessage = await magic?.solana.signMessage("Hello World")
+⁠
+console.log(signedMessage)
+```
+</Tab>
+</Tabs>
+
+### Resources
+
+* [Magic Solana SDK](https://solana.com/docs/clients/javascript)
+* [Solana JavaScript Web3 example](https://codesandbox.io/s/github/MagicLabs/example-solana)
+* [Solana Faucet](https://solfaucet.com/)
+* [How to use email to create wallets on Solana](https://magic.link/posts/email-otp-with-solana-guide)

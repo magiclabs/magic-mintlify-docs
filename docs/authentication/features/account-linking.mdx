@@ -1,0 +1,323 @@
+---
+title: Account Linking
+description: "Account linking lets developers help users connect different methods of logging in to one wallet and one account. It solves the issue where users have accidentally created more than one account and have a hard time remembering which account has their active wallet."
+
+---
+
+import { Button } from '/snippets/button.mdx';
+
+<Card
+
+>
+This feature requires an enterprise agreement
+<br/>
+<Button href="https://magic.link/contact">
+Contact Sales
+</Button>
+</Card>
+
+## Overview
+
+Account linking requires the submission of two identity proofs, which are actually just signed link delegation requests encoded as ethereum typed data ([eip712](https://eips.ethereum.org/EIPS/eip-712)). The schema for these requests differ only by their issuer, which is the signing party of any request. These proofs are collected by the developer from both parties, and can then be submitted to an API endpoint to link the accounts. Once linked, Magic only requires the identity proof (signed delegation request) from the primary account to perform the unlinking process. 
+
+This process has been designed to be as native and compatible with web3 and associated standards as possible. The payload being signed is eip712 typed data and as such will have a nicely formatted representation created by the wallet UI and the requests/signed proofs involved are readable and usable in any smart contract written in solidity. The process is secured by public key cryptography and with that comes reasonable guarantees that accounts cannot be linked by anyone who does not have access to the private key associated with the wallet of the associated account.
+
+### Compatibility
+
+Account Linking is available on all platforms via REST API.
+
+### Linking Two Magic User Accounts
+
+Before linking, you should ensure that **both accounts** to be linked follow the following rules:
+
+* Both accounts must be for the Magic product, not Fortmatic
+
+* Both accounts must have successfully completed a login and been granted a session
+
+* Neither account can already be linked to a primary account
+
+* Both accounts must belong to the same Magic [Dedicated Wallet](/docs/wallets/wallet-types#dedicated-wallet) application
+
+
+### Example
+
+
+#### Identity Proof Generation
+
+The following is an example of how to generate the identity proof in JavaScript using the Magic SDK and web3 packages. It’s based on another example which can be found [here](https://medium.com/metamask/eip712-is-coming-what-to-expect-and-how-to-use-it-bb92fd1a7a26).
+
+
+<Tabs>
+<Tab title="Javascript">
+```json
+import { Magic } from 'magic-sdk';
+import Web3 from 'web3';
+
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY');
+const web3 = new Web3(magic.rpcProvider);
+
+// eip712 structs
+const types = {
+  "DelegateIdentityRequest": [
+    {"name": "subject", "type": "WalletIdentity"},
+    {"name": "delegatedTo", "type": "UserIdentity"},
+    {"name": "issuer", "type": "address"},
+    {"name": "action", "type": "string"},
+    {"name": "validFrom", "type": "uint256"},
+    {"name": "validTo", "type": "uint256"},
+    {"name": "nonce", "type": "uint256"}
+  ],
+  "WalletIdentity": [
+    {"name": "address", "type": "address"}
+  ],
+  "UserIdentity": [
+    {"name": "userId", "type": "string"},
+  ],
+  "EIP712Domain": [
+    {"name": "name", "type": "string"},
+    {"name": "version", "type": "string"},
+    {"name": "chainId", "type": "uint256"},
+    {"name": "salt", "type": "bytes32"}
+  ]
+};
+
+const domain = {
+  name: "magic.link",
+  version: "1.0.1",
+  chainId: 1,
+  salt: "0x4ee0aed8162862010446039a54bee2e6c4f331822a46c9dc4d4d681d15e95bee"
+};
+
+const message = {
+  "subject": {
+      "address": primary_address // the wallet address of the primary account for which the secondary accounts become delegates
+  },
+  "delegatedTo": {
+      "userId": secondary_auth_user_id, // the `sub` claim from the DID token of the secondary account
+  },
+  "issuer": signer_address, // the logged-in user's public address
+  "action": "link",
+  "validFrom": Date.now(),
+  "validTo": 0, // Leave this at 0, expiry is currently default to 10 minutes after issue
+  "nonce": 1
+};
+
+// Generate the message data
+const data = JSON.stringify({
+  types: types,
+  domain: domain,
+  primaryType: "DelegateIdentityRequest",
+  message: message
+});
+
+// Generate the signature
+let signature;
+web3.currentProvider.sendAsync(
+  {
+    method: "eth_signTypedData_v3",
+    params: [signer, data],
+    from: signer
+  },
+  function(err, result) {
+    if (err) {
+      return console.error(err);
+    }
+    signature = result.result.substring(2);
+    const r = "0x" + signature.substring(0, 64);
+    const s = "0x" + signature.substring(64, 128);
+    const v = parseInt(signature.substring(128, 130), 16);
+  }
+);
+
+const proof = {
+  // base64 encode the message data
+  msg: btoa(data), sig: signature
+}
+```
+</Tab>
+</Tabs>
+
+
+
+### Linking via Admin API
+
+Once both proofs have been collected, they should be combined and submitted to the account linking endpoint at [https://api.magic.link/v1/admin/auth/user/link](https://api.magic.link/v1/admin/auth/user/link). Here is an example of how that interaction should look.
+
+**Request**:
+
+* `POST` | `https://api.magic.link/v1/admin/auth/user/link`
+
+**Headers**:
+
+* `Content-Type`: `application/json`
+* `X-Magic-Secret-Key`: `sk_live...`
+
+**Payload**:
+
+<Tabs>
+<Tab title="Json">
+```json
+⁠ {
+  "primary_proof": {
+    "msg":
+      "eyJwcmltYXJ5VHlwZSI6ICJEZWxlZ2F0ZUlkZW50aXR5UmVxdWVzdCIsICJ0eXBlcyI6IHsiSWRlbnRpdHkiOiBbeyJuYW1lIjogInVzZXJJZCIsICJ0eXBlIjogInN0cmluZyJ9LCB7Im5hbWUiOiAiYWRkcmVzcyIsICJ0eXBlIjogImFkZHJlc3MifV0sICJFSVA3MTJEb21haW4iOiBbeyJuYW1lIjogIm5hbWUiLCAidHlwZSI6ICJzdHJpbmcifSwgeyJuYW1lIjogInZlcnNpb24iLCAidHlwZSI6ICJzdHJpbmcifSwgeyJuYW1lIjogImNoYWluSWQiLCAidHlwZSI6ICJ1aW50MjU2In1dLCAiRGVsZWdhdGVJZGVudGl0eVJlcXVlc3QiOiBbeyJuYW1lIjogInN1YmplY3QiLCAidHlwZSI6ICJJZGVudGl0eSJ9LCB7Im5hbWUiOiAiZGVsZWdhdGVkVG8iLCAidHlwZSI6ICJJZGVudGl0eSJ9LCB7Im5hbWUiOiAiaXNzdWVyIiwgInR5cGUiOiAiYWRkcmVzcyJ9LCB7Im5hbWUiOiAidmFsaWRGcm9tIiwgInR5cGUiOiAidWludDI1NiJ9LCB7Im5hbWUiOiAidmFsaWRUbyIsICJ0eXBlIjogInVpbnQyNTYifSwgeyJuYW1lIjogIm5vbmNlIiwgInR5cGUiOiAidWludDI1NiJ9XX0sICJkb21haW4iOiB7Im5hbWUiOiAibWFnaWMubGluayIsICJ2ZXJzaW9uIjogIjEuMC4xIiwgImNoYWluSWQiOiAxfSwgIm1lc3NhZ2UiOiB7InN1YmplY3QiOiB7InVzZXJJZCI6ICJhdXRoIHVzZXIgaWQiLCAiYWRkcmVzcyI6ICIweDQwODNEYTdDN0E3N2I3ZDA1NjkyOTM0Yzg4YmRGNDNEMDMxYWRiNmEifSwgImRlbGVnYXRlZFRvIjogeyJ1c2VySWQiOiAiYXV0aCB1c2VyIGlkIiwgImFkZHJlc3MiOiAiMHg0MDgzRGE3QzdBNzdiN2QwNTY5MjkzNGM4OGJkRjQzRDAzMWFkYjZhIn0sICJpc3N1ZXIiOiAiMHg0MDgzRGE3QzdBNzdiN2QwNTY5MjkzNGM4OGJkRjQzRDAzMWFkYjZhIiwgInZhbGlkRnJvbSI6IDE2NjYxMTYyMDcsICJ2YWxpZFRvIjogMjY4OTQ5MTMyOTAsICJub25jZSI6IDF9fQ==",
+    "sig": "0xb0d71d4dc2118f9ed1c86d5eb983e4021161bea7a61449386628d482b8ebe08c3f46c6c43852689265c530e7c011c4b9aefc9e77d85ce6af6ab39aa9fa50f79e1c"
+  },
+  "secondary_proof": {
+    "msg":
+      "eyJwcmltYXJ5VHlwZSI6ICJEZWxlZ2F0ZUlkZW50aXR5UmVxdWVzdCIsICJ0eXBlcyI6IHsiSWRlbnRpdHkiOiBbeyJuYW1lIjogInVzZXJJZCIsICJ0eXBlIjogInN0cmluZyJ9LCB7Im5hbWUiOiAiYWRkcmVzcyIsICJ0eXBlIjogImFkZHJlc3MifV0sICJFSVA3MTJEb21haW4iOiBbeyJuYW1lIjogIm5hbWUiLCAidHlwZSI6ICJzdHJpbmcifSwgeyJuYW1lIjogInZlcnNpb24iLCAidHlwZSI6ICJzdHJpbmcifSwgeyJuYW1lIjogImNoYWluSWQiLCAidHlwZSI6ICJ1aW50MjU2In1dLCAiRGVsZWdhdGVJZGVudGl0eVJlcXVlc3QiOiBbeyJuYW1lIjogInN1YmplY3QiLCAidHlwZSI6ICJJZGVudGl0eSJ9LCB7Im5hbWUiOiAiZGVsZWdhdGVkVG8iLCAidHlwZSI6ICJJZGVudGl0eSJ9LCB7Im5hbWUiOiAiaXNzdWVyIiwgInR5cGUiOiAiYWRkcmVzcyJ9LCB7Im5hbWUiOiAidmFsaWRGcm9tIiwgInR5cGUiOiAidWludDI1NiJ9LCB7Im5hbWUiOiAidmFsaWRUbyIsICJ0eXBlIjogInVpbnQyNTYifSwgeyJuYW1lIjogIm5vbmNlIiwgInR5cGUiOiAidWludDI1NiJ9XX0sICJkb21haW4iOiB7Im5hbWUiOiAibWFnaWMubGluayIsICJ2ZXJzaW9uIjogIjEuMC4xIiwgImNoYWluSWQiOiAxfSwgIm1lc3NhZ2UiOiB7InN1YmplY3QiOiB7InVzZXJJZCI6ICJhdXRoIHVzZXIgaWQiLCAiYWRkcmVzcyI6ICIweDQwODNEYTdDN0E3N2I3ZDA1NjkyOTM0Yzg4YmRGNDNEMDMxYWRiNmEifSwgImRlbGVnYXRlZFRvIjogeyJ1c2VySWQiOiAiYXV0aCB1c2VyIGlkIiwgImFkZHJlc3MiOiAiMHg0MDgzRGE3QzdBNzdiN2QwNTY5MjkzNGM4OGJkRjQzRDAzMWFkYjZhIn0sICJpc3N1ZXIiOiAiMHg4NjFkN0FkNTVBNDNEZDViRTg3MzAwNDJhMTdiNzI1NDBmMjliZjEzIiwgInZhbGlkRnJvbSI6IDE2NjYxMTYyMDcsICJ2YWxpZFRvIjogMjY4OTQ5MTMyOTAsICJub25jZSI6IDF9fQ==",
+    "sig": "0x65d4886622c1b0ad919049e36a250b97b704c621de7adca452550ae47cc72fd912817c03f8e16a0ab46283a2de351b551e747e7cd729abfccfd6cad31853ee001b"
+  }
+}
+
+```
+</Tab>
+</Tabs>
+
+When successful, a response like the one below should be expected.
+
+**Status**:
+
+* `200`
+
+**Headers**:
+
+* `Content-Type`: `application/json`
+
+**Response**:
+
+Json
+
+Copy
+
+
+
+Both account proofs must be less than 10 minutes old when sending to the link endpoint, otherwise the proof will be invalid/expired
+
+## Possible Exceptions
+
+* `**UserNotEligibleForLinking**`:
+
+    * **Status**: `403`
+
+    * **Error Code**: `USER_NOT_ELIGIBLE_FOR_LINKING`
+
+    * **Message**: `"User account not eligible for linking due to {reason}."`
+
+        * **Reasons**:
+
+            * `invalid_user_type`
+
+            * `user_is_admin`
+
+            * `user_unverified`
+
+            * `already_linked`
+
+            * `client_mismatch`
+
+* `**InvalidIdentityProof**`:
+
+    * **Status**: `400`
+
+    * **Error** **Code**: `INVALID_IDENTITY_PROOF`
+
+    * **Message**: `"Identity proof(s) are invalid or expired."`
+
+
+
+<Note>
+When a secondary account is linked to a primary account the secondary account will no longer access its own wallet and instead will access the primary account's wallet upon successful login. This action is reversible and access to the secondary account's wallet can be restored when the two accounts are unlinked.
+</Note>
+
+## Unlinking Two Linked Accounts
+
+
+Unlinking accounts will follow a similar pattern as linking accounts, except only the primary account's proof is needed. The message data that is signed by the user should have the `action` set to `"unlink"`.
+
+<Tabs>
+<Tab title="Javascript">
+```json
+const message = {
+  "subject": {
+      "address": primary_address // the wallet address of the primary account for which the secondary accounts become delegates
+  },
+  "delegatedTo": {
+      "userId": secondary_auth_user_id, // the `sub` claim from the DID token of the secondary account
+  },
+  "issuer": signer_address, // the primary account's public address
+  "action": "unlink",
+  "validFrom": Date.now(),
+  "validTo": 0, // Leave this at 0, expiry is currently default to 10 minutes after issue
+  "nonce": 1
+};
+```
+</Tab>
+</Tabs>
+
+**Request**:
+
+* `POST` | `https://api.magic.link/v1/admin/auth/user/unlink`
+
+**Headers**:
+
+* `Content-Type`: `application/json`
+* `X-Magic-Secret-Key`: `sk_live...`
+
+**Payload**:
+
+
+<Tabs>
+<Tab title="Json">
+```json
+⁠ {
+  "primary_proof": {
+    "msg": "eyJ0eXBlcyI6eyJEZWxlZ2F0ZUlkZW50aXR5UmVxdWVzdCI6W3sibmFtZSI6InN1YmplY3QiLCJ0eXBlIjoiV2FsbGV0SWRlbnRpdHkifSx7Im5hbWUiOiJkZWxlZ2F0ZWRUbyIsInR5cGUiOiJVc2VySWRlbnRpdHkifSx7Im5hbWUiOiJpc3N1ZXIiLCJ0eXBlIjoiYWRkcmVzcyJ9LHsibmFtZSI6ImFjdGlvbiIsInR5cGUiOiJzdHJpbmcifSx7Im5hbWUiOiJ2YWxpZEZyb20iLCJ0eXBlIjoidWludDI1NiJ9LHsibmFtZSI6InZhbGlkVG8iLCJ0eXBlIjoidWludDI1NiJ9LHsibmFtZSI6Im5vbmNlIiwidHlwZSI6InVpbnQyNTYifV0sIldhbGxldElkZW50aXR5IjpbeyJuYW1lIjoiYWRkcmVzcyIsInR5cGUiOiJhZGRyZXNzIn1dLCJVc2VySWRlbnRpdHkiOlt7Im5hbWUiOiJ1c2VySWQiLCJ0eXBlIjoic3RyaW5nIn1dLCJFSVA3MTJEb21haW4iOlt7Im5hbWUiOiJuYW1lIiwidHlwZSI6InN0cmluZyJ9LHsibmFtZSI6InZlcnNpb24iLCJ0eXBlIjoic3RyaW5nIn0seyJuYW1lIjoiY2hhaW5JZCIsInR5cGUiOiJ1aW50MjU2In0seyJuYW1lIjoic2FsdCIsInR5cGUiOiJieXRlczMyIn1dfSwiZG9tYWluIjp7Im5hbWUiOiJtYWdpYy5saW5rIiwidmVyc2lvbiI6IjEuMC4xIiwiY2hhaW5JZCI6MSwic2FsdCI6IjB4NGVlMGFlZDgxNjI4NjIwMTA0NDYwMzlhNTRiZWUyZTZjNGYzMzE4MjJhNDZjOWRjNGQ0ZDY4MWQxNWU5NWJlZSJ9LCJwcmltYXJ5VHlwZSI6IkRlbGVnYXRlSWRlbnRpdHlSZXF1ZXN0IiwibWVzc2FnZSI6eyJzdWJqZWN0Ijp7ImFkZHJlc3MiOiIweDgzMzViYjg4OGM5NUJGQmIwYzJFRTNkMjQ5NDA5RTcyQmQwNTkzRDEifSwiZGVsZWdhdGVkVG8iOnsidXNlcklkIjoiZlgxRFJtOWJ6LWY5T2IyZ09ycmNqdldDQkdlcHJXbWI2MzFKTjU0Z1Rwcz0ifSwiaXNzdWVyIjoiMHg4MzM1YmI4ODhjOTVCRkJiMGMyRUUzZDI0OTQwOUU3MkJkMDU5M0QxIiwiYWN0aW9uIjoidW5saW5rIiwidmFsaWRGcm9tIjoxNjk1NjgzOTY3MTc5LCJ2YWxpZFRvIjowLCJub25jZSI6MX19",
+    "sig": "0x713287dfa096f5fa83596b2644a1abc74b0ca38ea86c166ae715fc2a3abcbf6415b2dfad8c713453e2cdbeb08136baaa874bbbfaf0a20ebd05ed2cc7a4e8206c1b"
+}
+}
+```
+</Tab>
+</Tabs>
+
+
+
+When successful, a response like the one below should be expected.
+
+**Status**:
+
+* `200`
+
+**Headers**:
+
+* `Content-Type`: `application/json`
+
+**Response**:
+
+
+<Tabs>
+<Tab title="Json">
+```json
+⁠ {
+  "data": {
+    "primary_address":"0x98fe962f93f2f3fe9e4d62a88971a943677634d4184c7aa72ce86b9f95af9a19",
+    "result": "unlinked",
+    "secondary_auth_user_id": "3LDeve5f56ouY_tN-jLJlop_hkLI1LLTNG8abaCD42E="
+  },
+  "status": "ok",
+  "error_code": "",
+  "message": ""
+}
+```
+</Tab>
+</Tabs>
+
+
+<Note>
+The proof must be less than 10 minutes old when sending to the unlink endpoint, otherwise the proof will be invalid/expired.
+</Note>
+## Account Linking vs Account Recovery
+
+
+**Account linking is not account recovery**. If a user loses access to their primary login method they will not be able to update the login credential for the primary account and they will not be able to unlink their secondary accounts. However, the user will be able to access their account using their secondary login method.
+

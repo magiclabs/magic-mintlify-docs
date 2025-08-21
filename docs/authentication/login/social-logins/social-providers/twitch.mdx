@@ -1,0 +1,72 @@
+---
+title: Twitch Social Login with Magic
+sidebarTitle: Twitch
+description: "You can allow your users to sign up & log in to your web app with their Twitch account."
+---
+
+## Usage
+
+### Prerequisites
+
+<Note>
+Magic SDK offers two OAuth extensions: [v1](https://www.npmjs.com/package/@magic-ext/oauth) and [v2](https://www.npmjs.com/package/@magic-ext/oauth2). For web applications, it is recommended to use v2, while v1 should be used for mobile applications.
+</Note>
+
+* You will need a [Twitch](https://www.twitch.com/) account
+* You will need to have the [Magic SDK installed](/docs/api/overview) into your web app
+* You will need to have the [Magic SDK - OAuth Extension](/docs/authentication/login/social-logins/oauth-implementation) installed into your web app
+
+## Twitch Setup (v1 extension)
+
+After installing the OAuth extension, you can now enable Twitch Login for your Magic app:
+
+1.  Go to your [Magic Dashboard](https://dashboard.magic.link/login)
+2.  Select the Magic app for which you’d like to enable Twitch Login, or create a new app
+3.  Navigate to **Social Login** from the sidebar
+4.  Click the toggle for **Twitch**
+5.  Copy the **Redirect URI** field from your Magic Dashboard
+6.  Follow Twitch's [registration instructions](https://dev.twitch.tv/docs/authentication/#registration) to [register your app](https://dev.twitch.tv/console/apps/create)
+7.  Paste **Redirect URI** into the **OAuth Redirect URLs**
+<Frame>
+  <img src="/images/register-your-application.webp" alt="register-your-application"/>
+</Frame>
+
+
+8.  After creation of your Twitch app, click **Manage**
+<Frame>
+  <img src="/images/manage-your-app.webp" alt="manage-your-app.png"/>
+</Frame>
+
+9.  In the manage application section, click **New Secret**
+<Frame>
+  <img src="/images/generate-client-secret.webp" alt="generate-client-secret.png"/>
+</Frame>
+
+
+10. Obtain the **Client ID** and **Client Secret**
+11. Return to your Magic Dashboard and input the **Client ID** and **Client Secret** for your Twitch OAuth app
+12. In Magic Dashboard, click **“Save”**
+13. Click **"Test Connection"** to give your new Twitch OAuth flow a try!
+
+## Twitch Setup (v2 extension)
+
+* Follow above steps, but disregard Magic's **Redirect URI** in step 5
+* In step 7, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
+
+
+<Tabs>
+<Tab title="Javascript">
+```json
+await magic.oauth2.loginWithRedirect({
+  provider: 'twitch',
+  redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with Twitch
+});
+```
+</Tab>
+</Tabs>
+
+## Resources
+
+* [Twitch Social Login Demo](https://magic-oauth-v2-dun.vercel.app/)
+
+

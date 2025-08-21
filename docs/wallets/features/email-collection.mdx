@@ -1,0 +1,89 @@
+---
+title: Email Collection
+---
+
+<Info>
+**Restricted Availability**
+
+Universal wallets will soon be merged with Dedicated Wallets into a single product line. Universal apps created before February 7, 2024 will work as expected with no change. See our [blog post](https://magic.link/posts/unifyingwaas) to learn more.
+</Info>
+
+
+### Overview
+
+Magic offers out-of-the-box UI to request user information in line with OpenID standards. Currently, the only supported field is `email` but more profile information will be supported in the future.
+
+<Frame>
+  <img src="/images/Email-Collection-4.webp" alt="Email-Collection-4"/>
+</Frame>
+
+
+### Compatibility
+
+* For Dedicated Wallet, emails are automatically collected
+* For Universal Wallet, must be manually integrated. Follow the documentation below to implement.
+* Email Collection is available via the following client-side SDKs:
+    * [Web](/docs/api/client-side-sdks/web)
+    * [React Native](/docs/api/client-side-sdks/react-native)
+    * [iOS](/docs/api/client-side-sdks/ios)
+    * [Android](/docs/api/client-side-sdks/android)
+
+### Use Cases
+
+* Request users that have signed in through any of the [authentication methods](docs/authentication/customization/login-ui#authentication-methods-0) for an email address
+
+### Usage
+
+Once you've completed the quickstart to verify the correct setup of the Magic SDK and the user is successfully authenticated and logged in, you can then request consent to collect their information:
+
+
+<Tabs>
+<Tab title="Web3.js">
+```json
+import Web3 from 'web3';
+import { Magic } from 'magic-sdk';
+
+const magic = new Magic('YOUR_API_KEY', {
+  network: "goerli", // Ethereum testnet
+});
+
+// Do something with provider
+const web3 = new Web3(magic.rpcProvider);
+
+const accounts = await magic.wallet.connectWithUI();
+
+⁠const email = await magic.user.requestInfoWithUI({ scope: { email: "required" }});
+
+console.log(email)
+
+```
+</Tab>
+<Tab title="Ethers (v6)">
+```json
+import { Magic } from "magic-sdk"
+import { ethers } from "ethers";
+
+const magic = new Magic('YOUR_API_KEY', {
+  network: "goerli", // Ethereum testnet
+});
+
+// Do something with provider
+const provider = new ethers.BrowserProvider(magic.rpcProvider);
+
+const accounts = await magic.wallet.connectWithUI();
+
+const email = await magic.user.requestInfoWithUI({ scope: { email: "required" }});
+
+console.log(email)
+```
+</Tab>
+</Tabs>
+
+### Configuration
+
+* In order to collect emails from users that have authenticated through a third-party wallet, developers will need to be subscribed to the approriate [pricing tier.](https://magic.link/pricing)
+
+### Resources
+
+* [Quickstart](/docs/home/quickstart)
+* [`magic.wallet.requestInfoWithUI()`](/docs/api/client-side-sdks/web#requestInfoWithUI)

@@ -1,0 +1,79 @@
+---
+title: Tezos
+description: "The Tezos extension also lets you interact with the blockchain using methods from Tezos's [Taquito](https://tezostaquito.io/) SDK."
+---
+
+## Installation
+
+Magic interacts with the [Tezos](https://tezos.com/) blockchain via Magic's extension NPM package [`@magic-ext/taquito`](https://www.npmjs.com/package/@magic-ext/taquito).
+
+<Info>
+**NOTE**
+
+You can skip straight to our kitchen sink example directly:
+
+<Icon icon="hand-point-right" iconType="solid"/> [**Tezos Taquito Example**](https://codesandbox.io/s/github/magiclabs/example-taquito)
+
+</Info>
+
+<Tabs>
+  <Tab title="NPM">
+```bash
+npm install --save @magic-ext/taquito
+```
+  </Tab>
+  <Tab title="Yarn">
+```bash
+yarn add @magic-ext/taquito
+```
+  </Tab>
+</Tabs>
+
+## Initialization
+
+```Typescript Typescript
+
+import { Magic } from 'magic-sdk';
+import { TaquitoExtension } from '@magic-ext/taquito';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new TaquitoExtension({
+      rpcUrl: 'TEZOS_RPC_NODE_URL',
+    }),
+  ],
+});
+```
+## Common Methods
+### Send Transaction
+
+Note that the Magic Taquito extension follows the method names and conventions by [**Taquito**](https://tezostaquito.io/). To send a standard Tezos blockchain transaction, you can call the `magic.taquito.createMagicSigner` method to create a signer to inject to Tezos client.
+
+```Typescript Typescript
+
+import { Magic } from 'magic-sdk';
+import { TaquitoExtension } from '@magic-ext/taquito';
+import { TezosToolkit } from '@taquito/taquito';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new TaquitoExtension({
+      rpcUrl: 'https://rpc.oxfordnet.teztnets.com',
+    }),
+  ],
+});
+
+const Tezos = new TezosToolkit('https://rpc.oxfordnet.teztnets.com');
+const magicSigner = await magic.taquito.createMagicSigner();
+
+Tezos.setProvider({ signer: magicSigner });
+
+const op = await Tezos.wallet.transfer({ to: destinationAddress, amount: sendXTZAmount });
+
+const result = await op.confirmation();
+
+console.log('result', result)
+```
+### Resources
+* [Tezos Block Explorer](https://tzstats.com/)
+

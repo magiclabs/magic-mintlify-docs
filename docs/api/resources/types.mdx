@@ -1,0 +1,473 @@
+---
+title: Typescript Types
+---
+
+## Overview
+
+Below are the most common types in Magic's Typescript SDK, separated by module.
+
+To view all supported types, feel free to explore the [Magic SDK repo](https://github.com/magiclabs/magic-js/tree/master/packages/%40magic-sdk/types/src).
+
+## User Module
+
+### `MagicUserMetadata`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export interface MagicUserMetadata {
+  issuer: string | null;
+  publicAddress: string | null;
+  email: string | null;
+  phoneNumber: string | null;
+  isMfaEnabled: boolean;
+  recoveryFactors: [RecoveryFactor];
+}
+```
+</Tab>
+</Tabs>
+
+### `RecoveryMethodType`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export enum RecoveryMethodType {
+  PhoneNumber = 'phone_number',
+}
+```
+</Tab>
+</Tabs>
+
+### `RecoveryFactor`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+type RecoveryFactor = {
+  type: RecoveryMethodType;
+  value: string;
+};
+```
+</Tab>
+</Tabs>
+
+### `GetIdTokenConfiguration`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export interface GetIdTokenConfiguration {
+  /**
+   * The number of seconds until the generated ID token will expire.
+   */
+  lifespan?: number;
+}
+```
+</Tab>
+</Tabs>
+
+### `GenerateIdTokenConfiguration`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export interface GenerateIdTokenConfiguration extends GetIdTokenConfiguration {
+  /**
+   * An optional piece of data to sign with the token. Note, however, that the
+   * unsigned data _will not_ be encoded in the token, only an encrypted
+   * signature of the data.
+   */
+  attachment?: string;
+}
+```
+</Tab>
+</Tabs>
+
+### `UpdateEmailConfiguration`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export interface UpdateEmailConfiguration {
+  /**
+   * The new email address to update to
+   */
+  email: string;
+
+  /**
+   * When `true`, a pre-built pending modal interface will
+   * guide the user to check their new, followed by old emails
+   * for confirmation emails.
+   */
+  showUI?: boolean;
+}
+```
+</Tab>
+</Tabs>
+
+### `UpdateWebAuthnInfoConfiguration`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export interface UpdateWebAuthnInfoConfiguration {
+  /**
+   *  WebAuthn info id
+   */
+  id: string;
+
+  /**
+   *  nickname that user attempts to update to the webauth device associate to the id.
+   */
+  nickname: string;
+}
+
+```
+</Tab>
+</Tabs>
+
+### `RecoverAccountConfiguration`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export interface RecoverAccountConfiguration {
+  /**
+   * The email to recover
+   */
+  email: string;
+}
+```
+</Tab>
+</Tabs>
+
+### `ShowSettingsConfiguration`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export interface ShowSettingsConfiguration {
+  /**
+   * deep linking destination
+   */
+  page: DeepLinkPage;
+}
+```
+</Tab>
+</Tabs>
+
+## Wallet Module
+
+### `GasApiResponse`
+
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export type GasApiResponse = {
+  request_id: string;
+  state: string;
+  success: boolean;
+};
+```
+</Tab>
+</Tabs>
+
+### `AccessListEntry`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export type AccessListEntry = { address: string; storageKeys: Array<string> };
+```
+</Tab>
+</Tabs>
+
+### `AccessList`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export type AccessList = Array<AccessListEntry>;
+```
+</Tab>
+</Tabs>
+
+## Auth Module
+
+### `LoginWithMagicLinkConfiguration`
+<Tabs>
+<Tab title="Typescript">
+```json
+export interface LoginWithMagicLinkConfiguration {
+  /**
+   * The email address of the user attempting to login.
+   */
+  email: string;
+
+  /**
+   * When `true`, a pre-built modal interface will show to the user, directing
+   * them to check their email for the "magic link" to complete their
+   * authentication.
+   */
+  showUI?: boolean;
+
+  /**
+   * You can optionally provide a redirect URI that will be followed at the end
+   * of the magic link flow. Don't forget to invoke
+   * `magic.auth.loginWithCredential()` to complete the login from the route you
+   * configure here.
+   */
+  redirectURI?: string;
+
+  /**
+   * Enterprise users with a custom SMTP can create custom email templates
+   * from their dashboard. The default Magic loginWithMagicLink email will be
+   * overriden when a variation is passed here.
+   */
+  overrides?: {
+    variation?: string;
+  };
+}
+```
+</Tab>
+</Tabs>
+
+### `LoginWithSmsConfiguration`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export interface LoginWithSmsConfiguration {
+  /**
+   * Specify the phone number of the user attempting to login.
+   */
+  phoneNumber: string;
+}
+```
+</Tab>
+</Tabs>
+
+### `LoginWithEmailOTPConfiguration`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export interface LoginWithEmailOTPConfiguration {
+  /**
+   * Specify the email address of the user attempting to login.
+   */
+  email: string;
+
+  /**
+   * When `true`, a pre-built modal interface will show to the user, directing
+   * them to check their email for the one time passcode (OTP) to complete their
+   * authentication.
+   *
+   * When `false`, developers will be able to implement their own custom UI to
+   * continue the email OTP flow.
+   */
+  showUI?: boolean;
+
+  /**
+   * Device Unrecognized UI will enforce showing up to secure user's login
+   *
+   * When set to true (default), an improved device recognition UI will be displayed to the user,
+   * prompting them to verify their login by checking their email for device approval. This feature
+   * enhances authentication security.
+   *
+   * This param will only be affect if showUI is false. When set to false,
+   * developers have the flexibility to implement their own customized UI to
+   * handle device check events, providing a more tailored user experience.
+   */
+  deviceCheckUI?: boolean;
+
+  /**
+   * Enterprise users with a custom SMTP can create custom email templates
+   * from their dashboard. The default Magic loginWithOTP email will be
+   * overriden when a variation is passed here.
+   */
+  overrides?: {
+    variation?: string;
+  };
+}
+```
+</Tab>
+</Tabs>
+
+### EventHandlers
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export type LoginWithMagicLinkEventHandlers = {
+  // Event Received
+  [LoginWithMagicLinkEventOnReceived.EmailSent]: () => void;
+  [LoginWithMagicLinkEventOnReceived.EmailNotDeliverable]: () => void;
+
+  // Event sent
+  [LoginWithMagicLinkEventEmit.Retry]: () => void;
+} & DeviceVerificationEventHandlers;
+
+export type LoginWithEmailOTPEventHandlers = {
+  // Event Received
+  [LoginWithEmailOTPEventOnReceived.EmailOTPSent]: () => void;
+  [LoginWithEmailOTPEventOnReceived.InvalidEmailOtp]: () => void;
+  [LoginWithEmailOTPEventOnReceived.ExpiredEmailOtp]: () => void;
+
+  // Event sent
+  [LoginWithEmailOTPEventEmit.VerifyEmailOtp]: (otp: string) => void;
+  [LoginWithEmailOTPEventEmit.Cancel]: () => void;
+} & DeviceVerificationEventHandlers;
+
+type DeviceVerificationEventHandlers = {
+  // Event Received
+  [DeviceVerificationEventOnReceived.DeviceNeedsApproval]: () => void;
+  [DeviceVerificationEventOnReceived.DeviceVerificationEmailSent]: () => void;
+  [DeviceVerificationEventOnReceived.DeviceVerificationLinkExpired]: () => void;
+  [DeviceVerificationEventOnReceived.DeviceApproved]: () => void;
+
+  // Event sent
+  [DeviceVerificationEventEmit.Retry]: () => void;
+};
+```
+</Tab>
+</Tabs>
+
+### Auth Events Enum
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export enum LoginWithMagicLinkEventEmit {
+  Retry = 'retry',
+}
+
+export enum LoginWithMagicLinkEventOnReceived {
+  EmailSent = 'email-sent',
+  EmailNotDeliverable = 'email-not-deliverable',
+}
+
+export enum LoginWithEmailOTPEventEmit {
+  VerifyEmailOtp = 'verify-email-otp',
+  Cancel = 'cancel',
+}
+
+export enum LoginWithEmailOTPEventOnReceived {
+  EmailOTPSent = 'email-otp-sent',
+  InvalidEmailOtp = 'invalid-email-otp',
+  ExpiredEmailOtp = 'expired-email-otp',
+}
+
+export enum DeviceVerificationEventEmit {
+  Retry = 'device-retry',
+}
+
+export enum DeviceVerificationEventOnReceived {
+  DeviceApproved = 'device-approved',
+  DeviceNeedsApproval = 'device-needs-approval',
+  DeviceVerificationLinkExpired = 'device-verification-link-expired',
+  DeviceVerificationEmailSent = 'device-verification-email-sent',
+}
+```
+</Tab>
+</Tabs>
+
+## NFT Module
+
+### `NFTPurchaseRequest`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export interface NFTPurchaseRequest {
+  nft: {
+    name: string;
+    imageUrl: string;
+    blockchainNftId: string;
+    contractAddress: string;
+    network: string;
+    platform: string;
+    type: string;
+  };
+  identityPrefill: {
+    firstName: string;
+    lastName: string;
+    dateOfBirth: string; // YYYY-MM-DD
+    emailAddress: string;
+    phone: string;
+    address: {
+      street1: string;
+      street2: string;
+      city: string;
+      regionCode: string;
+      postalCode: string;
+      countryCode: string;
+    };
+  };
+}
+```
+</Tab>
+</Tabs>
+
+### `NFTCheckoutRequest`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export interface NFTCheckoutRequest {
+  // given by magic / found in the developer dashboard in future
+  contractId: string;
+  // in contract, if ERC1155… for ERC721, use token ID = 0
+  tokenId: string;
+  name: string;
+  imageUrl: string;
+  quantity?: number; // default is 1
+  walletAddress?: string; // default is user's wallet address
+}
+```
+</Tab>
+</Tabs>
+
+### `NFTTransferRequest`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export interface NFTTransferRequest {
+  tokenId: string;
+  contractAddress: string;
+  quantity?: number;
+  recipient?: string;
+}
+```
+</Tab>
+</Tabs>
+
+### Responses and `ResponseStatus`
+
+<Tabs>
+<Tab title="Typescript">
+```json
+export type NFTResponseStatus = 'cancelled' | 'processed' | 'declined' | 'expired';
+
+export type NFTResponse = {
+  status: NFTResponseStatus;
+};
+
+export type NFTPurchaseResponse = NFTResponse & {
+  errorMessage?: string;
+};
+
+export type NFTCheckoutResponse = NFTResponse;
+
+export type NFTTransferResponse = NFTResponse;
+```
+</Tab>
+</Tabs>
+
+## Resources
+
+* [Magic Types](https://github.com/magiclabs/magic-js/tree/master/packages/%40magic-sdk/types/src)
+
