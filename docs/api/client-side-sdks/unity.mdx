@@ -4,7 +4,8 @@ sidebarTitle: Unity
 ---
 
 <Note>
-It's recommended to apply this plugin in Unity 2021.3.3f1 or newer. Developers may build 2d Unity mobile Apps both in iOS and Android.
+  It's recommended to apply this plugin in Unity 2021.3.3f1 or newer. Developers
+  may build 2d Unity mobile Apps both in iOS and Android.
 </Note>
 
 WebGL is currently not supported, but you may use [magic-js](https://github.com/magiclabs/magic-js) in a JS context to enable passwordless authentication flow.
@@ -21,14 +22,14 @@ The Magic class is the entry-point to the Magic SDK. It must be instantiated wit
 
 ### `Magic`
 
-|     |     |     |
-| --- | --- | --- |
-| Parameter | Type | Definition |
-| `apiKey` | String | Your **publishable** API Key retrieved from the Magic Dashboard. |
-| `network` | EthNetwork | A representation of the connected Ethereum network (one of: mainnet or goerli). |
-| `locale?` | String | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/docs/authentication/customization/localization) for more. |
-| `config?` | CustomNodeConfiguration | A custom Ethereum Node configuration with the following shape:<br/><br/>`rpcUrl` (String): A URL pointing to your custom Ethereum Node.<br/><br/>⁠`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer. |
-| `macCanvas?` | GameObject | Your application’s primary canvas. Must be non-null for macOS and macOS editor support. |
+|              |                         |                                                                                                                                                                                                                                                                                                                                     |
+| ------------ | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Parameter    | Type                    | Definition                                                                                                                                                                                                                                                                                                                          |
+| `apiKey`     | String                  | Your **publishable** API Key retrieved from the Magic Dashboard.                                                                                                                                                                                                                                                                    |
+| `network`    | EthNetwork              | A representation of the connected Ethereum network (one of: mainnet or goerli).                                                                                                                                                                                                                                                     |
+| `locale?`    | String                  | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/docs/authentication/customization/localization) for more.                                                                                                                                                                               |
+| `config?`    | CustomNodeConfiguration | A custom Ethereum Node configuration with the following shape:<br/><br/>`rpcUrl` (String): A URL pointing to your custom Ethereum Node.<br/><br/>⁠`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer. |
+| `macCanvas?` | GameObject              | Your application’s primary canvas. Must be non-null for macOS and macOS editor support.                                                                                                                                                                                                                                             |
 
 ### Initialization
 
@@ -40,13 +41,14 @@ using MagicSDK;
 
 public class MagicUnity : MonoBehaviour
 {
-    void Start()
-    {
-        Magic magic = new Magic("PUBLISHABLE_API_KEY");
-        Magic.Instance = magic;
-    }
+void Start()
+{
+Magic magic = new Magic("PUBLISHABLE_API_KEY");
+Magic.Instance = magic;
 }
-```
+}
+
+````
 </Tab>
 </Tabs>
 
@@ -62,7 +64,8 @@ using MagicSDK;
 
 magic.Auth;
 magic.Auth.LoginWithEmailOTP;
-```
+````
+
 </Tab>
 </Tabs>
 
@@ -70,18 +73,18 @@ magic.Auth.LoginWithEmailOTP;
 
 Authenticate a user passwordlessly using an email one-time code sent to the specified user's email address.
 
-### Public Methods
+#### Public Methods
 
-|     |
-| --- |
-| Methods |
+|                                                          |
+| -------------------------------------------------------- |
+| Methods                                                  |
 | async Task&lt;string&gt; LoginWithEmailOtp(string email) |
 
-* `email` The user email to log in with
+- `email` The user email to log in with
 
-### Returns
+#### Returns
 
-* `DIDToken: Task<String>`: The function resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
+- `DIDToken: Task<String>`: The function resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
 ## User Module
 
@@ -102,7 +105,8 @@ magic.User.GetMetadata
 magic.User.UpdateEmail
 magic.User.IsLoggedIn
 magic.User.Logout
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -110,7 +114,7 @@ magic.User.Logout
 
 Initiates the update email flow that allows a user to change to a new email
 
-### Public Methods
+#### Public Methods
 
 |     |
 | --- |
@@ -120,7 +124,7 @@ Initiates the update email flow that allows a user to change to a new email
 * `email` The user email to update with
 * `showUI` If `true`, show an out-of-the-box pending UI while the request is in flight
 
-### Returns
+#### Returns
 
 * `Task<Boolean>`: The `Completable` resolves with a true boolean value if update email is successful and rejects with a specific error code if the request fails.
 
@@ -128,7 +132,7 @@ Initiates the update email flow that allows a user to change to a new email
 
 Generates a Decentralized Id Token which acts as a proof of authentication to resource servers.
 
-### Public Methods
+#### Public Methods
 
 |     |
 | --- |
@@ -137,7 +141,7 @@ Generates a Decentralized Id Token which acts as a proof of authentication to re
 
 * `lifespan?`: will set the lifespan of the generated token. Defaults to 900s (15 mins)
 
-### Returns
+#### Returns
 
 * `GetIdTokenResponse: Task<String>`: The `Completable` resolves with a true boolean value if update email is successful and rejects with a specific error code if the request fails.
 
@@ -145,7 +149,7 @@ Generates a Decentralized Id Token which acts as a proof of authentication to re
 
 Generates a Decentralized Id Token with optional serialized data.
 
-### Public Methods
+#### Public Methods
 
 |     |
 | --- |
@@ -155,7 +159,7 @@ Generates a Decentralized Id Token with optional serialized data.
 * `lifespan` : will set the lifespan of the generated token. Defaults to 900s (15 mins)
 * `attachment` : will set a signature of serialized data in the generated token. Defaults to `"none"`
 
-### Returns
+#### Returns
 
 * `Task<String>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
 
@@ -163,14 +167,14 @@ Generates a Decentralized Id Token with optional serialized data.
 
 Retrieves information for the authenticated user.
 
-### Public Methods
+#### Public Methods
 
 |     |
 | --- |
 | Methods |
 | public async Task&lt;UserMetadata&gt; **GetMetadata**() |
 
-### Returns
+#### Returns
 
 * `Task<UserMetadata>`: The `UserMetadata` containing the issuer, email and cryptographic [public address](https://support.blockchain.com/hc/en-us/articles/4417082520724-What-are-public-and-private-keys-and-how-do-they-work-) of the authenticated user
 
@@ -184,46 +188,46 @@ Retrieves information for the authenticated user.
         [CanBeNull] public string publicAddress;
         [CanBeNull] public string email;
     }
-```
+````
+
 </Tab>
 </Tabs>
 
-* `issuer` : The Decentralized ID of the user. In server-side use-cases, we recommend this value to be used as the user ID in your own tables.
-* `email` : Email address of the authenticated user
-* `publicAddress`: The authenticated user's public address (a.k.a.: public key). Currently, this value is associated with the Ethereum blockchain.
+- `issuer` : The Decentralized ID of the user. In server-side use-cases, we recommend this value to be used as the user ID in your own tables.
+- `email` : Email address of the authenticated user
+- `publicAddress`: The authenticated user's public address (a.k.a.: public key). Currently, this value is associated with the Ethereum blockchain.
 
 ### `IsLoggedIn`
 
 Checks if a user is currently logged in to the Magic SDK.
 
-### Public Methods
+#### Public Methods
 
-|     |
-| --- |
-| Methods |
+|                                                |
+| ---------------------------------------------- |
+| Methods                                        |
 | public async Task&lt;bool&gt; **IsLoggedIn**() |
 
-### Returns
+#### Returns
 
-* `Task<Boolean>`
+- `Task<Boolean>`
 
 ### `Logout`
 
 Logs out the currently authenticated Magic user
 
-### Public Methods
+#### Public Methods
 
-|     |
-| --- |
-| Methods |
+|                                            |
+| ------------------------------------------ |
+| Methods                                    |
 | public async Task&lt;bool&gt; **Logout**() |
 
-### Returns
+#### Returns
 
-* `Task<Boolean>`
+- `Task<Boolean>`
 
 ## Resources
 
-* [GitHub](https://github.com/magiclabs/magic-unity)
-* [Goerli Testnet Faucet](https://goerlifaucet.com)
-
+- [GitHub](https://github.com/magiclabs/magic-unity)
+- [Goerli Testnet Faucet](https://goerlifaucet.com)
