@@ -84,13 +84,7 @@
           ]
         },
         "docs/home/teams",
-        {
-          "group": "FAQ",
-          "pages": [
-            "docs/home/faq/dedicated-wallet",
-            "docs/home/faq/wallet-end-users"
-          ]
-        }
+        "docs/home/faq"
       ]
     },
     {
@@ -176,7 +170,7 @@
     },
     {
       "group": "Wallets",
-      "pages": ["docs/wallets/overview", "docs/wallets/wallet-types"]
+      "pages": ["docs/wallets/overview"]
     },
     {
       "group": "Features",
@@ -184,7 +178,6 @@
         "docs/wallets/features/transaction-signing",
         "docs/wallets/features/personal-signatures",
         "docs/wallets/features/fiat-on-ramps",
-        "docs/wallets/features/email-collection",
         "docs/wallets/features/third-party-wallets",
         "docs/wallets/features/key-export",
         "docs/wallets/features/wallet-pregen"

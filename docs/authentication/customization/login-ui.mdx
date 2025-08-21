@@ -10,24 +10,19 @@ Magic's authentication can enable passwordless Web3 onboarding (no seed phrases)
 
 The Login UI is available via the following client-side SDKs:
 
-* [Web](/docs/api/client-side-sdks/web)
-* [React Native](/docs/api/client-side-sdks/react-native)
-* [iOS](/docs/api/client-side-sdks/ios)
-* [Android](/docs/api/client-side-sdks/android)
+- [Web](/docs/api/client-side-sdks/web)
+- [React Native](/docs/api/client-side-sdks/react-native)
+- [iOS](/docs/api/client-side-sdks/ios)
+- [Android](/docs/api/client-side-sdks/android)
 
 ### Use Cases
 
-
-* Allow your users to log in and/or sign up to your dApp using their preferred authentication method and gain access to their public wallet address on the network you are connected to.
-* Using [Dedicated Wallet](/docs/wallets/wallet-types#dedicated-wallet) you can collect a signed token for wallet address verification and skip the need to explictly request a personal signature which would prompt an additional screen. (For [Universal Wallet](/docs/wallets/wallet-types#universal-wallet), an event listener is needed to retrieve the signed token)
-
-## Dedicated
-
+- Allow your users to log in and/or sign up to your dApp using their preferred authentication method and gain access to their public wallet address on the network you are connected to.
+- You can collect a signed token for wallet address verification and skip the need to explicitly request a personal signature which would prompt an additional screen.
 
 <Frame>
-  <img src="/images/dedicated-widget-login.webp" alt="dedicated-widget-login"/>
+  <img src="/images/dedicated-widget-login.webp" alt="dedicated-widget-login" />
 </Frame>
-
 
 ### Authentication Methods
 
@@ -37,144 +32,25 @@ If a user chooses to authenticate through their email, they will recieve a uniqu
 
 ### Usage
 
-
 #### Login
 
-
-
 <Tabs>
 <Tab title="Javascript">
 ```json
 import { Magic } from "magic-sdk"
 
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
-  network: "goerli",
+network: "sepolia",
 });
 
 const accounts = await magic.wallet.connectWithUI();
-```
+
+````
 </Tab>
 </Tabs>
 
-The example above authenticates the user and connects to the Ethereum Goerli Testnet. To connect to a different network, simply replace the configuration with another of [the 25+ chains supported by Magic](/docs/blockchains/overview).
+The example above authenticates the user and connects to the Ethereum Sepolia Testnet. To connect to a different network, simply replace the configuration with another of [the 25+ chains supported by Magic](/docs/blockchains/overview).
 
-## Universal
-
-<Info>
-**Restricted availability**
-
-Universal wallets will soon be merged with Dedicated Wallets into a single product line. Universal apps created before February 7, 2024 will work as expected with no change. See our [blog post](https://magic.link/posts/unifyingwaas) to learn more.
-</Info>
-
-
-<Frame>
-  <img src="/images/Authentication.webp" alt="Authentication"/>
-</Frame>
-
-
-## Authentication Methods
-
-### Email One-Time Passcode
-
-If a user chooses to authenticate through their email, they will recieve a unique code to their email that is generated per attempt and the user will be required to enter it to authenticate. OTPs for email provide a simple and effective way to increase security and ensure the safety of user assets.
-
-### Google One-Tap
-
-<Note>
-Google One-Tap logins for Universal Wallet are not available on Mobile SDKs or through in-app browsers.
-</Note>
-
-One-tap login with Google provides effortless authentication for your users that have Google Accounts. Utilizing the 'One Tap' sign-up API, users can create a secure and passwordless account with just one tap, all within the context of your application. Magic handles all of the authentication flow with Google with no setup for you dApp required.
-
-
-<Note>
-Users that sign in using the email OTP method and/or Google One-Tap will resolve to the same address as long as their gmail address is a personal account with the ending `@gmail.com` and is automatically linked. Auto-linking is not supported for custom G Suite/Google Workspace domains (such as `test@acme.co`).
-</Note>
-
-### Third-Party Wallets
-
-Magic Wallet allows users to connect with existing third-party wallets (e.g. MetaMask). When a user is asked for a public address, they can select a supported third-party wallet to use from the Magic Wallet login view. For more information, visit [Third Party Wallets](/docs/wallets/features/third-party-wallets).
-
-## Usage
-
-Magic offers a utility method [`connectWithUI`](/docs/api/client-side-sdks/web#connectwithui) which will ask permission from your user's selected authentication method to connect to your dApp.
-
-### Login
-
-<Tabs>
-<Tab title="Javascript">
-```json
-import { Magic } from "magic-sdk"
-import Web3 from 'web3';
-
-const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
-  network: "goerli",
-});
-
-const provider = await magic.wallet.getProvider();
-
-const web3 = new Web3(provider);
-
-const accounts = await magic.wallet.connectWithUI();
-```
-</Tab>
-</Tabs>
-
-
-### [#Log in with wallet verification](#log-in-with-wallet-verification)
-
-If you require a signature from the wallet’s private keys on authentication (same as a personal sign) in order to validate the ownership of the wallet address, you can do this by catching the following event after a login occurs as shown below. **This requires the domain you are on is on the** [**domain allowlist**](docs/authentication/security/allowlists/domain-allowlist) and verify the token using our [Magic Admin SDK](/docs/api/server-side-sdks/node#token-module)'s token module.
-
-If you would like to verify the ownership of a user's wallet address in a single login step, you can optionally listen for the `id-token-created` event that's fired after `connectWithUI` is called. The token will only be emitted for email or Google logins, and not for any 3rd party wallet connections.
-
-
-Copy
-
-<Tabs>
-<Tab title="Javascript">
-```json
-
-/* On the front end, collect the token as the user signs in */⁠
-await ⁠magic.wallet.connectWithUI().on('id-token-created', (params) => {
- const { idToken } = params;
- console.log(idToken);
- // send to your resource server for validation with the Magic Admin SDK
- // ...
-});
-
-/* Alternative to the above, if you are using a third party wallet provider or tool and wish to recieve the event, you can do the following. */
-await magic.rpcProvider.enable().on('id-token-created', (params) => {
- const { idToken } = params;
- console.log(idToken);
- // send to your resource server for validation with the Magic Admin SDK
- // ...
-});
-
-/* On your own resource server */
-const { MagicAdmin } = require('@magic-sdk/admin');
-const magicAdmin = await MagicAdmin.init('YOUR_SECRET_API_KEY');
-// ...
-
-/* In some context where the ID token from the FE is passed in */
-app.get('/login', async (req: any, res: any) => {
-  /*
-    Assumes DIDToken was passed in the Authorization header
-    in the standard `Bearer {token}` format.
-   */
-  const DIDToken = req.headers.authorization.substring(7);
-  magicAdmin.token.validate(DIDToken); // returns void, throws error if invalid
-  /* User is logged in. Set cookies! */
-});
-```
-</Tab>
-</Tabs>
-
-_**Security Notes:**_
-
-* The token provided is only valid for 90 seconds after the user has logged in.
-* In the Admin SDK, the user’s token is validated against your client’s unique identifier to ensure the signature occurred on your application’s site.
-
-⁠Alternatively, you can also explictly request a [personal signature](/docs/wallets/features/personal-signatures) from the user with an additional confirmation screen.
 
 ### Device Registration
 
@@ -184,11 +60,11 @@ Find out more about Device Registration [here](/docs/authentication/security/dev
 ### Configuration
 
 
-* You can configure which authentication methods and/or third party wallets are supported by your dApp in your [Dashboard settings](https://dashboard.magic.link/app/settings).
+* You can configure which authentication methods are supported by your dApp in your [Dashboard settings](https://dashboard.magic.link/app/settings).
 * See how to brand this experience with your own logo and colors in the [customization section](https://dashboard.magic.link/app/branding).
 
 ### Resources
 
-* [Magic Connect Verification Demo](https://codesandbox.io/s/github/magiclabs/magic-connect-verification-demo?file=/src/App.js)
 * [`magic.wallet.connectWithUI()`](/docs/api/client-side-sdks/web#connectwithui)
-* [`magic.wallet.getProvider()`](/docs/api/client-side-sdks/web#getprovider)
+```
+````

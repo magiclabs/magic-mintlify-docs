@@ -16,6 +16,7 @@ To use Magic in your application, install the `magic-sdk` dependency.
 **NOTE**
 
 ⁠If you're integrating with [OAuth](/docs/api/client-side-sdks/web#o-auth-module), [OpenID](#open-id-module) or [WebAuthn](/docs/api/client-side-sdks/web#web-authn-module), additional dependencies are needed. You'll find the installation instructions in their dedicated sections within this documentation.
+
 </Info>
 <Tabs>
   <Tab title="NPM">
@@ -30,23 +31,22 @@ yarn add magic-sdk
   </Tab>
 </Tabs>
 
-
 ### Constructor
 
-
 #### `Magic()`
+
 Configure and construct your Magic SDK instance.
 
-|     |     |     |
-| --- | --- | --- |
-| Parameter | Type | Definition |
-| `apiKey` | String | Your **publishable** API key retrieved from the Magic Dashboard. |
-| `options.locale?` | String | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/docs/authentication/customization/localization) for more. |
-| `options.testMode?` | Boolean | Enable [`testMode`](/docs/authentication/login/magic-links) to assert the desired behavior through the email address you provide to `loginWithMagicLink` without having to go through the auth flow. |
-| `options.network?` | String \| Object | (String): A representation of the connected Ethereum network (mainnet or goerli).<br/><br/>⁠(Object): A custom Ethereum Node configuration with the following shape:<br/><br/>⁠`rpcUrl` (String): A URL pointing to your custom Ethereum Node.⁠⁠<br/><br/>⁠`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer. |
-| `options.endpoint?` | String | A URL pointing to the Magic `<iframe>` application. |
-| `options.deferPreload?` | Boolean | An optional flag to delay the loading of the Magic Iframe's static assets until an SDK function is explicitly invoked. ⁠⁠⁠Set this to true if latency bottlenecks are a concern. |
-| `options.useStorageCache?` | Boolean | An optional flag to allow the usage of the local storage as cache. Currently it is only used for faster calls to `isLoggedIn`. When set to `true`, the `magic.user.onUserLoggedOut` event listener needs to be used. |
+|                            |                  |                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| -------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Parameter                  | Type             | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `apiKey`                   | String           | Your **publishable** API key retrieved from the Magic Dashboard.                                                                                                                                                                                                                                                                                                                                                                             |
+| `options.locale?`          | String           | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/docs/authentication/customization/localization) for more.                                                                                                                                                                                                                                                                                        |
+| `options.testMode?`        | Boolean          | Enable [`testMode`](/docs/authentication/login/magic-links) to assert the desired behavior through the email address you provide to `loginWithMagicLink` without having to go through the auth flow.                                                                                                                                                                                                                                         |
+| `options.network?`         | String \| Object | (String): A representation of the connected Ethereum network (mainnet or goerli).<br/><br/>⁠(Object): A custom Ethereum Node configuration with the following shape:<br/><br/>⁠`rpcUrl` (String): A URL pointing to your custom Ethereum Node.⁠⁠<br/><br/>⁠`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer. |
+| `options.endpoint?`        | String           | A URL pointing to the Magic `<iframe>` application.                                                                                                                                                                                                                                                                                                                                                                                          |
+| `options.deferPreload?`    | Boolean          | An optional flag to delay the loading of the Magic Iframe's static assets until an SDK function is explicitly invoked. ⁠⁠⁠Set this to true if latency bottlenecks are a concern.                                                                                                                                                                                                                                                             |
+| `options.useStorageCache?` | Boolean          | An optional flag to allow the usage of the local storage as cache. Currently it is only used for faster calls to `isLoggedIn`. When set to `true`, the `magic.user.onUserLoggedOut` event listener needs to be used.                                                                                                                                                                                                                         |
 
 ### Initialization
 
@@ -94,6 +94,7 @@ Starts downloading the static assets required to render the Magic iframe context
 **NOTE**
 
 As of magic-sdk version [21.0.0](https://www.npmjs.com/package/magic-sdk/v/21.0.0), the SDK constructor will preload the iframe's static assets by default, unless the `deferPreload` flag is passed into the constructor options. See [Release Notes](https://github.com/magiclabs/magic-js/releases/tag/magic-sdk%4021.0.0)
+
 </Info>
 
 ```Javascript JavaScript
@@ -116,20 +117,21 @@ Authenticate a user passwordlessly using a "magic link" sent to the specified us
 **NOTE**
 
 Only available with Dedicated Wallet.
+
 </Note>
 
 ####Arguments
 
-* `email` (String): The user email to log in with
-* `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
-* `showUI?` (Boolean): If `true`, show an out-of-the-box UI to accept the OTP from user. Defaults to `true`
-* `redirectURI?` (String): You can provide a redirect URI that Magic will point to after the user clicks their email link. If included, don't forget to call [`loginWithCredential`](#loginwithcredential) at the specified redirect location
+- `email` (String): The user email to log in with
+- `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
+- `showUI?` (Boolean): If `true`, show an out-of-the-box UI to accept the OTP from user. Defaults to `true`
+- `redirectURI?` (String): You can provide a redirect URI that Magic will point to after the user clicks their email link. If included, don't forget to call [`loginWithCredential`](#loginwithcredential) at the specified redirect location
 
 ⁠**Note**: If you are securing a resource server and have your own signup flow after this call resolves, be mindful of where you're calling signup in your implementation to avoid potential concurrency issues!
 
 #### Returns
 
-* `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
+- `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
 #### Example
 
@@ -184,26 +186,24 @@ try {
 
 #### Events
 
-|     |     |
-| --- | --- |
-| Event Name | Definition |
-| `email-not-deliverable` | Dispatched if the magic link email is unable to be delivered. |
-| `email-sent` | Dispatched when the magic link email has been successfully sent from the Magic Link server. |
-| `retry` | Dispatched when the user restarts the flow. This can only happen if `showUI: true`. |
+|                         |                                                                                             |
+| ----------------------- | ------------------------------------------------------------------------------------------- |
+| Event Name              | Definition                                                                                  |
+| `email-not-deliverable` | Dispatched if the magic link email is unable to be delivered.                               |
+| `email-sent`            | Dispatched when the magic link email has been successfully sent from the Magic Link server. |
+| `retry`                 | Dispatched when the user restarts the flow. This can only happen if `showUI: true`.         |
 
 #### `loginWithEmailOTP`
 
 Authenticate a user passwordlessly using an email one-time code sent to the specified user's email address.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
+<Note>Only available with Dedicated Wallet.</Note>
 ### arguments
 
-* `email` (String): The user email to log in with
-* `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
-* `showUI?` (Boolean): If `true`, show an out-of-the-box UI to accept the OTP from user. Defaults to `true`
-* `deviceCheckUI?` (Boolean): The default value is `true`. It shows Magic branded UI securing sign-ins from new devices. If set to `false`, the UI will remain hidden. However, this false value only takes effect when you have also set `showUI: false`. If you enable Device Verification in the Magic dashboard and are passing `showUI: false` you must also explicitly pass `deviceCheckUI: false`
+- `email` (String): The user email to log in with
+- `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
+- `showUI?` (Boolean): If `true`, show an out-of-the-box UI to accept the OTP from user. Defaults to `true`
+- `deviceCheckUI?` (Boolean): The default value is `true`. It shows Magic branded UI securing sign-ins from new devices. If set to `false`, the UI will remain hidden. However, this false value only takes effect when you have also set `showUI: false`. If you enable Device Verification in the Magic dashboard and are passing `showUI: false` you must also explicitly pass `deviceCheckUI: false`
 
 ⁠
 
@@ -211,33 +211,33 @@ Available from `magic-sdk@19.1.0`
 
 ### Returns
 
-* `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
+- `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
 ### Example
-
 
 <Tabs>
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
+import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 // log in a user by their email
 try {
-  await magic.auth.loginWithEmailOTP({ email: 'hello@example.com' });
+await magic.auth.loginWithEmailOTP({ email: 'hello@example.com' });
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
 
 // log in a user by their email, without showing an out-of-the box UI.
 try {
-  await magic.auth.loginWithEmailOTP({ email: 'hello@example.com', showUI: false });
+await magic.auth.loginWithEmailOTP({ email: 'hello@example.com', showUI: false });
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -345,34 +345,33 @@ try {
 } catch (err) {
   // handle errors
 }
-```
+````
+
 </Tab>
 </Tabs>
-
-
 
 ### Event Enums
 
 **Email OTP**
 
-|     |     |
-| --- | --- |
-| Event Name | Definition |
-| `email-otp-sent` | Dispatched when the OTP email has been successfully sent from the Magic server. |
-| `verify-email-otp` | Emit along with the OTP to verify the code from user. |
-| `invalid-email-otp` | Dispatched when the OTP sent fails verification. |
-| `cancel` | Emit to cancel the login request. |
+|                     |                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------- |
+| Event Name          | Definition                                                                      |
+| `email-otp-sent`    | Dispatched when the OTP email has been successfully sent from the Magic server. |
+| `verify-email-otp`  | Emit along with the OTP to verify the code from user.                           |
+| `invalid-email-otp` | Dispatched when the OTP sent fails verification.                                |
+| `cancel`            | Emit to cancel the login request.                                               |
 
 **Device Verification**
 
-|     |     |
-| --- | --- |
-| Event Name | Definition |
-| `device-needs-approval` | Dispatched when the device is unrecognized and requires user approval |
-| `device-verification-email-sent` | Dispatched when the device verification email is sent |
-| `device-approved` | Dispatched when the user has approved the unrecongized device |
-| `device-verification-link-expired` | Dispatched when the email verification email has expired |
-| `device-retry` | Emit to restart the device registration flow |
+|                                    |                                                                       |
+| ---------------------------------- | --------------------------------------------------------------------- |
+| Event Name                         | Definition                                                            |
+| `device-needs-approval`            | Dispatched when the device is unrecognized and requires user approval |
+| `device-verification-email-sent`   | Dispatched when the device verification email is sent                 |
+| `device-approved`                  | Dispatched when the user has approved the unrecongized device         |
+| `device-verification-link-expired` | Dispatched when the email verification email has expired              |
+| `device-retry`                     | Emit to restart the device registration flow                          |
 
 ### Error Handling
 
@@ -382,23 +381,24 @@ To achieve a fully white-labeled experience, you will need to implement some cus
 <Tab title="Javascript">
 ```json
 
-import { Magic, RPCError, RPCErrorCode } from 'magic-sdk';
+import { Magic, RPCError, RPCErrorCode } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-  await magic.auth.loginWithEmailOTP({ email: 'hello@example.com' });
+await magic.auth.loginWithEmailOTP({ email: 'hello@example.com' });
 } catch (err) {
-  if (err instanceof RPCError) {
-    switch (err.code) {
-      case RPCErrorCode.MagicLinkExpired
-      case RPCErrorCode.UserAlreadyLoggedIn:
-        // Handle errors accordingly :)
-        break;
-    }
-  }
+if (err instanceof RPCError) {
+switch (err.code) {
+case RPCErrorCode.MagicLinkExpired
+case RPCErrorCode.UserAlreadyLoggedIn:
+// Handle errors accordingly :)
+break;
 }
-```
+}
+}
+
+````
 </Tab>
 </Tabs>
 
@@ -439,11 +439,10 @@ try {
 } catch {
   // Handle errors if required!
 }
-```
+````
+
 </Tab>
 </Tabs>
-
-
 
 ### Error Handling
 
@@ -455,25 +454,25 @@ To achieve a fully white-labeled experience, you will need to implement some cus
 <Tab title="Javascript">
 ```json
 
-import { Magic, RPCError, RPCErrorCode } from 'magic-sdk';
+import { Magic, RPCError, RPCErrorCode } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-  await magic.auth.loginWithSMS({ phoneNumber: "+14151231234" });
+await magic.auth.loginWithSMS({ phoneNumber: "+14151231234" });
 } catch (err) {
-  if (err instanceof RPCError) {
-    switch (err.code) {
-      case RPCErrorCode.AccessDeniedToUser:
-      case RPCErrorCode.MagicLinkRateLimited:
-      case RPCErrorCode.UserAlreadyLoggedIn:
-        // Handle errors accordingly :)
-        break;
-    }
-  }
+if (err instanceof RPCError) {
+switch (err.code) {
+case RPCErrorCode.AccessDeniedToUser:
+case RPCErrorCode.MagicLinkRateLimited:
+case RPCErrorCode.UserAlreadyLoggedIn:
+// Handle errors accordingly :)
+break;
+}
+}
 }
 
-```
+````
 </Tab>
 </Tabs>
 
@@ -520,11 +519,10 @@ try {
 } catch {
   // Handle errors if required!
 }
-```
+````
+
 </Tab>
 </Tabs>
-
-
 
 From your authentication callback page:
 
@@ -532,30 +530,31 @@ From your authentication callback page:
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
+import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-  await magic.auth.loginWithCredential();
+await magic.auth.loginWithCredential();
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
 
 // You can also provide the credential yourself
 try {
-  await magic.auth.loginWithCredential('iamacredentialtoken');
+await magic.auth.loginWithCredential('iamacredentialtoken');
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
 
 // You can also provide the credential as a query string
 try {
-  await magic.auth.loginWithCredential(window.location.search);
+await magic.auth.loginWithCredential(window.location.search);
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -611,7 +610,8 @@ try {
 } catch {
   // Handle errors if required!
 }
-```
+````
+
 </Tab>
 </Tabs>
 
@@ -629,51 +629,54 @@ import {
   RecencyCheckEventEmit,
   UpdateEmailEventOnReceived,
   UpdateEmailEventEmit,
-} from 'magic-sdk';
+} from "magic-sdk";
 
 const magic = new Magic('API_KEY');
 
 try {
-  /* Initiates update email flow to update a user's current email to a new one */
-  const handle = await magic.auth.updateEmailWithUI({
-⁠    email: 'new_user_email@example.com',
-    showUI: false,
-  });
+/_ Initiates update email flow to update a user's current email to a new one _/
+const handle = await magic.auth.updateEmailWithUI({
+⁠ email: 'new_user_email@example.com',
+showUI: false,
+});
 
-  /*
-    Recency Check Events & Emit
-  */
+/_
+Recency Check Events & Emit
+_/
 
-  let recencyCheckRetries = 5;
+let recencyCheckRetries = 5;
 
-  handle
-  .on(RecencyCheckEventOnReceived.EmailSent, () => {
-⁠    // Email OTP has been sent to the user's primary email
+handle
+.on(RecencyCheckEventOnReceived.EmailSent, () => {
+⁠ // Email OTP has been sent to the user's primary email
 
     // Prompt the user for the OTP
     const otp = window.prompt('Primary Email OTP');
 
     // Send the OTP for verification
     handle.emit(RecencyCheckEventEmit.VerifyEmailOtp, otp);
-  })
-  .on(RecencyCheckEventOnReceived.PrimaryAuthFactorVerified, () => {
-    window.alert('Primary Factor has been verified');
-  })
-  .on(RecencyCheckEventOnReceived.EmailNotDeliverable, () => {
-    // Email OTP was undeliverable to user's primary email
+
+})
+.on(RecencyCheckEventOnReceived.PrimaryAuthFactorVerified, () => {
+window.alert('Primary Factor has been verified');
+})
+.on(RecencyCheckEventOnReceived.EmailNotDeliverable, () => {
+// Email OTP was undeliverable to user's primary email
 
     // Cancel update email request
     handle.emit(RecencyCheckEventEmit.Cancel);
     window.alert('Email Not Deliverable');
-  })
-  .on(RecencyCheckEventOnReceived.EmailExpired, () => {
-    // User entered expired OTP
+
+})
+.on(RecencyCheckEventOnReceived.EmailExpired, () => {
+// User entered expired OTP
 
     handle.emit(RecencyCheckEventEmit.Cancel);
     window.alert('Expired OTP');
-  })
-  .on(RecencyCheckEventOnReceived.InvalidEmailOtp, () => {
-    // User entered invalid OTP; you may limit retries and cancel the request
+
+})
+.on(RecencyCheckEventOnReceived.InvalidEmailOtp, () => {
+// User entered invalid OTP; you may limit retries and cancel the request
 
     if (!recencyCheckRetries) {
       // Cancel update email request
@@ -688,26 +691,28 @@ try {
       // Send the OTP for verification
       handle.emit(RecencyCheckEventEmit.VerifyEmailOtp, otp);
     }
-  });
 
-  /*
-    Update Email Events & Emit
-  */
+});
 
-  let updateEmailRetries = 5;
+/_
+Update Email Events & Emit
+_/
 
-  handle
-  .on(UpdateEmailEventOnReceived.EmailSent, () => {
-⁠    // Email OTP has been sent to the user's secondary email
+let updateEmailRetries = 5;
+
+handle
+.on(UpdateEmailEventOnReceived.EmailSent, () => {
+⁠ // Email OTP has been sent to the user's secondary email
 
     // Prompt the user for the OTP
     const otp = window.prompt('Enter new Email OTP');
 
     // Send the OTP for verification
     handle.emit(UpdateEmailEventEmit.VerifyEmailOtp, otp);
-  })
-  .on(UpdateEmailEventOnReceived.InvalidEmail, () => {
-    // Email OTP was undeliverable to user's secondary email
+
+})
+.on(UpdateEmailEventOnReceived.InvalidEmail, () => {
+// Email OTP was undeliverable to user's secondary email
 
     const newEmail = window.prompt('Invalid Email, Enter a new Email');
 
@@ -716,9 +721,10 @@ try {
       UpdateEmailEventEmit.RetryWithNewEmail,
       newEmail || email,
     );
-  })
-  .on(UpdateEmailEventOnReceived.EmailAlreadyExists, () => {
-    // Account already exists for new email address
+
+})
+.on(UpdateEmailEventOnReceived.EmailAlreadyExists, () => {
+// Account already exists for new email address
 
     const newEmail = window.prompt('Email address already in use, Enter a different Email');
 
@@ -727,9 +733,10 @@ try {
       UpdateEmailEventEmit.RetryWithNewEmail,
       newEmail || email,
     );
-  })
-  .on(UpdateEmailEventOnReceived.InvalidEmailOtp, () => {
-    // User entered invalid OTP; you may limit retries and cancel the request
+
+})
+.on(UpdateEmailEventOnReceived.InvalidEmailOtp, () => {
+// User entered invalid OTP; you may limit retries and cancel the request
 
     if (!updateEmailRetries) {
       // Cancel update email request
@@ -744,29 +751,33 @@ try {
       // Send the OTP for verification
       handle.emit(UpdateEmailEventEmit.VerifyEmailOtp, otp);
     }
-  })
-  .on(UpdateEmailEventOnReceived.EmailUpdated, () => {
-⁠    // Update email succcessful
+
+})
+.on(UpdateEmailEventOnReceived.EmailUpdated, () => {
+⁠ // Update email succcessful
 
     alert('Email Updated');
-  })
 
-  handle
-  .on('error', () => {
-    // is called if the Promise rejects
+})
+
+handle
+.on('error', () => {
+// is called if the Promise rejects
 
     alert('Error occurred');
-  });
 
-  const res = await handle;
-  console.log(res);
+});
 
-  // Can also handle successful email update here
-  alert('Email Updated');
+const res = await handle;
+console.log(res);
+
+// Can also handle successful email update here
+alert('Email Updated');
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -797,11 +808,10 @@ try {
     }
   }
 }
-```
+````
+
 </Tab>
 </Tabs>
-
-
 
 ## Wallet Module
 
@@ -811,7 +821,7 @@ The Wallet Module and it's members are accessible on the Magic SDK instance by t
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
+import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
@@ -823,8 +833,8 @@ magic.wallet.showBalances;
 magic.wallet.showNFTs;
 magic.wallet.showSendTokensUI;
 magic.wallet.showOnRamp; // enterprise only
-magic.wallet.getProvider;
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -849,43 +859,22 @@ Renders a simple login form UI to collect the user's email address and authentic
 import { Magic } from "magic-sdk"
 
 const accounts = await magic.wallet.connectWithUI();
-⁠
-/* Optionally, chain to the id token creation event if needed and configured (Universal Wallets only) */
-magic.wallet.connectWithUI().on('id-token-created', (params) => {
- const { idToken } = params
- console.log(idToken)
- // send to your resource server for validation
- // ...
-});
-```
+````
+
 </Tab>
 </Tabs>
 
-
-
-### Events
-
-
-<Note>
-The id-token-created event is only emitted for Universal Wallet apps. To generate a DID token for a Dedicated Wallet app, please use [getIdToken](/docs/api/client-side-sdks/web#getidtoken).
-</Note>
-
-|     |     |
-| --- | --- |
-| Event Name | Definition |
-| `id-token-created` | Returns an object containing a short lived, time bound ID token that can be used to verify the ownership of a user's wallet address on login.<br/><br/>[Read more](docs/authentication/customization/login-ui#usage-0) about this token and how to use it. |
-
 ### `showUI`
 
-Displays the fully [navigable wallet](/docs/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google and not third party wallets such as metamask. User must be signed in for this method to return or else it will throw an error.
+Displays the fully [navigable wallet](/docs/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google. User must be signed in for this method to return or else it will throw an error.
 
 ### Arguments
 
-* _None_
+- _None_
 
 ### Returns
 
-* `Promise` which resolves when the user closes the window
+- `Promise` which resolves when the user closes the window
 
 ⁠Optionally, add a `.on()` handler to catch the `disconnect` event emitted when the user logs out from the wallet widget.
 
@@ -895,12 +884,13 @@ Displays the fully [navigable wallet](/docs/wallets/customization/widget-ui) to 
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
+import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 await magic.wallet.showUI()
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -929,11 +919,10 @@ import { Magic } from 'magic-sdk';
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 await magic.wallet.showAddress()
-```
+````
+
 </Tab>
 </Tabs>
-
-
 
 ### `showBalances`
 
@@ -941,11 +930,11 @@ Displays an iframe that displays the user’s token balances from the currently 
 
 ### Arguments
 
-* _None_
+- _None_
 
 ### Returns
 
-* `Promise` which resolves when the user closes the window
+- `Promise` which resolves when the user closes the window
 
 ### Example
 
@@ -953,12 +942,13 @@ Displays an iframe that displays the user’s token balances from the currently 
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
+import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 await magic.wallet.showBalances()
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -986,10 +976,10 @@ import { Magic } from 'magic-sdk';
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 await magic.wallet.showNFTs()
-```
+````
+
 </Tab>
 </Tabs>
-
 
 ### `showSendTokensUI`
 
@@ -997,11 +987,11 @@ Displays an iframe with UI to help the user transfer tokens from their account t
 
 ### Arguments
 
-* _None_
+- _None_
 
 ### Returns
 
-* `Promise` which resolves when the user closes the window
+- `Promise` which resolves when the user closes the window
 
 ### Example
 
@@ -1009,12 +999,13 @@ Displays an iframe with UI to help the user transfer tokens from their account t
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
+import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 await magic.wallet.showSendTokensUI()
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -1044,73 +1035,10 @@ import { Magic } from 'magic-sdk';
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 await magic.wallet.showOnRamp()
-```
+````
+
 </Tab>
 </Tabs>
-
-
-
-### `getProvider`
-
-This method is introduced in `magic-sdk@17.0.0` and must be used to get the current provider if third party wallets are enabled. If not using third party wallets, we suggest using `magic.rpcProvider`.
-
-### Arguments
-
-* _None_
-
-### Returns
-
-* `Object`: The rpc provider of the wallet a user is currently logged in with (MetaMask, Coinbase Wallet or Magic)
-
-**Important**: To ensure rpc requests are routed to the correct wallet, developers must re-fetch the provider object using `getProvider()` and re-initialize the web3.js or ethers.js instance any time a user logs in, logs out, or disconnects their wallet.
-
-### Web3.js/Ethers.js
-
-Copy
-<Tabs>
-<Tab title="Web3.js">
-```json
-import { Magic } from "magic-sdk"
-import Web3 from 'web3';
-
-const magic = new Magic('PUBLISHABLE_API_KEY', {
-  network: "goerli",
-});
-
-const provider = await magic.wallet.getProvider();
-
-const web3 = new Web3(provider);
-
-const accounts = await magic.wallet.connectWithUI();
-
-// Listen for events
-web3.currentProvider.on('accountsChanged', handleAccountsChanged);
-web3.currentProvider.on('chainChanged', handleChainChanged);
-
-```
-</Tab>
-<Tab title="Ethers.js">
-```json
-import { Magic } from "magic-sdk"
-import { ethers } from "ethers";
-
-const magic = new Magic('PUBLISHABLE_API_KEY', {
-  network: "goerli",
-});
-
-const provider = await magic.wallet.getProvider();
-
-const web3Provider = new ethers.providers.Web3Provider(provider);
-
-const accounts = await magic.wallet.connectWithUI();
-
-// Listen for events
-web3Provider.on('accountsChanged', handleAccountsChanged);
-web3Provider.on('chainChanged', handleChainChanged);
-```
-</Tab>
-</Tabs>
-
 
 ## User Module
 
@@ -1120,7 +1048,7 @@ The User Module and it's members are accessible on the Magic SDK instance by the
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
+import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
@@ -1134,8 +1062,8 @@ magic.user.showSettings;
 magic.user.enableMFA;
 magic.user.disableMFA;
 magic.user.revealPrivateKey;
-magic.user.requestInfoWithUI;
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -1172,29 +1100,25 @@ try {
 } catch {
   // Handle errors if required!
 }
-```
+````
+
 </Tab>
 </Tabs>
-
-
 
 ### `generateIdToken`
 
 Generates a [Decentralized ID token](/docs/authentication/features/decentralized-id) with optional serialized data.
 
-
-<Note>
-Only available with Dedicated Wallet.
-</Note>
+<Note>Only available with Dedicated Wallet.</Note>
 
 ### Arguments
 
-* `lifespan?` (Number): Will set the lifespan of the generated token. Defaults to 900s (15 mins)
-* `attachment?` (String): Will set a signature of serialized data in the generated token. Defaults to `"none"`
+- `lifespan?` (Number): Will set the lifespan of the generated token. Defaults to 900s (15 mins)
+- `attachment?` (String): Will set a signature of serialized data in the generated token. Defaults to `"none"`
 
 ### Returns
 
-* `PromiEvent<string>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
+- `PromiEvent<string>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
 
 ### Example
 
@@ -1202,17 +1126,18 @@ Only available with Dedicated Wallet.
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
+import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 // Assumes a user is already logged in
 try {
-  const idToken = await magic.user.generateIdToken({ attachment: 'SERVER_SECRET' });
+const idToken = await magic.user.generateIdToken({ attachment: 'SERVER_SECRET' });
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -1251,10 +1176,10 @@ try {
 } catch {
   // Handle errors if required!
 }
-```
+````
+
 </Tab>
 </Tabs>
-
 
 ### `isLoggedIn`
 
@@ -1262,11 +1187,11 @@ Checks if a user is currently logged in to the Magic SDK.
 
 ### Arguments
 
-* _None_
+- _None_
 
 ### Returns
 
-* `PromiEvent<boolean>`
+- `PromiEvent<boolean>`
 
 ### Example
 
@@ -1274,17 +1199,18 @@ Checks if a user is currently logged in to the Magic SDK.
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
+import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-  const isLoggedIn = await magic.user.isLoggedIn();
-  console.log(isLoggedIn); // => `true` or `false`
+const isLoggedIn = await magic.user.isLoggedIn();
+console.log(isLoggedIn); // => `true` or `false`
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -1319,29 +1245,28 @@ try {
 } catch {
   // Handle errors if required!
 }
-```
+````
+
 </Tab>
 </Tabs>
 
-
-
 ### `showSettings`
-
 
 Displays an iframe with the current user’s settings. Allows for users to update their email address, enable multi-factor authentication, and add a recovery factor.
 
-
 <Note>
-Only available with Dedicated Wallet. Access to [MFA](/docs/authentication/features/mfa) and [account recovery](docs/authentication/features/account-recovery) require paid add-ons.
+  Only available with Dedicated Wallet. Access to
+  [MFA](/docs/authentication/features/mfa) and [account
+  recovery](docs/authentication/features/account-recovery) require paid add-ons.
 </Note>
 
 ### Arguments
 
-* `page?` (String): Optional argument to deeplink to a specific page (`'mfa' | 'update-email' | 'recovery'`)
+- `page?` (String): Optional argument to deeplink to a specific page (`'mfa' | 'update-email' | 'recovery'`)
 
 ### Returns
 
-* `Promise` which resolves when the user closes the window
+- `Promise` which resolves when the user closes the window
 
 ### Example
 
@@ -1349,23 +1274,24 @@ Only available with Dedicated Wallet. Access to [MFA](/docs/authentication/featu
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
+import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-  await magic.user.showSettings();
+await magic.user.showSettings();
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
 
 // Deeplink to MFA view
 try {
-  await magic.user.showSettings({ page: 'mfa' });
+await magic.user.showSettings({ page: 'mfa' });
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -1465,28 +1391,26 @@ try {
 } catch {
   // Handle errors if required!
 }
-```
+````
+
 </Tab>
 </Tabs>
 
-
 ### `recoverAccount()`
-
 
 A user can recover their email account if they've setup a phone number as a recovery factor. Calling this method will display a modal for the user to submit the sent SMS OTP.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
-Access to [account recovery](docs/authentication/features/account-recovery) require paid add-ons.
+<Note>Only available with Dedicated Wallet.</Note>
+Access to [account recovery](docs/authentication/features/account-recovery) require
+paid add-ons.
 
 ### Arguments
 
-* `email` (String): The email address (primary auth factor) of the user
+- `email` (String): The email address (primary auth factor) of the user
 
 ### Returns
 
-* `PromiEvent<boolean>`: The promise resolves with a true boolean value if the recovery is successful and rejects if the request fails
+- `PromiEvent<boolean>`: The promise resolves with a true boolean value if the recovery is successful and rejects if the request fails
 
 ### Example
 
@@ -1498,11 +1422,12 @@ import { Magic } from 'magic-sdk';
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-  magic.user.recoverAccount({ email: email })
+magic.user.recoverAccount({ email: email })
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -1574,37 +1499,37 @@ try {
 } catch {
   // Handle errors if required!
 }
-```
+````
+
 </Tab>
 </Tabs>
 
 ### Events
 
-|     |     |
-| --- | --- |
-| Event Name | Definition |
-| `mfa-secret-generated` | Dispatched when the user starts the enable MFA process. |
-| `invalid-mfa-otp` | Dispatched when the MFA TOTP submitted by user is invalid. |
-| `mfa-recovery-codes` | Dispatched when the MFA TOTP submitted by user is valid. |
-| `verify-mfa-code` | Emit to submit MFA TOTP submitted by user. |
-| `cancel-mfa-setup` | Emit to cancel the MFA enable flow. |
+|                        |                                                            |
+| ---------------------- | ---------------------------------------------------------- |
+| Event Name             | Definition                                                 |
+| `mfa-secret-generated` | Dispatched when the user starts the enable MFA process.    |
+| `invalid-mfa-otp`      | Dispatched when the MFA TOTP submitted by user is invalid. |
+| `mfa-recovery-codes`   | Dispatched when the MFA TOTP submitted by user is valid.   |
+| `verify-mfa-code`      | Emit to submit MFA TOTP submitted by user.                 |
+| `cancel-mfa-setup`     | Emit to cancel the MFA enable flow.                        |
 
 ### `disableMFA`
 
 Displays an iframe deep linked to the beginning of the disable MFA flow. This method assumes MFA has been enabled for the logged in user. This cannot be achieved by calling `showSettings()` .
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
-Access to [MFA](/docs/authentication/features/mfa) require paid add-ons. Available as of `magic-sdk v28.11.0`
+<Note>Only available with Dedicated Wallet.</Note>
+Access to [MFA](/docs/authentication/features/mfa) require paid add-ons. Available
+as of `magic-sdk v28.11.0`
 
 ### Arguments
 
-* `showUI?` (Boolean): If `true`, show an out-of-the-box UI to take user through flow to disable MFA. Defaults to `true`
+- `showUI?` (Boolean): If `true`, show an out-of-the-box UI to take user through flow to disable MFA. Defaults to `true`
 
 ### Returns
 
-* `Promise` which resolves when the user closes the window
+- `Promise` which resolves when the user closes the window
 
 ### Example
 
@@ -1621,49 +1546,52 @@ const magic = new Magic('PUBLISHABLE_API_KEY');
 
 // user disables MFA through Magic UI
 try {
-  await magic.user.disableMFA();
+await magic.user.disableMFA();
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
 
 // user disables MFA through whitelabel UI
 try {
-  const handle = magic.user.disableMFA({ showUI: false });
+const handle = magic.user.disableMFA({ showUI: false });
 
-  handle
-  .on(DisableMFAEventOnReceived.MFACodeRequested, () => {
-⁠    // Prompt user for MFA TOTP and emit it to disable MFA
-    const totp = window.prompt('Submit MFA TOTP');
-    handle.emit(DisableMFAEventEmit.VerifyMFACode, totp);
+handle
+.on(DisableMFAEventOnReceived.MFACodeRequested, () => {
+⁠ // Prompt user for MFA TOTP and emit it to disable MFA
+const totp = window.prompt('Submit MFA TOTP');
+handle.emit(DisableMFAEventEmit.VerifyMFACode, totp);
 
     // If user lost device and needs to recover with recovery code
     const recoveryCode = window.prompt('Enter Recovery Code');
     handle.emit(DisableMFAEventEmit.LostDevice, recoveryCode);
-  })
-  .on(DisableMFAEventOnReceived.InvalidMFAOtp, ({ errorCode }) => {
-⁠    // Handle user entered invalid MFA TOTP
+
+})
+.on(DisableMFAEventOnReceived.InvalidMFAOtp, ({ errorCode }) => {
+⁠ // Handle user entered invalid MFA TOTP
 
     // Have the user retry entering the MFA TOTP and emit via VerifyMFACode.
     // You may display error and limit retries by emitting Cancel.
     handle.emit(DisableMFAEventEmit.Cancel);
-  })
-  .on(DisableMFAEventOnReceived.InvalidRecoveryCode, () => {
-    // Handle user entered invalid Recovery Code
+
+})
+.on(DisableMFAEventOnReceived.InvalidRecoveryCode, () => {
+// Handle user entered invalid Recovery Code
 ⁠
-    // Have the user retry entering the Recovery Code and emit via LostDevice.
-    // You may display error and limit retries by emitting Cancel.
-    handle.emit(DisableMFAEventEmit.Cancel);
-  })
-  .on('done', () => {
-⁠    // Handle successful disable MFA
-  })
-  .on('error', (error) => {
-⁠    // Handle disable MFA errors
-⁠  )};
+// Have the user retry entering the Recovery Code and emit via LostDevice.
+// You may display error and limit retries by emitting Cancel.
+handle.emit(DisableMFAEventEmit.Cancel);
+})
+.on('done', () => {
+⁠ // Handle successful disable MFA
+})
+.on('error', (error) => {
+⁠ // Handle disable MFA errors
+⁠ )};
 } catch {
-  // Handle errors if required!
+// Handle errors if required!
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -1710,63 +1638,25 @@ try {
 } catch {
   // Handle errors if required!
 }
-```
+````
+
 </Tab>
 </Tabs>
-
-
-## `requestInfoWithUI`
-
-restricted availability
-
-Universal wallets will soon be merged with Dedicated Wallets into a single product line. Universal apps created before February 7, 2024 will work as expected with no change. See our [blog post](https://magic.link/posts/unifyingwaas) to learn more.
-
-Displays the [wallet widget](/docs/wallets/customization/widget-ui) within an iframe that prompts the user to consent to sharing information with the requesting dApp with OpenID profile scopes. Currently, the only profile scope that can be requested is a verified email. Collecting a verified email address from third-party wallet users (MetaMask, Coinbase Wallet, etc.) is a premium feature but included in the free trial period (see [pricing](https://magic.link/pricing)). User must be signed in for this method to return or else it will throw an error.
-
-note
-
-Only available with Universal Wallet.
-
-### Arguments
-
-* `scope?` (Object): The object containing requested OpenID profile scopes
-    * `email?: String` : If the user should be prompted to provide them email as a `required` or `optional` field
-
-### Returns
-
-* A `promise` which returns an `Object`: Contains result of the requested scopes
-    * `email?: String`: The email of the user if they consented to providing it in the UI
-
-### Example
-
-<Tabs>
-<Tab title="Javascript">
-```json
-
-import { Magic } from "magic-sdk"
-
-// after user has already logged in
-const userInfo = await magic.user.requestInfoWithUI({ scope: { email: "required" }})
-⁠console.log(userInfo.email); // the user's email if they consented.
-```
-</Tab>
-</Tabs>
-
 
 ### `onUserLoggedOut`
 
 When the useStorageCache is enabled, there might be situations where the isLoggedIn function returns true despite the user being logged out. In such instances, an event will be emitted after a few milliseconds, providing an opportunity to manage the user's logged-out state, such as when a session expires.
 
 <Note>
-Only necessary with when the `useStorageCache` option is set to `true`.
+  Only necessary with when the `useStorageCache` option is set to `true`.
 </Note>
 ### Arguments
 
-* `callback` (`(isLoggedOut: boolean) => void`): The callback function when the event is emitted
+- `callback` (`(isLoggedOut: boolean) => void`): The callback function when the event is emitted
 
 ### Returns
 
-* A `function` that can be called to unsubscribe from the event
+- A `function` that can be called to unsubscribe from the event
 
 ### Example
 
@@ -1774,22 +1664,22 @@ Only necessary with when the `useStorageCache` option is set to `true`.
 <Tab title="Javascript">
 ```json
 
-import { Magic } from "magic-sdk"
+import { Magic } from "magic-sdk";
 
 ⁠// Create Magic instance with useStorageCache set to true
 const magic = new Magic('PUBLISHABLE_API_KEY', {
-  useStorageCache: true
+useStorageCache: true
 });
 
 magic.user.onUserLoggedOut((isLoggedOut: boolean) => {
-  // Do something when user is logged out
-  navigation.navigate('LoginScreen')
+// Do something when user is logged out
+navigation.navigate('LoginScreen')
 })
-```
+
+````
+
 </Tab>
 </Tabs>
-
-
 
 ### OAuth Module
 
@@ -1801,54 +1691,52 @@ To use the OAuth Module in your application, install `@magic-ext/oauth2` along w
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
-import { OAuthExtension } from '@magic-ext/oauth2';
+import { Magic } from "magic-sdk";
+import { OAuthExtension } from "@magic-ext/oauth2";
 
 const magic = new Magic('PUBLISHABLE_API_KEY', {
-  extensions: [new OAuthExtension()],
+extensions: [new OAuthExtension()],
 });
 
 magic.oauth2;
 magic.oauth2.loginWithRedirect;
 magic.oauth2.getRedirectResult;
-```
+
+````
+
 </Tab>
 </Tabs>
-
 
 #### `loginWithRedirect`
 
 Starts the OAuth 2.0 login flow.
 
-
-<Note>
-Only available with Dedicated Wallet.
-</Note>
+<Note>Only available with Dedicated Wallet.</Note>
 ### Arguments
 
-* `provider` (String): The OAuth provider being used for login
-* `redirectURI` (String): A URL a user is sent to after they successfully log in
-* `scope?` (Array): Defines the specific permissions an application requests from a user
+- `provider` (String): The OAuth provider being used for login
+- `redirectURI` (String): A URL a user is sent to after they successfully log in
+- `scope?` (Array): Defines the specific permissions an application requests from a user
 
 ### Returns
 
-* _None_
+- _None_
 
 ### Valid Providers
 
-|     |     |     |
-| --- | --- | --- |
-| Name | Argument | Example |
-| Google | `'google'` | [Google demo](https://magic-oauth-v2-dun.vercel.app/) |
-| Facebook | `'facebook'` | [Facebook demo](https://magic-oauth-v2-dun.vercel.app/) |
-| Twitter | `'twitter'` | [Twitter demo](https://magic-oauth-v2-dun.vercel.app/) |
-| Apple | `'apple'` | [Apple demo](https://5kkmud.csb.app/) |
-| Discord | `'discord'` | [Discord demo](https://magic-oauth-v2-dun.vercel.app/) |
-| GitHub | `'github'` | [Github demo](https://magic-oauth-v2-dun.vercel.app/) |
-| LinkedIn | `'linkedin'` | [LinkedIn demo](https://magic-oauth-v2-dun.vercel.app/) |
+|           |               |                                                          |
+| --------- | ------------- | -------------------------------------------------------- |
+| Name      | Argument      | Example                                                  |
+| Google    | `'google'`    | [Google demo](https://magic-oauth-v2-dun.vercel.app/)    |
+| Facebook  | `'facebook'`  | [Facebook demo](https://magic-oauth-v2-dun.vercel.app/)  |
+| Twitter   | `'twitter'`   | [Twitter demo](https://magic-oauth-v2-dun.vercel.app/)   |
+| Apple     | `'apple'`     | [Apple demo](https://5kkmud.csb.app/)                    |
+| Discord   | `'discord'`   | [Discord demo](https://magic-oauth-v2-dun.vercel.app/)   |
+| GitHub    | `'github'`    | [Github demo](https://magic-oauth-v2-dun.vercel.app/)    |
+| LinkedIn  | `'linkedin'`  | [LinkedIn demo](https://magic-oauth-v2-dun.vercel.app/)  |
 | Bitbucket | `'bitbucket'` | [Bitbucket demo](https://magic-oauth-v2-dun.vercel.app/) |
-| GitLab | `'gitlab'` | [GitLab demo](https://magic-oauth-v2-dun.vercel.app/) |
-| Twitch | `'twitch'` | [Twitch demo](https://magic-oauth-v2-dun.vercel.app/) |
+| GitLab    | `'gitlab'`    | [GitLab demo](https://magic-oauth-v2-dun.vercel.app/)    |
+| Twitch    | `'twitch'`    | [Twitch demo](https://magic-oauth-v2-dun.vercel.app/)    |
 | Microsoft | `'microsoft'` | [Microsoft demo](https://magic-oauth-v2-dun.vercel.app/) |
 
 ### Example
@@ -1857,40 +1745,38 @@ Only available with Dedicated Wallet.
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
-import { OAuthExtension } from '@magic-ext/oauth2';
+import { Magic } from "magic-sdk";
+import { OAuthExtension } from "@magic-ext/oauth2";
 
 const magic = new Magic('PUBLISHABLE_API_KEY', {
-  extensions: [new OAuthExtension()],
+extensions: [new OAuthExtension()],
 });
 
 await magic.oauth2.loginWithRedirect({
-  provider: '...' /* 'google', 'facebook', 'apple', etc. */,
-  redirectURI: 'https://your-app.com/your/oauth/callback',
-  scope: ['user:email'] /* optional */,
+provider: '...' /_ 'google', 'facebook', 'apple', etc. _/,
+redirectURI: 'https://your-app.com/your/oauth/callback',
+scope: ['user:email'] /_ optional _/,
 });
-```
+
+````
+
 </Tab>
 </Tabs>
-
-
 
 ### `getRedirectResult`
 
 Returns the final OAuth 2.0 result.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
+<Note>Only available with Dedicated Wallet.</Note>
 ### Arguments
 
-* `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
+- `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
 
 ### Returns
 
-* `PromiEvent<object>`:
-    * ⁠`magic` (Object): Information about the authenticated Magic user. Comprised of `idToken` and `userMetadata`.
-    * `oauth` (Object): Information about the authenticated OAuth user. Comprised of `accessToken`, `provider`, `scope`, `userHandle`, and `userInfo`.
+- `PromiEvent<object>`:
+  - ⁠`magic` (Object): Information about the authenticated Magic user. Comprised of `idToken` and `userMetadata`.
+  - `oauth` (Object): Information about the authenticated OAuth user. Comprised of `accessToken`, `provider`, `scope`, `userHandle`, and `userInfo`.
 
 ### Example
 
@@ -1898,11 +1784,11 @@ Only available with Dedicated Wallet.
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
-import { OAuthExtension } from '@magic-ext/oauth2';
+import { Magic } from "magic-sdk";
+import { OAuthExtension } from "@magic-ext/oauth2";
 
 const magic = new Magic('PUBLISHABLE_API_KEY', {
-  extensions: [new OAuthExtension()],
+extensions: [new OAuthExtension()],
 });
 
 // optionally pass in number to method to set Decentralized ID token lifespan
@@ -1910,28 +1796,29 @@ const result = await magic.oauth2.getRedirectResult();
 
 // Result has the following interface
 interface OAuthRedirectResult {
-  magic: {
-    idToken: string;
-    userMetadata: MagicUserMetadata;
-  },
-  oauth: {
-    provider: string;
-    scope: string[];
-    accessToken: string;
-    userHandle: string;
-    userInfo: ...;
-  }
+magic: {
+idToken: string;
+userMetadata: MagicUserMetadata;
+},
+oauth: {
+provider: string;
+scope: string[];
+accessToken: string;
+userHandle: string;
+userInfo: ...;
+}
 };
-```
+
+````
+
 </Tab>
 </Tabs>
 
-
 ### OpenID Module
 
-
 <Note>
-This module requires an enterprise agreement. For more details [click here](docs/authentication/login/idp).
+  This module requires an enterprise agreement. For more details [click
+  here](docs/authentication/login/idp).
 </Note>
 
 The OpenID Module and it's members are accessible on the Magic SDK instance by the `openid` property.
@@ -1942,40 +1829,36 @@ To use the OpenID Module in your application, install `@magic-ext/oidc` along wi
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
-import { OpenIdExtension } from '@magic-ext/oidc';
+import { Magic } from "magic-sdk";
+import { OpenIdExtension } from "@magic-ext/oidc";
 
 const magic = new Magic('PUBLISHABLE_API_KEY', {
-  extensions: [new OpenIdExtension()],
+extensions: [new OpenIdExtension()],
 });
 
 magic.openid;
 magic.openid.loginWithOIDC;
-```
+
+````
+
 </Tab>
 </Tabs>
 
-
-
 ### `loginWithOIDC`
-
 
 Authenticate users via your preferred OIDC client.
 
-
-<Note>
-Only available with Dedicated Wallet.
-</Note>
+<Note>Only available with Dedicated Wallet.</Note>
 
 ### Arguments
 
-* `jwt` (String): The OIDC token from your identity provider.
-* `providerId` (String): An alphanumeric ID provided by Magic after successful configuration of your identity provider.
-* `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
+- `jwt` (String): The OIDC token from your identity provider.
+- `providerId` (String): An alphanumeric ID provided by Magic after successful configuration of your identity provider.
+- `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
 
 ### Returns
 
-* `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
+- `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
 ### Example
 
@@ -1983,25 +1866,26 @@ Only available with Dedicated Wallet.
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
-import { OpenIdExtension } from '@magic-ext/oidc';
+import { Magic } from "magic-sdk";
+import { OpenIdExtension } from "@magic-ext/oidc";
 
 const magic = new Magic('PUBLISHABLE_API_KEY', {
-  extensions: [new OpenIdExtension()],
+extensions: [new OpenIdExtension()],
 });
 
 const DID = await magic.openid.loginWithOIDC({
-  // this oidcToken comes from the identity provider
-  jwt: oidcToken,
-  // this providerId is provided by Magic
-  providerId: myProviderId,
-  // this optional argument sets the resolved Decentralized ID token's lifespan
-  lifespan: number
+// this oidcToken comes from the identity provider
+jwt: oidcToken,
+// this providerId is provided by Magic
+providerId: myProviderId,
+// this optional argument sets the resolved Decentralized ID token's lifespan
+lifespan: number
 });
-```
+
+````
+
 </Tab>
 </Tabs>
-
 
 ### WebAuthn Module
 
@@ -2013,11 +1897,11 @@ To use the WebAuthn Module in your application, install `@magic-ext/webauthn` al
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
-import { WebAuthnExtension } from '@magic-ext/webauthn';
+import { Magic } from "magic-sdk";
+import { WebAuthnExtension } from "@magic-ext/webauthn";
 
 const magic = new Magic('PUBLISHABLE_API_KEY', {
-  extensions: [new WebAuthnExtension()],
+extensions: [new WebAuthnExtension()],
 });
 
 magic.webauthn;
@@ -2027,28 +1911,25 @@ magic.webauthn.getMetadata;
 magic.webauthn.registerNewDevice;
 magic.webauthn.updateInfo;
 magic.webauthn.unregisterDevice;
-```
+
+````
+
 </Tab>
 </Tabs>
 
-
-
 ### `registerNewUser`
-
 
 Registers a new WebAuthn user.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
+<Note>Only available with Dedicated Wallet.</Note>
 ### Arguments
 
-* `username` (String): The username to register with
-* `nickname?` (String): The nickname of the WebAuthn device the user wants to set
+- `username` (String): The username to register with
+- `nickname?` (String): The nickname of the WebAuthn device the user wants to set
 
 ### Returns
 
-* `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
+- `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
 ### example
 
@@ -2056,31 +1937,31 @@ Only available with Dedicated Wallet.
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
-import { WebAuthnExtension } from '@magic-ext/webauthn';
+import { Magic } from "magic-sdk";
+import { WebAuthnExtension } from "@magic-ext/webauthn";
 
 const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
+extensions: [new WebAuthnExtension()],
 });
 
 // register a user by their username
 try {
-  const token = await magic.webauthn.registerNewUser({ username: 'username' });
+const token = await magic.webauthn.registerNewUser({ username: 'username' });
 } catch (e) {
-  // Handle errors if required!
+// Handle errors if required!
 }
 
 // log in a user by their username and set webauthn device nickname.
 try {
-  const token = await magic.webauthn.registerNewUser({ username: 'username', nickname: 'nickname' });
+const token = await magic.webauthn.registerNewUser({ username: 'username', nickname: 'nickname' });
 } catch (e) {
-  // Handle errors if required!
+// Handle errors if required!
 }
-```
+
+````
+
 </Tab>
 </Tabs>
-
-
 
 ### Error
 
@@ -2088,44 +1969,43 @@ try {
 <Tab title="Javascript">
 ```json
 
-import { Magic, SDKErrorCode } from 'magic-sdk';
-import { WebAuthnExtension } from '@magic-ext/webauthn';
+import { Magic, SDKErrorCode } from "magic-sdk";
+import { WebAuthnExtension } from "@magic-ext/webauthn";
 
 const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
+extensions: [new WebAuthnExtension()],
 });
 
 try {
-  await magic.webauthn.registerNewUser({ username: 'username' });
+await magic.webauthn.registerNewUser({ username: 'username' });
 } catch (err) {
-  if (err instanceof SDKErrorCode) {
-    switch (err.code) {
-      case SDKErrorCode.WebAuthnNotSupported:
-      case SDKErrorCode.WebAuthnCreateCredentialError:
-        // Handle errors accordingly :)
-        break;
-    }
-  }
+if (err instanceof SDKErrorCode) {
+switch (err.code) {
+case SDKErrorCode.WebAuthnNotSupported:
+case SDKErrorCode.WebAuthnCreateCredentialError:
+// Handle errors accordingly :)
+break;
 }
-```
+}
+}
+
+````
+
 </Tab>
 </Tabs>
 
-
 ### `login`
 
-
 Logs in a registered WebAuthn user.
-<Note>
-Only available with Dedicated Wallet.
-</Note>
+
+<Note>Only available with Dedicated Wallet.</Note>
 ### Arguments
 
-* `username` (String): The username to log in with
+- `username` (String): The username to log in with
 
 ### Returns
 
-* `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
+- `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
 ### Example
 
@@ -2133,24 +2013,24 @@ Only available with Dedicated Wallet.
 <Tab title="Javascript">
 ```json
 
-import { Magic } from 'magic-sdk';
-import { WebAuthnExtension } from '@magic-ext/webauthn';
+import { Magic } from "magic-sdk";
+import { WebAuthnExtension } from "@magic-ext/webauthn";
 
 const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
+extensions: [new WebAuthnExtension()],
 });
 
 // login a user by their username
 try {
-  const token = await magic.webauthn.login({ username: 'username' });
+const token = await magic.webauthn.login({ username: 'username' });
 } catch (e) {
-  // Handle errors if required!
+// Handle errors if required!
 }
-```
+
+````
+
 </Tab>
 </Tabs>
-
-
 
 ### Error
 
@@ -2158,46 +2038,45 @@ try {
 <Tab title="Javascript">
 ```json
 
-import { Magic, SDKErrorCode } from 'magic-sdk';
-import { WebAuthnExtension } from '@magic-ext/webauthn';
+import { Magic, SDKErrorCode } from "magic-sdk";
+import { WebAuthnExtension } from "@magic-ext/webauthn";
 
 const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
+extensions: [new WebAuthnExtension()],
 });
 
 try {
-  await magic.webauthn.login({ username: 'username' });
+await magic.webauthn.login({ username: 'username' });
 } catch (err) {
-  if (err instanceof SDKErrorCode) {
-    switch (err.code) {
-      case SDKErrorCode.WebAuthnNotSupported:
-      case SDKErrorCode.WebAuthnCreateCredentialError:
-        // Handle errors accordingly :)
-        break;
-    }
-  }
+if (err instanceof SDKErrorCode) {
+switch (err.code) {
+case SDKErrorCode.WebAuthnNotSupported:
+case SDKErrorCode.WebAuthnCreateCredentialError:
+// Handle errors accordingly :)
+break;
 }
-```
+}
+}
+
+````
+
 </Tab>
 </Tabs>
-
 
 ### `getMetadata`
 
 Returns information about the currently logged in user.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
+<Note>Only available with Dedicated Wallet.</Note>
 ### Arguments
 
-* _None_
+- _None_
 
 ### Returns
 
-* `PromiEvent<object | null>`: an object containing the WebAuthn devices information and username of the authenticated user
-    * `devicesInfo` (Array): List of devices info contains device ID, device nickname, transport, user agent
-    * `username` (String): Username of the authenticated user
+- `PromiEvent<object | null>`: an object containing the WebAuthn devices information and username of the authenticated user
+  - `devicesInfo` (Array): List of devices info contains device ID, device nickname, transport, user agent
+  - `username` (String): Username of the authenticated user
 
 ### Example
 
@@ -2205,53 +2084,51 @@ Only available with Dedicated Wallet.
 <Tab title="Javascript">
 ```json
 
-import { Magic, SDKErrorCode } from 'magic-sdk';
-import { WebAuthnExtension } from '@magic-ext/webauthn';
+import { Magic, SDKErrorCode } from "magic-sdk";
+import { WebAuthnExtension } from "@magic-ext/webauthn";
 
 const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
+extensions: [new WebAuthnExtension()],
 });
 
 // Initiates the flow to get webauthn metadata for current account.
 try {
-  const metadata = await magic.webauthn.getMetadata();
+const metadata = await magic.webauthn.getMetadata();
 
-  /* webauthn metadata
-       {
-         "devicesInfo": [
-           {
-             "id": "EjI_EFJhB6cdCj6rHPRHUcFCn6NnywALuWjQyPe0_dI=",
-             "nickname": "",
-             "transport": "internal",
-             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36"
-           }
-         ],
-         "username": "username"
-       }
-    */
-} catch (e) {
-  // Handle errors if required!
+/_ webauthn metadata
+{
+"devicesInfo": [
+{
+"id": "EjI_EFJhB6cdCj6rHPRHUcFCn6NnywALuWjQyPe0_dI=",
+"nickname": "",
+"transport": "internal",
+"user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36"
 }
-```
+],
+"username": "username"
+}
+_/
+} catch (e) {
+// Handle errors if required!
+}
+
+````
+
 </Tab>
 </Tabs>
-
-
 
 ### `registerNewDevice`
 
 Registers a new WebAuthn device.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
+<Note>Only available with Dedicated Wallet.</Note>
 ### Arguments
 
-* `nickname` (String): The nickname of the WebAuthn device the user wants to set
+- `nickname` (String): The nickname of the WebAuthn device the user wants to set
 
 ### Returns
 
-* `PromiEvent<boolean>`: The promise resolves with a true boolean value if register webauthn device is successful and rejects with a specific error code if the request fails.
+- `PromiEvent<boolean>`: The promise resolves with a true boolean value if register webauthn device is successful and rejects with a specific error code if the request fails.
 
 ### Example
 
@@ -2259,23 +2136,24 @@ Only available with Dedicated Wallet.
 <Tab title="Javascript">
 ```json
 
-import { Magic, SDKErrorCode } from 'magic-sdk';
-import { WebAuthnExtension } from '@magic-ext/webauthn';
+import { Magic, SDKErrorCode } from "magic-sdk";
+import { WebAuthnExtension } from "@magic-ext/webauthn";
 
 const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
+extensions: [new WebAuthnExtension()],
 });
 
 // Initiates the flow to a new WebAuthn Device for current account.
 try {
-  await magic.webauthn.registerNewDevice('new device nickname');
+await magic.webauthn.registerNewDevice('new device nickname');
 } catch (e) {
-  // Handle errors if required!
+// Handle errors if required!
 }
-```
+
+````
+
 </Tab>
 </Tabs>
-
 
 ### Error
 
@@ -2283,46 +2161,44 @@ try {
 <Tab title="Javascript">
 ```json
 
-import { Magic, SDKErrorCode } from 'magic-sdk';
-import { WebAuthnExtension } from '@magic-ext/webauthn';
+import { Magic, SDKErrorCode } from "magic-sdk";
+import { WebAuthnExtension } from "@magic-ext/webauthn";
 
 const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
+extensions: [new WebAuthnExtension()],
 });
 
 try {
-  await magic.webauthn.registerNewDevice('new device nickname');
+await magic.webauthn.registerNewDevice('new device nickname');
 } catch (err) {
-  if (err instanceof SDKErrorCode) {
-    switch (err.code) {
-      case SDKErrorCode.WebAuthnNotSupported:
-      case SDKErrorCode.WebAuthnCreateCredentialError:
-        // Handle errors accordingly :)
-        break;
-    }
-  }
+if (err instanceof SDKErrorCode) {
+switch (err.code) {
+case SDKErrorCode.WebAuthnNotSupported:
+case SDKErrorCode.WebAuthnCreateCredentialError:
+// Handle errors accordingly :)
+break;
 }
-```
+}
+}
+
+````
+
 </Tab>
 </Tabs>
-
-
 
 ### `updateInfo`
 
 Allows a user to update their device nickname.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
+<Note>Only available with Dedicated Wallet.</Note>
 ### Arguments
 
-* `nickname` (String): The nickname of the WebAuthn device the user wants to set
-* `id` (String): The WebAuthn ID returned from `getMetaData` function's `devicesInfo` field
+- `nickname` (String): The nickname of the WebAuthn device the user wants to set
+- `id` (String): The WebAuthn ID returned from `getMetaData` function's `devicesInfo` field
 
 ### Returns
 
-* `PromiEvent<boolean>`: The promise resolves with a true boolean value if update webauthn device nickname is successful and rejects with a specific error code if the request fails
+- `PromiEvent<boolean>`: The promise resolves with a true boolean value if update webauthn device nickname is successful and rejects with a specific error code if the request fails
 
 ### Example
 
@@ -2330,38 +2206,37 @@ Only available with Dedicated Wallet.
 <Tab title="Javascript">
 ```json
 
-import { Magic, SDKErrorCode } from 'magic-sdk';
-import { WebAuthnExtension } from '@magic-ext/webauthn';
+import { Magic, SDKErrorCode } from "magic-sdk";
+import { WebAuthnExtension } from "@magic-ext/webauthn";
 
 const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
+extensions: [new WebAuthnExtension()],
 });
 
 // Initiates the flow to update WebAuthn Device's nickname.
 try {
-  await magic.webauthn.updateInfo({ id, nickname });
+await magic.webauthn.updateInfo({ id, nickname });
 } catch (e) {
-  // Handle errors if required!
+// Handle errors if required!
 }
-```
+
+````
+
 </Tab>
 </Tabs>
 
-
-
 ### `unregisterDevice`
+
 Unregisters a user's device.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
+<Note>Only available with Dedicated Wallet.</Note>
 ### Arguments
 
-* `id` (String): The WebAuthn ID returned from `getMetaData` function's `devicesInfo` field
+- `id` (String): The WebAuthn ID returned from `getMetaData` function's `devicesInfo` field
 
 ### Returns
 
-* `PromiEvent<boolean>`: The promise resolves with a true boolean value if unregister webauthn device is successful and rejects with a specific error code if the request fails
+- `PromiEvent<boolean>`: The promise resolves with a true boolean value if unregister webauthn device is successful and rejects with a specific error code if the request fails
 
 ### Example
 
@@ -2369,36 +2244,35 @@ Only available with Dedicated Wallet.
 <Tab title="Javascript">
 ```json
 
-import { Magic, SDKErrorCode } from 'magic-sdk';
-import { WebAuthnExtension } from '@magic-ext/webauthn';
+import { Magic, SDKErrorCode } from "magic-sdk";
+import { WebAuthnExtension } from "@magic-ext/webauthn";
 
 const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
+extensions: [new WebAuthnExtension()],
 });
 
 // Initiates the flow to unregister WebAuthn Device.
 try {
-  /* Assuming user is logged in */
-  await magic.webauthn.unregisterDevice(id);
+/_ Assuming user is logged in _/
+await magic.webauthn.unregisterDevice(id);
 } catch (e) {
-  // Handle errors if required!
+// Handle errors if required!
 }
-```
+
+````
+
 </Tab>
 </Tabs>
-
-
 
 ## Response and Error Handling
 
 There are three types of error class to be aware of when working with Magic's client-side JavaScript SDK:
 
-* `SDKError`: Raised by the SDK to indicate missing parameters, communicate deprecation notices, or other internal issues. A notable example would be a MISSING\_API\_KEY error, which informs the required API key parameter was missing from new Magic(...).
-* `RPCError`: Errors associated with specific method calls to the Magic `<iframe>` context. These methods are formatted as [JSON RPC 2.0](https://www.jsonrpc.org/specification) payloads, so they return error codes as integers. This type of error is raised by methods like [`AuthModule.loginWithMagicLink`](#loginwithmagiclink).
-* `ExtensionError`: Errors associated with method calls to Magic SDK Extensions. Extensions are an upcoming/experimental feature of Magic SDK. More information will be available once Extensions are officially released.
+- `SDKError`: Raised by the SDK to indicate missing parameters, communicate deprecation notices, or other internal issues. A notable example would be a MISSING_API_KEY error, which informs the required API key parameter was missing from new Magic(...).
+- `RPCError`: Errors associated with specific method calls to the Magic `<iframe>` context. These methods are formatted as [JSON RPC 2.0](https://www.jsonrpc.org/specification) payloads, so they return error codes as integers. This type of error is raised by methods like [`AuthModule.loginWithMagicLink`](#loginwithmagiclink).
+- `ExtensionError`: Errors associated with method calls to Magic SDK Extensions. Extensions are an upcoming/experimental feature of Magic SDK. More information will be available once Extensions are officially released.
 
 ### `SDKError`
-
 
 The `SDKError` class is exposed for `instanceof` operations.
 
@@ -2406,20 +2280,20 @@ The `SDKError` class is exposed for `instanceof` operations.
 <Tab title="Javascript">
 ```json
 
-import { SDKError } from 'magic-sdk';
+import { SDKError } from "magic-sdk";
 
 try {
-  // Something async...
+// Something async...
 catch (err) {
-  if (err instanceof SDKError) {
-    // Handle...
-  }
+if (err instanceof SDKError) {
+// Handle...
 }
-```
+}
+
+````
+
 </Tab>
 </Tabs>
-
-
 
 `SDKError` instances expose the `code` field which may be used to deterministically identify the error. Additionally, an enumeration of error codes is exposed for convenience and readability:
 
@@ -2427,30 +2301,30 @@ catch (err) {
 <Tab title="Javascript">
 ```json
 
-import { SDKErrorCode } from 'magic-sdk';
+import { SDKErrorCode } from "magic-sdk";
 
 SDKErrorCode.MissingApiKey;
 SDKErrorCode.ModalNotReady;
 SDKErrorCode.MalformedResponse;
 // and so forth...
 // Please reference the `Enum Key` column of the error table below.
-```
+
+````
+
 </Tab>
 </Tabs>
 
-
-
 ### Error Codes
 
-|     |     |
-| --- | --- |
-| Enum Key | Description |
-| `MissingApiKey` | Indicates the required Magic API key is missing or invalid. |
-| `ModalNotReady` | Indicates the Magic iframe context is not ready to receive events. This error should be rare and usually indicates an environmental issue or improper `async/await` usage. |
-| `MalformedResponse` | Indicates the response received from the Magic iframe context is malformed. We all make mistakes (even us), but this should still be a rare exception. If you encounter this, please be aware of phishing! |
-| `InvalidArgument` | Raised if an SDK method receives an invalid argument. Generally, TypeScript saves us all from simple bugs, but there are validation edge cases it cannot solve—this error type will keep you informed! |
-| `ExtensionNotInitialized` | Indicates an extension method was invoked before the Magic SDK instance was initialized. Make sure to access extension methods only from the Magic SDK instance to avoid this error. |
-| `IncompatibleExtension` | Indicates that incompatible extensions were detected during the initialization of the Magic SDK. The error message specifies the incompatible extensions and their compatibility requirements based on the current Magic SDK version and platform environment. |
+|                           |                                                                                                                                                                                                                                                                |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Enum Key                  | Description                                                                                                                                                                                                                                                    |
+| `MissingApiKey`           | Indicates the required Magic API key is missing or invalid.                                                                                                                                                                                                    |
+| `ModalNotReady`           | Indicates the Magic iframe context is not ready to receive events. This error should be rare and usually indicates an environmental issue or improper `async/await` usage.                                                                                     |
+| `MalformedResponse`       | Indicates the response received from the Magic iframe context is malformed. We all make mistakes (even us), but this should still be a rare exception. If you encounter this, please be aware of phishing!                                                     |
+| `InvalidArgument`         | Raised if an SDK method receives an invalid argument. Generally, TypeScript saves us all from simple bugs, but there are validation edge cases it cannot solve—this error type will keep you informed!                                                         |
+| `ExtensionNotInitialized` | Indicates an extension method was invoked before the Magic SDK instance was initialized. Make sure to access extension methods only from the Magic SDK instance to avoid this error.                                                                           |
+| `IncompatibleExtension`   | Indicates that incompatible extensions were detected during the initialization of the Magic SDK. The error message specifies the incompatible extensions and their compatibility requirements based on the current Magic SDK version and platform environment. |
 
 ### `RPCError`
 
@@ -2460,20 +2334,20 @@ The `RPCError` class is exposed for `instanceof` operations:
 <Tab title="Javascript">
 ```json
 
-import { RPCError } from 'magic-sdk';
+import { RPCError } from "magic-sdk";
 
 try {
-  // Something async...
+// Something async...
 catch (err) {
-  if (err instanceof RPCError) {
-    // Handle...
-  }
+if (err instanceof RPCError) {
+// Handle...
 }
-```
+}
+
+````
+
 </Tab>
 </Tabs>
-
-
 
 `RPCError` instances expose the `code` field which may be used to deterministically identify the error. Additionally, an enumeration of error codes is exposed for convenience and readability:
 
@@ -2481,7 +2355,7 @@ catch (err) {
 <Tab title="Javascript">
 ```json
 
-import { RPCErrorCode } from 'magic-sdk';
+import { RPCErrorCode } from "magic-sdk";
 
 RPCErrorCode.MagicLinkExpired;
 RPCErrorCode.UserAlreadyLoggedIn;
@@ -2490,41 +2364,40 @@ RPCErrorCode.MethodNotFound;
 RPCErrorCode.InternalError;
 // and so forth...
 // Please reference the `Enum Key` column of the error table below.
-```
+
+````
+
 </Tab>
 </Tabs>
 
-
-
 ### Magic Link Error Codes
 
-|     |     |     |
-| --- | --- | --- |
-| Code | Enum Key | Description |
-| -10000 | `MagicLinkFailedVerification` | The magic link failed verification, possibly due to an internal service error or a generic network error. |
-| -10001 | `MagicLinkExpired` | The user clicked their magic link after it had expired (this can happen if the user takes more than 20 minutes to check their email). |
-| -10002 | `MagicLinkRateLimited` | If the `showUI` parameter is set to `false`, this error will communicate the email rate limit has been reached. Please debounce your method calls if this occurs. |
-| -10006 | `MagicLinkInvalidRedirectURL` | If using the `redirectURI` parameter for the magic link flow, this error is recevied if the provided value is invalid for some reason. |
-| -10003 | `UserAlreadyLoggedIn` | A user is already logged in. If a new user should replace the existing user, make sure to call [`logout`](#logout) before proceeding. |
-| -10004 | `UpdateEmailFailed` | An update email request was unsuccessful, either due to an invalid email being supplied or the user canceled the action. |
-| -10005 | `UserRequestEditEmail` | The user has stopped the login request because they want to edit the provided email. |
-| -10010 | `InactiveRecipient` | The recipient account is currently inactive. The user should verify and activate their account to resolve this issue. |
-| -10011 | `AccessDeniedToUser` | User access is denied. The user lacks the necessary permissions or credentials to perform the requested action. |
-| -10015 | `RedirectLoginComplete` | The redirect login process has been successfully completed. |
+|        |                               |                                                                                                                                                                   |
+| ------ | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Code   | Enum Key                      | Description                                                                                                                                                       |
+| -10000 | `MagicLinkFailedVerification` | The magic link failed verification, possibly due to an internal service error or a generic network error.                                                         |
+| -10001 | `MagicLinkExpired`            | The user clicked their magic link after it had expired (this can happen if the user takes more than 20 minutes to check their email).                             |
+| -10002 | `MagicLinkRateLimited`        | If the `showUI` parameter is set to `false`, this error will communicate the email rate limit has been reached. Please debounce your method calls if this occurs. |
+| -10006 | `MagicLinkInvalidRedirectURL` | If using the `redirectURI` parameter for the magic link flow, this error is recevied if the provided value is invalid for some reason.                            |
+| -10003 | `UserAlreadyLoggedIn`         | A user is already logged in. If a new user should replace the existing user, make sure to call [`logout`](#logout) before proceeding.                             |
+| -10004 | `UpdateEmailFailed`           | An update email request was unsuccessful, either due to an invalid email being supplied or the user canceled the action.                                          |
+| -10005 | `UserRequestEditEmail`        | The user has stopped the login request because they want to edit the provided email.                                                                              |
+| -10010 | `InactiveRecipient`           | The recipient account is currently inactive. The user should verify and activate their account to resolve this issue.                                             |
+| -10011 | `AccessDeniedToUser`          | User access is denied. The user lacks the necessary permissions or credentials to perform the requested action.                                                   |
+| -10015 | `RedirectLoginComplete`       | The redirect login process has been successfully completed.                                                                                                       |
 
 ### Standard JSON RPC 2.0 Error Codes
 
-|     |     |     |
-| --- | --- | --- |
-| Code | Enum Key | Description |
-| -32700 | `ParseError` | Invalid JSON was received by the server. An error occurred on the server while parsing the JSON text. |
-| -32600 | `InvalidRequest` | The JSON sent is not a valid Request object. |
-| -32601 | `MethodNotFound` | The method does not exist / is not available. |
-| -32602 | `InvalidParams` | Invalid method parameter(s). |
-| -32603 | `InternalError` | Internal JSON-RPC error. These can manifest as different generic issues (i.e.: attempting to access a protected endpoint before the user is logged in). |
+|        |                  |                                                                                                                                                         |
+| ------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Code   | Enum Key         | Description                                                                                                                                             |
+| -32700 | `ParseError`     | Invalid JSON was received by the server. An error occurred on the server while parsing the JSON text.                                                   |
+| -32600 | `InvalidRequest` | The JSON sent is not a valid Request object.                                                                                                            |
+| -32601 | `MethodNotFound` | The method does not exist / is not available.                                                                                                           |
+| -32602 | `InvalidParams`  | Invalid method parameter(s).                                                                                                                            |
+| -32603 | `InternalError`  | Internal JSON-RPC error. These can manifest as different generic issues (i.e.: attempting to access a protected endpoint before the user is logged in). |
 
 ### `ExtensionError`
-
 
 The `ExtensionError` class is exposed for `instanceof` operations:
 
@@ -2532,19 +2405,20 @@ The `ExtensionError` class is exposed for `instanceof` operations:
 <Tab title="Typescript">
 ```json
 
-import { ExtensionError } from 'magic-sdk';
+import { ExtensionError } from "magic-sdk";
 
 try {
-  // Something async...
+// Something async...
 catch (err) {
-  if (err instanceof ExtensionError) {
-    // Handle...
-  }
+if (err instanceof ExtensionError) {
+// Handle...
 }
-```
+}
+
+````
+
 </Tab>
 </Tabs>
-
 
 `ExtensionError` instances expose the `code` field which may be used to deterministically identify the error. Magic SDK does not export a global enumeration of Extension error codes. Instead, Extension authors are responsible for exposing and documenting error codes relevant to the Extension's use-case.
 
@@ -2554,9 +2428,9 @@ Magic SDK provides a flexible interface for handling methods which encompass mul
 
 `**PromiEvent**` is a portmanteau of `Promise` and [`EventEmitter`](https://github.com/primus/eventemitter3). Browser and React Native SDK methods return this object type, which is a native JavaScript `Promise` overloaded with `EventEmitter` methods. This value can be `awaited` in modern `async/await` code, or you may register event listeners to handle method-specific life-cycle hooks. Each `PromiEvent` contains the following default event types:
 
-* `**"done"**`: Called when the `Promise` resolves. This is equivalent to `Promise.then`.
-* `**"error"**`: Called if the `Promise` rejects. This is equivalent to `Promise.catch`.
-* `**"settled"**`: Called when the `Promise` either resolves or rejects. This is equivalent to `Promise.finally`.
+- `**"done"**`: Called when the `Promise` resolves. This is equivalent to `Promise.then`.
+- `**"error"**`: Called if the `Promise` rejects. This is equivalent to `Promise.catch`.
+- `**"settled"**`: Called when the `Promise` either resolves or rejects. This is equivalent to `Promise.finally`.
 
 Look for additional event types documented near the method they relate to. Events are strongly-typed by TypeScript to offer developer hints and conveniant IDE auto-complete.
 
@@ -2567,25 +2441,16 @@ Look for additional event types documented near the method they relate to. Event
 const req = magic.auth.loginWithMagicLink({ email: 'hello@magic.link' });
 
 req
-  .on('email-sent', () => {
-    /* ... */
-  })
-  .then(DIDToken => {
-    /* ... */
-  })
-  .once('email-not-deliverable', () => {
-    /* ... */
-  })
-  .catch(error => {
-    /* ... */
-  })
-  .on('error', error => {
-    /* ... */
-  });
-```
+.on('email-sent', () => {/* ... */})
+.then(DIDToken => {/* ... */})
+.once('email-not-deliverable', () => {/* ... */})
+.catch(error => {/* ... */})
+.on('error', error => {/* ... */});
+
+````
+
 </Tab>
 </Tabs>
-
 
 ## EVM RPC Methods
 
@@ -2593,14 +2458,14 @@ Magic supports the following EVM RPC Methods that can be called through a web3 p
 
 **Note**: starting from `magic-sdk@17.0.0`, `eth_accounts` will return an empty array if no user is logged in, instead of prompting the login form. To prompt the login form, use `connectWithUI()`.
 
-* `eth_accounts`
-* `get_balance`
-* `eth_estimateGas`
-* `eth_gasPrice`
-* `eth_sendTransaction`
-* `personal_sign`
-* `eth_signTypedData_v3`
-* `eth_signTypedData_v4`
+- `eth_accounts`
+- `get_balance`
+- `eth_estimateGas`
+- `eth_gasPrice`
+- `eth_sendTransaction`
+- `personal_sign`
+- `eth_signTypedData_v3`
+- `eth_signTypedData_v4`
 
 ## Examples
 
@@ -2616,34 +2481,35 @@ Before re-authenticating a user, [install the Magic Client SDK​](#installation
 <Tab title="Typescript">
 ```json
 
-import { Magic } from 'magic-sdk';
-const magic = new Magic('PUBLISHABLE_API_KEY');
+import { Magic } from "magic-sdk";
+const magic = new Magic("PUBLISHABLE_API_KEY");
 
 const email = 'example@magic.link';
 
 if (await magic.user.isLoggedIn()) {
-  const didToken = await magic.user.getIdToken();
+const didToken = await magic.user.getIdToken();
 
-  // Do something with the DID token.
-  // For instance, this could be a `fetch` call
-  // to a protected backend endpoint.
-  document.getElementById('your-access-token').innerHTML = didToken;
+// Do something with the DID token.
+// For instance, this could be a `fetch` call
+// to a protected backend endpoint.
+document.getElementById('your-access-token').innerHTML = didToken;
 } else {
-  // Log in the user
-  const user = await magic.auth.loginWithMagicLink({ email });
+// Log in the user
+const user = await magic.auth.loginWithMagicLink({ email });
 }
+
 ```
+
 </Tab>
 </Tabs>
 
-
 ## Resources
 
-* [GitHub](https://github.com/magiclabs/magic-js)
-* [Quickstart](/docs/home/quickstart)
-* [NPM](https://www.npmjs.com/package/magic-sdk)
+- [GitHub](https://github.com/magiclabs/magic-js)
+- [Quickstart](/docs/home/quickstart)
+- [NPM](https://www.npmjs.com/package/magic-sdk)
 
 ## Versions
 
 All changes to the SDK are covered in our [latest release notes](https://github.com/magiclabs/magic-js/releases).
-
+```

@@ -15,8 +15,8 @@ The Magic class is the entry-point to the Magic SDK. It must be instantiated wit
 **Note**
 
 Following example is using Swift 5 with XCode 11. IOS demo will be open-sourced soon.
-</Note>
 
+</Note>
 
 <Tabs>
 <Tab title="Swift">
@@ -28,14 +28,16 @@ import MagicSDK
 import UIKit
 
 @UIApplicationMain
-func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+func application(\_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
     // assign the newly created Magic instance to shared property
     Magic.shared = Magic("YOUR_PUBLISHABLE_API_KEY");
 
     return true
+
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -53,7 +55,8 @@ class Web3ViewController: UIViewController {
 
     let web3 = Web3(provider: Magic.shared.rpcProvider)
 }
-```
+````
+
 </Tab>
 </Tabs>
 
@@ -72,20 +75,22 @@ Goerli Testnet Faucet: [https://goerlifaucet.com](https://goerlifaucet.com/)
 // AppDelegate.swift
 import MagicSDK
 
-func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+func application(\_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
     // assign to Magic singleton
     Magic.shared = Magic("YOUR_PUBLISHABLE_API_KEY", EthNetwork.rinkeby);
 
     return true
+
 }
-```
+
+````
 </Tab>
 </Tabs>
 
 ### Custom Node
 
-You can allow specific URLs to interact with the Magic SDK, such as a custom RPC URL to send transactions to your node. The Content Security Policy (CSP) of a browser dictates what resources can be loaded. If you're used a dedicated wallet, you can update the policy in the settings page of the dashboard with your custom URL. If you're using a universal wallet, please reach out to support to get your URL added.
+You can allow specific URLs to interact with the Magic SDK, such as a custom RPC URL to send transactions to your node. The Content Security Policy (CSP) of a browser dictates what resources can be loaded. You can update the policy in the settings page of the dashboard with your custom URL.
 
 <Note>
 **Note**
@@ -109,7 +114,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 
     return true
 }
-```
+````
+
 </Tab>
 </Tabs>
 
@@ -117,14 +123,15 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 **Important**
 
 Do **not** set the custom nodes to local IP address (E.x. "[http://127.0.0.1"](http://127.0.0.1")). Local IP will point to the network environment inside mobile device / simulator
+
 </Info>
 
 ### Associated Class
 
 `CustomNodeConfiguration(rpcUrl: String, chainId: Int?)`
 
-* `rpcUrl` :Your own node URL
-* `chainId` : Your own node's chainId
+- `rpcUrl` :Your own node URL
+- `chainId` : Your own node's chainId
 
 `EthNetwork`
 
@@ -133,10 +140,11 @@ Do **not** set the custom nodes to local IP address (E.x. "[http://127.0.0.1"](h
 ```json
 
 public enum EthNetwork: String {
-    case mainnet
-    case goerli
+case mainnet
+case goerli
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -176,7 +184,8 @@ class Web3ViewController: UIViewController {
         }
     }
 }
-```
+````
+
 </Tab>
 </Tabs>
 
@@ -207,8 +216,10 @@ class ViewController: UIViewController {
             print(result.hex())
         })
     }
+
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -237,7 +248,8 @@ class Web3ViewController: UIViewController {
         })
     }
 }
-```
+````
+
 </Tab>
 </Tabs>
 
@@ -271,8 +283,10 @@ class Web3ViewController: UIViewController {
             print(error.localizedDescription)
         }
     }
+
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -311,7 +325,8 @@ class Web3ViewController: UIViewController {
         }
     }
 }
-```
+````
+
 </Tab>
 </Tabs>
 
@@ -348,8 +363,10 @@ class Web3ViewController: UIViewController {
             print("Error loading accounts and balance: \(error)")
         }
     }
+
 }
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -375,7 +392,8 @@ contract HelloWorld {
     message = newMessage;
   }
 }
-```
+````
+
 </Tab>
 </Tabs>
 
@@ -386,7 +404,7 @@ contract HelloWorld {
 ```json
 Swift
 
-```
+````
 </Tab>
 </Tabs>
 
@@ -397,12 +415,12 @@ Swift
 ```json
 Swift
 
-```
+````
+
 </Tab>
 </Tabs>
 
 ### Write to Contract
-
 
 <Tabs>
 <Tab title="Swift">
@@ -447,7 +465,9 @@ class MagicViewController: UIViewController {
             print(error.localizedDescription)
         }
     }
+
 }
+
 ```
 </Tab>
 </Tabs>
@@ -456,3 +476,4 @@ class MagicViewController: UIViewController {
 
 * [Magic iOS SDK](https://github.com/magiclabs/magic-ios)
 * [Magic iOS Demo](https://github.com/magiclabs/magic-ios-demo)
+```

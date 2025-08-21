@@ -1,14 +1,15 @@
 ---
-title: FAQ - Dedicated Wallet
-sidebarTitle: Dedicated Wallet
+title: Frequently Asked Questions
+sidebarTitle: FAQ
 ---
 
-
 <Note>
-Have a question that isn't answered here? Reach out to us via our help widget in the bottom-right corner of this screen.
+  Have a question that isn't answered here? Reach out to us via our help widget
+  in the bottom-right corner of this screen.
 </Note>
 
 ## General
+
 <AccordionGroup>
 <Accordion title="Can the magic link redirect to a specific URL?">
 Yes! When calling the [`loginWithMagicLink`](/docs/api/client-side-sdks/web#loginwithmagiclink) sdk method you can pass in an optional [`redirectURI`](/docs/api/client-side-sdks/web#loginwithmagiclink) value which specifies the URL to redirect your user back to once the magic link is clicked. If no redirect is specified, the user will see a confirmation screen telling them to go back to the original tab where they will be logged in. We recommend this for an improved UX flow.
@@ -26,17 +27,18 @@ Magic offers a [Deletion Request API](/docs/authentication/data/deletion-request
 <Accordion title="How do I restrict which Domains have access to my API key?">
 Magic developers can specify which domains are allowed to use their application's publishable API key by configuring Domain & Mobile Access Whitelisting from the Settings page within the Magic Dashboard. The Domain & Mobile Access Whitelisting configuration is disabled by default for all newly created apps. Only the domains you specify will be accessible by your application when enabled.
 
-To configure domain access, open your application's Settings Page from the Magic Dashboard. From there, you can Edit the list of domains you want to support. Specific domains and wildcards using * are supported. Examples are below:
+To configure domain access, open your application's Settings Page from the Magic Dashboard. From there, you can Edit the list of domains you want to support. Specific domains and wildcards using \* are supported. Examples are below:
 
-* `http://localhost`
+- `http://localhost`
 
-* `https://example.com`
+- `https://example.com`
 
-* `https://*.example.com`
+- `https://*.example.com`
 
-* `http://example.com:8080⁠`
+- `http://example.com:8080⁠`
 
 There is no need to whitelist domains required to complete any Social Login (i.e., https://accounts.google.com, https://facebook.com, etc.) or Private Key Export (i.e., https://reveal.magic.link) flow. Magic automatically accepts these domains and any other domains on your whitelist.
+
 </Accordion>
 <Accordion title="Can Magic serve as my database?">
 Magic is not meant to replace your database, so if you need to store any information about users, you'll manage your own DB. We also won't store any custom user data, (only `email`, `public address` and `issuer`) but that doesn't stop you from prompting users for more info (such as first name, last name, etc) and storing that in your database. Magic also does not support importing user data.
@@ -53,6 +55,7 @@ Magic comes with essentially no vendor lock-in, so migrating away is easy. You w
 </AccordionGroup>
 
 ## Questions Around Email
+
 <AccordionGroup>
 <Accordion title="What to do if emails are delayed">
 Rarely, a user may not receive a magic link email immediately after requesting one. This is usually due to a spam filter holding onto the email before eventually displaying it in the user's inbox. If it's a personal email, adding our sending domain [noreply@trymagic.com](mailto:noreply@trymagic.com) to their email contacts list should solve the problem. If it's a corporate email, asking the user to have their IT team add our [noreply@trymagic.com](mailto:noreply@trymagic.com) email domain to their internal allowlist should prevent emails from being held up by the spam filters.
@@ -67,12 +70,12 @@ If a user loses access to their email account, they need to contact their email 
 Plus, if a magic link email is lost or stolen (or even somehow compromised in transit), a user's account is safe! The token included in the magic link email is only privileged to verify a login request _from the device and/or browsing context that initiated the request._ An attacker would require physical access to the user's device _and_ unencrypted email inbox to be malicious.
 
 However, a motivated attacker could create an identical replica of your application, which is a known phishing pattern that occurs today. For this case, we recommend developers to whitelist **specific domains for their Publishable API Keys on the** [**Magic Dashboard**](https://dashboard.magic.link) so that illegitimate applications cannot forge requests through the Magic SDKs.
+
 </Accordion>
 <Accordion title="Is there a way to add custom text to the magic link email?">
 Right now there isn't a way, but we will soon implement a feature that enables developers to be able to completely customize the magic link email, and that will include being able to add your company-specific Terms of Service.
 </Accordion>
 </AccordionGroup>
-
 
 ## Questions Around SMS
 
@@ -82,12 +85,15 @@ Right now there isn't a way, but we will soon implement a feature that enables d
 Some country codes are blocked due to heavy spam traffic from the region. If a user's country code is blocked they may still authenticate through email.
 
 _Currently blocked country codes:_
+
 ```
 +7, +20, +53, +62, +92, +94, +98, +221, +225, +231, +234, +235, +241, +243, +244, +249, +263, +291, +370, +375, +591, +670, +855, +870, +880, +881, +882, +883, +961, +962, +963, +964, +968, +992, +994, +996, +998, +44745, +44778, +44783, +447624, +4477003, +4478299
 ```
+
 </Accordion>
 
 ### Sessions and Tokens
+
 <AccordionGroup>
   <Accordion title="How long does a user remain logged in?">
 By default, users remain authenticated with Magic for up to 7 days (or until they logout or browser data is cleared). Developers can enable and configure auto refresh sessions in our [developer dashboard](https://dashboard.magic.link), extending the session up to 90 days instead of 7. See [Session Management](/docs/authentication/security/session-management) for more.
@@ -101,6 +107,7 @@ The session (how long a user is logged in for) is set by Magic through cookies/b
 A `DID token` is proof of authentication, not necessarily proof of having a valid session. That's because the `getIdToken` sdk method can create a token that expires far in the future, and just because a token was theoretically created with an expiration for one year in the future, the session set by Magic may not still be valid. The DID token that's returned from `loginWithMagicLink` has a default lifespan of 15 minutes and is generally used to send to the server after login to validate its authenticity with the admin sdk `validate` function. The `DID token` can be used to access a protected API route on the server if stored in a cookie or client-side storage. You can create a token with `getIdToken` any time a user is logged in.
 
 Developers can control how long the Magic session lasts in the [developer dashboard](https://dashboard.magic.link/login).
+
   </Accordion>
   <Accordion title="What is the unique user ID I should save to my database?">
 The `issuer` is the unique ID provided by Magic for each user. The `DID token` shouldn't ever be used as the unique ID because for each user, and each login, the token is unique. When decoded, it contains information about the login, including a timestamp.
@@ -116,40 +123,31 @@ When a user logs out, the session will expire but a previously generated DID tok
   While the Auto Refresh sessions feature is enabled, Magic will use the browser's [_**IndexDB**_](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) to store refresh tokens under your domain. These refresh tokens can be exchanged for a [Magic session](/docs/home/faq/dedicated-wallet#sessions-and-tokens). If your application is vulnerable to Cross-Site Scripting (XSS), it is not within Magic's control how an attacker will exfiltrate these refresh tokens. We strongly recommend that you review OWASP's documentation on [XSS vulnerabilities](https://owasp.org/www-community/attacks/xss/). OWASP also provides a great [starter sheet for XSS prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html).
 
 If you are a Web 3 developer, we strongly encourage you in particular to understand your application's exposure to XSS. A successful XSS attack targeting a Magic refresh token on your application could translate to the attacker owning your end user's Web 3 address/wallet.
+
   </Accordion>
 
 ### Blockchains
+
 <AccordionGroup>
-  <Accordion title="Why is my custom node configuration not working due to CSP errors?">
-> <Icon icon="lightbulb" iconType="solid"/> You can allowlist a custom RPC URL for **Dedicated** apps by adding it to the app's **Content Security Policy** in the app settings.
-
-Magic provides robust blockchain support, including the ability to emit requests directly to your own, custom node infrastructure. To maintain a high-level of security, we require that customers' coordinate with our support team to allow the domain of your specific node provider to work within our `<iframe>`. Please reach out via our help widget If your app uses **Universal** wallets and you see errors similar to the following:
-
-<Frame>
-  <img src="/images/csp-error-example.webp" alt=""/>
-</Frame>
-
-  </Accordion>
   <Accordion title="How can I allow users to view and export their private key?">
 Developers can now call the [revealPrivateKey](/docs/api/client-side-sdks/web#revealprivatekey) method to initaite the private key reveal flow within their apps. Users no longer need to leave your app to get their private keys! This method is available on our [Web](/docs/api/client-side-sdks/web), [React Native](/docs/api/client-side-sdks/react-native), and [Android](/docs/api/client-side-sdks/android) SDKs. If your app is not able to use this method please continue reading about how you may request a private key reveal page.
 
 <Frame>
-  <img src="/images/reveal-page-ui_v3.webp" alt=""/>
+  <img src="/images/reveal-page-ui_v3.webp" alt="" />
 </Frame>
-
 
 For applications that aren't able to call the reveal private key method, ⁠Magic creates a private key reveal page for your users to log into using the same login methods as your app. This page is only made for your app upon request. When the user logs in they will follow intuitive prompts to reveal their private key. If you would like your users to be able to view and export their private key, please contact us using the chat widget in the bottom-right corner of this page with the following information:
 
-* Your API key (starts with `pk_live`)
+- Your API key (starts with `pk_live`)
 
-* A list of blockchains you are using
+- A list of blockchains you are using
 
-* Your app name for the endpoint, such as `https://reveal.magic.link/your-app-name`
-
+- Your app name for the endpoint, such as `https://reveal.magic.link/your-app-name`
 
 The login methods available on your reveal page will match the login methods that you have activated in your [Magic developer dashboard](https://dashboard.magic.link/) (found under "Passwordless Login" and "Social Login"). Please make sure to deactivate any login methods that you are not using. Login methods can be added and removed at any point and changes will be immediately visible on your reveal page.
 
 The look of the UI for your reveal page will also match the settings configured within the "branding" section of your developer dashboard. This includes the logo shown, the primary color, as well as choosing between light/dark mode. More details on branding and UI customization can be [found here](/docs/wallets/customization/brand-and-theme).
+
   </Accordion>
   <Accordion title="How can I make changes to my legacy private key reveal page?">
 If you have an existing private key reveal page hosted by Magic and need to make changes, please reach out via our support widget in the bottom-right corner of this page.
@@ -157,11 +155,10 @@ If you have an existing private key reveal page hosted by Magic and need to make
 </AccordionGroup>
 
 ### App Store Review
+
   <Accordion title="How do I provide the reviewer with a test account?">
 You can create a test email account and provide the login credentials on submission. The reviewer can authenticate by logging into the test email account and clicking the link or getting the OTP code.
 
 Alternatively, you could provide the reviewer with a test email address you already own, such as `name+test@company.com` and click the link when triggered by the reviewer to log them in.
 
   </Accordion>
-
-
