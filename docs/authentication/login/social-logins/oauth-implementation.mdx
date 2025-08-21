@@ -10,27 +10,31 @@ Applications can be integrated with the following social providers: [Google](/do
 ### Compatibility
 
 <Note>
-OAuth SDK methods are only available with [Dedicated Wallets](/docs/wallets/wallet-types#dedicated-wallet). Magic SDK offers two OAuth extensions: [v1](https://www.npmjs.com/package/@magic-ext/oauth) and [v2](https://www.npmjs.com/package/@magic-ext/oauth2). For web applications, it is recommended to use v2, while v1 should be used for mobile applications.
+  Magic SDK offers two OAuth
+  extensions: [v1](https://www.npmjs.com/package/@magic-ext/oauth)
+  and [v2](https://www.npmjs.com/package/@magic-ext/oauth2). For web
+  applications, it is recommended to use v2, while v1 should be used for mobile
+  applications.
 </Note>
 
 OAuth SDK methods are available via the following client-side SDKs:
 
-* [Web](/docs/api/client-side-sdks/web)
-* [React Native](/docs/api/client-side-sdks/react-native)
-* [iOS](/docs/api/client-side-sdks/ios)
-* [Android](/docs/api/client-side-sdks/android)
+- [Web](/docs/api/client-side-sdks/web)
+- [React Native](/docs/api/client-side-sdks/react-native)
+- [iOS](/docs/api/client-side-sdks/ios)
+- [Android](/docs/api/client-side-sdks/android)
 
 ## Use Cases
 
-* Log in and create wallets for end users with OAuth for authentication
+- Log in and create wallets for end users with OAuth for authentication
 
 ## Usage
+
 You can use OAuth by creating a project with our [CLI tool](/docs/home/quickstart) and selecting your preferred social providers when prompted. Alternatively, you can directly integrate it into your existing projects using the instructions below. **Refer to the **[**API documentation**](/docs/api/overview)** for information on how to install and initialize Magic for your existing project.**
 
 ## Installation
 
 Social Logins work as an extension to Magic SDK. To add Social Login to your Magic integration, start by installing the **OAuth Extension**:
-
 
 <Tabs>
 <Tab title="NPM">
@@ -39,22 +43,21 @@ npm install magic-sdk @magic-ext/oauth2
 or
 npm install magic-sdk @magic-ext/oauth
 
-```
+````
 </Tab>
 <Tab title="Yarn">
 ```json
 yarn add magic-sdk @magic-ext/oauth2
 or
 yarn add magic-sdk @magic-ext/oauth
-```
+````
+
 </Tab>
 </Tabs>
-
 
 ## Initialization
 
 When creating your Magic instance, you'll need to add an instance of `OAuthExtension` to the Magic constructor:
-
 
 <Tabs>
 <Tab title="Web">
@@ -64,11 +67,11 @@ import { OAuthExtension } from '@magic-ext/oauth2';
 or
 import { OAuthExtension } from '@magic-ext/oauth';
 
-// Must use a Dedicated Wallet API Key
 const magic = new Magic('YOUR_API_KEY', {
-  extensions: [new OAuthExtension()],
+extensions: [new OAuthExtension()],
 });
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -83,7 +86,6 @@ Once logged in, you will have access to a DID token that can be used with our [A
 <Tabs>
 <Tab title="Javascript">
 ```json
-// Assumes you've initialized a `Magic` instance with a Dedicated Wallet API Key
 const beginOAuthFlow = () => {
   // if v1, use oauth module
   await magic.oauth2.loginWithRedirect({ //
@@ -102,13 +104,12 @@ const handleOAuthResult = () => {
   // Handle result information as needed
 }
 
-```
+````
+
 </Tab>
 </Tabs>
 
 The interface for the result of `getRedirectResult` is as follows:
-
-
 
 <Tabs>
 <Tab title="Javascript">
@@ -131,5 +132,6 @@ interface OAuthRedirectResult {
 </Tabs>
 
 ## Resources
-* [Web API documentation](/docs/api/client-side-sdks/web#loginwithredirect)
-* [React Native API documentation](/docs/api/client-side-sdks/react-native#loginwithpopup)
+
+- [Web API documentation](/docs/api/client-side-sdks/web#loginwithredirect)
+- [React Native API documentation](/docs/api/client-side-sdks/react-native#loginwithpopup)

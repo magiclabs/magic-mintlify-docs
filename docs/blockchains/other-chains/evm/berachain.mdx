@@ -2,7 +2,6 @@
 title: Berachain
 ---
 
-
 ## Overview
 
 [Berachain](https://www.berachain.com/) is an EVM-compatible L1 blockchain built on-top of the Cosmos-SDK, which uses [Proof-of-Liquidity](https://docs.berachain.com/learn/#proof-of-liquidity-overview) consensus.
@@ -15,9 +14,9 @@ Ensure you have installed the Magic SDK and have access to your API key, follow 
 
 ```js javascript
 // Setting network to point to Berachain Artio testnet
-const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
+const magic = new Magic("YOUR_PUBLISHABLE_API_KEY", {
   network: {
-    rpcUrl: 'https://artio.rpc.berachain.com/',
+    rpcUrl: "https://artio.rpc.berachain.com/",
     chainId: 80085,
   },
 });
@@ -25,15 +24,14 @@ const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
 
 ## Compatibility
 
-* All `Auth`, `User` and `Wallet` module methods for [Dedicated Wallets](/docs/wallets/wallet-types#dedicated-wallet-white-labeled-wallets)
-* All EVM Provider functionality to respond to supported [RPC methods](/docs/api/client-side-sdks/web#evm-rpc-methods)
+- All `Auth`, `User` and `Wallet` module methods
+- All EVM Provider functionality to respond to supported [RPC methods](/docs/api/client-side-sdks/web#evm-rpc-methods)
 
 _Need a feature or see a problem?_ File an issue on our [github repo](https://github.com/magiclabs/magic-js).
 
 ## Resources & Tools
 
-* Documentation: [https://docs.berachain.com/](https://docs.berachain.com/)
-* Block Explorer:
-    * [https://artio.beratrail.io/](https://artio.beratrail.io/) (Testnet)
-* Faucets: [https://docs.berachain.com/developers/testnet-faucet](https://docs.berachain.com/developers/testnet-faucet)
-
+- Documentation: [https://docs.berachain.com/](https://docs.berachain.com/)
+- Block Explorer:
+  - [https://artio.beratrail.io/](https://artio.beratrail.io/) (Testnet)
+- Faucets: [https://docs.berachain.com/developers/testnet-faucet](https://docs.berachain.com/developers/testnet-faucet)

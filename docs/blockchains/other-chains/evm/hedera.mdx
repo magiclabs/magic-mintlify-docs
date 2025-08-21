@@ -13,16 +13,8 @@ title: Hedera
 Magic interacts with the [Hedera](https://hedera.com/) blockchain via Magic's extension NPM package [`@magic-ext/hedera`](https://www.npmjs.com/package/@magic-ext/hedera). The Hedera extension also lets you interact with the blockchain using methods from [Hedera SDK](https://www.npmjs.com/package/hedera-sdk-js).
 
 <Tabs>
-  <Tab title="NPM">
-```bash
-npm install --save @magic-ext/hedera
-```
-  </Tab>
-  <Tab title="Yarn">
-```bash
-yarn add @magic-ext/hedera
-```
-  </Tab>
+  <Tab title="NPM">```bash npm install --save @magic-ext/hedera ```</Tab>
+  <Tab title="Yarn">```bash yarn add @magic-ext/hedera ```</Tab>
 </Tabs>
 
 ## Configure Hedera
@@ -79,17 +71,18 @@ const receipt = await result.getReceiptWithSigner(magicWallet);
 
 console.log(receipt.status.toString());
 ```
+
 ## Compatibility
 
-* All `Auth`, `User` module methods for [Dedicated Wallets](/docs/wallets/wallet-types#dedicated-wallet-white-labeled-wallets)
-* All EVM Provider functionality to respond to supported [RPC methods](/docs/api/client-side-sdks/web#evm-rpc-methods)
+- All `Auth`, `User` module methods
+- All EVM Provider functionality to respond to supported [RPC methods](/docs/api/client-side-sdks/web#evm-rpc-methods)
 
-_*Some features are not yet compatible such as the Widget UI._
+_\*Some features are not yet compatible such as the Widget UI._
 
 _Need a feature or see a problem?_ File an issue on our [github repo](https://github.com/magiclabs/magic-js).
 
 ## Resources & Tools
 
-* Documentation: [https://docs.hedera.com/hedera/](https://docs.hedera.com/hedera/)
-* Block Explorers: [https://hedera.com/ecosystem/network-explorers/](https://hedera.com/ecosystem/network-explorers)
-* [Example](https://github.com/magiclabs/example-hedera)
+- Documentation: [https://docs.hedera.com/hedera/](https://docs.hedera.com/hedera/)
+- Block Explorers: [https://hedera.com/ecosystem/network-explorers/](https://hedera.com/ecosystem/network-explorers)
+- [Example](https://github.com/magiclabs/example-hedera)

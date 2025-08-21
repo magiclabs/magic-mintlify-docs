@@ -7,22 +7,19 @@ sidebarTitle: Farcaster
 
 Provide users the ability to log into your app via Farcaster. This login method allows Farcaster users to login with their account and create a Magic wallet associated to their digital Farcaster Identifier (FID). Developers can access Farcaster user information such as `fid` and `username`, along with Magic metadata.
 
-* [⁠Test out Farcaster login here!](https://farcaster-example.vercel.app/magic-sdk)
+- [⁠Test out Farcaster login here!](https://farcaster-example.vercel.app/magic-sdk)
 
 <Frame>
-  <img src="/images/magic-swif.png"/>
+  <img src="/images/magic-swif.png" />
 </Frame>
 
 ### Compatibility
 
-
-<Note>
-Farcaster Login is only available with [Dedicated Wallet](/docs/wallets/wallet-types#dedicated-wallet), available as of `magic-sdk@28.0.7`.
-</Note>
+<Note>Farcaster Login is only available as of `magic-sdk@28.0.7`.</Note>
 
 ## Use Cases
 
-* Authenticate and create wallets for end users by prompting users to login via Farcaster native app.
+- Authenticate and create wallets for end users by prompting users to login via Farcaster native app.
 
 ## Usage
 
@@ -39,21 +36,19 @@ Farcaster Login works as an extension to Magic SDK. To add Farcaster Login to yo
 ```json
 npm install magic-sdk @magic-ext/farcaster
 
-```
+````
 </Tab>
 <Tab title="Yarn">
 ```json
 yarn add magic-sdk @magic-ext/farcaster
-```
+````
+
 </Tab>
 </Tabs>
-
-
 
 ## Initialization
 
 When creating your Magic instance, you'll need to add an instance of `FarcasterExtension` to the Magic constructor:
-
 
 <Tabs>
 <Tab title="Web">
@@ -61,11 +56,11 @@ When creating your Magic instance, you'll need to add an instance of `FarcasterE
 import { Magic } from 'magic-sdk';
 import { FarcasterExtension } from '@magic-ext/farcaster';
 
-// Must use a Dedicated Wallet API Key
 const magic = new Magic('YOUR_API_KEY', {
-  extensions: [new FarcasterExtension()],
+extensions: [new FarcasterExtension()],
 });
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -101,17 +96,14 @@ try {
 } catch {
   // Handle errors if required!
 }
-```
+````
+
 </Tab>
 </Tabs>
-
-
 
 ### Event Handling
 
 A white-label Farcaster Login flow is available when passing `showUI: false` to this login method. Here's a short example to illustrate listening for and emitting events during the login flow:
-
-
 
 <Tabs>
 <Tab title="Javascript">
@@ -120,34 +112,35 @@ import { Magic } from 'magic-sdk';
 import { FarcasterExtension } from '@magic-ext/farcaster';
 
 const magic = new Magic('YOUR_API_KEY', {
-  extensions: [new FarcasterExtension()],
+extensions: [new FarcasterExtension()],
 });
 
 try {
-  const handle = magic.farcaster.login({ showUI: false });
+const handle = magic.farcaster.login({ showUI: false });
 
-  handle
-    .on("channel", (channel) => {
-      console.log("channel URL", channel.url)
-      // display custom UI with QR code
-    })
-    .on("success", (data) => {
-      // get Farcaster user information
-    })
-    .on('done', (did) => {
-⁠      // get DID Token
-    .on("failed", (e) => {
-      // user rejects
-    })
-⁠  .on('error', (e) => {
-⁠      // handle error
-⁠    }
-⁠⁠    .on('settled', (e) => {
-⁠      // handle resolve or reject
-⁠    }
+handle
+.on("channel", (channel) => {
+console.log("channel URL", channel.url)
+// display custom UI with QR code
+})
+.on("success", (data) => {
+// get Farcaster user information
+})
+.on('done', (did) => {
+⁠ // get DID Token
+.on("failed", (e) => {
+// user rejects
+})
+⁠ .on('error', (e) => {
+⁠ // handle error
+⁠ }
+⁠⁠ .on('settled', (e) => {
+⁠ // handle resolve or reject
+⁠ }
 } catch (err) {
-  // handle errors
+// handle errors
 }
+
 ```
 </Tab>
 </Tabs>
@@ -159,3 +152,4 @@ try {
 * [Quickstart](/docs/home/quickstart/cli)
 * [Web API documentation](/docs/api/client-side-sdks/web#loginwithemailotp)
 * [React Native API documentation](/docs/api/client-side-sdks/react-native#loginwithemailotp)
+```

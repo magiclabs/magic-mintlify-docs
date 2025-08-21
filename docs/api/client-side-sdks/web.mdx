@@ -115,13 +115,6 @@ magic.preload;
 
 Authenticate a user passwordlessly using a "magic link" sent to the specified user's email address.
 
-<Note>
-**NOTE**
-
-Only available with Dedicated Wallet.
-
-</Note>
-
 #### Arguments
 
 - `email` (String): The user email to log in with
@@ -199,7 +192,6 @@ try {
 
 Authenticate a user passwordlessly using an email one-time code sent to the specified user's email address.
 
-<Note>Only available with Dedicated Wallet.</Note>
 #### arguments
 
 - `email` (String): The user email to log in with
@@ -410,12 +402,9 @@ break;
 
 Authenticate a user passwordlessly using a one-time code sent to the specified phone number.
 
-[List of Currently Blocked Country Codes](/docs/home/faq/dedicated-wallet#questions-around-sms)
+[List of Currently Blocked Country Codes](/docs/home/faq#questions-around-sms)
 
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 #### Arguments
 
 * `phoneNumber` (String): E.164 formatted phone number
@@ -487,9 +476,6 @@ Authenticate a user via a "Magic Credential," a special, one-time-use DID Token 
 
 If given **no arguments**, this method will parse the credential token automatically from `window.location.search`.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 #### Arguments
 
 * `credentialOrQueryString` (String): A credential token _or_ a valid query string (prefixed with `?` or `#`). By default, this method will look for the a credential token on the `magic_credential` key of `window.location.search`
@@ -567,9 +553,6 @@ await magic.auth.loginWithCredential(window.location.search);
 Initiates the update email flow that allows a user to change their email address.
 
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 
 #### Arguments
 
@@ -1016,7 +999,7 @@ await magic.wallet.showSendTokensUI()
 
 Displays an iframe modal with various on ramp providers for the user to purchase crypto from directly to their wallet.
 
-To use the fiat on ramp for Dedicated Wallet apps, **you will need to contact us to KYB with the payment provider prior to use.** Once approved, ensure this toggle is enabled in your developer dashboard via the ‘Widget UI’ tab.
+To use the fiat onramp, **you will need to contact us to KYB with the payment provider prior to use.** Once approved, ensure this toggle is enabled in your developer dashboard via the ‘Widget UI’ tab.
 
 #### Arguments
 
@@ -1075,9 +1058,6 @@ magic.user.revealPrivateKey;
 
 Generates a [Decentralized Id Token](/docs/authentication/features/decentralized-id) which acts as a proof of authentication to resource servers.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 #### Arguments
 
 * `lifespan?` (Number): Will set the lifespan of the generated token. Defaults to 900s (15 mins)
@@ -1110,8 +1090,6 @@ try {
 ### `generateIdToken`
 
 Generates a [Decentralized ID token](/docs/authentication/features/decentralized-id) with optional serialized data.
-
-<Note>Only available with Dedicated Wallet.</Note>
 
 #### Arguments
 
@@ -1257,8 +1235,7 @@ try {
 Displays an iframe with the current user’s settings. Allows for users to update their email address, enable multi-factor authentication, and add a recovery factor.
 
 <Note>
-  Only available with Dedicated Wallet. Access to
-  [MFA](/docs/authentication/features/mfa) and [account
+  Access to [MFA](/docs/authentication/features/mfa) and [account
   recovery](docs/authentication/features/account-recovery) require paid add-ons.
 </Note>
 
@@ -1303,9 +1280,6 @@ await magic.user.showSettings({ page: 'mfa' });
 
 Whitelabel the flow starting from where the user needs to add a recovery factor phone number. This allows you to implement your own UI, but you will need to implement some custom event handling according to your needs.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 Access to [account recovery](docs/authentication/features/account-recovery) require paid add-ons.
 
 **Arguments**
@@ -1402,7 +1376,6 @@ try {
 
 A user can recover their email account if they've setup a phone number as a recovery factor. Calling this method will display a modal for the user to submit the sent SMS OTP.
 
-<Note>Only available with Dedicated Wallet.</Note>
 Access to [account recovery](docs/authentication/features/account-recovery) require
 paid add-ons.
 
@@ -1441,7 +1414,7 @@ Displays an iframe deep linked to the beginning of the enable MFA flow. This is 
 
 
 <Note>
-Only available with Dedicated Wallet. Access to [MFA](/docs/authentication/features/mfa) require paid add-ons. Available as of `magic-sdk v28.11.0`
+Access to [MFA](/docs/authentication/features/mfa) require paid add-ons. Available as of `magic-sdk v28.11.0`
 </Note>
 #### Arguments
 
@@ -1521,7 +1494,6 @@ try {
 
 Displays an iframe deep linked to the beginning of the disable MFA flow. This method assumes MFA has been enabled for the logged in user. This cannot be achieved by calling `showSettings()` .
 
-<Note>Only available with Dedicated Wallet.</Note>
 Access to [MFA](/docs/authentication/features/mfa) require paid add-ons. Available
 as of `magic-sdk v28.11.0`
 
@@ -1614,9 +1586,6 @@ handle.emit(DisableMFAEventEmit.Cancel);
 
 Displays an iframe revealing the current user’s private key. Allows for users to take their private key to another wallet. Neither Magic nor the developer can see this key; only the end user can.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 #### Arguments
 
 * _None_
@@ -1713,7 +1682,6 @@ magic.oauth2.getRedirectResult;
 
 Starts the OAuth 2.0 login flow.
 
-<Note>Only available with Dedicated Wallet.</Note>
 #### Arguments
 
 - `provider` (String): The OAuth provider being used for login
@@ -1769,7 +1737,6 @@ scope: ['user:email'] /_ optional _/,
 
 Returns the final OAuth 2.0 result.
 
-<Note>Only available with Dedicated Wallet.</Note>
 #### Arguments
 
 - `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
@@ -1850,7 +1817,6 @@ magic.openid.loginWithOIDC;
 
 Authenticate users via your preferred OIDC client.
 
-<Note>Only available with Dedicated Wallet.</Note>
 
 #### Arguments
 
@@ -1923,7 +1889,6 @@ magic.webauthn.unregisterDevice;
 
 Registers a new WebAuthn user.
 
-<Note>Only available with Dedicated Wallet.</Note>
 #### Arguments
 
 - `username` (String): The username to register with
@@ -2000,7 +1965,6 @@ break;
 
 Logs in a registered WebAuthn user.
 
-<Note>Only available with Dedicated Wallet.</Note>
 #### Arguments
 
 - `username` (String): The username to log in with
@@ -2069,7 +2033,6 @@ break;
 
 Returns information about the currently logged in user.
 
-<Note>Only available with Dedicated Wallet.</Note>
 #### Arguments
 
 - _None_
@@ -2123,7 +2086,6 @@ _/
 
 Registers a new WebAuthn device.
 
-<Note>Only available with Dedicated Wallet.</Note>
 #### Arguments
 
 - `nickname` (String): The nickname of the WebAuthn device the user wants to set
@@ -2192,7 +2154,6 @@ break;
 
 Allows a user to update their device nickname.
 
-<Note>Only available with Dedicated Wallet.</Note>
 #### Arguments
 
 - `nickname` (String): The nickname of the WebAuthn device the user wants to set
@@ -2231,7 +2192,6 @@ await magic.webauthn.updateInfo({ id, nickname });
 
 Unregisters a user's device.
 
-<Note>Only available with Dedicated Wallet.</Note>
 #### Arguments
 
 - `id` (String): The WebAuthn ID returned from `getMetaData` function's `devicesInfo` field

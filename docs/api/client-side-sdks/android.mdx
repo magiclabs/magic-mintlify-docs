@@ -105,11 +105,10 @@ magic.auth.loginWithEmailOTP;
 
 ### loginWithSMS
 
-<Note>Only available with Dedicated Wallet</Note>
 Authenticate a user passwordlessly using a one-time code sent to the specified phone
 number.
 
-[List of Currently Blocked Country Codes](/docs/home/faq/dedicated-wallet#questions-around-sms)
+[List of Currently Blocked Country Codes](/docs/home/faq#questions-around-sms)
 
 ### Arguments
 
@@ -165,9 +164,6 @@ val completable = magic.auth.loginWithSMS(configuration)
 
 ### `loginWithEmailOTP`
 
-<Note>
-Only available with Dedicated Wallet
-</Note>
 Authenticate a user passwordlessly using an email one-time code sent to the specified user's email address.
 
 ### Arguments
@@ -383,9 +379,6 @@ magic.user.revealPrivateKey
 
 ### `updateEmail`
 
-<Note>
-Only available with Dedicated Wallet
-</Note>
 Initiates the update email flow that allows a user to change to a new email.
 
 ### Arguments
@@ -437,7 +430,6 @@ class MagicActivity: AppCompatActivity() {
 
 ### `getIdToken`
 
-<Note>Only available with Dedicated Wallet</Note>
 Generates a Decentralized Id Token which acts as proof of authentication to resource
 servers.
 
@@ -487,9 +479,6 @@ lateinit var magic: Magic
 
 ### `generateIdToken`
 
-<Note>
-Only available with Dedicated Wallet
-</Note>
 Generates a Decentralized Id Token with optional serialized data.
 
 ### Arguments
@@ -689,7 +678,7 @@ Displays an iframe with the current user’s settings. Allows for users to updat
 
 
 <Note>
-Only available with Dedicated Wallet. Access to [MFA](/docs/authentication/features/mfa) and [account recovery](docs/authentication/features/account-recovery) require paid add-ons.
+Access to [MFA](/docs/authentication/features/mfa) and [account recovery](docs/authentication/features/account-recovery) require paid add-ons.
 </Note>
 ### Arguments
 
@@ -873,9 +862,6 @@ magic.openid.loginWithOIDC;
 
 Authenticate users via your preferred OIDC client.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 ### Arguments
 
 * `jwt` (String): The OIDC token from your identity provider

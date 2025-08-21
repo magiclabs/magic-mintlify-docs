@@ -8,24 +8,21 @@ description: "This feature requires a subscription to Growth Plan"
 ## Overview
 
 <Note>
-To enable this feature, please contact our Customer Success team using the help widget in the bottom-right corner of this page.
+  To enable this feature, please contact our Customer Success team using the
+  help widget in the bottom-right corner of this page.
 </Note>
 
 Our OIDC extension integrates with your existing identity provider using OpenID Connect for authentication. It enables third-party identity providers to securely pass signed JWTs (OIDC tokens) for verification by Magic. This facilitates user authentication and registration while granting access to web3-capable wallets across 20+ blockchains.
 
 ### Compatibility
 
-<Note>
-Only available with [Dedicated Wallet](/docs/wallets/wallet-types#dedicated-wallet).
-</Note>
-
 OIDC extension methods are available on the following client-side SDKs:
 
-* [Web](/docs/api/client-side-sdks/web#open-id-module)
-* [iOS](/docs/api/client-side-sdks/ios#open-id-module)
-* [Android](/docs/api/client-side-sdks/android#open-id-module)
-* [React Native](/docs/api/client-side-sdks/react-native#open-id-module)
-* [Flutter](/docs/api/client-side-sdks/flutter#open-id-module)
+- [Web](/docs/api/client-side-sdks/web#open-id-module)
+- [iOS](/docs/api/client-side-sdks/ios#open-id-module)
+- [Android](/docs/api/client-side-sdks/android#open-id-module)
+- [React Native](/docs/api/client-side-sdks/react-native#open-id-module)
+- [Flutter](/docs/api/client-side-sdks/flutter#open-id-module)
 
 ### What is Open ID Connect?
 
@@ -37,19 +34,22 @@ For more information about this identity protocol, please visit [the Open ID do
 
 Before getting started using a custom identity provider, you will need to acquire the following values that Magic relies on to connect with those providers.
 
-|     |     |     |     |
-| --- | --- | --- | --- |
-| Property | Type | Required (POST) | Description |
-| **Issuer** | String | Yes | The URL of the token issuer. |
-| **audience** | String | Yes | The identifier of the audience, often the same as the IdP client ID to which the token is issued. |
-| **display_name** | String | Yes | A human-readable identifier for the entity. |
-| **sandbox_mode** | Bool | No (defaults false) | When true, provider does not enforce the expiry claim during ID token validation, which can be useful for testing environments. |
-| **Magic Publishable API Key** | String | Yes | The publishable API key retrieved from the Magic dashboard. |
+|                               |        |                     |                                                                                                                                 |
+| ----------------------------- | ------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Property                      | Type   | Required (POST)     | Description                                                                                                                     |
+| **Issuer**                    | String | Yes                 | The URL of the token issuer.                                                                                                    |
+| **audience**                  | String | Yes                 | The identifier of the audience, often the same as the IdP client ID to which the token is issued.                               |
+| **display_name**              | String | Yes                 | A human-readable identifier for the entity.                                                                                     |
+| **sandbox_mode**              | Bool   | No (defaults false) | When true, provider does not enforce the expiry claim during ID token validation, which can be useful for testing environments. |
+| **Magic Publishable API Key** | String | Yes                 | The publishable API key retrieved from the Magic dashboard.                                                                     |
 
 <Note>
-The flow to finding the required information will vary depending on your identity provider. Please refer to the README in one of the various OIDC demos pertaining to your specific identity provider.
+  The flow to finding the required information will vary depending on your
+  identity provider. Please refer to the README in one of the various OIDC demos
+  pertaining to your specific identity provider.
 </Note>
-With this information, you can configure your application's custom identity provider by calling our API with the Magic secret key sent in the `X-Magic-Secret-Key` header.
+With this information, you can configure your application's custom identity provider
+by calling our API with the Magic secret key sent in the `X-Magic-Secret-Key` header.
 
 Upon successful configuration in Magic's backend, the API will return a `providerId`, which is a string of letters and numbers. Please save this, you will need this value each time you provision a wallet for your end user.
 
@@ -57,10 +57,9 @@ Upon successful configuration in Magic's backend, the API will return a `provide
 
 Please call the POST endpoint for initial configuration of your application's custom identity provider with Magic. Subsequent updates can be accomplished by calling the PATCH endpoint.
 
-* POST Endpoint: `https://api.magic.link/v1/api/magic_client/federated_idp`
+- POST Endpoint: `https://api.magic.link/v1/api/magic_client/federated_idp`
 
 **Example POST call**
-
 
 <Tabs>
 <Tab title="Web">
@@ -84,31 +83,30 @@ const provider_Id = magic_json.data['id']
 
 // Responds 200 OK with new provider on successful create
 {
-  "data": {
-      "audience": "Xk8v3hjZP5RfzqWb4JtMn0E2sYpL9A1u",
-      "discovery_uri": "https://auth.examplecorp.com/.well-known/openid-configuration",
-      "display_name": "example-corp-dev",
-      "id": "3LDeve5f56ouY_tN-jLJlop_hkLI1LLTNG8abaCD42E=",
-      "is_active": true,
-      "issuer": "https://auth.examplecorp.com",
-      "jwks_uri": "https://auth.examplecorp.com/jwks.json",
-      "jwkset": null,
-      "magic_client": null,
-      "magic_client_id": "3LDeve5f56ouY_tN-jLJlop_hkLI1LLTNG8abaCD42E=",
-      "profile": "custom",
-      "sandbox_mode": true,
-      "store_verified_email_enabled": false,
-      "time_created": 1707238543,
-      "time_updated": 1707238543,
-      "type": "jwt"
-  },
-  "error_code": "",
-  "message": "",
-  "status": "ok"
+"data": {
+"audience": "Xk8v3hjZP5RfzqWb4JtMn0E2sYpL9A1u",
+"discovery_uri": "https://auth.examplecorp.com/.well-known/openid-configuration",
+"display_name": "example-corp-dev",
+"id": "3LDeve5f56ouY_tN-jLJlop_hkLI1LLTNG8abaCD42E=",
+"is_active": true,
+"issuer": "https://auth.examplecorp.com",
+"jwks_uri": "https://auth.examplecorp.com/jwks.json",
+"jwkset": null,
+"magic_client": null,
+"magic_client_id": "3LDeve5f56ouY_tN-jLJlop_hkLI1LLTNG8abaCD42E=",
+"profile": "custom",
+"sandbox_mode": true,
+"store_verified_email_enabled": false,
+"time_created": 1707238543,
+"time_updated": 1707238543,
+"type": "jwt"
+},
+"error_code": "",
+"message": "",
+"status": "ok"
 }
 
-
-```
+````
 </Tab>
 <Tab title="Curl">
 ```json
@@ -147,18 +145,16 @@ curl --request POST \
   "message": "",
   "status": "ok"
 }
-```
+````
+
 </Tab>
 </Tabs>
 
-
-
 To update, you will need to affix your application's `providerId` to the PATCH endpoint. Only values passed to the request body will be updated.
 
-* PATCH Endpoint: `https://api.magic.link/v1/api/magic_client/federated_idp/<provider_Id>`
+- PATCH Endpoint: `https://api.magic.link/v1/api/magic_client/federated_idp/<provider_Id>`
 
 **Example PATCH call**
-
 
 <Tabs>
 <Tab title="Web">
@@ -182,31 +178,30 @@ const provider_Id = magic_json.data['id']
 
 // Responds 200 OK with updated provider on successful patch
 {
-  "data": {
-      "audience": "Xk8v3hjZP5RfzqWb4JtMn0E2sYpL9A1u",
-      "discovery_uri": "https://auth.examplecorp2.com/.well-known/openid-configuration",
-      "display_name": "example-corp2-dev",
-      "id": "3LDeve5f56ouY_tN-jLJlop_hkLI1LLTNG8abaCD42E=",
-      "is_active": true,
-      "issuer": "https://auth.examplecorp2.com",
-      "jwks_uri": "https://auth.examplecorp2.com/jwks.json",
-      "jwkset": null,
-      "magic_client": null,
-      "magic_client_id": "3LDeve5f56ouY_tN-jLJlop_hkLI1LLTNG8abaCD42E=",
-      "profile": "custom",
-      "sandbox_mode": false,
-      "store_verified_email_enabled": false,
-      "time_created": 1707238543,
-      "time_updated": 1707238544,
-      "type": "jwt"
-  },
-  "error_code": "",
-  "message": "",
-  "status": "ok"
+"data": {
+"audience": "Xk8v3hjZP5RfzqWb4JtMn0E2sYpL9A1u",
+"discovery_uri": "https://auth.examplecorp2.com/.well-known/openid-configuration",
+"display_name": "example-corp2-dev",
+"id": "3LDeve5f56ouY_tN-jLJlop_hkLI1LLTNG8abaCD42E=",
+"is_active": true,
+"issuer": "https://auth.examplecorp2.com",
+"jwks_uri": "https://auth.examplecorp2.com/jwks.json",
+"jwkset": null,
+"magic_client": null,
+"magic_client_id": "3LDeve5f56ouY_tN-jLJlop_hkLI1LLTNG8abaCD42E=",
+"profile": "custom",
+"sandbox_mode": false,
+"store_verified_email_enabled": false,
+"time_created": 1707238543,
+"time_updated": 1707238544,
+"type": "jwt"
+},
+"error_code": "",
+"message": "",
+"status": "ok"
 }
 
-
-```
+````
 </Tab>
 <Tab title="Web">
 ```json
@@ -244,7 +239,8 @@ curl --request POST \
   "message": "",
   "status": "ok"
 }
-```
+````
+
 </Tab>
 </Tabs>
 
@@ -253,19 +249,9 @@ curl --request POST \
 To use your own identity provider, you must install both `magic-sdk` and the OIDC extension: `@magic-ext/oidc`
 
 <Tabs>
-<Tab title="NPM">
-```json
-npm install magic-sdk @magic-ext/oidc
-⁠
-```
-</Tab>
-<Tab title="Yarn">
-```json
-yarn add magic-sdk @magic-ext/oidc
-```
-</Tab>
+  <Tab title="NPM">```json npm install magic-sdk @magic-ext/oidc ⁠ ```</Tab>
+  <Tab title="Yarn">```json yarn add magic-sdk @magic-ext/oidc ```</Tab>
 </Tabs>
-
 
 ## Initialization
 
@@ -274,14 +260,11 @@ yarn add magic-sdk @magic-ext/oidc
 Import the necessary modules into your application. You'll need the `magic-sdk`, `@magic-ext/oidc`, and your identity provider's OIDC client library. Here's an example in JavaScript:
 
 <Tabs>
-<Tab title="Javascript">
-```json
-import { Magic } from "magic-sdk";
-import { OpenIdExtension } from "@magic-ext/oidc";
-// this is an example of an OIDC client library
-import { useAuth0 } from "@auth0/auth0-react";
-```
-</Tab>
+  <Tab title="Javascript">
+    ```json import {Magic} from "magic-sdk"; import {OpenIdExtension} from
+    "@magic-ext/oidc"; // this is an example of an OIDC client library import{" "}
+    {useAuth0} from "@auth0/auth0-react"; ```
+  </Tab>
 </Tabs>
 
 ### [#Initialize the Magic SDK](#initialize-the-magic-sdk)
@@ -313,9 +296,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 const { loginWithRedirect } = useAuth0();
 
 async function loginUser() {
-  await loginWithRedirect();
+await loginWithRedirect();
 };
-```
+
+````
 </Tab>
 </Tabs>
 
@@ -338,25 +322,21 @@ async function getMagicWallet() {
     providerId: '<your_magic_provider_id>',
   )};
 };
-```
+````
+
 </Tab>
 </Tabs>
 
-
 You can also utilize relevant Magic client SDK methods in the User Module to extend further functionality:
 
-
 <Tabs>
-<Tab title="Javascript">
-```json
-// metadata will only contain issuer and publicAddress
-const metadata = await magic.user.getInfo();
-// DID token default lifespan 15 minutes
-const didToken = await magic.user.getIdToken();
-// returns true if auth user has a valid Magic session
-const boolean = await magic.user.isLoggedIn();
-```
-</Tab>
+  <Tab title="Javascript">
+    ```json // metadata will only contain issuer and publicAddress const
+    metadata = await magic.user.getInfo(); // DID token default lifespan 15
+    minutes const didToken = await magic.user.getIdToken(); // returns true if
+    auth user has a valid Magic session const boolean = await
+    magic.user.isLoggedIn(); ```
+  </Tab>
 </Tabs>
 
 A full example incorporating web3 and Magic OIDC:
@@ -369,17 +349,18 @@ import { Magic } from 'magic-sdk';
 import { OpenIdExtension } from '@magic-ext/oidc';
 
 const magic = new Magic('<your_magic_api_key>', {
-  extensions: [new OpenIdExtension()],
+extensions: [new OpenIdExtension()],
 });
 const DID = await magic.openid.loginWithOIDC({
-  // this oidcToken comes from the identity provider
-  jwt: oidcToken,
-  // this providerId is provided by Magic
-  providerId: myProviderId,
+// this oidcToken comes from the identity provider
+jwt: oidcToken,
+// this providerId is provided by Magic
+providerId: myProviderId,
 });
 
 const web3 = new Web3(magic.rpcProvider);
 await web3.eth.getAccounts();
+
 ```
 </Tab>
 </Tabs>
@@ -405,3 +386,4 @@ This error can be thrown when the OIDC token is invalid in some way. The token c
 * [Auth0 demo](https://425tmh.csb.app/)
 * [Cognito demo](https://45z33v.csb.app/)
 
+```

@@ -3,7 +3,7 @@ title: Binance Smart Chain
 sidebarTitle: Binance
 ---
 
-import { Button } from '/snippets/button.mdx';
+import { Button } from "/snippets/button.mdx";
 
 <Card
     title="Binance implementation guide"
@@ -14,7 +14,6 @@ How to Build a Decentralized App on Binance Smart Chain with Magic
 View guide
 </Button>
 </Card>
-
 
 ## Overview
 
@@ -29,42 +28,42 @@ View guide
 Mainnet Block Explorer URL: [https://bscscan.com](https://bscscan.com)
 
 ```javascript Javascript
-
 const BSCOptions = {
-  rpcUrl: 'https://bsc-dataseed.binance.org/', // Smart Chain RPC URL
+  rpcUrl: "https://bsc-dataseed.binance.org/", // Smart Chain RPC URL
   chainId: 56, // Smart Chain chain id
 };
 
 // Setting network to Smart Chain
-const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: BSCOptions });
+const magic = new Magic("YOUR_PUBLISHABLE_API_KEY", { network: BSCOptions });
 ```
+
 ### Smart Chain - Testnet
 
 Testnet Block Explorer URL: [https://testnet.bscscan.com](https://testnet.bscscan.com)
 
 ```javascript Javascript
-
 const BSCOptions = {
-  rpcUrl: 'https://data-seed-prebsc-1-s1.binance.org:8545/', // Smart Chain - Testnet RPC URL
+  rpcUrl: "https://data-seed-prebsc-1-s1.binance.org:8545/", // Smart Chain - Testnet RPC URL
   chainId: 97, // Smart Chain - Testnet chain id
 };
 
 // Setting network to Smart Chain - Testnet
-const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: BSCOptions });
+const magic = new Magic("YOUR_PUBLISHABLE_API_KEY", { network: BSCOptions });
 ```
+
 ## Compatibility
 
-* All `Auth`, `User` and most `Wallet` module methods* for [Dedicated Wallets](/docs/wallets/wallet-types#dedicated-wallet-white-labeled-wallets)
-* All EVM Provider functionality to respond to supported [RPC methods](/docs/api/client-side-sdks/web#evm-rpc-methods)
+- All `Auth`, `User` and most `Wallet` module methods\*
+- All EVM Provider functionality to respond to supported [RPC methods](/docs/api/client-side-sdks/web#evm-rpc-methods)
 
-_*Some features are not yet compatible such as NFT Viewer and Fiat On-ramps._
+_\*Some features are not yet compatible such as NFT Viewer and Fiat On-ramps._
 
 _Need a feature or see a problem?_ File an issue on our [github repo](https://github.com/magiclabs/magic-js).
 
 ## Resources & Tools
 
-* Documentation: [https://docs.bnbchain.org/](https://docs.bnbchain.org/)
-* Block Explorer:
-    * [https://bscscan.com/](https://bscscan.com/) (Mainnet)
-    * [https://testnet.bscscan.com/](https://testnet.bscscan.com/) (Testnet)
-* Testnet Faucet: [https://www.bnbchain.org/en/testnet-faucet](https://www.bnbchain.org/en/testnet-faucet)
+- Documentation: [https://docs.bnbchain.org/](https://docs.bnbchain.org/)
+- Block Explorer:
+  - [https://bscscan.com/](https://bscscan.com/) (Mainnet)
+  - [https://testnet.bscscan.com/](https://testnet.bscscan.com/) (Testnet)
+- Testnet Faucet: [https://www.bnbchain.org/en/testnet-faucet](https://www.bnbchain.org/en/testnet-faucet)

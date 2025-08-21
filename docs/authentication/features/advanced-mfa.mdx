@@ -4,12 +4,12 @@ description: "Today Magic offers MFA support with tools such as Google Authentic
 sidebarTitle: Advanced MFA
 ---
 
-import { Button } from '/snippets/button.mdx';
+import { Button } from "/snippets/button.mdx";
 
 <Card
 
->
-⁠This feature requires an enterprise agreement
+> ⁠This feature requires an enterprise agreement
+
 <br/>
 <Button href="https://magic.link/contact">
 Contact Sales
@@ -22,15 +22,13 @@ With the Enterprise MFA feature, Magic can integrate with any MFA provider. Plea
 
 ### Compatibility
 
-<Note>
-Only available with [Dedicated Wallet](/docs/wallets/wallet-types#dedicated-wallet).
-</Note>
 Advanced MFA SDK methods are available via the following client-side SDKs:
 
-* [Web](/docs/api/client-side-sdks/web)
-* [React Native](/docs/api/client-side-sdks/react-native)
+- [Web](/docs/api/client-side-sdks/web)
+- [React Native](/docs/api/client-side-sdks/react-native)
 
 ## Usage
+
 To enable Enterprise MFA, all that is required is for your third-party provider to be configured in our system and their issued JWT to be set in the custom authorization header via `magic.auth.setAuthorizationToken` prior to calling login:
 
 <Tabs>
@@ -45,5 +43,3 @@ To enable Enterprise MFA, all that is required is for your third-party provider 
 </Tabs>
 
 Once you have added the `setAuthorizationToken` call into your login handler, Magic must enable the feature for your application. If you have users actively accessing your application, we recommend first testing this integration with a test application so that we can be sure to avoid any downtime when we turn on your production application.
-
-

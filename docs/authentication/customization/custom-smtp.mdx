@@ -2,13 +2,12 @@
 title: Custom Email Provider
 ---
 
-
-import { Button } from '/snippets/button.mdx';
+import { Button } from "/snippets/button.mdx";
 
 <Card
 
->
-This feature requires a subscription to Growth Plan
+> This feature requires a subscription to Growth Plan
+
 <br/>
 <Button href="https://magic.link/pricing#features">
 View pricing
@@ -16,33 +15,37 @@ View pricing
 </Card>
 
 ## Overview
-<Note>
-Only available with [Dedicated Wallet](/docs/wallets/wallet-types#dedicated-wallet).
-</Note>
+
 Custom Email Provider is a premium feature that allows developers to configure the sender of Magic Link emails by routing emails through their own SMTP servers. Emails sent from our servers come from the default `noreply@trymagic.com`.
 
 Enabling a custom SMTP gives you full control over where your application's login emails are sent from, as well as the name of the sender. Custom email providers are configured at the application level by visiting the Settings section of the [Dashboard](https://dashboard.magic.link/).
 
 <Frame>
-  <img src="/images/sales-enabled-read-only.webp" alt="sales-enabled-read-only"/>
+  <img
+    src="/images/sales-enabled-read-only.webp"
+    alt="sales-enabled-read-only"
+  />
 </Frame>
 
-
 ### Configuration
+
 Once Custom Email Provider has been unlocked for your workspace, you can continue using Magic's existing email infrastructure or configure your own custom SMTP server.
 
 All we need is the information specified in the form below:
 
 <Frame>
-  <img src="/images/sales-enabled-configuring.webp" alt="sales-enabled-read-only"/>
+  <img
+    src="/images/sales-enabled-configuring.webp"
+    alt="sales-enabled-read-only"
+  />
 </Frame>
 
-* **Sender email**: The email address your app's login emails will be sent from. E.g. `example@your-domain.com`
-    * ⁠**Note:** Do **not** to use your dashboard user account email as the `Sender Email`, or try to login with the `Sender Email`
-* **Sender name (optional)**: The name that appears on the subject line of the login email. Defaults to sender email address if not provided.
-* **Host**: Hostname for your SMTP server. E.g. `smtp.postmarkapp.com`
-* **Port**: Port of your SMTP server
-* **Username, Password**: Credentials to authenticate into your SMTP server
+- **Sender email**: The email address your app's login emails will be sent from. E.g. `example@your-domain.com`
+  - ⁠**Note:** Do **not** to use your dashboard user account email as the `Sender Email`, or try to login with the `Sender Email`
+- **Sender name (optional)**: The name that appears on the subject line of the login email. Defaults to sender email address if not provided.
+- **Host**: Hostname for your SMTP server. E.g. `smtp.postmarkapp.com`
+- **Port**: Port of your SMTP server
+- **Username, Password**: Credentials to authenticate into your SMTP server
 
 With the above pieces of information, we will be able to create a TLS-encrypted context to route our Magic Link emails to your server.
 
@@ -53,4 +56,3 @@ The **Send test email** button will be enabled after saving a valid custom SMTP 
 If you do not receive your test email within 1-2 minutes, please check your configuration settings and try again.
 
 If you run into any issues during setup, please reach out via our help widget in the bottom-right corner of this page.
-

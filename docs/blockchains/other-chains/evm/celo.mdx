@@ -2,13 +2,12 @@
 title: Celo
 ---
 
-import { Button } from '/snippets/button.mdx';
+import { Button } from "/snippets/button.mdx";
 
 <Card
   title="Celo implementation guide"
 
->
-How to use Magic with the Celo blockchain
+> How to use Magic with the Celo blockchain
 
 <Button href="/posts/magic-celo">
 View guide
@@ -24,19 +23,13 @@ View guide
 ## Installation
 
 To install Magic and Celo, follow the instructions below.
+
 <Tabs>
   <Tab title="NPM">
-```NPM
-npm install --save magic-sdk @celo/contractkit
-```
+    ```NPM npm install --save magic-sdk @celo/contractkit ```
   </Tab>
-  <Tab title="Yarn">
-```Yarn
-yarn add magic-sdk @celo/contractkit
-```
-  </Tab>
+  <Tab title="Yarn">```Yarn yarn add magic-sdk @celo/contractkit ```</Tab>
 </Tabs>
-
 
 ## Send Transaction
 
@@ -173,19 +166,19 @@ console.log('contract send result: ', hash, receipt);
 
 ## Compatibility
 
-* All `Auth`, `User` and most `Wallet` module methods* for [Dedicated Wallets](/docs/wallets/wallet-types#dedicated-wallet-white-labeled-wallets)
-* All EVM Provider functionality to respond to supported [RPC methods](/docs/api/client-side-sdks/web#evm-rpc-methods)
+- All `Auth`, `User` and most `Wallet` module methods\*
+- All EVM Provider functionality to respond to supported [RPC methods](/docs/api/client-side-sdks/web#evm-rpc-methods)
 
-_*Some features are not yet compatible such as NFT Viewer and Fiat On-ramps._
+_\*Some features are not yet compatible such as NFT Viewer and Fiat On-ramps._
 
 _Need a feature or see a problem?_ File an issue on our [github repo](https://github.com/magiclabs/magic-js).
 
 ## Resources & Tools
 
-* Documentation: [https://docs.celo.org/](https://docs.celo.org/)
-* Block Explorer:
-    * [https://explorer.celo.org/mainnet/](https://explorer.celo.org/mainnet/) (Mainnet)
-* Faucet: [https://faucet.quicknode.com/celo](https://faucet.quicknode.com/celo)
+- Documentation: [https://docs.celo.org/](https://docs.celo.org/)
+- Block Explorer:
+  - [https://explorer.celo.org/mainnet/](https://explorer.celo.org/mainnet/) (Mainnet)
+- Faucet: [https://faucet.quicknode.com/celo](https://faucet.quicknode.com/celo)
 
-* [Demo](https://magic-celo.vercel.app/login)
-* [Example](https://go.magic.link/example-celo)
+- [Demo](https://magic-celo.vercel.app/login)
+- [Example](https://go.magic.link/example-celo)

@@ -170,8 +170,6 @@ magic.auth.updateEmailWithUI;
 
 Authenticate a user passwordlessly using an email one-time code sent to the specified user's email address.
 
-<Note>Only available with Dedicated Wallet.</Note>
-
 ### Arguments
 
 - `email` (String): The user email to log in with
@@ -369,11 +367,8 @@ break;
 
 Authenticate a user passwordlessly using a one-time code sent to the specified phone number.
 
-[List of Currently Blocked Country Codes](/docs/home/faq/dedicated-wallet#questions-around-sms)
+[List of Currently Blocked Country Codes](/docs/home/faq#questions-around-sms)
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 ### Arguments
 
 * `phoneNumber` (String): E.164 formatted phone number
@@ -445,9 +440,6 @@ break;
 
 Initiates the update email flow that allows a user to change their email address.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 ### Arguments
 
 * `email` (String): The new email to update to
@@ -769,7 +761,7 @@ await magic.wallet.showSendTokensUI()
 
 Displays an iframe modal with various on ramp providers for the user to purchase crypto from directly to their wallet.
 
-To use the fiat on ramp for Dedicated Wallet apps, **you will need to contact us to KYB with the payment provider prior to use.** Once approved, ensure this toggle is enabled in your developer dashboard via the ‘Widget UI’ tab.
+To use the fiat on ramp, **you will need to contact us to KYB with the payment provider prior to use.** Once approved, ensure this toggle is enabled in your developer dashboard via the ‘Widget UI’ tab.
 
 ### Arguments
 
@@ -830,7 +822,6 @@ magic.user.revealPrivateKey;
 
 Generates a [Decentralized Id Token](/docs/authentication/features/decentralized-id) which acts as a proof of authentication to resource servers.
 
-<Note>Only available with Dedicated Wallet.</Note>
 ### Arguments
 
 - `lifespan?` (Number): Will set the lifespan of the generated token. Defaults to 900s (15 mins).
@@ -867,9 +858,6 @@ const idToken = await magic.user.getIdToken();
 
 Generates a [Decentralized ID token](/docs/authentication/features/decentralized-id) with optional serialized data.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 ### Arguments
 
 * `lifespan?` (Number): Will set the lifespan of the generated token. Defaults to 900s (15 mins).
@@ -1027,9 +1015,6 @@ console.log(await magic.user.isLoggedIn()); // => `false`
 
 Displays an iframe with the current user’s settings. Allows for users to update their email address, enable multi-factor authentication, and add a recovery factor.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 Access to [MFA](/docs/authentication/features/mfa) and [account recovery](docs/authentication/features/account-recovery) require paid add-ons.
 
 ### Arguments
@@ -1074,7 +1059,6 @@ try {
 
 Displays an iframe revealing the current user’s private key. Allows for users to take their private key to another wallet. Neither Magic nor the developer can see this key; only the end user can.
 
-<Note>Only available with Dedicated Wallet.</Note>
 ### Arguments
 
 - _None_
@@ -1176,9 +1160,6 @@ magic.oauth.loginWithPopup;
 
 Starts the OAuth 2.0 login flow.
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 ### [#Arguments](#arguments-20)
 
 * `provider` (String): The OAuth provider being used for login
@@ -1270,9 +1251,6 @@ magic.openid.loginWithOIDC;
 Authenticate users via your preferred OIDC client.
 
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 ### Arguments
 
 * `jwt` (String): The OIDC token from your identity provider

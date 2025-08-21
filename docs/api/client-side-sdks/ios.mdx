@@ -89,7 +89,7 @@ magic.auth.loginWithEmailOTP;
 
 Authenticate a user passwordlessly using a one-time code sent to the specified phone number.
 
-[List of Currently Blocked Country Codes](/docs/home/faq/dedicated-wallet#questions-around-sms)
+[List of Currently Blocked Country Codes](/docs/home/faq#questions-around-sms)
 
 ### Arguments
 
@@ -678,7 +678,7 @@ class MagicViewController: UIViewController {
 Displays an iframe with the current user’s settings. Allows for users to update their email address, enable multi-factor authentication, and add a recovery factor.
 
 <Note>
-Only available with Dedicated Wallet. Access to [MFA](/docs/authentication/features/mfa) and [account recovery](docs/authentication/features/account-recovery) require paid add-ons.
+Access to [MFA](/docs/authentication/features/mfa) and [account recovery](docs/authentication/features/account-recovery) require paid add-ons.
 </Note>
 ### Arguments
 
@@ -836,9 +836,6 @@ magic.openid.loginWithOIDC;
 Authenticate users via your preferred OIDC client.
 
 
-<Note>
-Only available with Dedicated Wallet.
-</Note>
 ### Arguments
 
 * `jwt` (String): The OIDC token from your identity provider
