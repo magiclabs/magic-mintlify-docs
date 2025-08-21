@@ -179,8 +179,7 @@
         "docs/wallets/features/personal-signatures",
         "docs/wallets/features/fiat-on-ramps",
         "docs/wallets/features/third-party-wallets",
-        "docs/wallets/features/key-export",
-        "docs/wallets/features/wallet-pregen"
+        "docs/wallets/features/key-export"
       ]
     },
     {
