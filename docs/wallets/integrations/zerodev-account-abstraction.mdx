@@ -24,7 +24,7 @@ The `make-scoped-magic-app` CLI tool is an easy way to bootstrap new projects 
 
 <Tabs>
 <Tab title="Bash">
-```json
+```bash
 npx make-scoped-magic-app \\
     --template nextjs-dedicated-wallet \\
     --network ethereum-sepolia \\
@@ -41,7 +41,7 @@ This will bootstrap the starting point of the tutorial for you. In the scaffolde
 
 <Tabs>
 <Tab title="Plaintext">
-```json
+```bash
 // Publishable API Key found in the Magic Dashboard
 NEXT_PUBLIC_MAGIC_API_KEY=pk_live_FF619AE0AEC9D473
 
@@ -66,13 +66,13 @@ Run the following command to install the required dependencies:
 
 <Tabs>
 <Tab title="NPM">
-```json
+```bash
 npm install @zerodev/sdk @zerodev/presets @zerodev/ecdsa-validator viem permissionless
 
 ```
 </Tab>
 <Tab title="Yarn">
-```json
+```bash
 yarn add @zerodev/sdk @zerodev/presets @zerodev/ecdsa-validator viem permissionless
 
 ```
@@ -105,7 +105,7 @@ Next, we create the kernel client by calling `createEcdsaKernelAccountClient` an
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 const magicProvider = await magic?.wallet.getProvider();
 const smartAccountSigner = await providerToSmartAccountSigner(magicProvider);
 
@@ -154,7 +154,7 @@ Now when a user logs in with Magic, their account is associated with the ZeroDev
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 ```
 </Tab>
 </Tabs>
@@ -179,7 +179,7 @@ First things first. Open `src/components/magic/cards/UserInfoCard.tsx` and make 
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 ```
 </Tab>
 </Tabs>
@@ -192,7 +192,7 @@ Next, update the `getBalance` function to set both balances:
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 ```
 </Tab>
 </Tabs>
@@ -204,7 +204,7 @@ Next, update the TSX for displaying the balance to show both balances:
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 ```
 </Tab>
 </Tabs>
@@ -217,7 +217,7 @@ The only remaining balance reference is to set the initial balance while loading
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 ```
 </Tab>
 </Tabs>
@@ -230,7 +230,7 @@ Now find the `CardLabel` and div that displays the address and modify it to use 
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 ```
 </Tab>
 </Tabs>
@@ -241,11 +241,11 @@ Now find the `CardLabel` and div that displays the address and modify it to use 
 
 Lastly, update the `copy` function to reference `magicAddress` instead of `publicAddress`, otherwise you’ll get an error.
 
-Typescript
+
 
 <Tabs>
-<Tab title="">
-```json
+<Tab title="Typescript">
+```typescript
 ```
 </Tab>
 </Tabs>
@@ -269,11 +269,11 @@ In `src/components/magic/cards/SendTransactionCard.tsx`, import the the `kernelC
 To transfer funds from your smart contract account, ensure you have enough test tokens to send. You can get some test Sepolia tokens [here](https://sepoliafaucet.com/).
 </Note>
 
-Typescript
+
 
 <Tabs>
-<Tab title="">
-```json
+<Tab title="Typescript">
+```typescript
 ```
 </Tab>
 </Tabs>

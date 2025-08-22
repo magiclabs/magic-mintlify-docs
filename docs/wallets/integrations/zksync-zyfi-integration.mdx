@@ -32,7 +32,7 @@ The `make-scoped-magic-app` CLI tool is an easy way to bootstrap new projects 
 
 <Tabs>
 <Tab title="Bash">
-```json
+```bash
 npx make-scoped-magic-app \\\\
     --template nextjs-dedicated-wallet \\\\
     --network zksync-sepolia \\\\
@@ -49,7 +49,7 @@ This will bootstrap the starting point of the tutorial for you. In the scaffolde
 
 <Tabs>
 <Tab title="Plaintext">
-```json
+```bash
 // Publishable API Key found in the Magic Dashboard
 NEXT_PUBLIC_MAGIC_API_KEY=pk_live_1234567890
 
@@ -69,13 +69,13 @@ Run the following command to install the required dependencies:
 
 <Tabs>
 <Tab title="NPM">
-```json
+```bash
 npm install viem
 
 ```
 </Tab>
 <Tab title="Yarn">
-```json
+```bash
 yarn add viem
 ```
 </Tab>
@@ -91,7 +91,7 @@ Inside of `src/components/magic/MagicProvider.tsx`, import the following from Vi
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 import { Client, createWalletClient, custom } from 'viem';
 import { zkSyncSepoliaTestnet } from 'viem/chains';
 import { eip712WalletActions } from "viem/zksync"
@@ -105,7 +105,7 @@ Next, create the wallet client state that will be used when we send the transact
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 const [walletClient, setWalletClient] = useState<Client | null>(null);
 ```
 </Tab>
@@ -124,7 +124,7 @@ Inside the useEffect underneath the `magic` variable declaration, add the follow
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 const initializeWalletClient = async () => {
   const provider = await magic?.wallet.getProvider()
   const walletClient = createWalletClient({
@@ -147,7 +147,7 @@ Now that we’ve created and set the wallet client, we want to export it so we g
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 const value = useMemo(() => {
   return {
     magic,
@@ -200,7 +200,7 @@ After the first conditionals, add the following API call to Zyfi:
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 const res = await fetch('<https://api.zyfi.org/api/erc20_paymaster/v1>', {
   method: 'POST',
   headers: {
@@ -282,7 +282,7 @@ Once you receive the response, you can use destructuring assignment to extract t
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 const { txData: apiTxData } = await res.json()
 
 const paymasterTxData = {
@@ -308,7 +308,7 @@ The data is correctly formatted and the transaction is ready to submit to the ne
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 try {
   const hash = await walletClient?.sendTransaction(paymasterTxData)
   setHash(hash)

@@ -25,7 +25,7 @@ The `make-scoped-magic-app` CLI tool is an easy way to bootstrap new projects 
 
 <Tabs>
 <Tab title="Bash">
-```json
+```bash
 npx make-scoped-magic-app \\
     --template nextjs-dedicated-wallet \\
     --network ethereum-sepolia \\
@@ -40,7 +40,7 @@ This will bootstrap the starting point of the tutorial for you. In the scaffolde
 
 <Tabs>
 <Tab title="Plaintext">
-```json
+```bash
 // Publishable API Key found in the Magic Dashboard
 NEXT_PUBLIC_MAGIC_API_KEY=pk_live_1234567890
 
@@ -62,13 +62,13 @@ Run the following command to install the required dependencies:
 
 <Tabs>
 <Tab title="NPM">
-```json
+```bash
 npm install @alchemy/aa-accounts @alchemy/aa-alchemy @alchemy/aa-core viem@\^1.16.0
 
 ```
 </Tab>
 <Tab title="Yarn">
-```json
+```bash
 yarn add @alchemy/aa-accounts @alchemy/aa-alchemy @alchemy/aa-core viem@\^1.16.0
 
 ```
@@ -103,7 +103,7 @@ Below is an example of how to connect to a Magic user’s smart contract account
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 const lightAccountFactoryAddress = getDefaultLightAccountFactoryAddress(chain)
 
 const magicSigner: SmartAccountSigner | undefined = useMemo(() => {
@@ -140,7 +140,7 @@ When we put all of this together, we get the following:
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 import {
   getDefaultLightAccountFactoryAddress,
   LightSmartContractAccount,
@@ -237,7 +237,7 @@ First things first. Open `src/components/magic/cards/UserInfoCard.tsx` and chang
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 // Change this
 const [balance, setBalance] = useState("...")
 const [publicAddress] = useState(
@@ -264,7 +264,7 @@ Next, update the `getBalance` function to set both balances:
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 const getBalance = useCallback(async () => {
   if (magicAddress && web3) {
     const magicBalance = await web3.eth.getBalance(magicAddress)
@@ -294,7 +294,7 @@ Next, update the TSX for displaying the balance to show both balances:
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 <div className="flex flex-col gap-2">
   <div className="code">
     Magic: {magicBalance.substring(0, 7)} {getNetworkToken()}
@@ -315,7 +315,7 @@ The only remaining balance reference is to set the initial balance while loading
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 // Change this
 useEffect(() => {
   setBalance('...');
@@ -336,7 +336,7 @@ useEffect(() => {
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 const { provider } = useAlchemyProvider()
 
 const getSmartContractAccount = useCallback(async () => {
@@ -359,7 +359,7 @@ Now find the `CardLabel` and div that displays the address and modify it to use 
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 <CardLabel
   leftHeader="Addresses"
   rightAction={
@@ -403,7 +403,7 @@ To transfer funds from your smart contract account, ensure you have enough test 
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 const sendTransaction = useCallback(async () => {
     if (!web3?.utils.isAddress(toAddress)) {
       return setToAddressError(true);

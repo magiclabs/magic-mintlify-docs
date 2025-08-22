@@ -35,7 +35,7 @@ The `make-scoped-magic-app` CLI tool is an easy way to bootstrap new projects 
 
 <Tabs>
 <Tab title="Bash">
-```json
+```bash
 npx make-scoped-magic-app \
     --template nextjs-dedicated-wallet \
     --network ethereum-sepolia \
@@ -52,7 +52,7 @@ From your MoonPay business dashboard, click on the "Developers" tab on the left 
 
 <Tabs>
 <Tab title=".env">
-```json
+```bash
 // Publishable API Key found in the Magic Dashboard
 NEXT_PUBLIC_MAGIC_API_KEY=pk_live_1234567890
 
@@ -74,13 +74,13 @@ Run the following command to install the required dependencies:
 
 <Tabs>
 <Tab title="NPM">
-```json
+```bash
 npm install @moonpay/moonpay-react
 
 ```
 </Tab>
 <Tab title="Yarn">
-```json
+```bash
 yarn add @moonpay/moonpay-react
 
 ```
@@ -95,7 +95,7 @@ Since we’re using Next.js, it is recommended to import the provider dynamicall
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 import dynamic from 'next/dynamic';
 
 const MoonPayProvider = dynamic(
@@ -113,7 +113,7 @@ Inside the return statement and below the Magic provider, wrap the rest of the a
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 
 <MagicProvider>
   <MoonPayProvider
@@ -138,7 +138,7 @@ Similarly to the provider we created in the previous step, it is recommended to 
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 import dynamic from 'next/dynamic';
 
 const MoonPayBuyWidget = dynamic(
@@ -158,7 +158,7 @@ The first thing we need to do is create a variable named `isVisible`. This will 
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 const [isVisible, setIsVisible] = useState<boolean>(false)
 ```
 </Tab>
@@ -179,7 +179,7 @@ In the return statement of the `SendTransaction` card, inside the `getFaucetUrl(
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 <div className="flex flex-col gap-2">
   <a href={getFaucetUrl()} target="_blank" rel="noreferrer">
     <FormButton onClick={() => null} disabled={false}>
