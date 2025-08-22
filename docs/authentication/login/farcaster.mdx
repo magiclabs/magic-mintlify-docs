@@ -33,16 +33,15 @@ Farcaster Login works as an extension to Magic SDK. To add Farcaster Login to yo
 
 <Tabs>
 <Tab title="NPM">
-```json
+```bash
 npm install magic-sdk @magic-ext/farcaster
-
-````
+```
 </Tab>
-<Tab title="Yarn">
-```json
-yarn add magic-sdk @magic-ext/farcaster
-````
 
+<Tab title="Yarn">
+```bash
+yarn add magic-sdk @magic-ext/farcaster
+```
 </Tab>
 </Tabs>
 
@@ -51,8 +50,8 @@ yarn add magic-sdk @magic-ext/farcaster
 When creating your Magic instance, you'll need to add an instance of `FarcasterExtension` to the Magic constructor:
 
 <Tabs>
-<Tab title="Web">
-```json
+<Tab title="Javascript">
+```javascript
 import { Magic } from 'magic-sdk';
 import { FarcasterExtension } from '@magic-ext/farcaster';
 
@@ -77,7 +76,7 @@ extensions: [new FarcasterExtension()],
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { FarcasterExtension } from '@magic-ext/farcaster';
 
@@ -96,8 +95,7 @@ try {
 } catch {
   // Handle errors if required!
 }
-````
-
+```
 </Tab>
 </Tabs>
 
@@ -107,49 +105,47 @@ A white-label Farcaster Login flow is available when passing `showUI: false` to 
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { FarcasterExtension } from '@magic-ext/farcaster';
 
 const magic = new Magic('YOUR_API_KEY', {
-extensions: [new FarcasterExtension()],
+  extensions: [new FarcasterExtension()],
 });
 
 try {
-const handle = magic.farcaster.login({ showUI: false });
+  const handle = magic.farcaster.login({ showUI: false });
 
-handle
-.on("channel", (channel) => {
-console.log("channel URL", channel.url)
-// display custom UI with QR code
-})
-.on("success", (data) => {
-// get Farcaster user information
-})
-.on('done', (did) => {
-⁠ // get DID Token
-.on("failed", (e) => {
-// user rejects
-})
-⁠ .on('error', (e) => {
-⁠ // handle error
-⁠ }
-⁠⁠ .on('settled', (e) => {
-⁠ // handle resolve or reject
-⁠ }
+  handle
+    .on("channel", (channel) => {
+    console.log("channel URL", channel.url)
+    // display custom UI with QR code
+    })
+    .on("success", (data) => {
+    // get Farcaster user information
+    })
+    .on('done', (did) => {
+    // get DID Token
+    })
+    .on("failed", (e) => {
+    // user rejects
+    })
+    .on('error', (e) => {
+    // handle error
+    })
+    .on('settled', (e) => {
+    // handle resolve or reject
+    });
 } catch (err) {
-// handle errors
+  // handle errors
 }
-
 ```
+
 </Tab>
 </Tabs>
 
-
-
 ## Resources
 
-* [Quickstart](/docs/home/quickstart/cli)
-* [Web API documentation](/docs/api/client-side-sdks/web#loginwithemailotp)
-* [React Native API documentation](/docs/api/client-side-sdks/react-native#loginwithemailotp)
-```
+- [Quickstart](/docs/home/quickstart/cli)
+- [Web API documentation](/docs/api/client-side-sdks/web#loginwithemailotp)
+- [React Native API documentation](/docs/api/client-side-sdks/react-native#loginwithemailotp)

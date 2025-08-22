@@ -13,19 +13,19 @@ To interact with the Polygon network, you can use _either_ [`ethers.js`](https:
 
 <Tabs>
 <Tab title="NPM">
-```json
+```bash
 npm install ethers magic-sdk
 
 ```
 </Tab>
 <Tab title="Yarn">
-```json
+```bash
 yarn add ethers magic-sdk
 
 ```
 </Tab>
 <Tab title="CDN">
-```json
+```javascript
 <script src="https://cdn.ethers.io/scripts/ethers-v4.min.js"></script>
 ```
 </Tab>
@@ -36,19 +36,19 @@ yarn add ethers magic-sdk
 
 <Tabs>
 <Tab title="NPM">
-```json
+```bash
 npm install web3 magic-sdk
 
 ```
 </Tab>
 <Tab title="Yarn">
-```json
+```bash
 yarn add web3 magic-sdk
 
 ```
 </Tab>
 <Tab title="CDN">
-```json
+```javascript
 <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 ```
 </Tab>
@@ -71,7 +71,7 @@ Mainnet Block Explorer URL: [https://polygonscan.com/](https://polygonscan.com/)
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 const customNodeOptions = {
   rpcUrl: 'https://polygon-rpc.com/', // Polygon RPC URL
@@ -92,7 +92,7 @@ Mumbai ⁠Testnet Faucet: [https://faucet.polygon.technology/](https://faucet.po
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 const customNodeOptions = {
   rpcUrl: 'https://rpc-amoy.polygon.technology/', // Polygon RPC URL
@@ -114,7 +114,7 @@ const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: customNodeOptions
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -140,7 +140,7 @@ const receipt = await tx.wait();
 ```
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -175,7 +175,7 @@ Example is using **web3@1.2.0** or later version.
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';
 
@@ -205,7 +205,7 @@ const receipt = await web3.eth.sendTransaction({
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -223,7 +223,7 @@ const signedMessage = await signer.signMessage(originalMessage);
 ```
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -245,7 +245,7 @@ const signedMessage = await signer.signMessage(originalMessage);
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -278,7 +278,7 @@ const signedMessage = await signer.provider.send(method, params);
 ```
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -316,7 +316,7 @@ const signedMessage = await signer.provider.send(method, params);
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -370,7 +370,7 @@ const signedMessage = await signer.provider.send(method, params);
 ```
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -429,7 +429,7 @@ const signedMessage = await signer.provider.send(method, params);
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 /*
   Sign Typed Data v4 adds support for
   arrays and recursive data types.
@@ -490,7 +490,7 @@ const signedMessage = await signer.provider.send(method, params);
 ```
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 /*
   Sign Typed Data v4 adds support for
   arrays and recursive data types.
@@ -563,7 +563,7 @@ The following examples assume **web3@>=4.0.2**
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```javascript
 
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';
@@ -587,7 +587,7 @@ const signedMessage = await web3.eth.personal.sign(originalMessage, fromAddress,
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```javascript
 
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';
@@ -623,7 +623,7 @@ const signedMessage = await web3.eth.signTypedData(fromAddress, message, true)
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```javascript
 
 /*
   Sign Typed Data v4 adds support for
@@ -689,7 +689,7 @@ const signedMessage = await web3.eth.signTypedData(fromAddress, message);
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -709,7 +709,7 @@ const balance = ethers.formatEther(
 ```
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -734,7 +734,7 @@ const balance = ethers.utils.formatEther(
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';

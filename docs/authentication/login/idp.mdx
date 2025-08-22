@@ -62,8 +62,8 @@ Please call the POST endpoint for initial configuration of your application's cu
 **Example POST call**
 
 <Tabs>
-<Tab title="Web">
-```json
+<Tab title="Javascript">
+```javascript
 const magic_resp = await fetch("https://api.magic.link/v1/api/magic_client/federated_idp", {
   method: "POST",
   headers: {
@@ -109,7 +109,7 @@ const provider_Id = magic_json.data['id']
 ````
 </Tab>
 <Tab title="Curl">
-```json
+```bash
 curl --request POST \
   --url 'https://api.magic.link/v1/api/magic_client/federated_idp' \
   --header 'X-Magic-Secret-Key: <your_magic_secret_api_key>' \
@@ -145,7 +145,7 @@ curl --request POST \
   "message": "",
   "status": "ok"
 }
-````
+```
 
 </Tab>
 </Tabs>
@@ -157,8 +157,8 @@ To update, you will need to affix your application's `providerId` to the PATCH e
 **Example PATCH call**
 
 <Tabs>
-<Tab title="Web">
-```json
+<Tab title="Javascript">
+```javascript
 const magic_resp = await fetch("https://api.magic.link/v1/api/magic_client/federated_idp/<provider_Id>", {
   method: "PATCH",
   headers: {
@@ -203,8 +203,8 @@ const provider_Id = magic_json.data['id']
 
 ````
 </Tab>
-<Tab title="Web">
-```json
+<Tab title="Curl">
+```bash
 curl --request POST \
   --url 'https://api.magic.link/v1/api/magic_client/federated_idp/<provider_Id>' \
   --header 'X-Magic-Secret-Key: <your_magic_secret_api_key>' \
@@ -249,31 +249,34 @@ curl --request POST \
 To use your own identity provider, you must install both `magic-sdk` and the OIDC extension: `@magic-ext/oidc`
 
 <Tabs>
-  <Tab title="NPM">```json npm install magic-sdk @magic-ext/oidc ⁠ ```</Tab>
-  <Tab title="Yarn">```json yarn add magic-sdk @magic-ext/oidc ```</Tab>
+  <Tab title="NPM">```bash npm install magic-sdk @magic-ext/oidc ⁠ ```</Tab>
+  <Tab title="Yarn">```bash yarn add magic-sdk @magic-ext/oidc ```</Tab>
 </Tabs>
 
 ## Initialization
 
 ### Import Required Modules
 
-Import the necessary modules into your application. You'll need the `magic-sdk`, `@magic-ext/oidc`, and your identity provider's OIDC client library. Here's an example in JavaScript:
+Import the necessary modules into your application. You&apos;ll need the `magic-sdk`, `@magic-ext/oidc`, and your identity provider&apos;s OIDC client library. Here&apos;s an example in JavaScript:
 
 <Tabs>
   <Tab title="Javascript">
-    ```json import {Magic} from "magic-sdk"; import {OpenIdExtension} from
-    "@magic-ext/oidc"; // this is an example of an OIDC client library import{" "}
-    {useAuth0} from "@auth0/auth0-react"; ```
+    ```javascript 
+    import { Magic } from "magic-sdk"; 
+    import { OpenIdExtension } from "@magic-ext/oidc"; 
+    // this is an example of an OIDC client library 
+    import { useAuth0 } from "@auth0/auth0-react"; 
+    ```
   </Tab>
 </Tabs>
 
-### [#Initialize the Magic SDK](#initialize-the-magic-sdk)
+### Initialize the Magic SDK
 
 Create an instance of the Magic SDK with your API key. Ensure that you include the `OpenIdExtension` to enable OIDC functionality:
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 const magic = new Magic('<your_magic_api_key>', {
   // exposes the openid module in your magic instance
   extensions: [new OpenIdExtension()],
@@ -288,7 +291,7 @@ Now that you've set up a Magic client, you can proceed to authenticate users via
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 // identity providers have different ways to authenticate a user
 // this is an example of an OIDC client library's login methods
 import { useAuth0 } from "@auth0/auth0-react";
@@ -307,7 +310,7 @@ After authentication, you can obtain the OIDC token from the identity provider. 
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 // identity providers have varying ways to obtain an OIDC token
 // this is an example of an OIDC client library's token methods
 import { useAuth0 } from "@auth0/auth0-react";
@@ -331,11 +334,14 @@ You can also utilize relevant Magic client SDK methods in the User Module to ext
 
 <Tabs>
   <Tab title="Javascript">
-    ```json // metadata will only contain issuer and publicAddress const
-    metadata = await magic.user.getInfo(); // DID token default lifespan 15
-    minutes const didToken = await magic.user.getIdToken(); // returns true if
-    auth user has a valid Magic session const boolean = await
-    magic.user.isLoggedIn(); ```
+    ```javascript 
+    // metadata will only contain issuer and publicAddress 
+    const metadata = await magic.user.getInfo(); 
+    // DID token default lifespan 15 minutes 
+    const didToken = await magic.user.getIdToken(); 
+    // returns true if auth user has a valid Magic session 
+    const boolean = await magic.user.isLoggedIn();
+    ```
   </Tab>
 </Tabs>
 
@@ -343,7 +349,7 @@ A full example incorporating web3 and Magic OIDC:
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 import Web3 from 'web3';
 import { Magic } from 'magic-sdk';
 import { OpenIdExtension } from '@magic-ext/oidc';
@@ -386,4 +392,3 @@ This error can be thrown when the OIDC token is invalid in some way. The token c
 * [Auth0 demo](https://425tmh.csb.app/)
 * [Cognito demo](https://45z33v.csb.app/)
 
-```

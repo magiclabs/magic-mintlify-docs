@@ -60,7 +60,7 @@ Provide the Secret Key and/or Client ID in your Curl commands, along with the ch
 
 <Tabs>
 <Tab title="Add">
-```json
+```bash
 curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allowlist/add' \
 --header 'X-Magic-Secret-Key: sk_live_06FC010DA25ED4F2' \
 --header 'Content-Type: application/json' \
@@ -73,7 +73,7 @@ curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allow
 ```
 </Tab>
 <Tab title="Remove">
-```json
+```bash
 curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allowlist/remove' \
 --header 'X-Magic-Secret-Key: sk_live_06FC010DA25ED4F2' \
 --header 'Content-Type: application/json' \
@@ -86,7 +86,7 @@ curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allow
 ```
 </Tab>
 <Tab title="Retrieve">
-```json
+```bash
 curl --location --request GET 'https://api.magic.link/v2/api/magic_client/allowlist' \
 --header 'X-Magic-Secret-Key: sk_live_3DACC9A06D5CDC09' \
 --header 'Content-Type: application/json' \

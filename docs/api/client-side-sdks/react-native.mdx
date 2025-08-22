@@ -13,7 +13,7 @@ The Magic SDK for React Native supports both Bare and Expo. Follow the installat
 
 <Tabs>
 <Tab title="Bare NPM">
-```json
+```bash
 npm install --save @magic-sdk/react-native-bare
 npm install --save react-native-device-info # Required Peer Dependency
 npm install --save @react-native-community/async-storage # Required Peer Dependency
@@ -34,7 +34,7 @@ yarn start
 ````
 </Tab>
 <Tab title="Bare Yarn">
-```json
+```bash
 yarn add @magic-sdk/react-native-bare
 ⁠yarn add react-native-device-info # Required Peer Dependency
 yarn add @react-native-community/async-storage # Required Peer Dependency
@@ -52,7 +52,7 @@ yarn start
 
 </Tab>
 <Tab title="Expo NPM">
-```json
+```bash
 npm install --save @magic-sdk/react-native-expo
 npm install --save react-native-webview@^11.26.0 # Required Peer Dependency
 npm install --save react-native-safe-area-context # Required Peer Dependency
@@ -64,7 +64,7 @@ expo start
 ````
 </Tab>
 <Tab title="Expo Yarn">
-```json
+```bash
 yarn add @magic-sdk/react-native-expo
 yarn add react-native-webview@^11.26.0 # Required Peer Dependency
 yarn add react-native-safe-area-context # Required Peer Dependency
@@ -98,7 +98,7 @@ Initialize Magic instance.
 
 <Tabs>
 <Tab title="Bare">
-```json
+```javascript
 import { Magic } from '@magic-sdk/react-native-bare'
 
 const magic = new Magic('PUBLISHABLE_API_KEY')
@@ -106,7 +106,7 @@ const magic = new Magic('PUBLISHABLE_API_KEY')
 ````
 </Tab>
 <Tab title="Expo">
-```json
+```javascript
 import { Magic } from '@magic-sdk/react-native-expo'
 
 const magic = new Magic('PUBLISHABLE_API_KEY')
@@ -127,7 +127,7 @@ To facilitate events between the Magic `<iframe>` context and your React Native 
 
 <Tabs>
 <Tab title="JSX">
-```json
+```javascript
 
 function App() {
 return (
@@ -148,7 +148,7 @@ The Auth Module and it's members are accessible on the Magic SDK instance by the
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -184,7 +184,7 @@ Authenticate a user passwordlessly using an email one-time code sent to the spec
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -219,7 +219,7 @@ A white-label OTP login flow is available when passing `showUI: false` to this l
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -337,7 +337,7 @@ To achieve a fully white-labeled experience, you will need to implement some cus
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic, RPCError, RPCErrorCode } from '@magic-sdk/react-native-bare';
@@ -381,7 +381,7 @@ Authenticate a user passwordlessly using a one-time code sent to the specified p
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -409,7 +409,7 @@ To achieve a fully white-labeled experience, you will need to implement some cus
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic, RPCError, RPCErrorCode } from '@magic-sdk/react-native-bare';
@@ -453,7 +453,7 @@ Initiates the update email flow that allows a user to change their email address
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -494,7 +494,7 @@ To achieve a fully white-labeled experience, you will need to implement some cus
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic, RPCError, RPCErrorCode } from '@magic-sdk/react-native-bare';
@@ -535,7 +535,7 @@ The Wallet Module and it's members are accessible on the Magic SDK instance by t
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -573,7 +573,7 @@ Renders a simple login form UI to collect the user's email address and authentic
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
 // Expo React Native
@@ -618,7 +618,7 @@ Displays the fully [navigable wallet](/docs/wallets/customization/widget-ui) to 
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -649,7 +649,7 @@ Displays an iframe with the current user’s wallet address in a QR Code.
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -680,7 +680,7 @@ Displays an iframe that displays the user’s token balances from the currently 
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -711,7 +711,7 @@ Displays an iframe that shows the user’s NFTs in both an aggregated and detail
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -742,7 +742,7 @@ Displays an iframe with UI to help the user transfer tokens from their account t
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -775,7 +775,7 @@ To use the fiat on ramp, **you will need to contact us to KYB with the payment p
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -796,7 +796,7 @@ The User Module and it's members are accessible on the Magic SDK instance by the
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -834,7 +834,7 @@ Generates a [Decentralized Id Token](/docs/authentication/features/decentralized
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -871,7 +871,7 @@ Generates a [Decentralized ID token](/docs/authentication/features/decentralized
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -919,7 +919,7 @@ Retrieves information for the authenticated user.
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -955,7 +955,7 @@ Checks if a user is currently logged in to the Magic SDK.
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -991,7 +991,7 @@ Logs out the currently authenticated Magic user
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1029,7 +1029,7 @@ Access to [MFA](/docs/authentication/features/mfa) and [account recovery](docs/a
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1071,7 +1071,7 @@ Displays an iframe revealing the current user’s private key. Allows for users 
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1110,7 +1110,7 @@ Only necessary with when the `useStorageCache` option is set to `true`.
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 import { Magic } from "magic-sdk"
 
@@ -1136,7 +1136,7 @@ To use the OAuth Module in your application, install `@magic-ext/oauth` along wi
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1190,7 +1190,7 @@ Starts the OAuth 2.0 login flow.
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1226,7 +1226,7 @@ To use the OpenID Module in your application, install `@magic-ext/oidc` along wi
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1264,7 +1264,7 @@ Authenticate users via your preferred OIDC client.
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1301,7 +1301,7 @@ The `SDKError` class is exposed for `instanceof` operations.
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { SDKError } from '@magic-sdk/react-native-bare';
@@ -1324,7 +1324,7 @@ if (err instanceof SDKError) {
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { SDKErrorCode } from '@magic-sdk/react-native-bare';
@@ -1359,7 +1359,7 @@ The `RPCError` class is exposed for `instanceof` operations:
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { RPCError } from '@magic-sdk/react-native-bare';
@@ -1382,7 +1382,7 @@ if (err instanceof RPCError) {
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { RPCErrorCode } from '@magic-sdk/react-native-bare';
@@ -1434,7 +1434,7 @@ The `ExtensionError` class is exposed for `instanceof` operations:
 
 <Tabs>
 <Tab title="Bare">
-```json
+```javascript
 import { ExtensionError } from '@magic-sdk/react-native-bare';
 
 try {
@@ -1448,7 +1448,7 @@ if (err instanceof ExtensionError) {
 ````
 </Tab>
 <Tab title="Expo">
-```json
+```javascript
 import { ExtensionError } from '@magic-sdk/react-native-expo';
 try {
   // Something async...
@@ -1478,7 +1478,7 @@ Look for additional event types documented near the method they relate to. Event
 
 <Tabs>
 <Tab title="Bare">
-```json
+```javascript
 
 import { Magic } from "@magic-sdk/react-native-bare";
 
@@ -1494,7 +1494,7 @@ req
 ````
 </Tab>
 <Tab title="Expo">
-```json
+```javascript
 import { Magic } from '@magic-sdk/react-native-expo';
 
 const req = magic.auth.loginWithEmailOTP({ email: 'hello@magic.link' });
@@ -1546,7 +1546,7 @@ We hreaView`showing the background. By default, the background will be white. If
 
 <Tabs>
   <Tab title="Javascript">
-    ```json
+    ```javascript
     <magic.Relayer backgroundColor="#0000FF" />
     ```
   </Tab>
@@ -1558,7 +1558,7 @@ When an app is opened without an internet connection, any request to the Magic S
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 {
   "code": "MODAL_NOT_READY",
   "rawMessage": "Modal is not ready."
@@ -1571,7 +1571,7 @@ It's good practice to use [@react-native-community/netinfo](https://www.npmjs.co
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 import { useInternetConnection } from '@magic-sdk/react-native-expo';
 
 export default function App() {
@@ -1609,7 +1609,7 @@ Before re-authenticating a user, [install the Magic Client SDK​](#installation
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
