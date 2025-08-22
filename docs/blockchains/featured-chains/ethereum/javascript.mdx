@@ -13,20 +13,17 @@ To interact with the EVM network, you can use _either_[`ethers.js`](https://docs
 
 <Tabs>
 <Tab title="NPM">
-```json
+```bash
 npm install ethers magic-sdk
-
-````
+```
 </Tab>
 <Tab title="Yarn">
+```bash
 yarn add ethers magic-sdk
-
-```json
-````
-
+```
 </Tab>
 <Tab title="CDN">
-```json
+```javascript
 ⁠<script src="https://cdn.ethers.io/scripts/ethers-v4.min.js"></script>
 ```
 </Tab>
@@ -34,28 +31,19 @@ yarn add ethers magic-sdk
 
 ### Web3.js
 
-NPM
-
-Yarn
-
-CDN
-
 <Tabs>
 <Tab title="NPM">
-```json
+```bash
 npm install web3 magic-sdk
-
-````
+```
 </Tab>
 <Tab title="Yarn">
+```bash
 yarn add web3 magic-sdk
-⁠
-```json
-````
-
+```
 </Tab>
 <Tab title="CDN">
-```json
+```javascript
 <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 ```
 </Tab>
@@ -79,25 +67,21 @@ Ethereum provider is only supported in **magic-sdk@1.0.1 or later** versions.
 <Tabs>
 <Tab title="Ethers (v6)">
 ```javascript
-
 import { Magic } from "magic-sdk";
 import { ethers } from "ethers";
 
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY');
 const provider = new ethers.BrowserProvider(magic.rpcProvider);
-
-````
+```
 </Tab>
 <Tab title="Ethers (v5)">
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY');
 const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
-```json
-
-````
-
+```
 </Tab>
 </Tabs>
 
@@ -105,24 +89,22 @@ const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 const { Magic } = require('magic-sdk');
 const ethers = require('ethers');
 
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY');
 const provider = new ethers.BrowserProvider(magic.rpcProvider);
-
-````
+```
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 const { Magic } = require('magic-sdk');
 const ethers = require('ethers');
 
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY');
 const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
-````
-
+```
 </Tab>
 </Tabs>
 
@@ -132,15 +114,13 @@ const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
 
 <Tabs>
 <Tab title="Typescript">
-```json
-
+```javascript
 import { Magic } from "magic-sdk";
 import Web3 from "web3";
 
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY');
 const web3 = new Web3(magic.rpcProvider); // Or window.web3 = ...
-
-````
+```
 </Tab>
 </Tabs>
 
@@ -148,15 +128,13 @@ const web3 = new Web3(magic.rpcProvider); // Or window.web3 = ...
 
 <Tabs>
 <Tab title="Typescript">
-```json
-
+```javascript
 const { Magic } = require('magic-sdk');
 const Web3 = require('web3');
 
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY');
 const web3 = new Web3(magic.rpcProvider); // Or window.web3 = ...
-````
-
+```
 </Tab>
 </Tabs>
 
@@ -166,7 +144,7 @@ Mainnet Block Explorer: [https://etherscan.io](https://etherscan.io/)
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
 network: 'mainnet',
@@ -174,7 +152,7 @@ network: 'mainnet',
 ⁠
 // Magic's node infrastructure maps 'mainnet' and 'testnet' to 2 unique set of addresses.
 
-````
+```
 </Tab>
 </Tabs>
 
@@ -187,14 +165,14 @@ Sepolia Testnet Faucet: [https://sepoliafaucet.com/](https://sepoliafaucet.com/)
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
   network: 'sepolia',
 });
 
 // Magic's node infrastructure maps 'mainnet' and 'sepolia' to 2 unique set of addresses.
-````
+```
 
 </Tab>
 </Tabs>
@@ -212,7 +190,7 @@ The use of a custom node will require the RPC URL to the project's Content Secur
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 const customNodeOptions = {
 rpcUrl: 'http://127.0.0.1:7545', // Your own node URL
@@ -226,7 +204,7 @@ network: customNodeOptions,
 
 // This configuration will map addresses in line with Magic's 'mainnet' setup.
 
-````
+```
 </Tab>
 </Tabs>
 
@@ -244,7 +222,7 @@ All Web.js examples are using **web3@1.2.0** or later version.
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -267,11 +245,11 @@ const tx = await signer.sendTransaction({
 // Wait for transaction to be mined
 const receipt = await tx.wait();
 
-````
+```
 
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -294,7 +272,7 @@ value: amount,
 // Wait for transaction to be mined
 const receipt = await tx.wait();
 
-````
+```
 </Tab>
 </Tabs>
 
@@ -302,7 +280,7 @@ const receipt = await tx.wait();
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';
@@ -324,7 +302,7 @@ const receipt = await web3.eth.sendTransaction({
   to: destination,
   value: amount,
 });
-````
+```
 
 </Tab>
 </Tabs>
@@ -337,7 +315,7 @@ const receipt = await web3.eth.sendTransaction({
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -351,10 +329,10 @@ const signer = await provider.getSigner();
 const originalMessage = 'YOUR_MESSAGE';
 const signedMessage = await signer.signMessage(originalMessage);
 
-````
+```
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -368,7 +346,7 @@ const signer = provider.getSigner();
 
 const originalMessage = 'YOUR_MESSAGE';
 const signedMessage = await signer.signMessage(originalMessage);
-````
+```
 
 </Tab>
 </Tabs>
@@ -377,7 +355,7 @@ const signedMessage = await signer.signMessage(originalMessage);
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -408,10 +386,10 @@ const method = 'eth_signTypedData';
 
 const signedMessage = await signer.provider.send(method, params);
 
-````
+```
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -442,7 +420,7 @@ const params = [originalMessage, fromAddress];
 const method = 'eth_signTypedData';
 
 const signedMessage = await signer.provider.send(method, params);
-````
+```
 
 </Tab>
 </Tabs>
@@ -451,7 +429,7 @@ const signedMessage = await signer.provider.send(method, params);
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -503,10 +481,10 @@ const method = 'eth_signTypedData_v3';
 
 const signedMessage = await signer.provider.send(method, params);
 
-````
+```
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -558,7 +536,7 @@ const params = [fromAddress, originalMessage];
 const method = 'eth_signTypedData_v3';
 
 const signedMessage = await signer.provider.send(method, params);
-````
+```
 
 </Tab>
 </Tabs>
@@ -567,7 +545,7 @@ const signedMessage = await signer.provider.send(method, params);
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 /*
   Sign Typed Data v4 adds support for
   arrays and recursive data types.
@@ -626,10 +604,10 @@ const method = 'eth_signTypedData_v4';
 
 const signedMessage = await signer.provider.send(method, params);
 
-````
+```
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 /*
   Sign Typed Data v4 adds support for
   arrays and recursive data types.
@@ -687,7 +665,7 @@ const params = [fromAddress, originalMessage];
 const method = 'eth_signTypedData_v4';
 
 const signedMessage = await signer.provider.send(method, params);
-````
+```
 
 </Tab>
 </Tabs>
@@ -698,7 +676,7 @@ const signedMessage = await signer.provider.send(method, params);
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```javascript
 
 import { Magic } from "magic-sdk";
 import Web3 from "web3";
@@ -715,7 +693,7 @@ const originalMessage = 'YOUR_MESSAGE';
 
 const signedMessage = await web3.eth.personal.sign(originalMessage, fromAddress);
 
-````
+```
 </Tab>
 </Tabs>
 
@@ -724,7 +702,7 @@ const signedMessage = await web3.eth.personal.sign(originalMessage, fromAddress)
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```javascript
 
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';
@@ -751,7 +729,7 @@ const message = [
 ];
 
 signedMessage = await web3.eth.signTypedData(fromAddress, message, true);
-````
+```
 
 </Tab>
 </Tabs>
@@ -760,7 +738,7 @@ signedMessage = await web3.eth.signTypedData(fromAddress, message, true);
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```javascript
 
 /\*
 Sign Typed Data v4 adds support for
@@ -816,7 +794,7 @@ contents: 'Hello, from Magic!',
 
 const signedMessage = await web3.eth.signTypedData(fromAddress, message);
 
-````
+```
 </Tab>
 </Tabs>
 
@@ -826,7 +804,7 @@ const signedMessage = await web3.eth.signTypedData(fromAddress, message);
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -845,11 +823,11 @@ const balance = ethers.formatEther(
   await provider.getBalance(address), // Balance is in wei
 );
 
-````
+```
 
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -869,7 +847,7 @@ const balance = ethers.utils.formatEther(
 await provider.getBalance(address), // Balance is in wei
 );
 
-````
+```
 </Tab>
 </Tabs>
 
@@ -877,7 +855,7 @@ await provider.getBalance(address), // Balance is in wei
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';
@@ -894,7 +872,7 @@ const address = (await web3.eth.getAccounts())[0];
 const balance = web3.utils.fromWei(
   await web3.eth.getBalance(address), // Balance is in wei
 );
-````
+```
 
 </Tab>
 </Tabs>
@@ -905,7 +883,7 @@ In this example, we'll be demonstrating how to use Magic with ethers.js or web3.
 
 <Tabs>
 <Tab title="Solidity">
-```json
+```javascript
 
 pragma solidity ^0.5.10;
 
@@ -922,7 +900,7 @@ message = newMessage;
 }
 }
 
-````
+```
 </Tab>
 </Tabs>
 
@@ -933,7 +911,7 @@ message = newMessage;
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -956,11 +934,11 @@ const contract = await contractFactory.deploy('Hello World!');
 // Wait for deployment to finish
 const receipt = contract.deploymentTransaction()
 
-````
+```
 
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -986,7 +964,7 @@ const contract = await contractFactory.deploy('Hello World!');
 // Wait for deployment to finish
 const receipt = await contract.deployed();
 
-````
+```
 </Tab>
 </Tabs>
 
@@ -994,7 +972,7 @@ const receipt = await contract.deployed();
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';
 
@@ -1021,7 +999,7 @@ const contractInstance = await contract
   .send({
     from: fromAddress,
   });
-````
+```
 
 </Tab>
 </Tabs>
@@ -1032,7 +1010,7 @@ const contractInstance = await contract
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -1051,10 +1029,10 @@ const contract = new ethers.Contract(contractAddress, contractABI, signer);
 // Read message from smart contract
 const message = await contract.message();
 
-````
+```
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -1073,7 +1051,7 @@ const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
 // Read message from smart contract
 const message = await contract.message();
-````
+```
 
 </Tab>
 </Tabs>
@@ -1082,7 +1060,7 @@ const message = await contract.message();
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 import { Magic } from "magic-sdk";
 import Web3 from "web3";
@@ -1103,7 +1081,7 @@ const contract = new web3.eth.Contract(JSON.parse(contractABI), contractAddress)
 // Read message from smart contract
 const message = await contract.methods.message().call();
 
-````
+```
 </Tab>
 </Tabs>
 
@@ -1113,7 +1091,7 @@ const message = await contract.methods.message().call();
 
 <Tabs>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -1135,11 +1113,11 @@ const tx = await contract.update('NEW_MESSAGE');
 // Wait for transaction to finish
 const receipt = await tx.wait();
 
-````
+```
 
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -1162,7 +1140,7 @@ const tx = await contract.update('NEW_MESSAGE');
 // Wait for transaction to finish
 const receipt = await tx.wait();
 
-````
+```
 </Tab>
 </Tabs>
 
@@ -1170,7 +1148,7 @@ const receipt = await tx.wait();
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';
@@ -1190,7 +1168,7 @@ const contract = new web3.eth.Contract(JSON.parse(contractABI), contractAddress)
 
 // Send transaction to smart contract to update message and wait to finish
 const receipt = await contract.methods.update('NEW_MESSAGE').send({ from: fromAddress });
-````
+```
 
 </Tab>
 </Tabs>

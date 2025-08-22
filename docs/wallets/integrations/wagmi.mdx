@@ -12,12 +12,12 @@ Add `wagmi` and `@magiclabs/wagmi-connector` using your chosen package manager.
 
 <Tabs>
 <Tab title="NPM">
-```json
+```bash
 npm install wagmi @magiclabs/wagmi-connector
 ```
 </Tab>
 <Tab title="Yarn">
-```json
+```bash
 yarn add wagmi @magiclabs/wagmi-connector
 ```
 </Tab>
@@ -32,7 +32,7 @@ Finally, pass the configuration to the `WagmiConfig` component to make WAGMI hoo
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
@@ -94,7 +94,7 @@ With the Magic connector added, you can use WAGMI hooks for everything else per 
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```typescript
 import { useConnect } from 'wagmi'
 
 const SignIn = () => {
@@ -122,7 +122,7 @@ export default SignIn
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 import { useSignMessage } from 'wagmi'
 
 function Component() {
@@ -150,7 +150,7 @@ function Component() {
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 import { useSendTransaction } from 'wagmi'
 ⁠import { parseEther } from "ethers/lib/utils"
 
@@ -184,7 +184,7 @@ function Component() {
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 import { useBalance } from 'wagmi'
 
 function Component() {

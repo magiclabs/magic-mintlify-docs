@@ -39,7 +39,7 @@ Account recovery methods are available on the following client-side SDKs:
 To enable SMS recovery for your users:
 
 <Tabs>
-  <Tab title="Javascript">```json ⁠magic.user.showSettings(); ```</Tab>
+  <Tab title="Javascript">```javascript ⁠magic.user.showSettings(); ```</Tab>
 </Tabs>
 
 This will display a settings modal where users will be able to add a recovery factor.
@@ -48,7 +48,7 @@ Additionally, Magic supports a deep linking flow where you can send users straig
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 magic.user.showSettings({ page:'recovery'  });
 ```
 </Tab>
@@ -62,7 +62,7 @@ Once a recovery factor is a set up, a user can recover their account. To enable 
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 magic.user.recoverAccount({ email: email })
 ```
 </Tab>

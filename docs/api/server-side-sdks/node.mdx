@@ -15,13 +15,13 @@ The Magic class is the entry-point to the Magic SDK. It must be instantiated wit
 
 <Tabs>
 <Tab title="NPM">
-```json
+```bash
 npm install @magic-sdk/admin
 
 ````
 </Tab>
 <Tab title="Yarn">
-```json
+```bash
 yarn add @magic-sdk/admin
 ````
 
@@ -41,8 +41,8 @@ yarn add @magic-sdk/admin
 ### Initialization
 
 <Tabs>
-<Tab title="Typescript">
-```json
+<Tab title="Javascript">
+```javascript
 
 const { Magic } = require('@magic-sdk/admin');
 
@@ -63,8 +63,8 @@ magic = await Magic.init('SECRET_API_KEY', { endpoint: '...' });
 The Token Module and its members are accessible on the Magic Admin SDK instance by the `token` property.
 
 <Tabs>
-<Tab title="Typescript">
-```json
+<Tab title="Javascript">
+```javascript
 
 const { Magic } = require('@magic-sdk/admin');
 
@@ -118,8 +118,8 @@ Decodes a Decentralized ID Token from a Base64 string into a tuple of its indivi
 The `claim` is automatically parsed to the following interface:
 
 <Tabs>
-<Tab title="Typescript">
-```json
+<Tab title="Javascript">
+```javascript
 
 interface Claim {
 iat: number; // Issued At Timestamp
@@ -139,8 +139,8 @@ add: string; // (optional) Misc additional signed data
 As a convenience, the above interface is available to your code in [TypeScript](https://www.typescriptlang.org/):
 
 <Tabs>
-<Tab title="Typescript">
-```json
+<Tab title="Javascript">
+```javascript
 
 import { Claim } from '@magic-sdk/admin';
 ````
@@ -258,8 +258,8 @@ Logs a user out of all client-side Magic SDK sessions given the user's DID token
 The following multichain methods require the use of the enum `WalletType` that is exported from the Magic Admin SDK.
 
 <Tabs>
-<Tab title="Typescript">
-```json
+<Tab title="Javascript">
+```javascript
 ⁠enum WalletType {
   ETH = 'ETH',
   HARMONY = 'HARMONY',
@@ -350,8 +350,8 @@ Retrieves information about user, including their multichain wallets, by the sup
 The Utils Module and it's members are accessible on the Magic Admin SDK instance by the `utils` property.
 
 <Tabs>
-<Tab title="Typescript">
-```json
+<Tab title="Javascript">
+```javascript
 
 const { Magic } = require('@magic-sdk/admin');
 
@@ -381,8 +381,8 @@ magic.utils.parseAuthorizationHeader;
 The `SDKError` class is exposed for `instanceof` operations.
 
 <Tabs>
-<Tab title="Typescript">
-```json
+<Tab title="Javascript">
+```javascript
 
 import { SDKError } from '@magic-sdk/admin';
 
@@ -401,8 +401,8 @@ catch (err) {
 Additionally, an enumeration of relevant error codes is also exposed for convenience and human readability:
 
 <Tabs>
-<Tab title="Typescript">
-```json
+<Tab title="Javascript">
+```javascript
 
 import { ErrorCode } from "@magic-sdk/admin";
 

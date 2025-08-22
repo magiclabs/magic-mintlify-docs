@@ -33,13 +33,13 @@ Install the Magic WebAuthn extension:
 
 <Tabs>
 <Tab title="NPM">
-```json
+```bash
 npm install magic-sdk @magic-ext/webauthn
 
 ```
 </Tab>
 <Tab title="Yarn">
-```json
+```bash
 yarn add magic-sdk @magic-ext/webauthn
 ```
 </Tab>
@@ -54,8 +54,8 @@ Create your Magic SDK instance with the WebAuthn extension:
 Javascript
 
 <Tabs>
-<Tab title="">
-```json
+<Tab title="Javascript">
+```javascript
 
 import { Magic } from 'magic-sdk';
 import { WebAuthnExtension } from '@magic-ext/webauthn';
@@ -77,7 +77,7 @@ Register new users with the `registerNewUser` function in the `webauthn` module.
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 // register a user by their username
 try {
   const token = await magic.webauthn.registerNewUser({ username: 'username' });
@@ -96,7 +96,7 @@ Authenticate users with the `login` method in the `webauthn` module. You must pr
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 // login a user by their username
 try {
   const token = await magic.webauthn.login({ username: 'username' });
@@ -115,7 +115,7 @@ Get WebAuthn-specific metadata with the `getMetadata` method in the `webauthn` m
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 // Initiates the flow to get webauthn metadata for current account.
 try {
   const metadata = await magic.webauthn.getMetadata();

@@ -41,7 +41,7 @@ The following is an example of how to generate the identity proof in JavaScript 
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';
 
@@ -148,7 +148,7 @@ Once both proofs have been collected, they should be combined and submitted to t
 **Payload**:
 
 <Tabs>
-<Tab title="Json">
+<Tab >
 ```json
 ⁠ {
   "primary_proof": {
@@ -230,7 +230,7 @@ Unlinking accounts will follow a similar pattern as linking accounts, except onl
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 const message = {
   "subject": {
       "address": primary_address // the wallet address of the primary account for which the secondary accounts become delegates
@@ -262,11 +262,11 @@ const message = {
 <Tabs>
 <Tab title="Json">
 ```json
-⁠ {
+⁠{
   "primary_proof": {
     "msg": "eyJ0eXBlcyI6eyJEZWxlZ2F0ZUlkZW50aXR5UmVxdWVzdCI6W3sibmFtZSI6InN1YmplY3QiLCJ0eXBlIjoiV2FsbGV0SWRlbnRpdHkifSx7Im5hbWUiOiJkZWxlZ2F0ZWRUbyIsInR5cGUiOiJVc2VySWRlbnRpdHkifSx7Im5hbWUiOiJpc3N1ZXIiLCJ0eXBlIjoiYWRkcmVzcyJ9LHsibmFtZSI6ImFjdGlvbiIsInR5cGUiOiJzdHJpbmcifSx7Im5hbWUiOiJ2YWxpZEZyb20iLCJ0eXBlIjoidWludDI1NiJ9LHsibmFtZSI6InZhbGlkVG8iLCJ0eXBlIjoidWludDI1NiJ9LHsibmFtZSI6Im5vbmNlIiwidHlwZSI6InVpbnQyNTYifV0sIldhbGxldElkZW50aXR5IjpbeyJuYW1lIjoiYWRkcmVzcyIsInR5cGUiOiJhZGRyZXNzIn1dLCJVc2VySWRlbnRpdHkiOlt7Im5hbWUiOiJ1c2VySWQiLCJ0eXBlIjoic3RyaW5nIn1dLCJFSVA3MTJEb21haW4iOlt7Im5hbWUiOiJuYW1lIiwidHlwZSI6InN0cmluZyJ9LHsibmFtZSI6InZlcnNpb24iLCJ0eXBlIjoic3RyaW5nIn0seyJuYW1lIjoiY2hhaW5JZCIsInR5cGUiOiJ1aW50MjU2In0seyJuYW1lIjoic2FsdCIsInR5cGUiOiJieXRlczMyIn1dfSwiZG9tYWluIjp7Im5hbWUiOiJtYWdpYy5saW5rIiwidmVyc2lvbiI6IjEuMC4xIiwiY2hhaW5JZCI6MSwic2FsdCI6IjB4NGVlMGFlZDgxNjI4NjIwMTA0NDYwMzlhNTRiZWUyZTZjNGYzMzE4MjJhNDZjOWRjNGQ0ZDY4MWQxNWU5NWJlZSJ9LCJwcmltYXJ5VHlwZSI6IkRlbGVnYXRlSWRlbnRpdHlSZXF1ZXN0IiwibWVzc2FnZSI6eyJzdWJqZWN0Ijp7ImFkZHJlc3MiOiIweDgzMzViYjg4OGM5NUJGQmIwYzJFRTNkMjQ5NDA5RTcyQmQwNTkzRDEifSwiZGVsZWdhdGVkVG8iOnsidXNlcklkIjoiZlgxRFJtOWJ6LWY5T2IyZ09ycmNqdldDQkdlcHJXbWI2MzFKTjU0Z1Rwcz0ifSwiaXNzdWVyIjoiMHg4MzM1YmI4ODhjOTVCRkJiMGMyRUUzZDI0OTQwOUU3MkJkMDU5M0QxIiwiYWN0aW9uIjoidW5saW5rIiwidmFsaWRGcm9tIjoxNjk1NjgzOTY3MTc5LCJ2YWxpZFRvIjowLCJub25jZSI6MX19",
     "sig": "0x713287dfa096f5fa83596b2644a1abc74b0ca38ea86c166ae715fc2a3abcbf6415b2dfad8c713453e2cdbeb08136baaa874bbbfaf0a20ebd05ed2cc7a4e8206c1b"
-}
+  }
 }
 ```
 </Tab>

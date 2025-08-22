@@ -16,33 +16,23 @@ The `loginWithMagicLink` function sends an authentication request to the user. T
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 import  {  Magic  }  from  'magic-sdk';
 
 const magic = new Magic('API_KEY');
 
 // log in a user by their email
-
 try {
-
 await magic.auth.loginWithMagicLink({ email: 'hello@example.com' });
-
 } catch {
-
 // Handle errors if required!
-
 }
 
 // log in a user by their email, without showing an out-of-the box UI.
-
 try {
-
 await magic.auth.loginWithMagicLink({ email: 'hello@example.com', showUI: false });
-
 } catch {
-
 // Handle errors if required!
-
 }
 
 ````
@@ -55,41 +45,24 @@ To achieve a fully white-labeled experience, you will need to implement some cus
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 import  {  Magic,  RPCError,  RPCErrorCode  }  from  'magic-sdk';
-
-
 
 const magic =  new  Magic('API_KEY');
 
-
-
 try  {
-
   await magic.auth.loginWithMagicLink({ email:  'hello@example.com', showUI:  false  });
-
-}  catch  (err)  {
-
+} catch  (err)  {
   if  (err instanceof  RPCError)  {
-
-  switch  (err.code)  {
-
-  case  RPCErrorCode.MagicLinkFailedVerification:
-
-  case  RPCErrorCode.MagicLinkExpired:
-
-  case  RPCErrorCode.MagicLinkRateLimited:
-
-  case  RPCErrorCode.UserAlreadyLoggedIn:
-
-  // Handle errors accordingly
-
-  break;
-
+    switch  (err.code)  {
+      case  RPCErrorCode.MagicLinkFailedVerification:
+      case  RPCErrorCode.MagicLinkExpired:
+      case  RPCErrorCode.MagicLinkRateLimited:
+      case  RPCErrorCode.UserAlreadyLoggedIn:
+      // Handle errors accordingly
+      break;
+    }
   }
-
-  }
-
 }
 ````
 
@@ -104,14 +77,10 @@ To enable Test Mode, provide `testMode: true` to the SDK constructor.
 
 <Tabs>
 <Tab title="Javascript">
-```json
-import  {  Magic  }  from  'magic-sdk';
+```javascript
+import { Magic } from 'magic-sdk';
 
-const magic = new Magic('YOUR_API_KEY', {
-
-testMode: true,
-
-});
+const magic = new Magic('YOUR_API_KEY', { testMode: true });
 
 ````
 </Tab>
@@ -127,24 +96,24 @@ With Test Mode enabled, you can assert the desired behavior through the email ad
 
 <Tabs>
 <Tab title="Succeed">
-```json
+```javascript
 magic.auth.loginWithMagicLink({ email: 'test+success@magic.link' });
 ````
 
 </Tab>
 <Tab title="Fail">
-```json
+```javascript
 magic.auth.loginWithMagicLink({ email: 'test+fail@magic.link' });
-
-````
+```
 </Tab>
+
 <Tab title="Fail With Error">
-```json
+```javascript
 import { RPCErrorCode } from 'magic-sdk';
 
 magic.auth.loginWithMagicLink({ email: `test+fail_with_{${RPCErrorCode.MagicLinkFailedVerification}}@magic.link` });
-````
 
+````
 </Tab>
 </Tabs>
 
@@ -160,12 +129,13 @@ In practice, you can assert a successful login with:
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 magic.auth.loginWithMagicLink({
   email:
     'test+success_with_{0x89A3983da27fF0eFCF901F74C4df84e0450A17B7:0x19de850af732e9e5745915162d707d6d8cf013ce7b2862e93081b0c8883bdfae}@magic.link',
 });
-```
+````
+
 </Tab>
 </Tabs>
 

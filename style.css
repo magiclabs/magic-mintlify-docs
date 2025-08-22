@@ -1,0 +1,3 @@
+html.light .code-block [data-component-part="code-block-root"] {
+  background: rgb(45, 42, 85) !important;
+}

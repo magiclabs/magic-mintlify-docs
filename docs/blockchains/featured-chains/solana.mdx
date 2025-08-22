@@ -8,13 +8,13 @@ To get started, install the following dependencies for your project:
 
 <Tabs>
 <Tab title="NPM">
-```json
+```bash
 npm install @magic-ext/solana @solana/web3.js magic-sdk
 
 ```
 </Tab>
 <Tab title="Yarn">
-```json
+```bash
 yarn add @magic-ext/solana @solana/web3.js magic-sdk
 ```
 </Tab>
@@ -28,7 +28,7 @@ The Magic class is the entry-point to the Magic SDK. It must be instantiated wit
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```javascript
 
 import { Magic } from 'magic-sdk';
 import { SolanaExtension } from '@magic-ext/solana';
@@ -48,7 +48,7 @@ const magic = new Magic('YOUR_API_KEY', {
 
 <Tabs>
 <Tab title="Javascript">
-```json
+```javascript
 
 <script src="https://auth.magic.link/sdk"></script>
 <script type="text/javascript" src="https://auth.magic.link/sdk/extension/solana"></script>
@@ -78,7 +78,7 @@ To sign a standard Solana blockchain transaction, call the `magic.solana.signTra
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```javascript
 import * as web3 from "@solana/web3.js";
 
 // Ensure you have Magic initialized with the Solana extension
@@ -127,7 +127,7 @@ const signature = await connection?.sendRawTransaction(
 
 <Tabs>
 <Tab title="Typescript">
-```json
+```javascript
 
 // Ensure you have Magic initialized with the Solana extension
 // Ensure that user is already authenticated

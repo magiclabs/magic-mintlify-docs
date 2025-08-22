@@ -30,7 +30,7 @@ Once the method is invoked, Magic will provide information about the transaction
 
 <Tabs>
 <Tab title="Web3.js">
-```json
+```javascript
 import Web3 from 'web3';
 import { Magic } from 'magic-sdk';
 
@@ -59,10 +59,10 @@ console.log("Transaction receipt:", receipt);
 console.error(error);
 });
 
-````
+```
 </Tab>
 <Tab title="Ethers (v6)">
-```json
+```javascript
 import { ethers } from 'ethers';
 import { Magic } from 'magic-sdk';
 
@@ -80,11 +80,11 @@ const tx = await signer.sendTransaction(txnParams);
 
 console.log(tx);
 
-````
+```
 
 </Tab>
 <Tab title="Ethers (v5)">
-```json
+```javascript
 import { ethers } from 'ethers';
 import { Magic } from 'magic-sdk';
 
@@ -115,4 +115,3 @@ See how to brand this experience with your own logo and colors in the [customiza
 * [Quickstart](/docs/home/quickstart/cli)
 * [Supported EVM RPC Methods](/docs/api/client-side-sdks/web#evm-rpc-methods)
 
-```

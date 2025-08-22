@@ -19,7 +19,7 @@ The **Deletion Request API** enables developers to delete users' information in 
 
 The bulk deletion endpoint supports deleting multiple user accounts in a single API call. To use this endpoint, send a POST request to the following URL with a payload that includes the list of email addresses associated with the accounts you want to delete.
 
-```json
+```bash
 curl --location 'https://api.magic.link/v1/api/auth_user/deletion_request' \
 --header 'X-Magic-Secret-Key: <SECRET_KEY>' \
 --header 'Content-Type: application/json' \
@@ -37,7 +37,7 @@ Upon successful request processing, the API returns a response with lists of pro
 - `processed`: An array of emails that have been queued for deletion.
 - `unprocessed`: An array of emails that were not found and hence not processed.
 
-```json
+```bash
 {
   "processed": ["user1@example.com"],
   "unprocessed": ["user2@example.com"]

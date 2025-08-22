@@ -1,0 +1,2 @@
+# Ignore MDX files to prevent code fence formatting issues
+*.mdx
