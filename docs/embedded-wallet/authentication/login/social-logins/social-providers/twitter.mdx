@@ -1,0 +1,102 @@
+---
+title: Twitter Social Login with Magic
+sidebarTitle: Twitter
+description: "You can allow your users to sign up & log in to your web application with their Twitter account."
+---
+
+
+## Usage
+
+## Prerequisites
+
+* You will need a [Twitter](https://developer.twitter.com/en/apply-for-access) Developer account (only free access is required)
+    * **Note:** Twitter has recently deprecated their legacy Twitter API access tiers (essential and elevated packages are no longer available). If your application has been suspended as part of this, please sign up for the Free access tier to have it unsuspended.
+* You will need to have the [Magic SDK installed](/docs/embedded-wallet/api/overview) into your web application
+* You will need to have the [Magic SDK - OAuth Extension](/docs/embedded-wallet/authentication/login/social-logins/oauth-implementation) installed into your web application
+
+## Twitter Setup (v1 extension)
+
+After installing the OAuth extension, you can now enable Twitter Login for your Magic application:
+
+1.  Go to your [Magic Dashboard](https://dashboard.magic.link/login)
+2.  Select the Magic application for which you’d like to enable Twitter Login, or create a new application
+3.  Navigate to **Social Login** from the sidebar
+4.  Click the toggle for **Twitter**
+5.  Copy the **Redirect URI** field from your Magic Dashboard
+6.  Go to Twitter App Dashboard and navigate to **Projects & Apps**
+7.  In the **Overview** section, click on **Add Project**
+
+<Frame>
+  <img src="/images/twitter-step-1.webp" alt="twitter-step-1.png"/>
+</Frame>
+
+
+8.  Add your project name, use case and description
+<Frame>
+  <img src="/images/twitter-step-2.webp" alt="twitter-step-2.png"/>
+</Frame>
+
+
+9.  Make sure to copy the **API Key** and **API Key Secret** to the Magic dashboard, which you can then use with your application that connects to Twitter
+<Frame>
+  <img src="/images/twitter-step-3.webp" alt="twitter-step-3.png"/>
+</Frame>
+
+
+10. Navigate to the application on the sidebar and click **Set up** under **User authentication settings**
+<Frame>
+  <img src="/images/twitter-step-4.webp" alt="twitter-step-4.png"/>
+</Frame>
+
+11. Fill out all of the required permissions and app type information
+12. Paste the **Redirect URI** from the **Magic Dashboard** in the **Callback URI / Redirect URL** and add your applications **Website URL ⁠**
+<Frame>
+  <img src="/images/twitter-step-5.webp" alt="twitter-step-5.png"/>
+</Frame>
+
+
+13. After saving these details for the first time, Twitter will then display an OAuth 2.0 Client ID and Client Secret. **IMPORTANT:** These are **NOT** the keys that Magic requires and can be ignored. The correct keys are the **API Key** and **API Key Secret** from step 9 of this walkthrough.
+14. ⁠Return to your Magic Dashboard and click "**Test Connection**" to give your new Twitter OAuth flow a try!
+
+## Twitter Setup (v2 extension)
+
+1.  Go to your [Magic Dashboard](https://dashboard.magic.link/login)
+2.  Select the Magic application for which you’d like to enable Twitter Login, or create a new application
+3.  Navigate to **Social Login** from the sidebar
+4.  Click the toggle for **Twitter**
+5.  Go to Twitter App Dashboard and navigate to **Projects & Apps**
+6.  In the **Overview** section, click on **Add Project**
+
+<Frame>
+  <img src="/images/twitter-step-1.webp" alt="twitter-step-1.png"/>
+</Frame>
+
+7.  Add your project name, use case and description
+
+<Frame>
+  <img src="/images/twitter-step-2.webp" alt="twitter-step-1.png"/>
+</Frame>
+
+8.  Do **NOT** use the **API Key** and **Secret** under Consumer Keys. Make sure to copy the **Client ID** and **Client Secret** to the Magic dashboard, which you can then use with your application that connects to Twitter. Complete flow if OAuth 2.0 **Client ID** and **Client Secret** are not visible
+<Frame>
+  <img src="/images/Screenshot-2024-08-20.webp" alt=""/>
+</Frame>
+
+
+9.  Navigate to the application on the sidebar and click **Set up** under **User authentication settings**
+<Frame>
+  <img src="/images/twitter-step-4.webp" alt="twitter-step-4.png"/>
+</Frame>
+
+10. Fill out all of the required permissions and app type information
+11. Paste the **Redirect URI** you will pass as the **redirectURI** argument to the **loginWithRedirect** method, in the **Callback URI / Redirect URL** and add your applications **Website URL**
+<Frame>
+  <img src="/images/twitter-step-5.webp" alt="twitter-step-5.png"/>
+</Frame>
+
+12. After saving these details for the first time, Twitter will then display an OAuth 2.0 Client ID and Client Secret. **IMPORTANT:** These are the keys that Magic requires to use v2. Do **NOT** use the **API Key** and **API Key Secret** for v2.
+13. **"Test Connection"** function in dashboard will not work for v2.
+
+## Resources
+
+* [Twitter Social Login Demo](https://magic-oauth-v2-dun.vercel.app/)

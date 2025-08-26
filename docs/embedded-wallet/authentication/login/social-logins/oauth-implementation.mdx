@@ -1,0 +1,137 @@
+---
+title: OAuth Implementation
+description: "With Magic, you can use OAuth as an authentication mechanism, giving users a simple way to log in with supported social providers."
+---
+
+## Overview
+
+Applications can be integrated with the following social providers: [Google](/docs/embedded-wallet/authentication/login/social-logins/social-providers/google), [Facebook](/docs/embedded-wallet/authentication/login/social-logins/social-providers/facebook), [Twitter](/docs/embedded-wallet/authentication/login/social-logins/social-providers/twitter), [Apple](/docs/embedded-wallet/authentication/login/social-logins/social-providers/apple), [Discord](/docs/embedded-wallet/authentication/login/social-logins/social-providers/discord), [GitHub](/docs/embedded-wallet/authentication/login/social-logins/social-providers/github), [LinkedIn](/docs/embedded-wallet/authentication/login/social-logins/social-providers/linkedin), [Twitch](/docs/embedded-wallet/authentication/login/social-logins/social-providers/twitch), [Bitbucket](/docs/embedded-wallet/authentication/login/social-logins/social-providers/bitbucket) and [Microsoft](/docs/embedded-wallet/authentication/login/social-logins/social-providers/microsoft).
+
+### Compatibility
+
+<Note>
+  Magic SDK offers two OAuth
+  extensions: [v1](https://www.npmjs.com/package/@magic-ext/oauth)
+  and [v2](https://www.npmjs.com/package/@magic-ext/oauth2). For web
+  applications, it is recommended to use v2, while v1 should be used for mobile
+  applications.
+</Note>
+
+OAuth SDK methods are available via the following client-side SDKs:
+
+- [Web](/docs/embedded-wallet/api/client-side-sdks/web)
+- [React Native](/docs/embedded-wallet/api/client-side-sdks/react-native)
+- [iOS](/docs/embedded-wallet/api/client-side-sdks/ios)
+- [Android](/docs/embedded-wallet/api/client-side-sdks/android)
+
+## Use Cases
+
+- Log in and create wallets for end users with OAuth for authentication
+
+## Usage
+
+You can use OAuth by creating a project with our [CLI tool](/docs/home/quickstart) and selecting your preferred social providers when prompted. Alternatively, you can directly integrate it into your existing projects using the instructions below. **Refer to the **[**API documentation**](/docs/embedded-wallet/api/overview)** for information on how to install and initialize Magic for your existing project.**
+
+## Installation
+
+Social Logins work as an extension to Magic SDK. To add Social Login to your Magic integration, start by installing the **OAuth Extension**:
+
+<Tabs>
+<Tab title="NPM">
+```bash
+npm install magic-sdk @magic-ext/oauth2
+or
+npm install magic-sdk @magic-ext/oauth
+
+```
+</Tab>
+<Tab title="Yarn">
+```bash
+yarn add magic-sdk @magic-ext/oauth2
+or
+yarn add magic-sdk @magic-ext/oauth
+```
+
+</Tab>
+</Tabs>
+
+## Initialization
+
+When creating your Magic instance, you'll need to add an instance of `OAuthExtension` to the Magic constructor:
+
+<Tabs>
+<Tab title="Javascript">
+```javascript
+import { Magic } from 'magic-sdk';
+import { OAuthExtension } from '@magic-ext/oauth2';
+or
+import { OAuthExtension } from '@magic-ext/oauth';
+
+const magic = new Magic('YOUR_API_KEY', {
+extensions: [new OAuthExtension()],
+});
+
+```
+</Tab>
+</Tabs>
+
+
+## Login
+
+Once you've created a Magic instance, kick off the OAuth login with `loginWithRedirect` on the web and `loginWithPopup` on mobile.
+
+Once logged in, you will have access to a DID token that can be used with our [Admin SDK](/docs/embedded-wallet/api/server-side-sdks/node#token-module) to verify the user's information and wallet address on the backend. On mobile SDKs, this is provided as the result of `loginWithPopup`, while on the web SDK you can retrieve this and other information about the OAuth result with `getRedirectResult`. The `getRedirectResult` function returns an object that includes user information. On mobile, you can get similar user info, such as wallet address and email, with `getMetadata`.
+
+
+<Tabs>
+<Tab title="Javascript">
+```javascript
+const beginOAuthFlow = () => {
+  // if v1, use oauth module
+  await magic.oauth2.loginWithRedirect({ //
+    provider: '...' /* 'google', 'facebook', 'apple', or 'github'   */,
+    redirectURI: 'https://your-app.com/your/oauth/callback',
+    scope: ['user:email'] /* optional */,
+  });
+}
+
+// Call this upon redirect back to application
+const handleOAuthResult = () => {
+  // if v1, use oauth module
+  const result = await magic.oauth2.getRedirectResult();
+  console.log(`OAuth result: ${result}`);
+
+  // Handle result information as needed
+}
+
+```
+
+</Tab>
+</Tabs>
+
+The interface for the result of `getRedirectResult` is as follows:
+
+<Tabs>
+<Tab title="Javascript">
+```javascript
+interface OAuthRedirectResult {
+  magic: {
+    idToken: string;
+    userMetadata: MagicUserMetadata;
+  },
+  oauth: {
+    provider: string;
+    scope: string[];
+    accessToken: string;
+    userHandle: string;
+    userInfo: ...;
+  }
+};
+```
+</Tab>
+</Tabs>
+
+## Resources
+
+- [Web API documentation](/docs/embedded-wallet/api/client-side-sdks/web#loginwithredirect)
+- [React Native API documentation](/docs/embedded-wallet/api/client-side-sdks/react-native#loginwithpopup)

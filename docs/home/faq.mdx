@@ -12,7 +12,7 @@ sidebarTitle: FAQ
 
 <AccordionGroup>
 <Accordion title="Can the magic link redirect to a specific URL?">
-Yes! When calling the [`loginWithMagicLink`](/docs/api/client-side-sdks/web#loginwithmagiclink) sdk method you can pass in an optional [`redirectURI`](/docs/api/client-side-sdks/web#loginwithmagiclink) value which specifies the URL to redirect your user back to once the magic link is clicked. If no redirect is specified, the user will see a confirmation screen telling them to go back to the original tab where they will be logged in. We recommend this for an improved UX flow.
+Yes! When calling the [`loginWithMagicLink`](/docs/embedded-wallet/api/client-side-sdks/web#loginwithmagiclink) sdk method you can pass in an optional [`redirectURI`](/docs/embedded-wallet/api/client-side-sdks/web#loginwithmagiclink) value which specifies the URL to redirect your user back to once the magic link is clicked. If no redirect is specified, the user will see a confirmation screen telling them to go back to the original tab where they will be logged in. We recommend this for an improved UX flow.
 </Accordion>
 <Accordion title="Can I delete users from the dashboard?">
 
@@ -21,7 +21,7 @@ We don't support deleting users from your dashboard view. However if you are req
 </Accordion>
 <Accordion title="How can I service GDPR deletion requests from my users?
 ">
-Magic offers a [Deletion Request API](/docs/authentication/data/deletion-request) that enables developers to delete users' information in compliance with GDPR.
+Magic offers a [Deletion Request API](/docs/embedded-wallet/authentication/data/deletion-request) that enables developers to delete users' information in compliance with GDPR.
 
 </Accordion>
 <Accordion title="How do I restrict which Domains have access to my API key?">
@@ -96,9 +96,9 @@ _Currently blocked country codes:_
 
 <AccordionGroup>
   <Accordion title="How long does a user remain logged in?">
-By default, users remain authenticated with Magic for up to 7 days (or until they logout or browser data is cleared). Developers can enable and configure auto refresh sessions in our [developer dashboard](https://dashboard.magic.link), extending the session up to 90 days instead of 7. See [Session Management](/docs/authentication/security/session-management) for more.
+By default, users remain authenticated with Magic for up to 7 days (or until they logout or browser data is cleared). Developers can enable and configure auto refresh sessions in our [developer dashboard](https://dashboard.magic.link), extending the session up to 90 days instead of 7. See [Session Management](/docs/embedded-wallet/authentication/security/session-management) for more.
 
-If you're building a custom backend, we recommend our [Decentralized ID token](/docs/authentication/features/decentralized-id) as a way to initiate server-side sessions. The DID Token is a cryptographically-generated proof of user authentication. Your resource server simply needs to validate the token and set an HTTPS session cookie. This option gives you the flexibility of maintaining your own sessions without storing user secrets.
+If you're building a custom backend, we recommend our [Decentralized ID token](/docs/embedded-wallet/authentication/features/decentralized-id) as a way to initiate server-side sessions. The DID Token is a cryptographically-generated proof of user authentication. Your resource server simply needs to validate the token and set an HTTPS session cookie. This option gives you the flexibility of maintaining your own sessions without storing user secrets.
 
   </Accordion>
   <Accordion title="Session vs DID token?">
@@ -130,7 +130,7 @@ If you are a Web 3 developer, we strongly encourage you in particular to underst
 
 <AccordionGroup>
   <Accordion title="How can I allow users to view and export their private key?">
-Developers can now call the [revealPrivateKey](/docs/api/client-side-sdks/web#revealprivatekey) method to initaite the private key reveal flow within their apps. Users no longer need to leave your app to get their private keys! This method is available on our [Web](/docs/api/client-side-sdks/web), [React Native](/docs/api/client-side-sdks/react-native), and [Android](/docs/api/client-side-sdks/android) SDKs. If your app is not able to use this method please continue reading about how you may request a private key reveal page.
+Developers can now call the [revealPrivateKey](/docs/embedded-wallet/api/client-side-sdks/web#revealprivatekey) method to initaite the private key reveal flow within their apps. Users no longer need to leave your app to get their private keys! This method is available on our [Web](/docs/embedded-wallet/api/client-side-sdks/web), [React Native](/docs/embedded-wallet/api/client-side-sdks/react-native), and [Android](/docs/embedded-wallet/api/client-side-sdks/android) SDKs. If your app is not able to use this method please continue reading about how you may request a private key reveal page.
 
 <Frame>
   <img src="/images/reveal-page-ui_v3.webp" alt="" />
@@ -146,7 +146,7 @@ For applications that aren't able to call the reveal private key method, ⁠Magi
 
 The login methods available on your reveal page will match the login methods that you have activated in your [Magic developer dashboard](https://dashboard.magic.link/) (found under "Passwordless Login" and "Social Login"). Please make sure to deactivate any login methods that you are not using. Login methods can be added and removed at any point and changes will be immediately visible on your reveal page.
 
-The look of the UI for your reveal page will also match the settings configured within the "branding" section of your developer dashboard. This includes the logo shown, the primary color, as well as choosing between light/dark mode. More details on branding and UI customization can be [found here](/docs/wallets/customization/brand-and-theme).
+The look of the UI for your reveal page will also match the settings configured within the "branding" section of your developer dashboard. This includes the logo shown, the primary color, as well as choosing between light/dark mode. More details on branding and UI customization can be [found here](/docs/embedded-wallet/wallets/customization/brand-and-theme).
 
   </Accordion>
   <Accordion title="How can I make changes to my legacy private key reveal page?">

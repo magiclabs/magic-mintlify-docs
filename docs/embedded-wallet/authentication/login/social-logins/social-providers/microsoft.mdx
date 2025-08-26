@@ -1,0 +1,75 @@
+---
+title: Microsoft Social Login with Magic
+sidebarTitle: Microsoft
+description: "You can allow your users to sign up & log in to your web app with their Microsoft account."
+---
+
+## Usage
+
+### Prerequisites
+
+<Note>
+Magic SDK offers two OAuth extensions: [v1](https://www.npmjs.com/package/@magic-ext/oauth) and [v2](https://www.npmjs.com/package/@magic-ext/oauth2). For web applications, it is recommended to use v2, while v1 should be used for mobile applications.
+</Note>
+* You will need a [Microsoft Azure](https://portal.azure.com/) account
+* You will need to have the [Magic SDK installed](/docs/embedded-wallet/api/overview) into your web app
+* You will need to have the [Magic SDK - OAuth Extension](/docs/embedded-wallet/authentication/login/social-logins/oauth-implementation) installed into your web app
+
+## Microsoft Setup (v1 extension)
+
+After installing the OAuth extension, you can now enable Microsoft Login for your Magic app:
+
+1.  Go to your [Magic Dashboard](https://dashboard.magic.link/login)
+2.  Select the Magic app for which you’d like to enable Microsoft Login, or create a new app
+3.  Navigate to **Social Login** from the sidebar
+4.  Click the toggle for **Microsoft**
+5.  Copy the **Redirect URI** field from your Magic Dashboard
+6.  Follow Microsoft's [registration instructions](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app) to register your app
+7.  Search and navigate to **App registrations** section
+
+  <Frame>
+  <img src="/images/app-registration.webp" alt="app-registration.png"/>
+</Frame>
+
+
+8.  Click **New registration**
+<Frame>
+  <img src="/images/new-registration.webp" alt="new-registration.png"/>
+</Frame>
+
+9.  Make sure to select **personal Microsoft accounts** to allow your users to access your oauth app. Paste redirect link from Magic Dashboard into the **Redirect URI**.
+10. After register your app, select **Certificates & secrets** in the sidebar, click **New client secret**, and obtain the client secret **Value**
+<Frame>
+  <img src="/images/create-secret.webp" alt="create-secret.png"/>
+</Frame>
+
+
+11. Navigate back to **Overview** in the sidebar, obtain the Client ID
+<Frame>
+  <img src="/images/client-id.webp" alt="client-id.png"/>
+</Frame>
+
+12. Return to your Magic Dashboard and input the **Client ID** and **Client Secret** for your Microsoft OAuth app and click **“Save”**
+13. Click **"Test Connection"** to give your new Microsoft OAuth flow a try!
+
+## Microsoft Setup (v2 extension)
+* Follow above steps, but disregard Magic's **Redirect URI** in step 5
+* In step 9, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
+
+
+<Tabs>
+<Tab title="Javascript">
+```javascript
+await magic.oauth2.loginWithRedirect({
+  provider: 'microsoft',
+  redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with Microsoft
+});
+```
+</Tab>
+</Tabs>
+
+
+## Resources
+
+* [Microsoft Social Login Demo](https://magic-oauth-v2-dun.vercel.app/)
+
