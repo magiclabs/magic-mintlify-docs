@@ -42,10 +42,6 @@
     {
       "name": "Embedded Wallets",
       "url": "docs/embedded-wallet"
-    },
-    {
-      "name": "Blockchains",
-      "url": "docs/blockchains"
     }
   ],
   "anchors": [
@@ -86,6 +82,7 @@
     {
       "group": "Authentication",
       "pages": [
+        "docs/embedded-wallet/authentication/overview",
         {
           "group": "Login",
           "pages": [
@@ -252,71 +249,73 @@
     },
     {
       "group": "Blockchains",
-      "pages": ["docs/blockchains/overview"]
-    },
-    {
-      "group": "Featured Chains",
       "pages": [
-        "docs/blockchains/featured-chains/polygon",
+        "docs/embedded-wallet/blockchains/overview",
         {
-          "group": "Ethereum",
+          "group": "Featured Chains",
           "pages": [
-            "docs/blockchains/featured-chains/ethereum/javascript",
-            "docs/blockchains/featured-chains/ethereum/flutter",
-            "docs/blockchains/featured-chains/ethereum/ios",
-            "docs/blockchains/featured-chains/ethereum/android",
-            "docs/blockchains/featured-chains/ethereum/unity"
-          ]
-        },
-        "docs/blockchains/featured-chains/tezos",
-        "docs/blockchains/featured-chains/solana"
-      ]
-    },
-    {
-      "group": "Supported Chains",
-      "pages": [
-        {
-          "group": "EVM",
-          "pages": [
-            "docs/blockchains/other-chains/evm/arbitrum",
-            "docs/blockchains/other-chains/evm/astar-zkevm",
-            "docs/blockchains/other-chains/evm/base",
-            "docs/blockchains/other-chains/evm/berachain",
-            "docs/blockchains/other-chains/evm/binance-smart-chain",
-            "docs/blockchains/other-chains/evm/celo",
-            "docs/blockchains/other-chains/evm/chiliz",
-            "docs/blockchains/other-chains/evm/cronos",
-            "docs/blockchains/other-chains/evm/etherlink",
-            "docs/blockchains/other-chains/evm/fantom",
-            "docs/blockchains/other-chains/evm/flare",
-            "docs/blockchains/other-chains/evm/harmony",
-            "docs/blockchains/other-chains/evm/hedera",
-            "docs/blockchains/other-chains/evm/horizen-eon",
-            "docs/blockchains/other-chains/evm/loopring",
-            "docs/blockchains/other-chains/evm/moonbeam",
-            "docs/blockchains/other-chains/evm/optimism",
-            "docs/blockchains/other-chains/evm/rari-chain",
-            "docs/blockchains/other-chains/evm/sei",
-            "docs/blockchains/other-chains/evm/soneium",
-            "docs/blockchains/other-chains/evm/stability",
-            "docs/blockchains/other-chains/evm/xdc-network",
-            "docs/blockchains/other-chains/evm/zetachain",
-            "docs/blockchains/other-chains/evm/zksync"
+            "docs/embedded-wallet/blockchains/featured-chains/polygon",
+            {
+              "group": "Ethereum",
+              "pages": [
+                "docs/embedded-wallet/blockchains/featured-chains/ethereum/javascript",
+                "docs/embedded-wallet/blockchains/featured-chains/ethereum/flutter",
+                "docs/embedded-wallet/blockchains/featured-chains/ethereum/ios",
+                "docs/embedded-wallet/blockchains/featured-chains/ethereum/android",
+                "docs/embedded-wallet/blockchains/featured-chains/ethereum/unity"
+              ]
+            },
+            "docs/embedded-wallet/blockchains/featured-chains/tezos",
+            "docs/embedded-wallet/blockchains/featured-chains/solana"
           ]
         },
         {
-          "group": "Non-EVM",
+          "group": "Supported Chains",
           "pages": [
-            "docs/blockchains/other-chains/other/algorand",
-            "docs/blockchains/other-chains/other/aptos",
-            "docs/blockchains/other-chains/other/avalanche",
-            "docs/blockchains/other-chains/other/bitcoin",
-            "docs/blockchains/other-chains/other/cosmos",
-            "docs/blockchains/other-chains/other/flow",
-            "docs/blockchains/other-chains/other/icon",
-            "docs/blockchains/other-chains/other/near",
-            "docs/blockchains/other-chains/other/polkadot",
-            "docs/blockchains/other-chains/other/zilliqa"
+            {
+              "group": "EVM",
+              "pages": [
+                "docs/embedded-wallet/blockchains/other-chains/evm/arbitrum",
+                "docs/embedded-wallet/blockchains/other-chains/evm/astar-zkevm",
+                "docs/embedded-wallet/blockchains/other-chains/evm/base",
+                "docs/embedded-wallet/blockchains/other-chains/evm/berachain",
+                "docs/embedded-wallet/blockchains/other-chains/evm/binance-smart-chain",
+                "docs/embedded-wallet/blockchains/other-chains/evm/celo",
+                "docs/embedded-wallet/blockchains/other-chains/evm/chiliz",
+                "docs/embedded-wallet/blockchains/other-chains/evm/cronos",
+                "docs/embedded-wallet/blockchains/other-chains/evm/etherlink",
+                "docs/embedded-wallet/blockchains/other-chains/evm/fantom",
+                "docs/embedded-wallet/blockchains/other-chains/evm/flare",
+                "docs/embedded-wallet/blockchains/other-chains/evm/harmony",
+                "docs/embedded-wallet/blockchains/other-chains/evm/hedera",
+                "docs/embedded-wallet/blockchains/other-chains/evm/horizen-eon",
+                "docs/embedded-wallet/blockchains/other-chains/evm/loopring",
+                "docs/embedded-wallet/blockchains/other-chains/evm/moonbeam",
+                "docs/embedded-wallet/blockchains/other-chains/evm/optimism",
+                "docs/embedded-wallet/blockchains/other-chains/evm/rari-chain",
+                "docs/embedded-wallet/blockchains/other-chains/evm/sei",
+                "docs/embedded-wallet/blockchains/other-chains/evm/soneium",
+                "docs/embedded-wallet/blockchains/other-chains/evm/stability",
+                "docs/embedded-wallet/blockchains/other-chains/evm/xdc-network",
+                "docs/embedded-wallet/blockchains/other-chains/evm/zetachain",
+                "docs/embedded-wallet/blockchains/other-chains/evm/zksync"
+              ]
+            },
+            {
+              "group": "Non-EVM",
+              "pages": [
+                "docs/embedded-wallet/blockchains/other-chains/other/algorand",
+                "docs/embedded-wallet/blockchains/other-chains/other/aptos",
+                "docs/embedded-wallet/blockchains/other-chains/other/avalanche",
+                "docs/embedded-wallet/blockchains/other-chains/other/bitcoin",
+                "docs/embedded-wallet/blockchains/other-chains/other/cosmos",
+                "docs/embedded-wallet/blockchains/other-chains/other/flow",
+                "docs/embedded-wallet/blockchains/other-chains/other/icon",
+                "docs/embedded-wallet/blockchains/other-chains/other/near",
+                "docs/embedded-wallet/blockchains/other-chains/other/polkadot",
+                "docs/embedded-wallet/blockchains/other-chains/other/zilliqa"
+              ]
+            }
           ]
         }
       ]
