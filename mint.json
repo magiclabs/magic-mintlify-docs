@@ -218,20 +218,15 @@
             "docs/embedded-wallet/api/client-side-sdks/react-native",
             "docs/embedded-wallet/api/client-side-sdks/android",
             "docs/embedded-wallet/api/client-side-sdks/ios",
-            "docs/embedded-wallet/api/client-side-sdks/flutter",
-            "docs/embedded-wallet/api/client-side-sdks/unity"
+            "docs/embedded-wallet/api/client-side-sdks/flutter"
           ]
         },
         {
           "group": "Server-side SDKs",
           "pages": [
             "docs/embedded-wallet/api/server-side-sdks/overview",
-            "docs/embedded-wallet/api/server-side-sdks/ruby",
             "docs/embedded-wallet/api/server-side-sdks/python",
-            "docs/embedded-wallet/api/server-side-sdks/php",
-            "docs/embedded-wallet/api/server-side-sdks/laravel",
-            "docs/embedded-wallet/api/server-side-sdks/node",
-            "docs/embedded-wallet/api/server-side-sdks/go"
+            "docs/embedded-wallet/api/server-side-sdks/node"
           ]
         },
         {
