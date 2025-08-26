@@ -122,7 +122,6 @@
             "docs/embedded-wallet/authentication/features/mfa",
             "docs/embedded-wallet/authentication/features/advanced-mfa",
             "docs/embedded-wallet/authentication/features/account-recovery",
-            "docs/embedded-wallet/authentication/features/account-linking",
             "docs/embedded-wallet/authentication/features/decentralized-id"
           ]
         },
@@ -173,12 +172,6 @@
             "docs/embedded-wallet/wallets/features/personal-signatures",
             "docs/embedded-wallet/wallets/features/fiat-on-ramps",
             "docs/embedded-wallet/wallets/features/key-export"
-          ]
-        },
-        {
-          "group": "Enterprise Features",
-          "pages": [
-            "docs/embedded-wallet/wallets/enterprise-features/generalized-dkms"
           ]
         },
         {
