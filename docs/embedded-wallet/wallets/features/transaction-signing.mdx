@@ -1,0 +1,117 @@
+---
+title: Transaction Signing
+---
+
+## Overview
+
+Magic offers out-of-the-box UI for Transaction Signing. This UI will be presented to the user whenever the `sendTransaction` EVM RPC method is called with a web3 provider library such as `web3.js` or `ethers.js`.
+
+<Frame>
+  <img src="/images/image-8.webp" alt="image-8" />
+</Frame>
+
+Once the method is invoked, Magic will provide information about the transaction, and the cost including estimated gas fees.
+
+<Frame>
+  <img src="/images/image-6.webp" alt="image-6" />
+</Frame>
+
+### Compatibility
+
+- Transaction Signing UI is disabled by default and can be enabled within the developer dashboard in Customization -> Widget UI. Magic also offers [Sign Confirmation](/docs/embedded-wallet/wallets/security/sign-confirmation), a feature that secures users from front-end attacks, by prompting them to confirm the transaction in a Magic-hosted tab after clicking "Send".
+
+### Use Cases
+
+- Requesting signatures from users for any transaction on the [supported networks](/docs/blockchains/overview)
+
+### Usage
+
+⁠Once you have verified the correct setup of the Magic SDK and successfully authenticated the user, you can proceed to send a request that invokes the Transaction Signature UI: ⁠
+
+<Tabs>
+<Tab title="Web3.js">
+```javascript
+import Web3 from 'web3';
+import { Magic } from 'magic-sdk';
+
+const magic = new Magic('YOUR_API_KEY', {
+network: "sepolia", // Ethereum testnet
+});
+
+const web3 = new Web3(magic.rpcProvider);
+
+const txnParams = {
+from: account,
+to: toAddress,
+value: web3.utils.toWei(amount, "ether"),
+gas: 21000
+};
+
+web3.eth
+.sendTransaction(txnParams)
+.on("transactionHash", (hash) => {
+console.log("Transaction hash:", hash);
+})
+.then((receipt) => {
+console.log("Transaction receipt:", receipt);
+})
+.catch((error) => {
+console.error(error);
+});
+
+```
+</Tab>
+<Tab title="Ethers (v6)">
+```javascript
+import { ethers } from 'ethers';
+import { Magic } from 'magic-sdk';
+
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY');
+const provider = new ethers.BrowserProvider(magic.rpcProvider);
+
+const signer = await provider.getSigner();
+
+const txnParams = {
+  to: toAddress,
+  value: ethers.parseUnits('0.001', 'ether'),
+};
+
+const tx = await signer.sendTransaction(txnParams);
+
+console.log(tx);
+
+```
+
+</Tab>
+<Tab title="Ethers (v5)">
+```javascript
+import { ethers } from 'ethers';
+import { Magic } from 'magic-sdk';
+
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY');
+const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
+
+const signer = provider.getSigner();
+
+const txnParams = {
+to: toAddress,
+value: ethers.utils.parseUnits('0.001', 'ether')
+};
+
+const tx = await signer.sendTransaction(txnParams);
+
+console.log(tx);
+
+```
+</Tab>
+</Tabs>
+
+#### Configuration
+
+See how to brand this experience with your own logo and colors in the [customization section](/docs/embedded-wallet/wallets/customization/brand-and-theme).
+
+### Resources
+
+* [Quickstart](/docs/home/quickstart/cli)
+* [Supported EVM RPC Methods](/docs/embedded-wallet/api/client-side-sdks/web#evm-rpc-methods)
+

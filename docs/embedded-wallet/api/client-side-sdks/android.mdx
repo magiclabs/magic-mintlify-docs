@@ -1,0 +1,878 @@
+---
+title: Android API Reference
+sidebarTitle: Android
+---
+
+## Overview
+
+The Magic SDK for Android is your entry-point to secure, passwordless authentication for your mobile app. This guide will cover some important topics for getting started with Android APIs and to make the most of Magic's features.
+
+Magic can support either server-based or serverless web applications. It is up to the developers to implement the Admin SDK to validate the DID Token.
+
+## Getting Started
+
+The `Magic` class is the entry-point to the Magic SDK. It must be instantiated with a Magic **publishable** key. The minimum Android version supported by the Android Magic SDK is version 24.
+
+### Installation
+
+Magic SDK is available in `mavenCentral`. Simply add the following to your `build.gradle` and `settings.gradle`, respectively.
+
+<Tabs>
+<Tab title="Groovy">
+```json
+// build.gradle file
+
+dependencies {
+implementation 'link.magic:magic-android:9.1.0'
+implementation 'org.web3j:core:4.8.8-android'
+}
+
+````
+</Tab>
+</Tabs>
+
+<Tabs>
+<Tab title="Groovy">
+```json
+// settings.gradle file
+
+repositories {
+    mavenCentral()
+}
+````
+
+</Tab>
+</Tabs>
+
+Sync the project with new dependencies settings.
+
+### Constructor
+
+### `Magic()`
+
+|                            |                           |                                                                                                                                                                                                                                                                                                                                     |
+| -------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Parameter                  | Type                      | Definition                                                                                                                                                                                                                                                                                                                          |
+| `context`                  | `Context`                 | Android `Context` object                                                                                                                                                                                                                                                                                                            |
+| `apiKey`                   | String                    | Your **publishable** API Key retrieved from the Magic Dashboard.                                                                                                                                                                                                                                                                    |
+| `ethNetwork?`              | `EthNetwork`              | An enum with values `Mainnet` and `Goerli`. Use `customNodeConfiguration` for other network options.<br/><br/>**Defaults to Ethereum Mainnet.**                                                                                                                                                                                     |
+| `customNodeConfiguration?` | `CustomNodeConfiguration` | A custom node configuration with the following shape: ⁠ ⁠<br/><br/>`rpcUrl` (String): A URL pointing to your custom Ethereum Node. ⁠ ⁠<br/><br/>`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer. ⁠ |
+| `locale?`                  | String                    | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/docs/embedded-wallet/authentication/customization/localization) for more.                                                                                                                                                                               |
+
+### Initialization
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+
+class MagicDemoApp: Application() {
+
+    lateinit var magic: Magic
+
+    override fun onCreate() {
+        magic = Magic(this, "PUBLISHABLE_API_KEY")
+        super.onCreate()
+    }
+
+}
+
+````
+</Tab>
+</Tabs>
+Copy
+
+
+## Auth Module
+
+The Auth Module and its members are accessible on the Magic SDK instance by the `auth` property.
+
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+
+import link.magic.android.Magic
+
+var magic: Magic
+
+magic.auth;
+magic.auth.loginWithSMS;
+magic.auth.loginWithEmailOTP;
+````
+
+</Tab>
+</Tabs>
+
+### loginWithSMS
+
+Authenticate a user passwordlessly using a one-time code sent to the specified phone
+number.
+
+[List of Currently Blocked Country Codes](/docs/home/faq#questions-around-sms)
+
+#### Arguments
+
+- `context` (Context): Global information about application environment
+- `configuration` (LoginWithSMSConfiguration):
+  - `phoneNumber` (str): The user phone number to log in with
+
+#### Returns
+
+- `DIDToken: Response<String>()` \- The function resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+
+class MagicActivity: AppCompatActivity() {
+
+    lateinit var magic: Magic
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    }
+
+fun login(v: View) {
+val phoneNumber = findViewById<EditText>(R.id.phone_number_input)
+val configuration = LoginWithSMSConfiguration(phoneNumber.text.toString())
+val completable = magic.auth.loginWithSMS(configuration)
+
+        // Logging in
+        completable.whenComplete { response: DIDToken?, error: Throwable? ->
+            if (error != null) {
+                // Handle error
+            }
+            if (response != null && !response.hasError()) {
+                Log.d("Magic", "You're logged in!" + response.result)
+            } else {
+                Log.d("Magic", "Not Logged in")
+            }
+        }
+    }
+
+}
+
+````
+</Tab>
+</Tabs>
+
+
+
+### `loginWithEmailOTP`
+
+Authenticate a user passwordlessly using an email one-time code sent to the specified user's email address.
+
+#### Arguments
+
+* `context` (Context): Global information about application environment
+* `configuration` (LoginWithEmailOTPConfiguration):
+    * `email` (str): The user email to log in with
+
+#### Returns
+
+* `DIDToken: Response<String>()` \- The function resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+
+class MagicActivity: AppCompatActivity() {
+
+    lateinit var magic: Magic
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    }
+
+   fun login(v: View) {
+        val email = findViewById<EditText>(R.id.email_input)
+        val configuration = LoginWithEmailOTPConfiguration(email.text.toString())
+        val completable = magic.auth.loginWithEmailOTP(configuration)
+
+        // Logging in
+        completable.whenComplete { response: DIDToken?, error: Throwable? ->
+            if (error != null) {
+                // Handle error
+            }
+            if (response != null && !response.hasError()) {
+                Log.d("Magic", "You're logged in!" + response.result)
+            } else {
+                Log.d("Magic", "Not Logged in")
+            }
+        }
+    }
+}
+````
+
+</Tab>
+</Tabs>
+
+## Wallet Module
+
+The Wallet Module and its members are accessible on the Magic SDK instance by the `wallet` property.
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+
+import link.magic.android.Magic
+
+var magic: Magic
+
+magic.wallet;
+magic.wallet.connectWithUI;
+magic.wallet.showUI;
+
+````
+</Tab>
+</Tabs>
+
+
+
+### `connectWithUI`
+
+Renders a simple login form UI to collect the user's email address and authenticate them passwordlessly using a one-time passcode (OTP) sent to their email address they input.
+
+#### Arguments
+
+* `context` (Context): Global information about application environment
+
+#### Returns
+
+* A `promiEvent` which returns an `String[]` when resolved: An array of user accounts that are connected, with the first element being the current public address of the user. You can read more on PromiEvents [here](#promievents).
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+private fun mcLogin(v: View) {
+    val accounts = (magic as Magic).wallet.connectWithUI(this)
+    accounts.whenComplete { response: ConnectWithUIResponse?, error: Throwable? ->
+        if (error != null) {
+            Log.d("error", error.localizedMessage)
+        }
+        if (response != null && !response.hasError()) {
+           response.result?.let { Log.d("Your Public Address is:", it.first()) }
+           startTabActivity()
+       } else {
+            response?.result?.let { Log.d("Your Public Address is:", it.first()) }
+            Log.i("mcLogin RESPONSE", "Response is: ${response.toString()}")
+            Log.d("MC Login", "Magic Connect Not logged in")
+        }
+    }
+}
+````
+
+</Tab>
+</Tabs>
+
+### `showUI`
+
+Displays the fully [navigable wallet](/docs/embedded-wallet/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google. User must be signed in for this method to return or else it will throw an error.
+
+#### Arguments
+
+- `context` (Context): Global information about application environment
+
+#### Returns
+
+- `Promise` which resolves when the user closes the window
+
+Optionally, add a `.on()` handler to catch the `disconnect` event emitted when the user logs out from the wallet widget.
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+fun showUI(v: View) {
+    val completable = magic.wallet.showUI(this.requireContext())
+    completable.whenComplete { response: ShowWalletResponse?, error: Throwable? ->
+        if (error != null) {
+            Log.d("error", error.localizedMessage)
+        }
+        if (response != null) {
+            tabActivity.toastAsync("show Wallet:" + response.result)
+        }
+    }
+}
+```
+</Tab>
+</Tabs>
+
+## User Module
+
+The User Module and its members are accessible on the Magic SDK instance by the `user` property.
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+
+import link.magic.android.Magic
+
+var magic: Magic
+
+magic.user
+magic.user.updateEmail
+magic.user.getIdToken
+magic.user.generateIdToken
+magic.user.getMetadata
+magic.user.isLoggedIn
+magic.user.logout
+magic.user.showSettings
+magic.user.updatePhoneNumber
+magic.user.recoverAccount
+magic.user.revealPrivateKey
+
+````
+</Tab>
+</Tabs>
+
+
+
+### `updateEmail`
+
+Initiates the update email flow that allows a user to change to a new email.
+
+#### Arguments
+
+* `context` (Context): Global information about application environment
+
+* `configuration` (UpdateEmailConfiguration):
+    * `email` (str): The user email to update with
+    * `showUI` (boolean): If `true`, show an out-of-the-box pending UI while the request is in flight
+
+#### Returns
+
+* `UpdateEmailResponse: Response<Boolean>()` \- The `Completable` resolves with a true boolean value if update email is successful and rejects with a specific error code if the request fails
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+
+class MagicActivity: AppCompatActivity() {
+
+    lateinit var magic: Magic
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    }
+
+    // Assuming user is logged in
+    fun updateEmail(v: View) {
+
+        val configuration = UpdateEmailConfiguration("new_user_email@example.com")
+        val completable = magic.user.updateEmail(this, configuration)
+        completable.whenComplete { response: UpdateEmailResponse?, error: Throwable? ->
+            if (response != null) {
+                Log.d("Magic", response.result.toString()) // "True"
+            } else {
+                // handle error
+            }
+        }
+    }
+}
+````
+
+</Tab>
+</Tabs>
+
+### `getIdToken`
+
+Generates a Decentralized Id Token which acts as proof of authentication to resource
+servers.
+
+#### Arguments
+
+- `context` (Context): Global information about application environment
+- `configuration` (GetIdTokenConfiguration):
+  - `lifespan` (number): will set the lifespan of the generated token. Defaults to 900s (15 mins).
+
+#### Returns
+
+- `PromiEvent<string>` \- Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+
+class MagicActivity: AppCompatActivity() {
+lateinit var magic: Magic
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    }
+
+    // Assuming user is logged in
+    fun getIdToken(v: View) {
+        val configuration = GetIdTokenConfiguration(lifespan = 900)
+        val completable = magic.user.getIdToken(configuration)
+        completable.whenComplete { response: GetIdTokenResponse?, error: Throwable? ->
+            if (response != null) {
+                Log.d("Magic", response.result)
+            } else {
+                // handle Error
+            }
+        }
+    }
+
+}
+
+````
+</Tab>
+</Tabs>
+
+
+
+### `generateIdToken`
+
+Generates a Decentralized Id Token with optional serialized data.
+
+#### Arguments
+
+* `configuration` (GenerateIdTokenConfiguration):
+    * `lifespan` (number): will set the lifespan of the generated token. Defaults to 900s (15 mins).
+    * `attachment` (str): will set a signature of serialized data in the generated token. Defaults to `"none"`.
+
+#### Returns
+
+* `GenerateIdTokenResponse: Response<String>()` \- Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+
+class MagicActivity: AppCompatActivity() {
+
+    lateinit var magic: Magic
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    }
+
+    // Assuming user is logged in
+    fun generateIdToken(v: View) {
+        val configuration = GenerateIdTokenConfiguration(lifespan = 900, attachment = "none")
+        val completable = magic.user.generateIdToken(configuration)
+
+        completable.whenComplete { response: GenerateIdTokenResponse?, error: Throwable? ->
+            if (response != null) {
+                Log.d("Magic", response.result)
+            } else {
+                // handle Error
+            }
+        }
+    }
+}
+````
+
+</Tab>
+</Tabs>
+
+### `getMetadata`
+
+Retrieves information for the authenticated user.
+
+#### Arguments
+
+- _None_.
+
+#### Returns
+
+- `GetMetadataResponse: Response<UserMetadataResponse>()` \- The `Completable` containing the issuer, email, phone number, and cryptographic [public address](https://support.blockchain.com/hc/en-us/articles/4417082520724-What-are-public-and-private-keys-and-how-do-they-work-) of the authenticated user.
+  - `issuer` (str): The Decentralized ID of the user. In server-side use-cases, we recommend this value to be used as the user ID in your own tables.
+  - `email` (str): Email address of the authenticated user
+  - `phoneNumber` (str): Phone number of the authenticated user
+  - `publicAddress` (str): The authenticated user's public address (a.k.a.: public key). Currently, this value is associated with the Ethereum blockchain.
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+class MagicActivity: AppCompatActivity() {
+
+    lateinit var magic: Magic
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    }
+
+    // Assuming user is logged in
+    fun getMetadata(v: View) {
+        val completable = magic.user.getMetadata()
+        completable.whenComplete { response: GetMetadataResponse?, error: Throwable? ->
+            if (response != null) {
+                Log.d("Magic", "Email: " + response.result.email)
+                Log.d("Magic", "Issuer: " + response.result.issuer)
+            } else {
+                // handle Error
+            }
+        }
+    }
+
+}
+
+````
+</Tab>
+</Tabs>
+
+
+
+### `isLoggedIn`
+
+Checks if a user is currently logged in to the Magic SDK.
+
+#### Arguments
+
+* _None_
+
+#### Returns
+
+* `IsLoggedInResponse: Response<Boolean>()`: A boolean value indicating if a user is logged in
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+
+class MagicActivity: AppCompatActivity() {
+
+    lateinit var magic: Magic
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    }
+
+    // Assuming user is logged in
+    fun isLoggedIn(v: View) {
+        val completable = magic.user.isLoggedIn()
+        completable.whenComplete { response: IsLoggedInResponse?, error: Throwable? ->
+            if (response != null && response.result) {
+                Log.d("Magic", "You're Logged In")
+            }
+            if (error != null) {
+                // handle Error
+            }
+        }
+    }
+}
+````
+
+</Tab>
+</Tabs>
+
+### `logout`
+
+Logs out the currently authenticated Magic user.
+
+#### Arguments
+
+- _None_
+
+#### Returns
+
+- `LogoutResponse: Response<Boolean>()`: A boolean value indicating if a user has been logged out.
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+
+class MagicActivity: AppCompatActivity() {
+
+    lateinit var magic: Magic
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    }
+
+    // Assuming user is logged in
+    fun logout(v: View) {
+        val completable = magic.user.logout()
+        completable.whenComplete { response: LogoutResponse?, error: Throwable? ->
+            if (response != null && response.result) {
+                Log.d("Magic", "You're logged out!")
+            }
+            if (error != null) {
+                // handle Error
+            }
+        }
+    }
+
+}
+
+````
+</Tab>
+</Tabs>
+
+
+### `showSettings`
+
+Displays an iframe with the current user’s settings. Allows for users to update their email address, enable multi-factor authentication, and add a recovery factor.
+
+
+<Note>
+Access to [MFA](/docs/embedded-wallet/authentication/features/mfa) and [account recovery](docs/embedded-wallet/authentication/features/account-recovery) require paid add-ons.
+</Note>
+#### Arguments
+
+* `page?` (String): Optional argument to deeplink to a specific page (`'mfa' | 'update-email' | 'recovery'`)
+
+#### Returns
+
+* `Promise` which resolves when the user closes the window
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+
+class MagicActivity: AppCompatActivity() {
+
+    lateinit var magic: Magic
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    }
+
+    // Assuming user is logged in
+    fun showSettings(v: View) {
+        val result = magic.user.showSettings()
+        result.whenComplete { response: GetMetadataResponse?, error: Throwable? ->
+            if (error != null) {
+                Log.d("error", error.localizedMessage)
+            }
+            if (response != null) {
+                tabActivity.toastAsync("Email: " + response.result.email + "\n" + "issuer: " + response.result.issuer + "\n")
+            }
+        }
+    }
+}
+````
+
+</Tab>
+</Tabs>
+
+### `updatePhoneNumber`
+
+Initiates the update phone number flow that allows a user to change their phone number.
+
+#### Arguments
+
+- `context` (Context): Global information about application environment
+
+- `configuration`:
+  - `phoneNumber` (str): The user phone number to update with
+  - `showUI` (boolean): If `true`, show an out-of-the-box pending UI while the request is in flight
+
+#### Returns
+
+- `PromiEvent<boolean>`: The promise resolves with a true boolean value if update email is successful and rejects with a specific error code if the request fails
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+fun updateSMS(v: View) {
+    val completable = magic.user.updatePhoneNumber(this.requireActivity())
+    completable.whenComplete { updatePhoneNumberResponse: UpdatePhoneNumberResponse?, error: Throwable? ->
+        if (error != null) {
+           Log.d("error", error.localizedMessage)
+        }
+        if (updatePhoneNumberResponse != null) {
+           Log.d("Update phone number result", updatePhoneNumberResponse.result.toString())
+        }
+    }
+}
+```
+</Tab>
+</Tabs>
+
+### `recoverAccount`
+
+Initiates the account recovery flow that allows a user to recover their account using their email address.
+
+#### Arguments
+
+- `email` (str): The user email address to recover account with
+
+#### Returns
+
+- `PromiEvent<boolean>`: The promise resolves with a true boolean value if the account recovery is successful and rejects with a specific error code if the request fails
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+private fun recoverAccount(v: View) {
+    val email = findViewById<EditText>(R.id.recovery_email_input)
+    val configuration = RecoverAccountConfiguration(email = email.text.toString())
+    val result = (magic as Magic).user.recoverAccount(this, configuration)
+    result.whenComplete { response: RecoverAccountResponse?, error: Throwable? ->
+        if (error != null) {
+            Log.d("error", error.localizedMessage)
+        }
+        if (response != null) {
+            var result = response.result
+            Log.d("recover account resp result", result.toString())
+            if (result != null) {
+                startTabActivity()
+           } else {
+                toastAsync("RecoverAccount error, consider using a different email")
+            }
+        }
+    }
+}
+```
+</Tab>
+</Tabs>
+
+### `revealPrivateKey`
+
+Displays an iframe revealing the current user’s private key. Allows for users to take their private key to another wallet. Neither Magic nor the developer can see this key; only the end user can.
+
+#### Arguments
+
+- _None_
+
+#### Returns
+
+- `Promise` which resolves when the user closes the window
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+fun revealPrivateKey(v: View) {
+    val result = magic.user.revealPrivateKey(this.requireContext())
+    result.whenComplete { response: RevealPrivateKeyResponse?, error: Throwable? ->
+        if (error != null) {
+            Log.d("error", error.localizedMessage)
+        }
+        if (response != null) {
+            tabActivity.toastAsync("Key revealed")
+        }
+    }
+}
+```
+</Tab>
+</Tabs>
+
+## OpenID Module
+
+<Note>
+  This module requires an enterprise agreement. For more details [click
+  here](docs/embedded-wallet/authentication/login/idp).
+</Note>
+The OpenID Module and it's members are accessible on the Magic SDK instance by the `openid` property.
+
+To use the OpenID Module in your application, install `:magic:ext:oidc` along with `magic-android`.
+
+<Tabs>
+<Tab title="Groovy">
+```json
+
+# In build.gradle
+
+implementation project(':magic:core')
+implementation project(':magic:ext:oidc')
+
+magic.openid;
+magic.openid.loginWithOIDC;
+
+````
+</Tab>
+</Tabs>
+
+
+
+### `loginWithOIDC`
+
+Authenticate users via your preferred OIDC client.
+
+#### Arguments
+
+* `jwt` (String): The OIDC token from your identity provider
+
+* `providerId` (String): An alphanumeric ID provided by Magic after successful configuration of your identity provider
+
+
+#### Returns
+
+* `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
+
+
+#### Example
+
+<Tabs>
+<Tab title="Kotlin">
+```json
+
+package link.magic.android.extension.oidc.*
+⁠
+magic = Magic(this, '<your_magic_api_key>')
+⁠
+private fun loginWithOIDC(v: View) {
+⁠   val providerId = findViewById<EditText>(R.id.provider_id_text)
+   val jwt = findViewById<EditText>(R.id.jwt_text)
+⁠
+   val configuration = OpenIdConfiguration(jwt.text.toString(),providerId.text.toString())
+
+   val did = magic.openid.loginWithOIDC(this, configuration)
+
+   did.whenComplete { response: DIDToken?, error: Throwable? ->
+     if (error != null) {
+       Log.d("error", error.localizedMessage)
+     }
+
+     if (response != null && !response.hasError()) {
+       response.result?.let { Log.d("login", it) }
+     } else {
+       Log.d("login", "OpenID Not Logged in")
+     }
+   }
+}
+````
+
+</Tab>
+</Tabs>
+
+## Resources
+
+- [GitHub](https://github.com/magiclabs/magic-android)
+- [Demo](https://github.com/magiclabs/magic-android/tree/main/example)
+- [Goerli Testnet Faucet](https://goerlifaucet.com)
