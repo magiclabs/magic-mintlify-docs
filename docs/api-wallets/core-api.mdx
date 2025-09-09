@@ -1,0 +1,684 @@
+---
+title: "Core API"
+description: "Complete reference for Magic's API Wallets Core API - a server-side wallet management solution that provides flexible key management with AWS Nitro Trusted Execution Environment security"
+---
+
+## Base URL
+
+All API requests should be made to:
+
+```
+https://tee.magiclabs.com
+```
+
+## Introduction
+
+Magic's Core API is a server-side solution that can be seamlessly incorporated into any tech stack. This API gives developers the freedom to choose how key management is handled, without having to rebuild that infrastructure.
+
+This un-opinionated server-side solution to key management has no client-side dependencies like iframes or local sessions, which helps developers build smooth onchain user experiences.
+
+Magic's Core API leverages the security of AWS Nitro Trusted Execution Environment to provide enhanced security for all key operations, like wallet generation and signing transaction payloads.
+
+<Warning>
+Simply using Core API does not constitute a non-custodial implementation. While we provide the tools to make anything possible, we recommend that developers consult legal professionals about the distinctions between custodial and non-custodial solutions in the markets where they plan to deploy their applications.
+</Warning>
+
+## Getting Started
+
+Use of Core API requires a Magic developer account and an allowlisted application. Register a Magic account at [https://dashboard.magic.link/](https://dashboard.magic.link/) and create an application. Provide the application's `Publishable API Key` to Magic for allowlisting.
+
+After the application is allowlisted, you can make requests to the API by passing the corresponding `Secret Key` in the request headers as `x-magic-secret-key`.
+
+<Frame>
+<img src="/images/api-wallets-core-getting-started.webp" alt="Magic Dashboard showing API key configuration" />
+</Frame>
+
+## Authentication
+
+Core API requires authentication using your Magic secret key:
+
+<ParamField header="x-magic-secret-key" type="string" required>
+Your Magic secret key for service authentication. Format: `sk_live_XXXXXXXX`
+</ParamField>
+
+<Warning>
+This secret key should be treated as extremely sensitive, as it would allow anyone to trigger the creation of a wallet and return the access and recovery key.
+</Warning>
+
+## Key Management Considerations
+
+### Disclaimer
+
+Magic does not act as a custodian of your or your users' digital assets. Ownership and control of digital assets remain entirely with you and your users and do not transfer to Magic at any point.
+
+At all times, you and your users maintain sole control over the authentication credentials required to utilize your or their private keys. Only you and your users have the authority to transfer the digital assets associated with those private keys. Once implemented by you, the management of these keys is entirely under you and/or your users control.
+
+### Key Custody Guidelines
+
+Magic's Core API provides the tools for the developer to build either a custodial or a non-custodial application. Carefully consider the ramifications around these 2 areas when building your application.
+
+First, this API is meant to be called from the application's server because the request header contains the `Secret Key`. 
+
+Second, the application decides on what piece of data (`encryption_context`) is used to generate a wallet. More significantly, the application also decides on how that piece of data is managed and recalled when executing a non-recovery sign operation.
+
+If the `encryption_context` is readily available to the application to use at will, then the application can call a sign operation without the user's knowledge or intent.
+
+### Wallet Generation Schema
+
+<Frame>
+<img src="/images/api-wallets-core-shard-diagram.webp" alt="Diagram showing how private keys are split into 5 shards for security" />
+</Frame>
+
+When a wallet is created, the PK is split into 3 shards. Reconstruction requires 2 of 3 shards.
+
+- **Shard 1** is held by Magic and will always be available. It is used to recreate the PK for all key operations, including recovery.
+- **Shard 2** is returned from the wallet creation endpoint as the `recovery_key`. It is intended to be stored by the application's database and used to recover the PK when the `encryption_context` is lost.
+- **Shard 3** is encrypted with the `encryption_context` and split into shards 4 and 5. All non-recovery key operations, like signing the transaction payload, requires shard 3 to recreate the PK. Carefully consider the ramifications regarding how you choose to manage this `encryption_context`.
+- **Shard 4** is returned from the wallet creation endpoint as the `access_key`. This must be stored by the application's database because it is required to recreate shard 3.
+- **Shard 5** is held by Magic and will always be available. It will be used with shard 4, to recreate shard 3.
+- Non-recovery key operations will always use Shard 1 and Shard 3 (Shard 4 + Shard 5 + `encryption_context`).
+- Recovering the PK will always use Shard 1 and Shard 2. Recovery will update the shard values.
+
+## Exemplary Implementation Guidelines
+
+### Wallet Generation Flow
+
+<Frame>
+<img src="/images/example-wallet-generation-flow-diagram.webp" alt="Flow diagram showing client-server wallet creation process" />
+</Frame>
+
+The above flow illustrates an application taking the user's passcode (`encryption_context`) from the client, passing it to the server before it is provided to the wallet creation endpoint.
+
+### Non-Recovery Key Operation Flow
+
+<Frame>
+<img src="/images/example-non-recovery-key-operation-flow-diagram.webp" alt="Flow diagram showing client-server key signing process" />
+</Frame>
+
+The above flow illustrates an application prompting the user for the same passcode (`encryption_context`) used to create their wallet. It is passed from the client to the server before it is provided to any sign operation endpoint.
+
+### Recovery Flow
+
+<Frame>
+<img src="/images/example-recovery-flow-diagram.webp" alt="Flow diagram showing client-server wallet recovery process" />
+</Frame>
+
+The above flow illustrates an application accepting the user's new passcode (`encryption_context`) to recover the PK because the original passcode was lost. The new passcode will serve as the updated `encryption_context`.
+
+## Organization Endpoints
+
+### Create Wallet Group
+
+Creates a group to logically organize created wallets.
+
+```bash cURL
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet_group' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "metadata": {
+      "resource_id": "customer-resource-id"
+    }
+  }'
+```
+
+**Parameters:**
+
+<ParamField body="metadata.resource_id" type="string">
+Optional name/identifier for wallet group
+</ParamField>
+
+**Response:**
+
+<ResponseField name="data.uuid" type="string">
+The identifier of the created wallet group
+</ResponseField>
+
+<ResponseField name="data.time_created" type="integer">
+Epoch timestamp in UTC
+</ResponseField>
+
+<ResponseField name="data.time_updated" type="integer">
+Epoch timestamp in UTC
+</ResponseField>
+
+<ResponseField name="data.metadata.resource_id" type="string">
+Provided `resource_id` during group creation. `Null` if not provided
+</ResponseField>
+
+```json
+{
+  "data": {
+    "uuid": "7313a996-eb9c-4568-acef-f622a6b151fd",
+    "time_created": 1709931542,
+    "time_updated": 1709931542,
+    "metadata": {
+      "resource_id": "customer-resource-id"
+    }
+  }
+}
+```
+
+### List Wallet Groups
+
+Lists created wallet groups.
+
+```bash cURL
+curl -X GET 'https://tee.magiclabs.com/v1/api/wallet_groups' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX'
+```
+
+**Response:**
+
+<ResponseField name="data" type="array">
+Array of wallet group objects
+</ResponseField>
+
+```json
+{
+  "data": [
+    {
+      "time_updated": 1718035165,
+      "metadata": {
+        "resource_id": "customer-resource-id"
+      },
+      "uuid": "7313a996-eb9c-4568-acef-f622a6b151fd",
+      "time_created": 1709931542
+    }
+  ]
+}
+```
+
+## Wallet Endpoints
+
+### Create Wallet
+
+Create a wallet for the user. Returns a `recovery_key` (shard 2), `access_key` (shard 4), and `uuid` (Magic's unique wallet ID).
+
+```bash cURL
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "encryption_context": "hashed_passcode",
+    "network": "mainnet",
+    "wallet_group_id": "58a08494-3c83-439a-8a07-551f2022c3fc",
+    "metadata": {
+      "resource_id": "customer-resource-id"
+    }
+  }'
+```
+
+**Parameters:**
+
+<ParamField body="encryption_context" type="string" required>
+The context that should be applied to encrypt returned key shares (where applicable)
+</ParamField>
+
+<ParamField body="network" type="string" required>
+Network for wallet creation. Values: `BTC_MAINNET`, `BTC_TESTNET`, `BTC_REGTEST` for Bitcoin; `SOL_MAINNET`, `SOL_TESTNET` for Solana; all other values create EVM wallet
+</ParamField>
+
+<ParamField body="wallet_group_id" type="string">
+The UUID returned from wallet group creation
+</ParamField>
+
+<ParamField body="metadata.resource_id" type="string">
+Optional name/identifier for wallet
+</ParamField>
+
+**Response:**
+
+<ResponseField name="data.uuid" type="string">
+The identifier for the created wallet
+</ResponseField>
+
+<ResponseField name="data.public_address" type="string">
+The public address of the created wallet
+</ResponseField>
+
+<ResponseField name="data.recovery_key" type="string">
+To be used if key recovery operation is needed
+</ResponseField>
+
+<ResponseField name="data.access_key" type="string">
+To be used for all non-recovery wallet operations
+</ResponseField>
+
+```json
+{
+  "data": {
+    "uuid": "e982b4a3-14d3-4d66-a3ac-fadfc3ae1875",
+    "time_created": 1709931542,
+    "time_updated": null,
+    "network": "mainnet",
+    "wallet_group_id": "58a08494-3c83-439a-8a07-551f2022c3fc",
+    "metadata": {
+      "resource_id": "customer-resource-id"
+    },
+    "key_type": "CORE",
+    "public_address": "0x797063FB2e3C31a8b9a10D7EDF6dE612d6aE7Fde",
+    "recovery_key": "3130cc5b8fb4c5a835067f8c1aba3872",
+    "access_key": "ebf0e16c5c22cd734083c803562b5dc0"
+  }
+}
+```
+
+### Sign Transaction
+
+Sign a transaction payload. The payload format varies by network (EVM, SVM, BTC).
+
+#### EVM Transaction Signing
+
+```bash cURL
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "payload": {
+      "type": 2,
+      "chainId": 888888,
+      "nonce": 1,
+      "value": "0x616263646566",
+      "gas": 100000,
+      "maxFeePerGas": 2000000000,
+      "maxPriorityFeePerGas": 2000000000,
+      "to": "0x0aA818d7952c0B6a56ee97581708866C154f63AD"
+    },
+    "encryption_context": "hashed_passcode",
+    "access_key": "key_shard",
+    "wallet_id": "wallet_id"
+  }'
+```
+
+#### Solana Transaction Signing
+
+```bash cURL
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "payload": "transaction_base64",
+    "encryption_context": "hashed_passcode",
+    "access_key": "key_shard",
+    "wallet_id": "wallet_id"
+  }'
+```
+
+#### Bitcoin Transaction Signing
+
+```bash cURL
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "payload": {
+      "inputs": [
+        {
+          "address": "bc1q59ehj6mza09gk8v5558dqpy8m4c...",
+          "value": 5,
+          "txid": "d12beb629cebe086149c9c7b558f09531f8...",
+          "tx_num": 0
+        }
+      ],
+      "outputs": [
+        {
+          "address": "bc1q59ehj6mza09gk8v5558dqpy8m4c...",
+          "value": 5
+        }
+      ]
+    },
+    "encryption_context": "hashed_passcode",
+    "access_key": "key_shard",
+    "wallet_id": "wallet_id"
+  }'
+```
+
+**Parameters:**
+
+<ParamField body="payload" type="object" required>
+The transaction payload to be signed. Format varies by network
+</ParamField>
+
+<ParamField body="encryption_context" type="string" required>
+The encryption context of the key shards
+</ParamField>
+
+<ParamField body="access_key" type="string" required>
+The access_key returned from wallet creation
+</ParamField>
+
+<ParamField body="wallet_id" type="string" required>
+The uuid returned from wallet creation
+</ParamField>
+
+**Response:**
+
+<ResponseField name="data.signed_transaction" type="string">
+Result of signing unsigned_transaction with user's private key
+</ResponseField>
+
+<ResponseField name="data.transaction_hash" type="string">
+Hashed version of signed_transaction which is what you'll get when you submit
+</ResponseField>
+
+```json
+{
+  "data": {
+    "signed_transaction": "0xabc...",
+    "transaction_hash": "0xabc..."
+  }
+}
+```
+
+### Sign Data
+
+Sign arbitrary data using keccak256 hash.
+
+```bash cURL
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_data' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "raw_data_hash": "keccak256_string_hash",
+    "encryption_context": "hashed_passcode",
+    "access_key": "key_shard",
+    "wallet_id": "wallet_id"
+  }'
+```
+
+**Parameters:**
+
+<ParamField body="raw_data_hash" type="string" required>
+The keccak256 hash of the data to sign
+</ParamField>
+
+<ParamField body="encryption_context" type="string" required>
+The encryption context of the key shards
+</ParamField>
+
+<ParamField body="access_key" type="string" required>
+The access_key returned from wallet creation
+</ParamField>
+
+<ParamField body="wallet_id" type="string" required>
+The uuid returned from wallet creation
+</ParamField>
+
+**Response:**
+
+<ResponseField name="data.messageHash" type="string">
+The hash that was signed
+</ResponseField>
+
+<ResponseField name="data.signature" type="string">
+The complete signature in hex format
+</ResponseField>
+
+<ResponseField name="data.r" type="string">
+The r component of the ECDSA signature
+</ResponseField>
+
+<ResponseField name="data.s" type="string">
+The s component of the ECDSA signature
+</ResponseField>
+
+<ResponseField name="data.v" type="string">
+The recovery parameter of the ECDSA signature
+</ResponseField>
+
+```json
+{
+  "data": {
+    "messageHash": "0xabc...",
+    "signature": "0xabc...",
+    "r": "",
+    "s": "",
+    "v": ""
+  }
+}
+```
+
+### Sign Message (Solana)
+
+Sign an arbitrary message using a Solana wallet.
+
+```bash cURL
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/svm/sign_message' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "message_base64": "base64_string_hash",
+    "encryption_context": "hashed_passcode",
+    "access_key": "key_shard",
+    "wallet_id": "wallet_id"
+  }'
+```
+
+**Parameters:**
+
+<ParamField body="message_base64" type="string" required>
+The message to be signed, encoded in base64
+</ParamField>
+
+<ParamField body="encryption_context" type="string" required>
+The encryption context of the key shards
+</ParamField>
+
+<ParamField body="access_key" type="string" required>
+The access_key returned from wallet creation
+</ParamField>
+
+<ParamField body="wallet_id" type="string" required>
+The uuid returned from wallet creation
+</ParamField>
+
+**Response:**
+
+<ResponseField name="data.signature" type="string">
+The signature in base64 format
+</ResponseField>
+
+```json
+{
+  "data": {
+    "signature": "base64_encoded"
+  }
+}
+```
+
+### Reveal Private Key
+
+Enable a user to reveal their raw private key using RSA encryption.
+
+#### Using Magic's iframe
+
+```javascript
+import { Magic } from 'magic-api-wallet';
+
+const magic = new Magic()
+
+// fetch PEM Base64 encoded RSA public key from iframe
+const rsaPublicKey = await magic.wallet.getRSAPublicKey();
+
+// send rsa_public_key to your backend service to be relayed to TEE API
+const encryptedPrivateKey = await HttpService.BackendService.Post(
+  Endpoint.BackendService.RevealPrivateKey,
+  { authorization: `Bearer ${access_token}` },
+  { rsa_public_key: rsaPublicKey },
+);
+
+// unwrap and render private key in secure iframe
+await magic.wallet.unwrapPrivateKey(encryptedPrivateKey.privateKey);
+```
+
+#### Custom RSA Implementation
+
+```javascript
+// Step 1: Create RSA encryption keypair using the Web Crypto API
+const keyPair = await window.crypto.subtle.generateKey(
+  {
+    name: 'RSA-OAEP',
+    modulusLength: 4096,
+    publicExponent: new Uint8Array([1, 0, 1]),
+    hash: 'SHA-1',
+  },
+  false, // non-exportable from the browser (important)
+  ['encrypt', 'decrypt'],
+);
+
+// Step 2: Export the raw public key
+const exported = await window.crypto.subtle.exportKey('spki', keyPair.publicKey);
+
+// Step 3: Convert the ArrayBuffer to a Base64 string
+const exportedAsString = String.fromCharCode(...new Uint8Array(exported));
+const exportedAsBase64 = window.btoa(exportedAsString);
+
+// Step 4: Split the Base64 string into manageable chunks
+const maxLineLength = 64;
+let formattedBase64 = '';
+for (let i = 0; i < exportedAsBase64.length; i += maxLineLength) {
+  formattedBase64 += exportedAsBase64.slice(i, i + maxLineLength) + '\n';
+}
+
+// Step 5: Create the PEM header and footer
+const rsa_public_key = `-----BEGIN PUBLIC KEY-----\n${formattedBase64}-----END PUBLIC KEY-----\n`;
+
+// Step 6: Send rsa_public_key to backend to call /v1/api/wallet/reveal_pk
+// Step 7: Use the RSA private key to decrypt the encrypted_private_key
+const encryptedBuffer = base64ToUint8(encryptedKey);
+const decryptedBuffer = await window.crypto.subtle.decrypt(
+  { name: 'RSA-OAEP' },
+  keypair.privateKey,
+  encryptedBuffer,
+);
+const eoa_pk = new TextDecoder().decode(decryptedBuffer);
+```
+
+```bash cURL
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/reveal_pk' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "encryption_context": "hashed_passcode",
+    "access_key": "key_shard",
+    "wallet_id": "wallet_id",
+    "rsa_public_key": "rsa_public_key"
+  }'
+```
+
+**Parameters:**
+
+<ParamField body="rsa_public_key" type="string" required>
+PEM Base64 encoded RSA public key
+</ParamField>
+
+<ParamField body="encryption_context" type="string" required>
+The encryption context of the key shards
+</ParamField>
+
+<ParamField body="access_key" type="string" required>
+The access_key returned from wallet creation
+</ParamField>
+
+<ParamField body="wallet_id" type="string" required>
+The uuid returned from wallet creation
+</ParamField>
+
+**Response:**
+
+<ResponseField name="data.encrypted_private_key" type="string">
+Private key encrypted by RSA public key sent to the endpoint and can only be decrypted by owner of RSA private key
+</ResponseField>
+
+### Wallet Recovery
+
+Recover a wallet using the recovery key.
+
+```bash cURL
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/recovery/confirm' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "wallet_id": "wallet_id",
+    "encryption_context": "hashed_passcode",
+    "recovery_key": "recovery_key"
+  }'
+```
+
+**Parameters:**
+
+<ParamField body="wallet_id" type="string" required>
+The uuid returned from wallet creation
+</ParamField>
+
+<ParamField body="encryption_context" type="string" required>
+The context that should be applied to encrypt returned key shares
+</ParamField>
+
+<ParamField body="recovery_key" type="string" required>
+The recovery_key returned from wallet creation
+</ParamField>
+
+**Response:**
+
+<ResponseField name="data.id" type="string">
+The identifier of the wallet
+</ResponseField>
+
+<ResponseField name="data.recovery_key" type="string">
+To be used if key recovery operation is needed
+</ResponseField>
+
+<ResponseField name="data.access_key" type="string">
+To be used for all non-recovery wallet operations
+</ResponseField>
+
+```json
+{
+  "data": {
+    "id": "e982b4a3-14d3-4d66-a3ac-fadfc3ae1875",
+    "recovery_key": "f41c504489531934a147413865913f24",
+    "access_key": "c6b2565c12a24b1e86f23e2196486541",
+    "network": "ETH",
+    "wallet_group_id": "58a08494-3c83-439a-8a07-551f2...",
+    "metadata": {
+      "resource_id": "customer-resource-id"
+    },
+    "time_created": 1709931542,
+    "time_updated": 1809931542
+  }
+}
+```
+
+## Error Handling
+
+The API uses standard HTTP status codes and returns detailed error information:
+
+### 400 Bad Request
+
+**`INVALID_REQUEST_FIELDS`**
+- This error occurs if one of the required fields is missing or invalid
+
+**`MISSING_REQUIRED_HEADER`**
+- This error occurs if the x-magic-secret-key header is not included in the request
+
+**`INVALID_API_KEY`**
+- This error occurs if the x-magic-secret-key header is invalid
+
+**`INVALID_USER_PASSCODE`**
+- This error occurs if the `encryption_context` and/or access_key is incorrect
+
+### 403 Forbidden
+
+**`METHOD_NOT_AVAILABLE`**
+- The requested resource/method is not available
+
+### 408 Timeout
+
+**`REQUEST_TIMEOUT`**
+
+### 500 Internal Server Error
+
+**`INTERNAL_SERVER_ERROR`**
+- If you receive a 500 status code, it indicates an unexpected condition or error on our backend server that was not handled properly. If this error persists, please contact our support team for assistance.
