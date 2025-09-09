@@ -2,4 +2,10 @@
 title: Overview
 ---
 
-**_Placeholder Content_**
+# TEE Express API
+
+TEE Express is a service that simplifies wallet management for developers. Unlike traditional wallet solutions that require complex key management, TEE Express handles all key management internally, providing a streamlined API for wallet operations.
+
+TEE Express leverages secure enclave technology to ensure that private keys never leave the secure environment. All wallet operations, including creation, signing, and key management, are performed within a trusted execution environment (TEE). This provides enterprise-grade security while maintaining the simplicity of a REST API.
+
+The service supports Ethereum wallets and provides endpoints for wallet creation, transaction signing, and message signing. All operations are authenticated using JWT tokens passed in the Authorization header, ensuring secure access to user wallets.

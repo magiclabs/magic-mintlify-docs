@@ -3,14 +3,6 @@ title: "TEE Express API"
 description: "Complete reference for Magic's TEE Express API - a secure wallet management service that handles key management internally using trusted execution environment technology"
 ---
 
-# TEE Express API
-
-TEE Express is a service that simplifies wallet management for developers. Unlike traditional wallet solutions that require complex key management, TEE Express handles all key management internally, providing a streamlined API for wallet operations.
-
-TEE Express leverages secure enclave technology to ensure that private keys never leave the secure environment. All wallet operations, including creation, signing, and key management, are performed within a trusted execution environment (TEE). This provides enterprise-grade security while maintaining the simplicity of a REST API.
-
-The service supports Ethereum wallets and provides endpoints for wallet creation, transaction signing, and message signing. All operations are authenticated using JWT tokens passed in the Authorization header, ensuring secure access to user wallets.
-
 ## Base URL
 
 All API requests should be made to:
@@ -18,14 +10,6 @@ All API requests should be made to:
 ```
 https://tee.express.magiclabs.com
 ```
-
-## Migration Notice
-
-<Info>
-If you're an existing customer, your users' wallets have been automatically migrated to TEE Express. There's no action required on your part - all existing wallets are now accessible through the TEE Express API using the same JWT tokens you currently use for authentication.
-
-Simply update your API calls to use the TEE Express endpoints, and pass your existing JWT token in the Authorization header for all requests.
-</Info>
 
 ## Authentication
 
@@ -51,6 +35,159 @@ The OIDC provider ID for your application.
 You must provide either `X-Magic-API-Key` or `X-Magic-Secret-Key` along with the other required headers.
 </Warning>
 
+## Wallet Endpoints
+
+### Get or Create Wallet
+
+Get or create a wallet for the given chain and return its public address.
+
+```bash cURL
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
+  -H 'X-Magic-API-Key: your-magic-api-key' \
+  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
+  -d '{
+    "chain": "ETH"
+  }'
+```
+
+
+**Parameters:**
+
+<ParamField body="chain" type="string" required>
+The blockchain to create the wallet for. Available values: `ETH`, `SOL`, `BTC`
+</ParamField>
+
+<ParamField body="should_sync_to_fortmatic" type="boolean" default="true">
+Whether to sync the wallet to Fortmatic for backwards compatibility.
+</ParamField>
+
+**Response:**
+
+<ResponseField name="public_address" type="string">
+The newly created wallet's public address.
+</ResponseField>
+
+```json
+{
+  "public_address": "0x6b422EefBFBc47a6900A1fc5454Ef4b940B7e36e"
+}
+```
+
+## Sign Endpoints
+
+### Sign Data
+
+Sign a hash of arbitrary data using the wallet's private key.
+
+```bash cURL
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
+  -H 'X-Magic-API-Key: your-magic-api-key' \
+  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
+  -d '{
+    "chain": "ETH",
+    "raw_data_hash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890"
+  }'
+```
+
+**Parameters:**
+
+<ParamField body="chain" type="string" required>
+The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
+</ParamField>
+
+<ParamField body="raw_data_hash" type="string" required>
+The keccak256 hash of the data to sign (hex string with 0x prefix).
+</ParamField>
+
+**Response:**
+
+<ResponseField name="message_hash" type="string">
+The hash that was signed.
+</ResponseField>
+
+<ResponseField name="signature" type="string">
+The complete signature in hex format.
+</ResponseField>
+
+<ResponseField name="r" type="string">
+The r component of the ECDSA signature.
+</ResponseField>
+
+<ResponseField name="s" type="string">
+The s component of the ECDSA signature.
+</ResponseField>
+
+<ResponseField name="v" type="string">
+The recovery parameter of the ECDSA signature.
+</ResponseField>
+
+```json
+{
+  "message_hash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+  "signature": "0x8e7d6c5b4a3928172635445566778899aabbccddeeff00112233445566778899",
+  "r": "0x3d4e5f678901234567890abcdef1234567890abcdef1234567890abcdef1234",
+  "s": "0x4e5f678901234567890abcdef1234567890abcdef1234567890abcdef123456",
+  "v": "27"
+}
+```
+
+### Sign Message
+
+Sign an arbitrary message using the wallet's private key. Useful for authentication and off-chain verification.
+
+```bash cURL
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
+  -H 'X-Magic-API-Key: your-magic-api-key' \
+  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
+  -d '{
+    "chain": "ETH",
+    "message_base64": "bm9uZQ=="
+  }'
+```
+
+**Parameters:**
+
+<ParamField body="chain" type="string" required>
+The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
+</ParamField>
+
+<ParamField body="message_base64" type="string" required>
+The message to sign, encoded as base64.
+</ParamField>
+
+**Response:**
+
+<ResponseField name="signature" type="string">
+The complete signature in hex format.
+</ResponseField>
+
+<ResponseField name="r" type="string">
+The r component of the ECDSA signature.
+</ResponseField>
+
+<ResponseField name="s" type="string">
+The s component of the ECDSA signature.
+</ResponseField>
+
+<ResponseField name="v" type="string">
+The recovery parameter of the ECDSA signature.
+</ResponseField>
+
+```json
+{
+  "signature": "0x0cebb670d8375ac74122b46c44def7e1ce593e80434a3e6557108ae124f8b44f3c5068fc104279fe7f51918cbe4c249d707bc1c0ce2ffb6d201d3cf4e2fdee8d1b",
+  "r": "0x0cebb670d8375ac74122b46c44def7e1ce593e80434a3e6557108ae124f8b44f",
+  "s": "0x3c5068fc104279fe7f51918cbe4c249d707bc1c0ce2fdee8d",
+  "v": "27"
+}
+```
+
 ## Data Hashing for Signing
 
 When signing messages or data, you need to properly encode your data:
@@ -59,15 +196,6 @@ When signing messages or data, you need to properly encode your data:
 
 For signing messages, encode your data as base64:
 
-```javascript
-const message = Buffer.from(data, 'utf-8').toString('base64');
-```
-
-### Data Signing
-
-For signing transaction data or other structured data, provide a keccak256 hash:
-
-<CodeGroup>
 ```javascript Personal Sign
 const personalSign = async (data: string) => {
   const message = Buffer.from(data, 'utf-8').toString('base64');
@@ -79,6 +207,11 @@ const personalSign = async (data: string) => {
 };
 ```
 
+### Data Signing
+
+For signing transaction data or other structured data, provide a keccak256 hash:
+
+<CodeGroup>
 ```javascript Typed Data V1
 import { typedSignatureHash } from '@metamask/eth-sig-util';
 
@@ -106,6 +239,15 @@ const computeEip712Hash = (
 ): string => {
   const hashBuffer = TypedDataUtils.eip712Hash(data, version);
   return '0x' + hashBuffer.toString('hex');
+};
+
+const signTypedDataV3 = async (data: TypedMessage<MessageTypes>) => {
+  const rawDataHash = computeEip712Hash(data, SignTypedDataVersion.V3);
+  const body = { raw_data_hash: rawDataHash, chain: 'ETH' };
+  return await fetch('/v1/wallet/sign/data', { 
+    method: 'POST', 
+    body: JSON.stringify(body) 
+  });
 };
 
 const signTypedDataV4 = async (data: TypedMessage<MessageTypes>) => {
@@ -139,179 +281,6 @@ const signTransaction = async (tx: TransactionRequest) => {
 };
 ```
 </CodeGroup>
-
-## Wallet Endpoints
-
-### Get Wallet Details
-
-Retrieve the wallet's public address for the given chain.
-
-```bash cURL
-curl -X GET 'https://tee.express.magiclabs.com/v1/wallet?chain=ETH' \
-  -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
-  -H 'X-Magic-API-Key: your-magic-api-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id'
-```
-
-**Response:**
-```json
-{
-  "public_address": "0x6b422EefBFBc47a6900A1fc5454Ef4b940B7e36e"
-}
-```
-
-<ParamField query="chain" type="string" required>
-The blockchain to get the wallet address for. Available values: `ETH`, `SOL`
-</ParamField>
-
-<ResponseField name="public_address" type="string">
-The wallet's public address for the specified chain.
-</ResponseField>
-
-### Create New Wallet
-
-Create a new wallet for the given chain and return its public address.
-
-```bash cURL
-curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
-  -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
-  -H 'X-Magic-API-Key: your-magic-api-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
-  -d '{
-    "chain": "ETH"
-  }'
-```
-
-**Response:**
-```json
-{
-  "public_address": "0x6b422EefBFBc47a6900A1fc5454Ef4b940B7e36e"
-}
-```
-
-<ParamField body="chain" type="string" required>
-The blockchain to create the wallet for. Available values: `ETH`, `SOL`
-</ParamField>
-
-<ParamField body="should_sync_to_fortmatic" type="boolean" default="true">
-Whether to sync the wallet to Fortmatic for backwards compatibility.
-</ParamField>
-
-<ResponseField name="public_address" type="string">
-The newly created wallet's public address.
-</ResponseField>
-
-## Sign Operations
-
-### Sign Data
-
-Sign a hash of arbitrary data using the wallet's private key.
-
-```bash cURL
-curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
-  -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
-  -H 'X-Magic-API-Key: your-magic-api-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
-  -d '{
-    "chain": "ETH",
-    "raw_data_hash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890"
-  }'
-```
-
-**Response:**
-```json
-{
-  "message_hash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
-  "signature": "0x8e7d6c5b4a3928172635445566778899aabbccddeeff00112233445566778899",
-  "r": "0x3d4e5f678901234567890abcdef1234567890abcdef1234567890abcdef1234",
-  "s": "0x4e5f678901234567890abcdef1234567890abcdef1234567890abcdef123456",
-  "v": "27"
-}
-```
-
-<ParamField body="chain" type="string" required>
-The blockchain to sign for. Available values: `ETH`, `SOL`
-</ParamField>
-
-<ParamField body="raw_data_hash" type="string" required>
-The keccak256 hash of the data to sign (hex string with 0x prefix).
-</ParamField>
-
-<ParamField body="one_time_code" type="string">
-Optional one-time code for additional security verification.
-</ParamField>
-
-<ResponseField name="message_hash" type="string">
-The hash that was signed.
-</ResponseField>
-
-<ResponseField name="signature" type="string">
-The complete signature in hex format.
-</ResponseField>
-
-<ResponseField name="r" type="string">
-The r component of the ECDSA signature.
-</ResponseField>
-
-<ResponseField name="s" type="string">
-The s component of the ECDSA signature.
-</ResponseField>
-
-<ResponseField name="v" type="string">
-The recovery parameter of the ECDSA signature.
-</ResponseField>
-
-### Sign Message
-
-Sign an arbitrary message using the wallet's private key. Useful for authentication and off-chain verification.
-
-```bash cURL
-curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
-  -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
-  -H 'X-Magic-API-Key: your-magic-api-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
-  -d '{
-    "chain": "ETH",
-    "message_base64": "bm9uZQ=="
-  }'
-```
-
-**Response:**
-```json
-{
-  "signature": "0x0cebb670d8375ac74122b46c44def7e1ce593e80434a3e6557108ae124f8b44f3c5068fc104279fe7f51918cbe4c249d707bc1c0ce2ffb6d201d3cf4e2fdee8d1b",
-  "r": "0x0cebb670d8375ac74122b46c44def7e1ce593e80434a3e6557108ae124f8b44f",
-  "s": "0x3c5068fc104279fe7f51918cbe4c249d707bc1c0ce2fdee8d",
-  "v": "27"
-}
-```
-
-<ParamField body="chain" type="string" required>
-The blockchain to sign for. Available values: `ETH`, `SOL`
-</ParamField>
-
-<ParamField body="message_base64" type="string" required>
-The message to sign, encoded as base64.
-</ParamField>
-
-<ResponseField name="signature" type="string">
-The complete signature in hex format.
-</ResponseField>
-
-<ResponseField name="r" type="string">
-The r component of the ECDSA signature.
-</ResponseField>
-
-<ResponseField name="s" type="string">
-The s component of the ECDSA signature.
-</ResponseField>
-
-<ResponseField name="v" type="string">
-The recovery parameter of the ECDSA signature.
-</ResponseField>
 
 ## Error Handling
 
