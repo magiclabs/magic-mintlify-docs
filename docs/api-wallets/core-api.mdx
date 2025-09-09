@@ -1,14 +1,15 @@
 ---
 title: "Core API"
-description: "Complete reference for Magic's Core API - a server-side wallet management solution that provides flexible key management with AWS Nitro Trusted Execution Environment security"
+description: "Complete reference for Magic's API Wallets Core API - a server-side wallet management solution that provides flexible key management with AWS Nitro Trusted Execution Environment security"
 ---
 
 ## Base URL
 
 All API requests should be made to:
 
-**Staging:** `https://tee.stagef.magiclabs.com`  
-**Production:** `https://tee.magiclabs.com`
+```
+https://tee.magiclabs.com
+```
 
 ## Introduction
 
@@ -29,7 +30,7 @@ Use of Core API requires a Magic developer account and an allowlisted applicatio
 After the application is allowlisted, you can make requests to the API by passing the corresponding `Secret Key` in the request headers as `x-magic-secret-key`.
 
 <Frame>
-<img src="/images/api-wallets-dashboard.png" alt="Magic Dashboard showing API key configuration" />
+<img src="/images/api-wallets-core-getting-started.webp" alt="Magic Dashboard showing API key configuration" />
 </Frame>
 
 ## Authentication
@@ -65,7 +66,7 @@ If the `encryption_context` is readily available to the application to use at wi
 ### Wallet Generation Schema
 
 <Frame>
-<img src="/images/wallet-generation-schema.png" alt="Diagram showing how private keys are split into 5 shards for security" />
+<img src="/images/api-wallets-core-shard-diagram.webp" alt="Diagram showing how private keys are split into 5 shards for security" />
 </Frame>
 
 When a wallet is created, the PK is split into 3 shards. Reconstruction requires 2 of 3 shards.
@@ -83,7 +84,7 @@ When a wallet is created, the PK is split into 3 shards. Reconstruction requires
 ### Wallet Generation Flow
 
 <Frame>
-<img src="/images/wallet-creation-flow.png" alt="Flow diagram showing client-server wallet creation process" />
+<img src="/images/example-wallet-generation-flow-diagram.webp" alt="Flow diagram showing client-server wallet creation process" />
 </Frame>
 
 The above flow illustrates an application taking the user's passcode (`encryption_context`) from the client, passing it to the server before it is provided to the wallet creation endpoint.
@@ -91,7 +92,7 @@ The above flow illustrates an application taking the user's passcode (`encryptio
 ### Non-Recovery Key Operation Flow
 
 <Frame>
-<img src="/images/key-signing-flow.png" alt="Flow diagram showing client-server key signing process" />
+<img src="/images/example-non-recovery-key-operation-flow-diagram.webp" alt="Flow diagram showing client-server key signing process" />
 </Frame>
 
 The above flow illustrates an application prompting the user for the same passcode (`encryption_context`) used to create their wallet. It is passed from the client to the server before it is provided to any sign operation endpoint.
@@ -99,7 +100,7 @@ The above flow illustrates an application prompting the user for the same passco
 ### Recovery Flow
 
 <Frame>
-<img src="/images/wallet-recovery-flow.png" alt="Flow diagram showing client-server wallet recovery process" />
+<img src="/images/example-recovery-flow-diagram.webp" alt="Flow diagram showing client-server wallet recovery process" />
 </Frame>
 
 The above flow illustrates an application accepting the user's new passcode (`encryption_context`) to recover the PK because the original passcode was lost. The new passcode will serve as the updated `encryption_context`.
