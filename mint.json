@@ -233,7 +233,11 @@
     },
     {
       "group": "API Wallets",
-      "pages": ["docs/api-wallets/api-wallets", "docs/api-wallets/express-api"]
+      "pages": [
+        "docs/api-wallets/api-wallets",
+        "docs/api-wallets/express-api",
+        "docs/api-wallets/core-api"
+      ]
     },
     {
       "group": "Blockchains",
