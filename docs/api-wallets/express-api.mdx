@@ -1,6 +1,6 @@
 ---
-title: "TEE Express API"
-description: "Complete reference for Magic's TEE Express API - a secure wallet management service that handles key management internally using trusted execution environment technology"
+title: "Express API"
+description: "Complete reference for Magic's API Wallets Express API - a secure wallet management service that handles key management internally using trusted execution environment technology"
 ---
 
 ## Base URL
@@ -13,7 +13,7 @@ https://tee.express.magiclabs.com
 
 ## Authentication
 
-TEE Express requires multiple authentication headers for secure access:
+API Wallets Express requires multiple authentication headers for secure access:
 
 <ParamField header="Authorization" type="string" required>
 Bearer token (JWT) for user authentication. Format: `Bearer YOUR_JWT_TOKEN`
@@ -317,57 +317,3 @@ Array of validation error details.
 </Expandable>
 </ResponseField>
 
-## Security Features
-
-### Trusted Execution Environment (TEE)
-
-TEE Express provides enterprise-grade security through:
-
-- **Secure Enclaves**: Private keys never leave the secure environment
-- **Hardware Security**: All cryptographic operations performed in trusted hardware
-- **Isolated Execution**: Wallet operations run in completely isolated environments
-- **Tamper Resistance**: Protection against both software and hardware attacks
-
-### Authentication Layers
-
-Multiple authentication layers ensure secure access:
-
-1. **JWT Bearer Token**: User-specific authentication
-2. **API Key/Secret Key**: Service-level authentication  
-3. **OIDC Provider ID**: Application-specific identification
-
-### Key Management
-
-- **No Key Exposure**: Private keys are generated and stored entirely within the TEE
-- **Automatic Key Derivation**: Keys are derived deterministically for consistency
-- **Secure Operations**: All signing operations happen within the secure enclave
-
-## Best Practices
-
-### Security
-
-- Always use HTTPS for all API requests
-- Store JWT tokens securely and implement proper token refresh logic
-- Never expose API keys or secret keys in client-side code
-- Implement proper error handling to avoid information leakage
-
-### Performance
-
-- Cache wallet addresses to reduce API calls
-- Implement retry logic with exponential backoff for transient failures
-- Use appropriate timeouts for network requests
-
-### Integration
-
-- Test all signing operations thoroughly in a development environment
-- Validate signature formats match your application's requirements
-- Implement proper logging for debugging and monitoring
-
-## Support
-
-For additional help and support:
-
-- **Documentation**: Visit our [comprehensive guides](https://magic.link/docs)
-- **Community**: Join our [Discord server](https://discord.gg/magiclabs)
-- **Support**: Contact our support team through the [Magic Dashboard](https://dashboard.magic.link)
-- **API Status**: Monitor service status and updates
