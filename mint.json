@@ -66,7 +66,6 @@
       "group": "Get Started",
       "pages": [
         "docs/home/welcome",
-        "docs/home/quickstart/cli",
         {
           "group": "Security",
           "pages": [
