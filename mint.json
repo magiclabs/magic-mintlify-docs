@@ -80,6 +80,14 @@
       ]
     },
     {
+      "group": "Quickstart",
+      "pages": [
+        "docs/embedded-wallet/quickstart/overview",
+        "docs/embedded-wallet/quickstart/cli",
+        "docs/embedded-wallet/quickstart/integration"
+      ]
+    },
+    {
       "group": "Authentication",
       "pages": [
         "docs/embedded-wallet/authentication/overview",

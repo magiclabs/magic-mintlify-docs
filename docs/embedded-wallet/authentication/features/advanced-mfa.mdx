@@ -27,15 +27,13 @@ Advanced MFA SDK methods are available via the following client-side SDKs:
 
 To enable Enterprise MFA, all that is required is for your third-party provider to be configured in our system and their issued JWT to be set in the custom authorization header via `magic.auth.setAuthorizationToken` prior to calling login:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+
+```javascript Javascript
 ⁠const handleLogin = async () => {
    await magic.auth.setAuthorizationToken(jwt)
    await magic.auth.loginWithEmailOTP({ email });
 };
 ```
-</Tab>
-</Tabs>
+
 
 Once you have added the `setAuthorizationToken` call into your login handler, Magic must enable the feature for your application. If you have users actively accessing your application, we recommend first testing this integration with a test application so that we can be sure to avoid any downtime when we turn on your production application.
