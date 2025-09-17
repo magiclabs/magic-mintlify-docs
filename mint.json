@@ -138,7 +138,8 @@
             "docs/embedded-wallet/authentication/customization/login-ui",
             "docs/embedded-wallet/authentication/customization/localization",
             "docs/embedded-wallet/authentication/customization/custom-smtp",
-            "docs/embedded-wallet/authentication/customization/custom-email-template"
+            "docs/embedded-wallet/authentication/customization/custom-email-template",
+            "docs/embedded-wallet/authentication/customization/custom-twilio-configuration"
           ]
         },
         {

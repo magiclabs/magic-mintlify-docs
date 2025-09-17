@@ -1,0 +1,156 @@
+---
+title: Custom Twilio Configuration
+sidebarTitle: Custom Twilio
+---
+
+## Introduction
+
+We understand that every business has unique communication needs, including specific country restrictions, compliance requirements, and cost optimizations. With our Custom Twilio Configuration integration, you can connect your own Twilio account to our system and send SMS messages using your own Twilio credentials.
+
+This guide walks you through the process of setting up and activating your Twilio integration in a few simple steps.
+
+<Note>
+**Why Use Your Own Twilio Account?**
+
+By connecting your Twilio account, you can:
+
+* Control which countries your SMS messages can be sent to
+* Manage your own Twilio usage and billing directly
+* Ensure messages are sent in compliance with your own business policies
+* Monitor and troubleshoot SMS delivery from your Twilio Console
+</Note>
+
+## Step 1: Get Your Twilio Credentials
+
+Before you can enable your Twilio integration, you need to collect a few key pieces of information from your Twilio account.
+
+### Where to Find Your Twilio Credentials
+
+1. Log in to your [Twilio Console](https://www.twilio.com/console)
+2. Navigate to **Account Dashboard** to find your **Account SID**
+<Frame>
+  <img src="/images/twilio_account_dashboard.webp" alt="twilio-account-dashboard"/>
+</Frame>
+3. Go to **API keys & tokens** and create a new **API Key** (recommended: [Standard API Key](https://www.twilio.com/docs/iam/api-keys#types-of-api-keys))
+<Frame>
+  <img src="/images/twilio_create_api_key.webp" alt="twilio-create-api-key"/>
+</Frame>
+4. Navigate to **Messaging → Services** and **Create Messaging Service**
+<Frame>
+  <img src="/images/twilio_create_messaging_service.webp" alt="twilio-create-messaging-service"/>
+</Frame>
+5. Copy the **Messaging Service SID** after creation
+
+### How to Add a Sender to the Sender Pool in Messaging Service
+
+<Note>
+Currently, we support the following Sender Types:
+
+* Phone Number
+* WhatsApp Number*
+
+*WhatsApp Number requires a specific **Content Template** approved by WhatsApp.
+</Note>
+
+1. Navigate to **Messaging → Services →** your **Messaging Service → Sender Pool** and **Add Senders**
+<Frame>
+  <img src="/images/twilio_add_senders.webp" alt="twilio-add-senders"/>
+</Frame>
+2. Choose the **Phone Number** Sender Type. The account must have an SMS-capable Twilio number to use this sender type.
+
+### How to Add a WhatsApp Number Sender
+
+<Note>
+WhatsApp [requires authentication templates](https://developers.facebook.com/docs/whatsapp/business-management-api/authentication-templates) to include one-time password (OTP) buttons as part of the approval process. These templates must adhere to predefined formats set by WhatsApp and cannot be customized by businesses.
+
+These authentication template formats are supported in Content Template Builder which supports basic authentication message, and optional expiry code and security advisory
+</Note>
+
+1. Navigate to **Messaging → Content Template Builder → Create New**
+2. Choose the **Authentication** Content Type
+<Frame>
+  <img src="/images/twilio_whatsapp_auth_type.webp" alt="twilio-whatsapp-auth-type"/>
+</Frame>
+3. Configure **Content Fields** as shown in the Screenshot. Click **Save and submit for WhatsApp approval**
+<Frame>
+  <img src="/images/twilio_whatsapp_content_template.webp" alt="twilio-whatsapp-content-template"/>
+</Frame>
+4. Copy the **Content Template SID** after creation and receiving WhatsApp approval
+
+## Step 2: Enter Your Twilio Credentials in the Dashboard
+
+Now that you have your Twilio credentials, you need to enter them in your account settings in our Dashboard.
+
+1. Log in to your Dashboard
+2. Go to **Settings → Custom Twilio Configuration**
+3. Fill in the following details:
+   * Account SID
+   * API Key
+   * API Secret
+   * Messaging Service SID
+   * Content Template SID (optional)
+<Frame>
+  <img src="/images/twilio_dashboard_fields.webp" alt="dashboard-fields"/>
+</Frame>
+4. **Save** Configuration
+
+Once saved, our system will automatically start using your Twilio settings to send SMS messages on your behalf.
+
+## Step 3: Country Restrictions
+
+Your Twilio account allows you to control which countries your messages can be sent to. To check and update this:
+
+1. Log in to your **Twilio Console**
+2. Go to **Messaging → Settings → Geo Permissions**
+3. Select the countries you want to allow or block
+<Frame>
+  <img src="/images/twilio_geo_permissions.webp" alt="twilio-geo-permissions"/>
+</Frame>
+
+## Step 4: Managing & Updating Your Twilio Configuration
+
+### Updating Your Twilio Credentials
+
+If you ever need to update your Twilio credentials (e.g., changing API keys for security reasons), simply:
+
+1. Go to **Settings → Custom Twilio Configuration** in the Dashboard
+2. Edit the fields with your new credentials
+3. Click **Save** Configuration
+
+### Disabling Your Twilio Integration
+
+If you want to temporarily disable your Twilio integration and switch back to our global SMS provider:
+
+1. Go to **Settings → Custom Twilio Configuration**
+2. Toggle off the Twilio configuration
+<Frame>
+  <img src="/images/twilio_toggle.webp" alt="twilio-disable-integration"/>
+</Frame>
+
+Your messages will now be sent using our default SMS provider.
+
+## Conclusion
+
+By following these steps, you have successfully connected your Twilio account to our system. You now have full control over your SMS messaging while leveraging the power of Twilio's infrastructure.
+
+If you need further assistance, feel free to reach out to our support team.
+
+## Frequently Asked Questions (FAQ)
+
+**What happens if I enter incorrect Twilio credentials?**
+
+If the credentials are incorrect, SMS messages will fail to send. You can check for errors in your Twilio Console under [Messaging Logs](https://www.twilio.com/docs/messaging/features/messaging-logs).
+
+**Can I use multiple Twilio accounts?**
+
+Currently, only one Twilio account can be linked to your dashboard at a time. If you need to switch accounts, update the credentials in **Settings → Custom Twilio Configuration**.
+
+**What if my SMS messages are not delivering?**
+
+* Check your Twilio Console [Messaging Logs](https://www.twilio.com/docs/messaging/features/messaging-logs) for errors
+* Ensure the destination country is allowed in **Twilio Geo Permissions**
+* Verify that your **Messaging Service SID** is correct
+
+**What happens if I do not configure Twilio?**
+
+A Twilio configuration is required to utilize SMS features like logging in with SMS. If you do not setup and activate your Twilio integration SMS messages will fail to send and users will not be able to login with SMS.
