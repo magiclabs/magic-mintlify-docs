@@ -16,7 +16,7 @@ Magic SDK offers two OAuth extensions: [v1](https://www.npmjs.com/package/@magic
 * You will need to have the [Magic SDK installed](/docs/embedded-wallet/api/overview) into your web app
 * You will need to have the [Magic SDK - OAuth Extension](/docs/embedded-wallet/authentication/login/social-logins/oauth-implementation) installed into your web app
 
-## LinkedIn Setup (v1 extension)
+### LinkedIn Setup (v1 extension)
 
 After installing the OAuth extension, you can now enable LinkedIn Login for your Magic app:
 
@@ -38,26 +38,19 @@ After installing the OAuth extension, you can now enable LinkedIn Login for your
 11. Return to your Magic Dashboard and input the **Client ID** and **Client Secret** for your LinkedIn OAuth app
 12. In Magic Dashboard, click **“Save”** – Done!
 
-## LinkedIn Setup (v2 extension)
+### LinkedIn Setup (v2 extension)
 
 * Follow above steps, but disregard Magic's **Redirect URI** in step 6
 * In step 8, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
 
-
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 await magic.oauth2.loginWithRedirect({
   provider: 'linkedin',
   redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with LinkedIn
 });
 ```
-</Tab>
-</Tabs>
 
-
-
-### Resources
+## Resources
 
 * [LinkedIn Social Login Demo](https://magic-oauth-v2-dun.vercel.app/)
 

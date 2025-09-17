@@ -15,7 +15,7 @@ Magic SDK offers two OAuth extensions: [v1](https://www.npmjs.com/package/@magic
 * You will need to have the [Magic SDK installed](/docs/embedded-wallet/api/overview) into your web app
 * You will need to have the [Magic SDK - OAuth Extension](/docs/embedded-wallet/authentication/login/social-logins/oauth-implementation) installed into your web app
 
-## Microsoft Setup (v1 extension)
+### Microsoft Setup (v1 extension)
 
 After installing the OAuth extension, you can now enable Microsoft Login for your Magic app:
 
@@ -52,22 +52,16 @@ After installing the OAuth extension, you can now enable Microsoft Login for you
 12. Return to your Magic Dashboard and input the **Client ID** and **Client Secret** for your Microsoft OAuth app and click **“Save”**
 13. Click **"Test Connection"** to give your new Microsoft OAuth flow a try!
 
-## Microsoft Setup (v2 extension)
+### Microsoft Setup (v2 extension)
 * Follow above steps, but disregard Magic's **Redirect URI** in step 5
 * In step 9, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
 
-
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 await magic.oauth2.loginWithRedirect({
   provider: 'microsoft',
   redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with Microsoft
 });
 ```
-</Tab>
-</Tabs>
-
 
 ## Resources
 

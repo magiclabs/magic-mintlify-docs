@@ -17,13 +17,13 @@ If your users are encountering an "Access blocked: magic.link has not completed 
 Magic SDK offers two OAuth extensions: [v1](https://www.npmjs.com/package/@magic-ext/oauth) and [v2](https://www.npmjs.com/package/@magic-ext/oauth2). For web applications, it is recommended to use v2, while v1 should be used for mobile applications.
 </Note>
 
-## Prerequisites
+### Prerequisites
 
 * You will need a [Google Developer](https://console.developers.google.com/) account
 * You will need to have the [Magic SDK installed](/docs/embedded-wallet/api/overview) into your web app
 * You will need to have the [Magic SDK - OAuth Extension](/docs/embedded-wallet/authentication/login/social-logins/oauth-implementation) installed into your web app
 
-## Google Setup (v1 extension)
+### Google Setup (v1 extension)
 
 After installing the OAuth extension, you can now enable Google Login for your Magic app:
 
@@ -40,31 +40,23 @@ After installing the OAuth extension, you can now enable Google Login for your M
   <img src="/images/redirect-uri.webp" alt=""/>
 </Frame>
 
-
 9.  In Magic Dashboard, click **“Save”**
 10. Click "**Test Connection**" to give your new Google OAuth flow a try!
 
-## Google Setup (v2 extension)
+### Google Setup (v2 extension)
 
 * Follow above steps, but disregard Magic's **Redirect URI** in step 8
 * Instead, add the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
 
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 await magic.oauth2.loginWithRedirect({
   provider: 'google',
   redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with Google
 });
 ```
-</Tab>
-</Tabs>
-Copy
 
-
-
-## Verification Process
+### Verification Process
 
 If your users are encountering an `Access blocked: magic.link has not completed the Google verification process` error, you will need to go to your Google developer dashboard and change your app's "Publishing status" from "Testing" to "In production".
 
@@ -93,7 +85,7 @@ The full list of criteria that requires verification from Google is as follows:
 </Frame>
 
 
-## Gmail Linking]
+## Gmail Linking
 
 A user's email login and Google social login can automatically be linked so that logging in with either auth factor will resolve to a single wallet.
 

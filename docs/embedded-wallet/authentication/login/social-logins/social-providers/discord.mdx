@@ -5,7 +5,7 @@ description: "You can allow your users to sign up & log in to your web app with 
 ---
 
 
-### Usage
+## Usage
 
 ### Prerequisites
 
@@ -46,23 +46,12 @@ After installing the OAuth extension, you can now enable GitHub Login for your M
 * Follow above steps, but disregard Magic's **Redirect URI** in step 6
 * In step 7, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
 
-
-<Tabs>
-<Tab title="Javascript">
-```javascript
-  await magic.oauth2.loginWithRedirect({
-
- provider:  'discord',
-
- redirectURI:  'https://your-app.com/your/oauth/callback',  // <== whitelist this with Discord
-
+```javascript JavaScript
+await magic.oauth2.loginWithRedirect({
+  provider:  'discord',
+  redirectURI: 'https://your-app.com/your/oauth/callback',  // <== whitelist this with Discord
 });
 ```
-</Tab>
-</Tabs>
-
-
-
 
 ## Resources
 

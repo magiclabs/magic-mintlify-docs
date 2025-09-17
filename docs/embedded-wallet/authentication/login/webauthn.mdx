@@ -35,7 +35,6 @@ Install the Magic WebAuthn extension:
 <Tab title="NPM">
 ```bash
 npm install magic-sdk @magic-ext/webauthn
-
 ```
 </Tab>
 <Tab title="Yarn">
@@ -45,18 +44,11 @@ yarn add magic-sdk @magic-ext/webauthn
 </Tab>
 </Tabs>
 
-
-
 ### Initialization
 
 Create your Magic SDK instance with the WebAuthn extension:
 
-Javascript
-
-<Tabs>
-<Tab title="Javascript">
-```javascript
-
+```javascript JavaScript
 import { Magic } from 'magic-sdk';
 import { WebAuthnExtension } from '@magic-ext/webauthn';
 
@@ -64,59 +56,36 @@ const magic = new Magic('YOUR_API_KEY', {
   extensions: [new WebAuthnExtension()],
 });
 ```
-</Tab>
-</Tabs>
-
-
 
 ### Register new users
 
 Register new users with the `registerNewUser` function in the `webauthn` module. You must provide the user's selected username and can optionally provide a nickname for the device.
 
-
-
-<Tabs>
-<Tab title="Javascript">
-```javascript
-// register a user by their username
+```javascript JavaScript
 try {
   const token = await magic.webauthn.registerNewUser({ username: 'username' });
 } catch (e) {
   // Handle errors if required!
 }
 ```
-</Tab>
-</Tabs>
-
-
 
 ### Authenticate users
 
 Authenticate users with the `login` method in the `webauthn` module. You must provide the user's username.
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
-// login a user by their username
+```javascript JavaScript
 try {
   const token = await magic.webauthn.login({ username: 'username' });
 } catch (e) {
   // Handle errors if required!
 }
 ```
-</Tab>
-</Tabs>
-
 
 ### Get User Metadata
 
-
 Get WebAuthn-specific metadata with the `getMetadata` method in the `webauthn` module. The response includes the user's username as well as device info like the device ID, device nickname, etc.
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
-// Initiates the flow to get webauthn metadata for current account.
+```javascript JavaScript
 try {
   const metadata = await magic.webauthn.getMetadata();
 
@@ -137,9 +106,6 @@ try {
   // Handle errors if required!
 }
 ```
-</Tab>
-</Tabs>
-
 
 ## Resources
 

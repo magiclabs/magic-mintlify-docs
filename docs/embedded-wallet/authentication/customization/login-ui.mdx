@@ -15,7 +15,7 @@ The Login UI is available via the following client-side SDKs:
 - [iOS](/docs/embedded-wallet/api/client-side-sdks/ios)
 - [Android](/docs/embedded-wallet/api/client-side-sdks/android)
 
-### Use Cases
+## Use Cases
 
 - Allow your users to log in and/or sign up to your dApp using their preferred authentication method and gain access to their public wallet address on the network you are connected to.
 - You can collect a signed token for wallet address verification and skip the need to explicitly request a personal signature which would prompt an additional screen.
@@ -24,46 +24,38 @@ The Login UI is available via the following client-side SDKs:
   <img src="/images/dedicated-widget-login.webp" alt="dedicated-widget-login" />
 </Frame>
 
-### Authentication Methods
+## Authentication Methods
 
 ### Email One-Time Passcode
 
-If a user chooses to authenticate through their email, they will recieve a unique code to their email that is generated per attempt and the user will be required to enter it to authenticate. OTPs for email provide a simple and effective way to increase security and ensure the safety of user assets.
+If a user chooses to authenticate through their email, they will receive a unique code to their email that is generated per attempt and the user will be required to enter it to authenticate. OTPs for email provide a simple and effective way to increase security and ensure the safety of user assets.
 
-### Usage
+## Usage
 
-#### Login
+### Login
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 import { Magic } from "magic-sdk"
 
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
-network: "sepolia",
+  network: "sepolia",
 });
 
 const accounts = await magic.wallet.connectWithUI();
-
-````
-</Tab>
-</Tabs>
+```
 
 The example above authenticates the user and connects to the Ethereum Sepolia Testnet. To connect to a different network, simply replace the configuration with another of [the 25+ chains supported by Magic](/docs/embedded-wallet/blockchains/overview).
 
-
-### Device Registration
+## Device Registration
 
 
 Find out more about Device Registration [here](/docs/embedded-wallet/authentication/security/device-registration).
 
-### Configuration
+## Configuration
 
-
-* You can configure which authentication methods are supported by your dApp in your [Dashboard settings](https://dashboard.magic.link/app/settings).
 * See how to brand this experience with your own logo and colors in the [customization section](https://dashboard.magic.link/app/branding).
 
-### Resources
+## Resources
 
 * [`magic.wallet.connectWithUI()`](/docs/embedded-wallet/api/client-side-sdks/web#connectwithui)
 ```

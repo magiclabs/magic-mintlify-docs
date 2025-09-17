@@ -18,7 +18,7 @@ Magic SDK offers two OAuth extensions: [v1](https://www.npmjs.com/package/@magic
 * You will need to have the [Magic SDK installed](/docs/embedded-wallet/api/overview) into your web app
 * You will need to have the [Magic SDK - OAuth Extension](/docs/embedded-wallet/authentication/login/social-logins/oauth-implementation) installed into your web app
 
-## GitHub Setup (v1 extension)
+### GitHub Setup (v1 extension)
 
 After installing the OAuth extension, you can now enable GitHub Login for your Magic app:
 
@@ -44,23 +44,17 @@ After installing the OAuth extension, you can now enable GitHub Login for your M
 10. Return to your Magic Dashboard and input the **Client ID** and **Client Secret** for your GitHub OAuth app
 11. In Magic Dashboard, click **“Save”** – Done!
 
-## GitHub Setup (v2 extension)
+### GitHub Setup (v2 extension)
 
 * Follow above steps, but disregard Magic's **Redirect URI** in step 6
 * In step 7, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
 
-
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 await magic.oauth2.loginWithRedirect({
   provider: 'github',
   redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with GitHub
 });
 ```
-</Tab>
-</Tabs>
-
 
 ## Resources
 

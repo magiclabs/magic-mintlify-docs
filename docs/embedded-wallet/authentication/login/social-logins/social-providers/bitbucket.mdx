@@ -4,9 +4,9 @@ sidebarTitle: Bitbucket
 description: "You can allow your users to sign up & log in to your web app with their Bitbucket account."
 ---
 
-### Usage
+## Usage
 
-## Prerequisites
+### Prerequisites
 
 <Note>
 Magic SDK offers two OAuth extensions: [v1](https://www.npmjs.com/package/@magic-ext/oauth) and [v2](https://www.npmjs.com/package/@magic-ext/oauth2). For web applications, it is recommended to use v2, while v1 should be used for mobile applications.
@@ -15,7 +15,7 @@ Magic SDK offers two OAuth extensions: [v1](https://www.npmjs.com/package/@magic
 * You will need to have the [Magic SDK installed](/docs/embedded-wallet/api/overview) into your web app
 * You will need to have the [Magic SDK - OAuth Extension](/docs/embedded-wallet/authentication/login/social-logins/oauth-implementation) installed into your web app
 
-## Bitbucket Setup (v1 extension)
+### Bitbucket Setup (v1 extension)
 
 After installing the OAuth extension, you can now enable Bitbucket Login for your Magic app:
 
@@ -53,23 +53,17 @@ After installing the OAuth extension, you can now enable Bitbucket Login for you
 11. Return to your Magic Dashboard and input the **Key** and **Secret** for your bitbucket OAuth app
 12. In Magic Dashboard, click **“Save”** – Done!
 
-## Bitbucket Setup (v2 extension)
+### Bitbucket Setup (v2 extension)
 
 * Follow above steps, but disregard Magic's **Redirect URI** in step 5
 * In step 8, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
 
-
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 await magic.oauth2.loginWithRedirect({
   provider: 'bitbucket',
   redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with Bitbucket
 });
 ```
-</Tab>
-</Tabs>
-
 
 ## Resources
 

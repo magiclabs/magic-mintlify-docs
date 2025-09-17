@@ -113,14 +113,14 @@
                     "docs/embedded-wallet/authentication/login/social-logins/social-providers/bitbucket",
                     "docs/embedded-wallet/authentication/login/social-logins/social-providers/twitch",
                     "docs/embedded-wallet/authentication/login/social-logins/social-providers/microsoft",
-                    "docs/embedded-wallet/authentication/login/social-logins/social-providers/gitlab"
+                    "docs/embedded-wallet/authentication/login/social-logins/social-providers/gitlab",
+                    "docs/embedded-wallet/authentication/login/social-logins/social-providers/telegram"
                   ]
                 }
               ]
             },
             "docs/embedded-wallet/authentication/login/farcaster",
-            "docs/embedded-wallet/authentication/login/webauthn",
-            "docs/embedded-wallet/authentication/login/idp"
+            "docs/embedded-wallet/authentication/login/webauthn"
           ]
         },
         {

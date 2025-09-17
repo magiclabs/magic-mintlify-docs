@@ -6,13 +6,13 @@ description: "You can allow your users to sign up & login into your web applicat
 
 ## Usage
 
-## Prerequisites
+### Prerequisites
 
 * You will need a [Facebook Developer](https://developers.facebook.com/) account
 * You will need to have the [Magic SDK installed](/docs/embedded-wallet/api/overview) into your web application
 * You will need to have the [Magic SDK - OAuth Extension](/docs/embedded-wallet/authentication/login/social-logins/oauth-implementation) installed into your web application
 
-## Facebook Setup (v1 extension)
+### Facebook Setup (v1 extension)
 
 After installing the OAuth extension, you can now enable Facebook Login for your Magic application:
 
@@ -52,23 +52,18 @@ After installing the OAuth extension, you can now enable Facebook Login for your
 13. Click **Save**
 14. Click **Test Connection** to give your new Facebook OAuth flow a try!
 
-## Facebook Setup (v2 extension)
+### Facebook Setup (v2 extension)
 
 * Follow above steps, but disregard Magic's **Redirect URI** in step 8
 * In step 9, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
 
 
-
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 await magic.oauth2.loginWithRedirect({
   provider: 'facebook',
   redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with Facebook
 });
 ```
-</Tab>
-</Tabs>
 
 ## Resources
 

@@ -4,35 +4,34 @@ title: Custom Email Provider
 
 import { Button } from "/snippets/button.mdx";
 
+## Overview
+
 <Card>
   This feature requires a subscription to Growth Plan
   <br />
   <Button href="https://magic.link/pricing#features">View pricing</Button>
 </Card>
 
-## Overview
-
 Custom Email Provider is a premium feature that allows developers to configure the sender of Magic Link emails by routing emails through their own SMTP servers. Emails sent from our servers come from the default `noreply@trymagic.com`.
 
 Enabling a custom SMTP gives you full control over where your application's login emails are sent from, as well as the name of the sender. Custom email providers are configured at the application level by visiting the Settings section of the [Dashboard](https://dashboard.magic.link/).
 
+## Configuration
+
+Once Custom Email Provider has been unlocked for your workspace, you can configure your own custom SMTP server.
+
+<Note>
+  Currently, only the Microsoft provider is supported for OAuth authentication.
+</Note>
+
+Refer to your SMTP provider to determine whether to use Basic Auth or OAuth.
+
+### Basic Auth
+
 <Frame>
   <img
-    src="/images/sales-enabled-read-only.webp"
-    alt="sales-enabled-read-only"
-  />
-</Frame>
-
-### Configuration
-
-Once Custom Email Provider has been unlocked for your workspace, you can continue using Magic's existing email infrastructure or configure your own custom SMTP server.
-
-All we need is the information specified in the form below:
-
-<Frame>
-  <img
-    src="/images/sales-enabled-configuring.webp"
-    alt="sales-enabled-read-only"
+    src="/images/SMTP-Basic-Auth.webp"
+    alt="SMTP-Basic-Auth"
   />
 </Frame>
 
@@ -43,9 +42,72 @@ All we need is the information specified in the form below:
 - **Port**: Port of your SMTP server
 - **Username, Password**: Credentials to authenticate into your SMTP server
 
-With the above pieces of information, we will be able to create a TLS-encrypted context to route our Magic Link emails to your server.
+### OAuth
 
-### Send a test email
+<Frame>
+  <img
+    src="/images/SMTP-OAuth.webp"
+    alt="SMTP-OAuth"
+  />
+</Frame>
+
+- **Sender email**: The email address your app's login emails will be sent from. E.g. `example@your-domain.com`
+  - ⁠**Note:** Do **not** to use your dashboard user account email as the `Sender Email`, or try to login with the `Sender Email`
+- **Sender name (optional)**: The name that appears on the subject line of the login email. Defaults to sender email address if not provided.
+- **Provider**: OAuth Provider. E.g. `Microsoft`
+- **Client ID**: The Client ID of your provider’s OAuth App
+- **Client Secret**: The Client Secret of your provider’s OAuth App
+- **Tenant ID**: Your Microsoft Tenant ID⁠
+  - **Note:** This field is required because, currently, only the `Microsoft` provider is supported
+
+### How to Set Up the Microsoft OAuth Provider
+
+<Note>
+  You need an Office 365 subscription to use Microsoft SMTP Server.
+</Note>
+
+1. Log in to the Microsoft Azure portal
+    - Use your organization credentials to access the [Microsoft Azure registration portal](https://learn.microsoft.com/en-us/azure). Refer to the official Microsoft documentation for more details.
+2. Register a new application
+    - Provide an application name
+    - Select the supported account type
+    - Enter the redirect URL (optional)
+    - Click **Register**
+3. Copy the Client ID
+4. Create a Client Secret
+    - In Microsoft Azure, go to **Manage -> Certificates & secrets**
+    - Click **New client secret**
+    - Provide a **description** and set an **expiration period**
+    - Select **Add**
+    - Copy the **Secret** value
+5. Enable the `SMTP.SendAsApp` permission
+    - In Microsoft Azure, go to **Manage -> API Permissions**
+    - Select **Add a permission**
+    - Choose the *APIs my organization uses* tile
+    - Select **Office 365 Exchange Online**
+    - Choose **Application permissions**
+    - In the *Select permissions* field, search for *SMTP.SendAsApp*
+    - Check the box for *SMTP.SendAsApp*
+    - Click **Add permissions**
+    - Select **Grant admin consent for `<your organization name>`**, then click **Yes** to confirm
+
+6. Register service principals in Microsoft Exchange using PowerShell
+    - Run the following commands
+    ```powershell PowerShell
+    Install-Module -Name ExchangeOnlineManagement
+    Import-module ExchangeOnlineManagement
+    Connect-ExchangeOnline -Organization <YOUR_TENANT_ID>
+    ```
+
+    ⁠For more information, see [Authenticate SMTP connection using OAuth](https://learn.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth)
+    - Register the service principal of a Microsoft Entra ID application by running the following command
+    ```powershell PowerShell
+    New-ServicePrincipal -AppId <YOUR_APPLICATION_ID> -ObjectId <YOUR_OBJECT_ID>
+    ```
+    **Important**: To obtain the `YOUR_APPLICATION_ID` value, navigate to **Overview -> Managed applications** in local directory and copy the Object ID. 
+
+
+## Send a Test Email
 
 The **Send test email** button will be enabled after saving a valid custom SMTP configuration. It will attempt to send a test email from the specified custom SMTP configuration to the email of the Magic Dashboard user who is currently logged in.
 
