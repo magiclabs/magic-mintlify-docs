@@ -33,40 +33,34 @@ Account recovery methods are available on the following client-side SDKs:
 ## Enabling Account Recovery
 
 <Frame>
-  <img src="/images/01_enable-recovery-method.webp" alt="" />
+  <img src="/images/01_enable-recovery-method.webp" alt="enable-recovery-method" />
 </Frame>
 
 To enable SMS recovery for your users:
 
-<Tabs>
-  <Tab title="Javascript">```javascript ⁠magic.user.showSettings(); ```</Tab>
-</Tabs>
+```javascript Javascript
+⁠magic.user.showSettings();
+```
 
 This will display a settings modal where users will be able to add a recovery factor.
 
 Additionally, Magic supports a deep linking flow where you can send users straight to adding a recovery factor. [The flow can also be whitelabeled](/docs/embedded-wallet/api/client-side-sdks/web#show-settings-show-ui-false-page-recovery):
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
-magic.user.showSettings({ page:'recovery'  });
+```javascript Javascript
+magic.user.showSettings({ page: 'recovery'  });
 ```
-</Tab>
-</Tabs>
 
 ## Recover Account
 
-![](https://media.graphcms.com/resize=w:20,h:20,fit:crop/blur=amount:2/compress/https://media.graphassets.com/tOThMoDTl2yw3khiJTyQ "00_use-recovery method.png")
+<Frame>
+  <img src="/images/00_use-recovery-method.webp" alt="use-recovery-method" />
+</Frame>
 
 Once a recovery factor is a set up, a user can recover their account. To enable this, the developer should call the following:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript Javascript
 magic.user.recoverAccount({ email: email })
 ```
-</Tab>
-</Tabs>
 
 <Note>
 It’s important to note that updating the recovery factor is a security sensitive operation so users will first be prompted to demonstrate account ownership by authenticating their email via a one-time-passcode before they are able to add a recovery phone number.
