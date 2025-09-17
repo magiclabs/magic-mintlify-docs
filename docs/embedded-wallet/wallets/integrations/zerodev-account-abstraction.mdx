@@ -22,40 +22,26 @@ We’ll use the `make-scoped-magic-app` CLI tool to bootstrap a Next.js app wi
 
 The `make-scoped-magic-app` CLI tool is an easy way to bootstrap new projects with Magic. To get started, simply run the command below in the shell of your choice. Be sure to replace `<YOUR_PUBLISHABLE_API_KEY>` with the **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link/).
 
-<Tabs>
-<Tab title="Bash">
 ```bash
-npx make-scoped-magic-app \\
-    --template nextjs-dedicated-wallet \\
-    --network ethereum-sepolia \\
-    --login-methods EmailOTP \\
-    --publishable-api-key <YOUR_PUBLISHABLE_API_KEY>
-
+npx make-scoped-magic-app \
+  --template nextjs-dedicated-wallet \
+  --network ethereum-sepolia \
+  --login-methods EmailOTP \
+  --publishable-api-key <YOUR_PUBLISHABLE_API_KEY>
 ```
-</Tab>
-</Tabs>
-
-
 
 This will bootstrap the starting point of the tutorial for you. In the scaffolded project, be sure to add your Magic Publishable API Key and ZeroDev project ID to the `.env` as `NEXT_PUBLIC_MAGIC_API_KEY` and `NEXT_PUBLIC_ZERODEV_SEPOLIA_PROJECT_ID`, respectively.
 
-<Tabs>
-<Tab title="Plaintext">
 ```bash
-// Publishable API Key found in the Magic Dashboard
+# Publishable API Key found in the Magic Dashboard
 NEXT_PUBLIC_MAGIC_API_KEY=pk_live_FF619AE0AEC9D473
 
-// The RPC URL for the blockchain network
+# The RPC URL for the blockchain network
 NEXT_PUBLIC_BLOCKCHAIN_NETWORK=ethereum-sepolia
 
-// The ZeroDev project id for the Sepolia blockchain network
+# The ZeroDev project id for the Sepolia blockchain network
 NEXT_PUBLIC_ZERODEV_SEPOLIA_PROJECT_ID=<ZERODEV_PROJECT_ID>
-
 ```
-</Tab>
-</Tabs>
-
-
 
 ## Install additional project dependencies
 
@@ -68,13 +54,11 @@ Run the following command to install the required dependencies:
 <Tab title="NPM">
 ```bash
 npm install @zerodev/sdk @zerodev/presets @zerodev/ecdsa-validator viem permissionless
-
 ```
 </Tab>
 <Tab title="Yarn">
 ```bash
 yarn add @zerodev/sdk @zerodev/presets @zerodev/ecdsa-validator viem permissionless
-
 ```
 </Tab>
 </Tabs>
@@ -103,9 +87,7 @@ Next, we create the kernel client by calling `createEcdsaKernelAccountClient` an
 3.  `signer`: The `smartAccountSigner` we create using the Magic provider and `providerToSmartAccountSigner` function.
 4.  `paymaster?`: Sponsoring gas paymaster. This is optional but allows you to pay transaction fees on behalf of your users.
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```javascript JavaScript
 const magicProvider = await magic?.wallet.getProvider();
 const smartAccountSigner = await providerToSmartAccountSigner(magicProvider);
 
@@ -115,17 +97,11 @@ const client = await createEcdsaKernelAccountClient({
   signer: smartAccountSigner,
   paymaster: "SPONSOR" // defaults to "SPONSOR". Use "NONE" if no policy is required.
 });
-
 ```
-</Tab>
-</Tabs>
-
-
 
 ## Paymaster
 
 Account abstraction enables you to cover gas fees on behalf of users, eliminating the need for them to obtain native tokens to engage with your DApp. ZeroDev makes sponsoring gas straight-forward in a few steps.
-
 
 <Note>
 For this guide we are using testnet tokens. If you're on planning on using mainnet you will need to make a payment for your gas policy to be applied.
@@ -151,15 +127,45 @@ Now when a user logs in with Magic, their account is associated with the ZeroDev
 
 ## Completed `useZeroDevKernelClient` code
 
+```typescript TypeScript
+import { sepolia } from "viem/chains"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { useMagic } from "../magic/MagicProvider"
+import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';
+import { providerToSmartAccountSigner } from 'permissionless';
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+export const useZeroDevKernelClient = () => {
+  const { magic } = useMagic();
+  const [kernelClient, setKernelClient] = useState<any>();
+  const [scaAddress, setScaAddress] = useState<any>();
+
+  useEffect(() => {
+    const fetchAccount = async () => {
+      const magicProvider = await magic?.wallet.getProvider();
+			if (!magicProvider) return;
+
+      const smartAccountSigner = await providerToSmartAccountSigner(magicProvider);
+
+      const client = await createEcdsaKernelAccountClient({
+        chain: sepolia,
+        projectId: process.env.NEXT_PUBLIC_ZERODEV_SEPOLIA_PROJECT_ID!,
+        signer: smartAccountSigner,
+        paymaster: "NONE"
+      });
+      setKernelClient(client)
+
+      setScaAddress(client.account.address);
+    }
+
+    fetchAccount()
+  }, [magic])
+
+  return {
+    kernelClient,
+    scaAddress,
+  }
+}
 ```
-</Tab>
-</Tabs>
-
-
 
 Notice that our hook returns both the client and the smart contract account address. This will allow us to use destructuring to access either or both from the rest of our code.
 
@@ -177,80 +183,118 @@ First things first. Open `src/components/magic/cards/UserInfoCard.tsx` and make 
 2.  Import our `useZeroDevKernelClient` hook and call it to get access to `scaAddress`
 3.  Add a state declaration for `scaBalance` and `setScaBalance` to store the smart contract account balance.
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
+// Change this
+const [balance, setBalance] = useState("...")
+const [publicAddress] = useState(
+  localStorage.getItem("user")
+)
+
+// To this
+const [magicBalance, setMagicBalance] = useState<string>("...")
+const [scaBalance, setScaBalance] = useState<string>("...")
+const [magicAddress] = useState(
+  localStorage.getItem("user")
+)
+const { scaAddress } = useZeroDevKernelClient();
 ```
-</Tab>
-</Tabs>
-
-
 
 ### Update `getBalance`
 
 Next, update the `getBalance` function to set both balances:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
+const getBalance = useCallback(async () => {
+  if (magicAddress && web3) {
+    const magicBalance = await web3.eth.getBalance(magicAddress)
+    if (magicBalance == BigInt(0)) {
+      setMagicBalance("0")
+    } else {
+      setMagicBalance(web3.utils.fromWei(magicBalance, "ether"))
+    }
+  }
+  if (scaAddress && web3) {
+    const aaBalance = await web3.eth.getBalance(scaAddress)
+    if (aaBalance == BigInt(0)) {
+      setScaBalance("0")
+    } else {
+      setScaBalance(web3.utils.fromWei(aaBalance, "ether"))
+    }
+  }
+}, [web3, magicAddress, scaAddress])
 ```
-</Tab>
-</Tabs>
-
 
 ### Update balance display
 
 Next, update the TSX for displaying the balance to show both balances:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```jsx JSX
+<div className="flex flex-col gap-2">
+  <div className="code">
+    Magic: {magicBalance.substring(0, 7)} {getNetworkToken()}
+  </div>
+  <div className="code">
+    AA: {scaBalance.substring(0, 7)} {getNetworkToken()}
+  </div>
+</div>
 ```
-</Tab>
-</Tabs>
 
-
-
-### Update initial showBalances
+### Update initial balances
 
 The only remaining balance reference is to set the initial balance while loading to `"..."`. This is in a short `useEffect` that calls `setBalance`. Update this `useEffect` to set both balances:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+
+```typescript TypeScript
+// Change this
+useEffect(() => {
+  setBalance('...');
+}, [magic]);
+
+// To this
+useEffect(() => {
+  setMagicBalance("...")
+  setScaBalance("...")
+}, [magic])
 ```
-</Tab>
-</Tabs>
-
-
 
 ### Update address display
 
 Now find the `CardLabel` and div that displays the address and modify it to use the new naming for `magicAddress` and also display the `scaAddress`.
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```jsx JSX
+<CardLabel
+  leftHeader="Addresses"
+  rightAction={
+    !magicAddress ? <Spinner /> : <div onClick={copy}>{copied}</div>
+  }
+/>
+<div className="flex flex-col gap-2">
+  <div className="code">
+    Magic:{" "}
+    {magicAddress?.length == 0 ? "Fetching address..." : magicAddress}
+  </div>
+  <div className="code">
+    Smart Contract Account:{" "}
+    {scaAddress?.length == 0 ? "Fetching address..." : scaAddress}
+  </div>
+</div>
 ```
-</Tab>
-</Tabs>
-
-
 
 ### Update `copy` function
 
 Lastly, update the `copy` function to reference `magicAddress` instead of `publicAddress`, otherwise you’ll get an error.
 
-
-
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
+const copy = useCallback(() => {
+  if (magicAddress && copied === "Copy") {
+    setCopied("Copied!")
+    navigator.clipboard.writeText(magicAddress)
+    setTimeout(() => {
+      setCopied("Copy")
+    }, 1000)
+  }
+}, [copied, magicAddress])
 ```
-</Tab>
-</Tabs>
-
-
 
 Now when a user logs in using Magic, both their Magic and smart contract account address and balances will be displayed!
 
@@ -269,21 +313,41 @@ In `src/components/magic/cards/SendTransactionCard.tsx`, import the the `kernelC
 To transfer funds from your smart contract account, ensure you have enough test tokens to send. You can get some test Sepolia tokens [here](https://sepoliafaucet.com/).
 </Note>
 
+```typescript TypeScript
+const sendTransaction = useCallback(async () => {
+    if (!web3?.utils.isAddress(toAddress)) {
+      return setToAddressError(true);
+    }
+    if (isNaN(Number(amount))) {
+      return setAmountError(true);
+    }
+    setDisabled(true);
 
+    try {
+      const result = await kernelClient.sendTransaction({
+        to: toAddress as `0x${string}`,
+        data: "0x",
+        value: web3.utils.toWei(amount, 'ether'),
+      });
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+      showToast({
+        message: `Transaction Successful. TX Hash: ${result}`,
+        type: 'success',
+      });
+      setHash(result.hash);
+      setToAddress('');
+      setAmount('');
+    } catch (err) {
+      console.log(err)
+    }
+
+    setDisabled(false);
+  }, [web3, amount, publicAddress, toAddress]);
 ```
-</Tab>
-</Tabs>
-
-
 
 Thats it! Go ahead and run the project to test it out. Then you can test out transferring tokens from your smart contract account. ⁠ ⁠**Note:** If you set up a paymaster earlier, then this transaction won't cost the user any gas. To be sure, try changing the `value` to `0` and send a transaction - you will notice that your ZeroDev account's balance didn't change at all.
 
 ## Next Steps
-
 
 You now know how to integrate Magic with a smart contract account and include the following features:
 

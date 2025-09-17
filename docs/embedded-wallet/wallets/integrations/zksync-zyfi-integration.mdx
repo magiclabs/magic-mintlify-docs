@@ -30,34 +30,24 @@ We’ll use the `make-scoped-magic-app` CLI tool to bootstrap a Next.js app wi
 
 The `make-scoped-magic-app` CLI tool is an easy way to bootstrap new projects with Magic. To get started, simply run the command below in the shell of your choice. Be sure to replace `<YOUR_PUBLISHABLE_API_KEY>` with the **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link/).
 
-<Tabs>
-<Tab title="Bash">
 ```bash
-npx make-scoped-magic-app \\\\
-    --template nextjs-dedicated-wallet \\\\
-    --network zksync-sepolia \\\\
-    --login-methods EmailOTP \\\\
+npx make-scoped-magic-app \
+    --template nextjs-dedicated-wallet \
+    --network zksync-sepolia \
+    --login-methods EmailOTP \
     --publishable-api-key <YOUR_PUBLISHABLE_API_KEY>
-
 ```
-</Tab>
-</Tabs>
-
-
 
 This will bootstrap the starting point of the tutorial for you. In the scaffolded project, be sure to add your Magic Publishable API Key to the `.env` as `NEXT_PUBLIC_MAGIC_API_KEY` if you didn’t add it to the CLI command above
 
-<Tabs>
-<Tab title="Plaintext">
+
 ```bash
-// Publishable API Key found in the Magic Dashboard
+# Publishable API Key found in the Magic Dashboard
 NEXT_PUBLIC_MAGIC_API_KEY=pk_live_1234567890
 
-// The RPC URL for the blockchain network
+# The RPC URL for the blockchain network
 NEXT_PUBLIC_BLOCKCHAIN_NETWORK=zksync-sepolia
 ```
-</Tab>
-</Tabs>
 
 
 
@@ -71,7 +61,6 @@ Run the following command to install the required dependencies:
 <Tab title="NPM">
 ```bash
 npm install viem
-
 ```
 </Tab>
 <Tab title="Yarn">
@@ -89,28 +78,18 @@ The code snippets provided below outline the process of initializing the `wallet
 
 Inside of `src/components/magic/MagicProvider.tsx`, import the following from Viem:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
 import { Client, createWalletClient, custom } from 'viem';
 import { zkSyncSepoliaTestnet } from 'viem/chains';
 import { eip712WalletActions } from "viem/zksync"
 ```
-</Tab>
-</Tabs>
-
-
 
 Next, create the wallet client state that will be used when we send the transaction:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+
+```typescript TypeScript
 const [walletClient, setWalletClient] = useState<Client | null>(null);
 ```
-</Tab>
-</Tabs>
-
 
 We must then create the wallet client inside of our useEffect hook that initializes the Magic provider and Web3 instance. Viem provides a function named `createWalletClient`. This function returns an object that acts as an interface for interacting with Ethereum wallets. It takes in the following arguments:
 
@@ -122,9 +101,8 @@ The client is also initialized with EIP712 transaction support using `eip712Wall
 
 Inside the useEffect underneath the `magic` variable declaration, add the following function and invocation:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+
+```typescript TypeScript
 const initializeWalletClient = async () => {
   const provider = await magic?.wallet.getProvider()
   const walletClient = createWalletClient({
@@ -138,16 +116,10 @@ const initializeWalletClient = async () => {
 initializeWalletClient();
 // rest of the code
 ```
-</Tab>
-</Tabs>
-
-
 
 Now that we’ve created and set the wallet client, we want to export it so we gain global access to the client. Update the `useMemo` hook and add `walletClient`:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
 const value = useMemo(() => {
   return {
     magic,
@@ -156,9 +128,6 @@ const value = useMemo(() => {
   };
 }, [magic, web3, walletClient]);
 ```
-</Tab>
-</Tabs>
-
 
 ## Mint testnet tokens
 
@@ -198,9 +167,7 @@ Inside this function is where the POST request is sent to Zyfi with the required
 
 After the first conditionals, add the following API call to Zyfi:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
 const res = await fetch('<https://api.zyfi.org/api/erc20_paymaster/v1>', {
   method: 'POST',
   headers: {
@@ -218,10 +185,7 @@ const res = await fetch('<https://api.zyfi.org/api/erc20_paymaster/v1>', {
     }
   })
 })
-
 ```
-</Tab>
-</Tabs>
 
 
 
@@ -237,42 +201,37 @@ Below is a sample response from the Zyfi API which is signed by the user. Take n
 
 It also contains additional data pertaining to the Zyfi request, not all of which needs to be included in the final transaction, but can be used in the UI or for validation.
 
-<Tabs>
-<Tab title="Json">
 ```json
 {
-    // signed by the user
-    "txData": {
-        "chainId": 300,
-        "from": "0xae37E4c7b3AD318E7d381804C9eAC15636e82079",
-        "to": "0x765fEB3FB358867453B26c715a29BDbbC10Be772",
-        "value": "10000000000000",
-        "data": "0x",
-        "customData": {
-            "paymasterParams": {
-                "paymaster": "0xEcacba301285cE4308aAFc71319F9a670fdd1C7a",
-                "paymasterInput": "0x949431dc000000000000000000000000fd1fbff2e1baa053c927dc513579a8b2727233d80000000000000000000000000000000000000000000000000001d54c9cb44000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000018e2f1dcacf00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000041fffe1f0df68221efb3c42f18bcbd7762e22a7d1e2a86441e0eb74515bc6eedb677756f3656b03d39ea1490d29940e083c5224af228983678009b07e215f9707e1c00000000000000000000000000000000000000000000000000000000000000"
-            },
-            "gasPerPubdata": 50000
-        },
-        "maxFeePerGas": "100000000",
-        "gasLimit": 1245000
-    },
-    "gasLimit": "1245000",
-    "gasPrice": "100000000",
-    "tokenAddress": "0xFD1fBFf2E1bAa053C927dc513579a8B2727233D8",
-    "tokenPrice": "10",
-    "feeTokenAmount": "516000000000000",
-    "feeTokendecimals": "18",
-    "feeUSD": "0.005160000000000001",
-    "markup": "-20%",
-    "expirationTime": "1710187465423",
-    "expiresIn": "1 hour"
+  // signed by the user
+  "txData": {
+      "chainId": 300,
+      "from": "0xae37E4c7b3AD318E7d381804C9eAC15636e82079",
+      "to": "0x765fEB3FB358867453B26c715a29BDbbC10Be772",
+      "value": "10000000000000",
+      "data": "0x",
+      "customData": {
+          "paymasterParams": {
+              "paymaster": "0xEcacba301285cE4308aAFc71319F9a670fdd1C7a",
+              "paymasterInput": "0x949431dc000000000000000000000000fd1fbff2e1baa053c927dc513579a8b2727233d80000000000000000000000000000000000000000000000000001d54c9cb44000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000018e2f1dcacf00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000041fffe1f0df68221efb3c42f18bcbd7762e22a7d1e2a86441e0eb74515bc6eedb677756f3656b03d39ea1490d29940e083c5224af228983678009b07e215f9707e1c00000000000000000000000000000000000000000000000000000000000000"
+          },
+          "gasPerPubdata": 50000
+      },
+      "maxFeePerGas": "100000000",
+      "gasLimit": 1245000
+  },
+  "gasLimit": "1245000",
+  "gasPrice": "100000000",
+  "tokenAddress": "0xFD1fBFf2E1bAa053C927dc513579a8B2727233D8",
+  "tokenPrice": "10",
+  "feeTokenAmount": "516000000000000",
+  "feeTokendecimals": "18",
+  "feeUSD": "0.005160000000000001",
+  "markup": "-20%",
+  "expirationTime": "1710187465423",
+  "expiresIn": "1 hour"
 }
-
 ```
-</Tab>
-</Tabs>
 
 
 
@@ -280,9 +239,7 @@ It also contains additional data pertaining to the Zyfi request, not all of whic
 
 Once you receive the response, you can use destructuring assignment to extract the `txData` property from the JSON response. Next, format the transaction data necessary for submission, including key details like the account address, recipient, value, chain specifications, gas limits, and paymaster information. This structured data is tailored specifically for the transaction and ensures that all necessary parameters are correctly set for processing the transaction properly.
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
 const { txData: apiTxData } = await res.json()
 
 const paymasterTxData = {
@@ -299,16 +256,12 @@ const paymasterTxData = {
   paymasterInput: apiTxData.customData.paymasterParams.paymasterInput,
 }
 ```
-</Tab>
-</Tabs>
 
 
 
 The data is correctly formatted and the transaction is ready to submit to the network. Add the following `try/catch` for sending the transaction beneath the rest of the code:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
 try {
   const hash = await walletClient?.sendTransaction(paymasterTxData)
   setHash(hash)
@@ -316,8 +269,6 @@ try {
   console.log("Something went wrong: ", err)
 }
 ```
-</Tab>
-</Tabs>
 
 
 

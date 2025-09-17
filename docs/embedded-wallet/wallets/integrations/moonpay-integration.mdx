@@ -50,20 +50,15 @@ This will bootstrap the starting point of the tutorial for you. In the scaffolde
 
 From your MoonPay business dashboard, click on the "Developers" tab on the left hand side navigation. Copy the **publishable** key and add it to your `.env` as `NEXT_PUBLIC_MOONPAY_API_KEY`.
 
-<Tabs>
-<Tab title=".env">
 ```bash
-// Publishable API Key found in the Magic Dashboard
+# Publishable API Key found in the Magic Dashboard
 NEXT_PUBLIC_MAGIC_API_KEY=pk_live_1234567890
 
-// The RPC URL for the blockchain network
+# The RPC URL for the blockchain network
 NEXT_PUBLIC_BLOCKCHAIN_NETWORK=ethereum-sepolia
 
 NEXT_PUBLIC_MOONPAY_API_KEY=pk_test_12345678901234567890
-
 ```
-</Tab>
-</Tabs>
 
 
 ### Install additional project dependencies
@@ -76,13 +71,11 @@ Run the following command to install the required dependencies:
 <Tab title="NPM">
 ```bash
 npm install @moonpay/moonpay-react
-
 ```
 </Tab>
 <Tab title="Yarn">
 ```bash
 yarn add @moonpay/moonpay-react
-
 ```
 </Tab>
 </Tabs>
@@ -93,28 +86,18 @@ Inside of `src/pages/index.tsx`, we need to wrap our application with the MoonPa
 
 Since we’re using Next.js, it is recommended to import the provider dynamically. We will need to utilize `dynamic` from `next/dynamic` to do this. Inside the `Home` function, create a variable named `MoonPayProvider`:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
 import dynamic from 'next/dynamic';
 
 const MoonPayProvider = dynamic(
   () => import('@moonpay/moonpay-react').then((mod) => mod.MoonPayProvider),
   { ssr: false },
 );
-
 ```
-</Tab>
-</Tabs>
-
-
 
 Inside the return statement and below the Magic provider, wrap the rest of the application with the MoonPay provider:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
-
+```jsx JSX
 <MagicProvider>
   <MoonPayProvider
     apiKey={process.env.NEXT_PUBLIC_MOONPAY_API_KEY || ""}
@@ -123,12 +106,7 @@ Inside the return statement and below the Magic provider, wrap the rest of the a
     // other components
   </MoonPayProvider>
 </MagicProvider>
-
 ```
-</Tab>
-</Tabs>
-
-
 
 ### Add MoonPayBuyWidget to UI
 
@@ -136,19 +114,15 @@ Now that we have MoonPay configured, we can now add the ability to use the onram
 
 Similarly to the provider we created in the previous step, it is recommended to import the component dynamically to avoid errors. At the top of the `src/components/magic/cards/SendTransactionCard.tsx`, below the rest of the existing imports, add the following:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+
+```typescript TypeScript
 import dynamic from 'next/dynamic';
 
 const MoonPayBuyWidget = dynamic(
   () => import('@moonpay/moonpay-react').then((mod) => mod.MoonPayBuyWidget),
   { ssr: false },
 );
-
 ```
-</Tab>
-</Tabs>
 
 
 
@@ -156,13 +130,10 @@ The widget itself can take a variety of props such as themes, currency codes and
 
 The first thing we need to do is create a variable named `isVisible`. This will determine if the onramp overlay is displayed. Underneath the other variables, add the following:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+
+```typescript TypeScript
 const [isVisible, setIsVisible] = useState<boolean>(false)
 ```
-</Tab>
-</Tabs>
 
 
 
@@ -177,9 +148,7 @@ Lets add a button that will allow us to display the MoonPay widget and onramp so
 
 In the return statement of the `SendTransaction` card, inside the `getFaucetUrl() &&` conditional, replace the div with the following:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```jsx JSX
 <div className="flex flex-col gap-2">
   <a href={getFaucetUrl()} target="_blank" rel="noreferrer">
     <FormButton onClick={() => null} disabled={false}>
@@ -201,10 +170,7 @@ In the return statement of the `SendTransaction` card, inside the `getFaucetUrl(
   />
   <Divider />
 </div>
-
 ```
-</Tab>
-</Tabs>
 
 
 

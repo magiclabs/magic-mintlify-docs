@@ -26,13 +26,20 @@ Magic offers fiat on-ramp functionality in our wallet widget UI, allowing US and
 
 ### Usage
 
-#### How do I allow users to purchase cryptocurrencies through the wallet widget UI?
+**How do I allow users to purchase cryptocurrencies through the wallet widget UI?**
 
 Once you have verified the correct setup of the Magic SDK and successfully authenticated the user, the wallet widget can then be displayed in an iframe by calling the `showUI` function: ⁠ ⁠
 
-Javascript
+```javascript JavaScript
+const walletInfo = await magic.user.getInfo();
+const walletType = walletInfo.walletType;
 
-#### How do I allow users to purchase crypto within the context of a transaction flow?
+if (walletType === "magic") {
+  await magic.wallet.showUI();
+};
+```
+
+**How do I allow users to purchase crypto within the context of a transaction flow?**
 
 Fiat on-ramp functionality can also be invoked during the transaction signing flow with the `sendTransaction()` function. This allows users to top-up their wallet's if their token balance is insufficient to complete the on-chain transaction.
 
