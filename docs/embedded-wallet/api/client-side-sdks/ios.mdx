@@ -13,8 +13,7 @@ The Magic class is the entry-point to the Magic SDK. It must be instantiated wit
 ### Performance improvement (optional)
 
 We use service workers for for better performance on web3 operations. If you'd like to take advantage of this performance boost, you'd have to enable app bound domains. To do that, add the following to your `Info.plist` and rebuild your app:
-
-```json
+```swift Swift
 <key>WKAppBoundDomains</key>
 <array>
   <string>https://auth.magic.link</string>
@@ -23,7 +22,7 @@ We use service workers for for better performance on web3 operations. If you'd l
 
 ### Constructor
 
-### `Magic()`
+`Magic()`
 
 |            |                                           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | ---------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -35,44 +34,31 @@ We use service workers for for better performance on web3 operations. If you'd l
 ### Initialization
 
 In `AppDelegate`
-
-<Tabs>
-<Tab title="Swift">
-```json
-
+```swift Swift
 import MagicSDK
 import UIKit
 
 @UIApplicationMain
-func application(\_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     // assign the newly created Magic instance to shared property
     // Test key defaults to "goerli", live key defaults to "mainnet"
-      Magic.shared = Magic(apiKey: "PUBLISHABLE_API_KEY")
+    Magic.shared = Magic(apiKey: "PUBLISHABLE_API_KEY")
     // Construct with an API key and options:
-      Magic.shared = Magic(apiKey: "PUBLISHABLE_API_KEY", ethNetwork: .goerli)
+    Magic.shared = Magic(apiKey: "PUBLISHABLE_API_KEY", ethNetwork: .goerli)
     // Construct with an API key and custom node options:
-      let customNode = CustomNodeConfiguration(rpcUrl: "https://polgyon-rpc.com", chainId: 137)
-      Magic.shared = Magic(apiKey: "PUBLISHABLE_API_KEY", customNode: customNode)
+    let customNode = CustomNodeConfiguration(rpcUrl: "https://polgyon-rpc.com", chainId: 137)
+    Magic.shared = Magic(apiKey: "PUBLISHABLE_API_KEY", customNode: customNode)
     // Construct with an API key and custom locale
-      Magic.shared = Magic(apiKey: "PUBLISHABLE_API_KEY", locale: "es")
+    Magic.shared = Magic(apiKey: "PUBLISHABLE_API_KEY", locale: "es")
 
     return true
-
 }
-
-````
-</Tab>
-</Tabs>
+```
 
 ## Auth Module
 
 The Auth Module and its members are accessible on the Magic SDK instance by the `auth` property.
-
-<Tabs>
-<Tab title="Swift">
-```json
-
+```swift Swift
 import MagicSDK
 
 let magic = Magic.shared
@@ -80,10 +66,8 @@ let magic = Magic.shared
 magic.auth;
 magic.auth.loginWithSMS;
 magic.auth.loginWithEmailOTP;
-````
+```
 
-</Tab>
-</Tabs>
 
 ### `loginWithSMS`
 
@@ -105,14 +89,10 @@ Authenticate a user passwordlessly using a one-time code sent to the specified p
 
 **Closure**
 
-<Tabs>
-<Tab title="Swift">
-```json
-
+```swift Swift
 import MagicSDK
 
 class LoginViewController: UIViewController {
-
     @IBOutlet weak var phoneNumberInput: UITextField!
     let magic = Magic.shared
 
@@ -128,23 +108,14 @@ class LoginViewController: UIViewController {
             print("Result", token)
         })
     }
-
 }
-
-````
-</Tab>
-</Tabs>
+```
 
 **Promise**
-
-<Tabs>
-<Tab title="Swift">
-```json
-
+```swift Swift
 import MagicSDK
 
 class LoginViewController: UIViewController {
-
     @IBOutlet weak var phoneNumberInput: UITextField!
     let magic = Magic.shared
 
@@ -160,10 +131,8 @@ class LoginViewController: UIViewController {
         })
     }
 }
-````
+```
 
-</Tab>
-</Tabs>
 
 ### `loginWithEmailOTP`
 
@@ -182,14 +151,10 @@ Authenticate a user passwordlessly using an email one-time code sent to the spec
 
 **Closure**
 
-<Tabs>
-<Tab title="Swift">
-```json
-
+```swift Swift
 import MagicSDK
 
 class LoginViewController: UIViewController {
-
     @IBOutlet weak var emailInput: UITextField!
     let magic = Magic.shared
 
@@ -205,23 +170,14 @@ class LoginViewController: UIViewController {
             print("Result", token)
         })
     }
-
 }
-
-````
-</Tab>
-</Tabs>
+```
 
 **Promise**
-
-<Tabs>
-<Tab title="Swift">
-```json
-
+```swift Swift
 import MagicSDK
 
 class LoginViewController: UIViewController {
-
     @IBOutlet weak var emailInput: UITextField!
     let magic = Magic.shared
 
@@ -237,19 +193,14 @@ class LoginViewController: UIViewController {
         })
     }
 }
-````
+```
 
-</Tab>
-</Tabs>
 
 ## Wallet Module
 
 The Wallet Module and its members are accessible on the Magic SDK instance by the `wallet` property.
 
-<Tabs>
-<Tab title="Typescript">
-```json
-
+```swift Swift
 import MagicSDK
 
 let magic = Magic.shared
@@ -257,10 +208,7 @@ let magic = Magic.shared
 magic.wallet
 magic.wallet.connectWithUI
 magic.wallet.showUI
-
-````
-</Tab>
-</Tabs>
+```
 
 ### `connectWithUI`
 
@@ -275,14 +223,10 @@ Renders a simple login form UI to collect the user's email address and authentic
 * A `promiEvent` which returns an `String[]` when resolved: An array of user accounts that are connected, with the first element being the current public address of the user. You can read more on PromiEvents [here](#promievents).
 
 **Example**
-
-<Tabs>
-<Tab title="Swift">
-```json
+```swift Swift
 import MagicSDK
 
 class MagicViewController: UIViewController {
-
     let magic = Magic.shared
 
     func logout() {
@@ -296,10 +240,8 @@ class MagicViewController: UIViewController {
         })
     }
 }
-````
+```
 
-</Tab>
-</Tabs>
 
 ### `showUI`
 
@@ -314,14 +256,10 @@ Displays the fully [navigable wallet](/docs/embedded-wallet/wallets/customizatio
 - `Promise` which resolves when the user closes the window
 
 **Example**
-
-<Tabs>
-<Tab title="Swift">
-```json
+```swift Swift
 import MagicSDK
 
 class MagicViewController: UIViewController {
-
     let magic = Magic.shared
 
     func logout() {
@@ -334,22 +272,15 @@ class MagicViewController: UIViewController {
             print("Result", result)
         })
     }
-
 }
-
-````
-</Tab>
-</Tabs>
+```
 
 
 ## User Module
 
 The User Module and its members are accessible on the Magic SDK instance by the `user` property.
 
-<Tabs>
-<Tab title="TypeScript">
-```json
-
+```swift Swift
 import MagicSDK
 
 let magic = Magic.shared
@@ -364,11 +295,8 @@ magic.user.logout
 magic.user.showSettings
 magic.user.updatePhoneNumber
 magic.user.recoverAccount
+```
 
-````
-
-</Tab>
-</Tabs>
 
 ### `updateEmail`
 
@@ -385,11 +313,7 @@ Initiates the update email flow that allows a user to change to a new email.
 - `Promise<Bool>`: The promise resolves with a true boolean value if update email is successful and rejects with a specific error code if the request fails
 
 **Example**
-
-<Tabs>
-<Tab title="Swift">
-```json
-
+```swift Swift
 import MagicSDK
 
 class MagicViewController: UIViewController {
@@ -411,11 +335,8 @@ class MagicViewController: UIViewController {
     }
 
 }
+```
 
-````
-
-</Tab>
-</Tabs>
 
 ### `getIdToken`
 
@@ -431,11 +352,7 @@ Generates a Decentralized Id Token which acts as a proof of authentication to re
 - `Promise<String>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
 
 **Example**
-
-<Tabs>
-<Tab title="Swift">
-```json
-
+```swift Swift
 import MagicSDK
 
 class MagicViewController: UIViewController {
@@ -456,11 +373,8 @@ class MagicViewController: UIViewController {
     }
 
 }
+```
 
-````
-
-</Tab>
-</Tabs>
 
 ### `generateIdToken`
 
@@ -477,15 +391,10 @@ Generates a Decentralized Id Token with optional serialized data.
 - `Promise<String>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
 
 **Example**
-
-<Tabs>
-<Tab title="Swift">
-```json
-
+```swift Swift
 import MagicSDK
 
 class MagicViewController: UIViewController {
-
     let magic = Magic.shared
 
     func generateIdToken() {
@@ -500,13 +409,9 @@ class MagicViewController: UIViewController {
             print("Result", token)
         })
     }
-
 }
+```
 
-````
-
-</Tab>
-</Tabs>
 
 ### `getInfo`
 
@@ -529,15 +434,10 @@ Retrieves information for the authenticated user.
     - `type` (RecoveryMethodType): The method used for account recovery
 
 **Example**
-
-<Tabs>
-<Tab title="Swift">
-```json
-
+```swift Swift
 import MagicSDK
 
 class MagicViewController: UIViewController {
-
     let magic = Magic.shared
 
     func getInfo() {
@@ -550,13 +450,9 @@ class MagicViewController: UIViewController {
             print("Result", metadata)
         })
     }
-
 }
+```
 
-````
-
-</Tab>
-</Tabs>
 
 ### `isLoggedIn`
 
@@ -571,15 +467,10 @@ Checks if a user is currently logged in to the Magic SDK.
 - `Promise<Bool>`: A boolean value indicating if a user is logged in
 
 **Example**
-
-<Tabs>
-<Tab title="Swift">
-```json
-
+```swift Swift
 import MagicSDK
 
 class MagicViewController: UIViewController {
-
     let magic = Magic.shared
 
     func isLoggedIn() {
@@ -591,13 +482,9 @@ class MagicViewController: UIViewController {
             print("Result", result)
         })
     }
-
 }
+```
 
-````
-
-</Tab>
-</Tabs>
 
 ### logout
 
@@ -612,15 +499,10 @@ Logs out the currently authenticated Magic user.
 - `Promise<Bool>`: A boolean value indicating if a user has been logged out
 
 **Example**
-
-<Tabs>
-<Tab title="Swift">
-```json
-
+```swift Swift
 import MagicSDK
 
 class MagicViewController: UIViewController {
-
     let magic = Magic.shared
 
     func logout() {
@@ -633,13 +515,9 @@ class MagicViewController: UIViewController {
             print("Result", result)
         })
     }
-
 }
+```
 
-````
-
-</Tab>
-</Tabs>
 
 ### `showSettings`
 
@@ -649,6 +527,7 @@ Displays an iframe with the current user’s settings. Allows for users to updat
   Access to [MFA](/docs/embedded-wallet/authentication/features/mfa) and [account
   recovery](docs/embedded-wallet/authentication/features/account-recovery) require paid add-ons.
 </Note>
+
 **Arguments**
 
 - None
@@ -658,14 +537,10 @@ Displays an iframe with the current user’s settings. Allows for users to updat
 - `Promise` which resolves when the user closes the window
 
 **Example**
-
-<Tabs>
-<Tab title="Swift">
-```json
+```swift Swift
 import MagicSDK
 
 class MagicViewController: UIViewController {
-
     let magic = Magic.shared
 
     func logout() {
@@ -678,13 +553,9 @@ class MagicViewController: UIViewController {
             print("Result", result)
         })
     }
-
 }
+```
 
-````
-
-</Tab>
-</Tabs>
 
 ### `updatePhoneNumber`
 
@@ -700,14 +571,10 @@ Initiates the update phone number flow that allows a user to change their phone 
 - `PromiEvent<boolean>`: The promise resolves with a true boolean value if update email is successful and rejects with a specific error code if the request fails
 
 **Example**
-
-<Tabs>
-<Tab title="Swift">
-```json
+```swift Swift
 import MagicSDK
 
 class MagicViewController: UIViewController {
-
     let magic = Magic.shared
 
     func logout() {
@@ -721,13 +588,9 @@ class MagicViewController: UIViewController {
             print("Result", result)
         })
     }
-
 }
+```
 
-````
-
-</Tab>
-</Tabs>
 
 ### `recoverAccount`
 
@@ -743,14 +606,10 @@ Initiates the account recovery flow that allows a user to recover their account 
 - `PromiEvent<boolean>`: The promise resolves with a true boolean value if the account recovery is successful and rejects with a specific error code if the request fails
 
 **Example**
-
-<Tabs>
-<Tab title="Swift">
-```json
+```swift Swift
 import MagicSDK
 
 class MagicViewController: UIViewController {
-
     let magic = Magic.shared
 
     func logout() {
@@ -764,13 +623,9 @@ class MagicViewController: UIViewController {
             print("Result", result)
         })
     }
-
 }
+```
 
-````
-
-</Tab>
-</Tabs>
 
 ## OpenID Module
 
@@ -783,28 +638,21 @@ The OpenID Module and it's members are accessible on the Magic SDK instance by t
 
 To use the OpenID Module in your application, install `MagicExt-OIDC` along with `magic-ios`.
 
-<Tabs>
-<Tab title="Bash">
-```json
+```swift Swift
+// Cocoapods, in Podfile
 
-# Cocoapods, in Podfile
-
-⁠pod 'MagicSDK'⁠
+pod 'MagicSDK'
 pod 'MagicExt-OIDC'
-⁠
 
-# SPM⁠
+// SPM
 
-Add magic-ios-ext ⁠
+Add magic-ios-ext 
 Add magic-ios
 
 magic.openid;
 magic.openid.loginWithOIDC;
+```
 
-````
-
-</Tab>
-</Tabs>
 
 ### `loginWithOIDC`
 
@@ -821,60 +669,46 @@ Authenticate users via your preferred OIDC client.
 - `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
 **Example**
-
-<Tabs>
-<Tab title="Swift">
-```json
+```swift Swift
 import MagicSDK
-⁠import MagicExt_OIDC
-⁠
+import MagicExt_OIDC
+
 magic = Magic(apiKey: '<your_magic_api_key>')
-⁠
+
 // MARK: - Openid Login
-⁠func handleOpenIdLogin() {
-⁠    guard let magic = magic else { return }
+func handleOpenIdLogin() {
+    guard let magic = magic else { return }
 
-⁠ let config = OpenIdConfiguration(jwt: jwt, providerId: providerId)
-magic.openid.loginWithOIDC(config, response: {res in
-if (res.status.isSuccess) {
-print(res.result ?? "nil")
+    let config = OpenIdConfiguration(jwt: jwt, providerId: providerId)
+    magic.openid.loginWithOIDC(config, response: {res in
+        if (res.status.isSuccess) {
+            print(res.result ?? "nil")
+        }
+    })
 }
-})
-}
+```
 
-````
-
-</Tab>
-</Tabs>
 
 ## Error Handling
 
 There are three types of error class to be aware of when working with Magic's iOS SDK:
 
 ### Provider
-
-<Tabs>
-<Tab title="Swift">
-```json
+```swift Swift
 public enum ProviderError: Swift.Error {
-  /// The provider is not configured with an authDelegate
+  // The provider is not configured with an authDelegate
   case encodingFailed(Swift.Error?)
-  /// Decoding the JSON-RPC request failed
+  // Decoding the JSON-RPC request failed
   case decodingFailed(json: String)
-  /// Convert string failed
+  // Convert string failed
   case invalidJsonResponse(json: String)
-  /// Missing callback
+  // Missing callback
   case missingPayloadCallback(json: String)
 }
 ```
-</Tab>
-</Tabs>
 
 ### Network
-
-<Tabs>
-<Tab title="Swift">
-```json
+```swift Swift
 public enum Error: Swift.Error {
   /// The response did not include expected results
   case unexpectedResponse(Swift.Error?)
@@ -882,24 +716,16 @@ public enum Error: Swift.Error {
   case invalidResponseCode
 }
 ```
-</Tab>
-</Tabs>
 
 ### Events
-
-<Tabs>
-<Tab title="Swift">
-```json
+```swift Swift
 enum Error: Swift.Error{
   case eventCallbackMissing
 }
 ```
-</Tab>
-</Tabs>
 
 ## Resources
 
 - [GitHub](https://github.com/magiclabs/magic-ios)
 - [Demo](https://github.com/magiclabs/magic-ios-demo)
 - [Goerli Testnet Faucet](https://goerlifaucet.com)
-````
