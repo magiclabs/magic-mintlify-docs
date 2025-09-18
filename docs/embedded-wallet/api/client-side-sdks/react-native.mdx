@@ -12,58 +12,60 @@ The Magic class is the entry-point to the Magic SDK. It must be instantiated wit
 The Magic SDK for React Native supports both Bare and Expo. Follow the installation steps relevant to your setup.
 
 <Tabs>
-<Tab title="Bare NPM">
-```bash
-npm install --save @magic-sdk/react-native-bare
-npm install --save react-native-device-info # Required Peer Dependency
-npm install --save @react-native-community/async-storage # Required Peer Dependency
-npm install --save react-native-safe-area-context # Required Peer Dependency
+  <Tab title="Bare NPM">
+  ```bash
+  npm install --save @magic-sdk/react-native-bare
+  npm install --save react-native-device-info # Required Peer Dependency
+  npm install --save @react-native-community/async-storage # Required Peer Dependency
+  npm install --save react-native-safe-area-context # Required Peer Dependency
 
-# For iOS
-cd ios
-⁠pod install
-⁠
-# Start your app
-⁠cd /path/to/project/root
-yarn start
-```
-</Tab>
-<Tab title="Bare Yarn">
-```bash
-yarn add @magic-sdk/react-native-bare
-⁠yarn add react-native-device-info # Required Peer Dependency
-yarn add @react-native-community/async-storage # Required Peer Dependency
-yarn add react-native-safe-area-context # Required Peer Dependency
-⁠
-# For iOS
-cd ios
-⁠pod install
-⁠
-# Start your app
-⁠cd /path/to/project/root
-yarn start
-```
+  # For iOS
+  cd ios
+  ⁠pod install
+  ⁠
+  # Start your app
+  ⁠cd /path/to/project/root
+  yarn start
+  ```
+  </Tab>
+  <Tab title="Bare Yarn">
+  ```bash
+  yarn add @magic-sdk/react-native-bare
+  ⁠yarn add react-native-device-info # Required Peer Dependency
+  yarn add @react-native-community/async-storage # Required Peer Dependency
+  yarn add react-native-safe-area-context # Required Peer Dependency
+  ⁠
+  # For iOS
+  cd ios
+  ⁠pod install
+  ⁠
+  # Start your app
+  ⁠cd /path/to/project/root
+  yarn start
+  ```
 
-</Tab>
-<Tab title="Expo NPM">
-```bash
-npm install --save @magic-sdk/react-native-expo
-npm install --save react-native-webview@^11.26.0 # Required Peer Dependency
-npm install --save react-native-safe-area-context # Required Peer Dependency
+  </Tab>
+  <Tab title="Expo NPM">
+  ```bash
+  npm install --save @magic-sdk/react-native-expo
+  npm install --save react-native-webview@^11.26.0 # Required Peer Dependency
+  npm install --save react-native-safe-area-context # Required Peer Dependency
 
-# Start your app
-expo start
-```
-</Tab>
-<Tab title="Expo Yarn">
-```bash
-yarn add @magic-sdk/react-native-expo
-yarn add react-native-webview@^11.26.0 # Required Peer Dependency
-yarn add react-native-safe-area-context # Required Peer Dependency
-⁠
-# Start your app
-expo start
-```
+  # Start your app
+  expo start
+  ```
+  </Tab>
+  <Tab title="Expo Yarn">
+  ```bash
+  yarn add @magic-sdk/react-native-expo
+  yarn add react-native-webview@^11.26.0 # Required Peer Dependency
+  yarn add react-native-safe-area-context # Required Peer Dependency
+  ⁠
+  # Start your app
+  expo start
+  ```
+  </Tab>
+</Tabs>
 
 ### Constructor
 
@@ -178,7 +180,6 @@ try {
 } catch {
   // Handle errors if required!
 }
-
 ```
 
 **Event Handling**
@@ -322,7 +323,6 @@ try {
     }
   }
 }
-
 ```
 
 ### `loginWithSMS`
@@ -387,7 +387,6 @@ try {
     }
   }
 }
-
 ```
 
 ### `updateEmailWithUI`
@@ -434,9 +433,6 @@ try {
 }
 ```
 
-</Tab>
-</Tabs>
-
 **Error Handling**
 
 [Relevant Error Codes](#error-codes)
@@ -462,7 +458,6 @@ try {
     }
   }
 }
-
 ```
 
 **Events**
@@ -522,12 +517,11 @@ const accounts = await magic.wallet.connectWithUI();
 ⁠
 /* Optionally, chain to the id token creation event if needed and configured */
 magic.wallet.connectWithUI().on('id-token-created', (params) => {
-const { idToken } = params
-console.log(idToken)
-// send to your resource server for validation
-// ...
+  const { idToken } = params
+  console.log(idToken)
+  // send to your resource server for validation
+  // ...
 });
-
 ```
 
 **Events**
@@ -587,7 +581,6 @@ import { Magic } from '@magic-sdk/react-native-expo';
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 await magic.wallet.showAddress()
-
 ```
 
 ### `showBalances`
@@ -638,7 +631,6 @@ import { Magic } from '@magic-sdk/react-native-expo';
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 await magic.wallet.showNFTs()
-
 ```
 
 ### `showSendTokensUI`
@@ -691,7 +683,6 @@ import { Magic } from '@magic-sdk/react-native-expo';
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 await magic.wallet.showOnRamp()
-
 ```
 
 ## User Module
@@ -744,7 +735,6 @@ try {
 } catch {
   // Handle errors if required!
 }
-
 ```
 
 ### `generateIdToken`
@@ -818,7 +808,6 @@ try {
 } catch {
   // Handle errors if required!
 }
-
 ```
 
 ### `isLoggedIn`
@@ -879,7 +868,6 @@ try {
 } catch {
   // Handle errors if required!
 }
-
 ```
 
 ### `showSettings`
@@ -947,7 +935,6 @@ try {
 } catch {
   // Handle errors if required!
 }
-
 ```
 
 ### `onUserLoggedOut`
@@ -1002,7 +989,6 @@ extensions: [new OAuthExtension()],
 
 magic.oauth;
 magic.oauth.loginWithPopup;
-
 ```
 
 ### `loginWithPopup`
@@ -1081,7 +1067,6 @@ extensions: [new OpenIdExtension()],
 
 magic.openid;
 magic.openid.loginWithOIDC;
-
 ```
 
 ### `loginWithOIDC`
@@ -1144,7 +1129,6 @@ try {
     // Handle...
   }
 }
-
 ```
 
 `SDKError` instances expose the `code` field which may be used to deterministically identify the error. Additionally, an enumeration of error codes is exposed for convenience and readability:
@@ -1191,7 +1175,6 @@ try {
     // Handle...
   }
 }
-
 ```
 
 `RPCError` instances expose the `code` field which may be used to deterministically identify the error. Additionally, an enumeration of error codes is exposed for convenience and readability:
@@ -1254,7 +1237,6 @@ try {
     // Handle...
   }
 }
-
 ```
 </Tab>
 <Tab title="Expo">
@@ -1262,7 +1244,7 @@ try {
 import { ExtensionError } from '@magic-sdk/react-native-expo';
 try {
   // Something async...
-catch (err) {
+} catch (err) {
   if (err instanceof ExtensionError) {
     // Handle...
   }
@@ -1289,7 +1271,6 @@ Look for additional event types documented near the method they relate to. Event
 <Tabs>
 <Tab title="Bare">
 ```javascript
-
 import { Magic } from "@magic-sdk/react-native-bare";
 
 const req = magic.auth.loginWithEmailOTP({ email: 'hello@magic.link' });
@@ -1300,7 +1281,6 @@ req
 .once('email-not-deliverable', () => {/* ... */})
 .catch(error => {/* ... */})
 .on('error', error => {/* ... */});
-
 ```
 </Tab>
 <Tab title="Expo">
@@ -1325,7 +1305,6 @@ req
   .on('error', error => {
     /* ... */
   });
-
 ```
 
 </Tab>
@@ -1354,14 +1333,16 @@ As of **v14.0.0** our React Native package offerings wrap the `<magic.Relayer />
 
 We have also added an optional `backgroundColor` prop to the `Relayer` to fix issues with `SafeAreaView` showing the background. By default, the background will be white. If you have changed the background color as part of your [custom branding setup](docs/embedded-wallet/authentication/customization/login-ui#configuration), make sure to pass your custom background color to `magic.Relayer`:
 
-```javascript JavaScript<magic.Relayer backgroundColor="#0000FF" />
+```jsx JavaScript
+<magic.Relayer backgroundColor="#0000FF" />
 ```
 
 Handle internet connection problems
 
 When an app is opened without an internet connection, any request to the Magic SDK will result in a rejection with a `MagicSDKError`:
 
-```javascript JavaScript{
+```javascript JavaScript
+{
   "code": "MODAL_NOT_READY",
   "rawMessage": "Modal is not ready."
 }
@@ -1369,7 +1350,8 @@ When an app is opened without an internet connection, any request to the Magic S
 
 It's good practice to use [@react-native-community/netinfo](https://www.npmjs.com/package/@react-native-community/netinfo) to track the internet connection state of the device. For your convenience, we've also added a hook that uses this library behind the scenes:
 
-```javascript JavaScriptimport { useInternetConnection } from '@magic-sdk/react-native-expo';
+```javascript JavaScript
+import { useInternetConnection } from '@magic-sdk/react-native-expo';
 
 export default function App() {
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -1377,16 +1359,17 @@ const magic = new Magic('PUBLISHABLE_API_KEY');
 const connected = useInternetConnection()
 
 useEffect(() => {
-if (!connected)
-{// Unmount this component and show your "You're offline" screen.}
+  if (!connected) {
+    // Unmount this component and show your "You're offline" screen.}
+  }
 }, [connected])
 
 return <>
 
 <SafeAreaProvider>
-{/* Render the Magic iframe! */}
-<magic.Relayer />
-{...}
+  {/* Render the Magic iframe! */}
+  <magic.Relayer />
+  {...}
 </SafeAreaProvider>
 
 </>
@@ -1413,23 +1396,18 @@ const magic = new Magic('PUBLISHABLE_API_KEY');
 const email = 'example@magic.link';
 
 if (await magic.user.isLoggedIn()) {
-const didToken = await magic.user.getIdToken();
+  const didToken = await magic.user.getIdToken();
 
-// Do something with the DID token.
-// For instance, this could be a `fetch` call
-// to a protected backend endpoint.
+  // Do something with the DID token.
+  // For instance, this could be a `fetch` call
+  // to a protected backend endpoint.
 } else {
-// Log in the user
-const user = await magic.auth.loginWithEmailOTP({ email });
+  // Log in the user
+  const user = await magic.auth.loginWithEmailOTP({ email });
 }
-
 ```
 
 ## Resources
 
 - [Demo](https://github.com/magiclabs/react-native-demo)
 - [GitHub Repository](https://github.com/magiclabs/magic-js/blob/master/packages/%40magic-sdk/react-native-bare/README.md)
-
-```
-
-```
