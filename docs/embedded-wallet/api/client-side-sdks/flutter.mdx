@@ -136,11 +136,11 @@ Authenticate a user passwordlessly using a one-time code sent to the specified p
 | Parameter     | Type   | Definition                       |
 | `phoneNumber` | String | The phone number to log in with. |
 
-#### Returns
+**Returns**
 
 - `Future<string>` The future resolves upon authentication request success and throws with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
-#### Example
+**Example**
 
 <Tabs>
 <Tab title="Dart">
@@ -175,11 +175,11 @@ Authenticate a user passwordlessly using an email one-time code sent to the spec
 | Parameter | Type | Definition |
 | `email` | String | The user email to log in with. |
 
-#### Returns
+**Returns**
 
 * `Future<string>` The future resolves upon authentication request success and throws with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
-#### Example
+**Example**
 
 <Tabs>
 <Tab title="Dart">
@@ -231,7 +231,7 @@ m.user.logout;
 
 Initiates the update email flow that allows a user to change their email address.
 
-#### Arguments
+**Arguments**
 
 `Future<bool> updateEmail({required String email, bool showUI = true})`
 
@@ -241,11 +241,11 @@ Initiates the update email flow that allows a user to change their email address
 | `email` | String | The new email to update to. |
 | `showUI?` | Boolean | If `true`, shows an out-of-the-box pending UI which includes instructions on which step of the confirmation process the user is on. Dismisses automatically when the process is complete. |
 
-#### Returns
+**Returns**
 
 * `Future<boolean>`: The future resolves with a true boolean value if update email is successful and rejects with a specific error code if the request fails
 
-#### Example
+**Example**
 
 <Tabs>
 <Tab title="Dart">
@@ -286,7 +286,7 @@ try {
 
 Generates a [Decentralized Id Token](/docs/embedded-wallet/authentication/features/decentralized-id) which acts as a proof of authentication to resource servers.
 
-#### Arguments
+**Arguments**
 
 `Future<String> getIdToken({int lifespan = 900})`
 
@@ -295,11 +295,11 @@ Generates a [Decentralized Id Token](/docs/embedded-wallet/authentication/featur
 | Parameter   | Type | Definition                                                               |
 | `lifespan?` | int  | Will set the lifespan of the generated token. Defaults to 900s (15 mins) |
 
-#### Returns
+**Returns**
 
 - `Future<string>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
 
-#### Example
+**Example**
 
 <Tabs>
 <Tab title="Dart">
@@ -325,7 +325,7 @@ const idToken = await m.user.getIdToken();
 
 Generates a [Decentralized Id Token](/docs/embedded-wallet/authentication/features/decentralized-id) with optional serialized data.
 
-#### Arguments
+**Arguments**
 
 `Future<String> generateIdToken({int lifespan = 900, String attachment = 'none'})`
 
@@ -335,11 +335,11 @@ Generates a [Decentralized Id Token](/docs/embedded-wallet/authentication/featur
 | `lifespan?` | int | Will set the lifespan of the generated token. Defaults to 900s (15 mins) |
 | `attachment?` | String | Will set a signature of serialized data in the generated token. Defaults to `"none"` |
 
-#### Returns
+**Returns**
 
 * `Future<string>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
 
-#### Example
+**Example**
 
 <Tabs>
 <Tab title="Dart">
@@ -366,11 +366,11 @@ try {
 
 Retrieves information for the authenticated user.
 
-#### Arguments
+**Arguments**
 
 - _None_
 
-#### Returns
+**Returns**
 
 - `Future<UserInfo>`: an object containing the issuer, email and cryptographic public address of the authenticated user
 
@@ -383,7 +383,7 @@ Retrieves information for the authenticated user.
 | `isMfaEnabled`    | Boolean                                                | A boolean indicating if user has multi-factor authentication enabled.                                                             |
 | `recoveryFactors` | _ `List<RecoveryFactor>`<br/> _ `value`<br/> \* `type` |                                                                                                                                   |
 
-#### Example
+**Example**
 
 <Tabs>
 <Tab title="Dart">
@@ -409,15 +409,15 @@ await m.user.getInfo();
 
 Checks if a user is currently logged in to the Magic SDK.
 
-#### Arguments
+**Arguments**
 
 * _None_
 
-#### Returns
+**Returns**
 
 * `Future<Boolean>`
 
-#### Example
+**Example**
 
 <Tabs>
 <Tab title="Dart">
@@ -442,15 +442,15 @@ try {
 
 Logs out the currently authenticated Magic user
 
-#### Arguments
+**Arguments**
 
 - _None_
 
-#### Returns
+**Returns**
 
 - `Future<Boolean>`
 
-#### Example
+**Example**
 
 <Tabs>
 <Tab title="Dart">
@@ -494,13 +494,13 @@ magic.oauth.loginWithPopup;
 
 Starts the OAuth 2.0 login flow.
 
-#### Arguments
+**Arguments**
 
 - `provider` (String): The OAuth provider being used for login
 - `redirectURI` (String): A URL a user is sent to after they successfully log in
 - `scope?` (Array): Defines the specific permissions an application requests from a user
 
-#### Returns
+**Returns**
 
 - _None_
 
@@ -521,7 +521,7 @@ Starts the OAuth 2.0 login flow.
 | Twitch    | `'twitch'`    |
 | Microsoft | `'microsoft'` |
 
-#### Example
+**Example**
 
 Dart
 
@@ -572,17 +572,17 @@ magic.openid.loginWithOIDC;
 
 Authenticate users via your preferred OIDC client.
 
-#### Arguments
+**Arguments**
 
 - `jwt` (String): The OIDC token from your identity provider
 
 - `providerId` (String): An alphanumeric ID provided by Magic after successful configuration of your identity provider
 
-#### Returns
+**Returns**
 
 - `String`: The resolved value is a Decentralized ID token with a default 15-minute lifespan
 
-#### Example
+**Example**
 
 <Tabs>
 <Tab title="Dart">
