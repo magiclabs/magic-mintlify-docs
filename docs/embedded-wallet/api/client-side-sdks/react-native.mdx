@@ -65,8 +65,6 @@ yarn add react-native-safe-area-context # Required Peer Dependency
 # Start your app
 expo start
 ```
-</Tab>
-</Tabs>
 
 ### Constructor
 
@@ -102,8 +100,6 @@ import { Magic } from '@magic-sdk/react-native-expo'
 
 const magic = new Magic('PUBLISHABLE_API_KEY')
 ```
-</Tab>
-</Tabs>
 
 ## `Relayer`
 
@@ -127,16 +123,12 @@ return (
 </SafeAreaProvider>
 ); }
 ```
-</Tab>
-</Tabs>
 
 ## Auth Module
 
 The Auth Module and it's members are accessible on the Magic SDK instance by the `auth` property.
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -150,8 +142,6 @@ magic.auth.loginWithEmailOTP;
 magic.auth.loginWithSMS;
 magic.auth.updateEmailWithUI;
 ```
-</Tab>
-</Tabs>
 
 ### `loginWithEmailOTP`
 
@@ -169,9 +159,7 @@ Authenticate a user passwordlessly using an email one-time code sent to the spec
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -195,8 +183,6 @@ await magic.auth.loginWithEmailOTP({ email: 'hello@example.com', showUI: false }
 }
 
 ```
-</Tab>
-</Tabs>
 
 **Event Handling**
 
@@ -204,9 +190,7 @@ await magic.auth.loginWithEmailOTP({ email: 'hello@example.com', showUI: false }
 
 A white-label OTP login flow is available when passing `showUI: false` to this login method. Here's a short example to illustrate listening for and emitting events during the login flow:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -322,9 +306,7 @@ try {
 
 To achieve a fully white-labeled experience, you will need to implement some custom error handling according to your UI needs. Here's a short example to illustrate how errors can be caught and identified by their code:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic, RPCError, RPCErrorCode } from '@magic-sdk/react-native-bare';
@@ -347,8 +329,6 @@ break;
 }
 
 ```
-</Tab>
-</Tabs>
 
 ### `loginWithSMS`
 
@@ -366,9 +346,7 @@ Authenticate a user passwordlessly using a one-time code sent to the specified p
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -394,9 +372,7 @@ try {
 
 To achieve a fully white-labeled experience, you will need to implement some custom error handling according to your UI needs. Here's a short example to illustrate how errors can be caught and identified by their code:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic, RPCError, RPCErrorCode } from '@magic-sdk/react-native-bare';
@@ -420,8 +396,6 @@ break;
 }
 
 ```
-</Tab>
-</Tabs>
 
 ### `updateEmailWithUI`
 
@@ -438,9 +412,7 @@ Initiates the update email flow that allows a user to change their email address
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -479,9 +451,7 @@ try {
 
 To achieve a fully white-labeled experience, you will need to implement some custom error handling according to your UI needs. Here's a short example to illustrate how errors can be caught and identified by their code:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic, RPCError, RPCErrorCode } from '@magic-sdk/react-native-bare';
@@ -503,8 +473,6 @@ break;
 }
 
 ```
-</Tab>
-</Tabs>
 
 **Events**
 
@@ -521,9 +489,7 @@ break;
 
 The Wallet Module and it's members are accessible on the Magic SDK instance by the `wallet` property. ⁠ **⁠Note:** The Wallet Module is currently only **compatiable with Ethereum, Polygon, Flow (no NFTs), and Optimism.**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -542,9 +508,6 @@ magic.wallet.showSendTokensUI;
 magic.wallet.showOnRamp; // enterprise only
 ```
 
-</Tab>
-</Tabs>
-
 ### `connectWithUI`
 
 Renders a simple login form UI to collect the user's email address and authenticate them passwordlessly using a one-time passcode (OTP) sent to their email address they input.
@@ -559,9 +522,7 @@ Renders a simple login form UI to collect the user's email address and authentic
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
 // Expo React Native
@@ -578,8 +539,6 @@ console.log(idToken)
 });
 
 ```
-</Tab>
-</Tabs>
 
 **Events**
 
@@ -604,9 +563,7 @@ Displays the fully [navigable wallet](/docs/embedded-wallet/wallets/customizatio
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -617,9 +574,6 @@ const magic = new Magic('PUBLISHABLE_API_KEY');
 
 await magic.wallet.showUI()
 ```
-
-</Tab>
-</Tabs>
 
 ### `showAddress`
 
@@ -635,9 +589,7 @@ Displays an iframe with the current user’s wallet address in a QR Code.
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -649,8 +601,6 @@ const magic = new Magic('PUBLISHABLE_API_KEY');
 await magic.wallet.showAddress()
 
 ```
-</Tab>
-</Tabs>
 
 ### `showBalances`
 
@@ -666,9 +616,7 @@ Displays an iframe that displays the user’s token balances from the currently 
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -679,9 +627,6 @@ const magic = new Magic('PUBLISHABLE_API_KEY');
 
 await magic.wallet.showBalances()
 ```
-
-</Tab>
-</Tabs>
 
 ### `showNFTs`
 
@@ -697,9 +642,7 @@ Displays an iframe that shows the user’s NFTs in both an aggregated and detail
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -711,8 +654,6 @@ const magic = new Magic('PUBLISHABLE_API_KEY');
 await magic.wallet.showNFTs()
 
 ```
-</Tab>
-</Tabs>
 
 ### `showSendTokensUI`
 
@@ -728,9 +669,7 @@ Displays an iframe with UI to help the user transfer tokens from their account t
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -741,9 +680,6 @@ const magic = new Magic('PUBLISHABLE_API_KEY');
 
 await magic.wallet.showSendTokensUI()
 ```
-
-</Tab>
-</Tabs>
 
 ### `showOnRamp`
 
@@ -761,9 +697,7 @@ To use the fiat on ramp, **you will need to contact us to KYB with the payment p
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -775,16 +709,12 @@ const magic = new Magic('PUBLISHABLE_API_KEY');
 await magic.wallet.showOnRamp()
 
 ```
-</Tab>
-</Tabs>
 
 ## User Module
 
 The User Module and it's members are accessible on the Magic SDK instance by the `user` property.
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -803,9 +733,6 @@ magic.user.showSettings;
 magic.user.revealPrivateKey;
 ```
 
-</Tab>
-</Tabs>
-
 ### `getIdToken`
 
 Generates a [Decentralized Id Token](/docs/embedded-wallet/authentication/features/decentralized-id) which acts as a proof of authentication to resource servers.
@@ -820,9 +747,7 @@ Generates a [Decentralized Id Token](/docs/embedded-wallet/authentication/featur
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -839,8 +764,6 @@ const idToken = await magic.user.getIdToken();
 }
 
 ```
-</Tab>
-</Tabs>
 
 ### `generateIdToken`
 
@@ -857,9 +780,7 @@ Generates a [Decentralized ID token](/docs/embedded-wallet/authentication/featur
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -875,9 +796,6 @@ try {
   // Handle errors if required!
 }
 ```
-
-</Tab>
-</Tabs>
 
 ### `getInfo`
 
@@ -905,9 +823,7 @@ Retrieves information for the authenticated user.
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -924,8 +840,6 @@ const userInfo = await magic.user.getInfo();
 }
 
 ```
-</Tab>
-</Tabs>
 
 ### `isLoggedIn`
 
@@ -941,9 +855,7 @@ Checks if a user is currently logged in to the Magic SDK.
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -960,9 +872,6 @@ try {
 }
 ```
 
-</Tab>
-</Tabs>
-
 ### `logout`
 
 Logs out the currently authenticated Magic user
@@ -977,9 +886,7 @@ Logs out the currently authenticated Magic user
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -996,8 +903,6 @@ console.log(await magic.user.isLoggedIn()); // => `false`
 }
 
 ```
-</Tab>
-</Tabs>
 
 ### `showSettings`
 
@@ -1015,9 +920,7 @@ Access to [MFA](/docs/embedded-wallet/authentication/features/mfa) and [account 
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1040,9 +943,6 @@ try {
 }
 ```
 
-</Tab>
-</Tabs>
-
 ### `revealPrivateKey`
 
 Displays an iframe revealing the current user’s private key. Allows for users to take their private key to another wallet. Neither Magic nor the developer can see this key; only the end user can.
@@ -1057,9 +957,7 @@ Displays an iframe revealing the current user’s private key. Allows for users 
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1075,8 +973,6 @@ await magic.user.revealPrivateKey();
 }
 
 ```
-</Tab>
-</Tabs>
 
 ### `onUserLoggedOut`
 
@@ -1096,9 +992,7 @@ Only necessary with when the `useStorageCache` option is set to `true`.
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 import { Magic } from "magic-sdk"
 
@@ -1113,18 +1007,13 @@ magic.user.onUserLoggedOut((isLoggedOut: boolean) => {
 })
 ```
 
-</Tab>
-</Tabs>
-
 ## OAuth Module
 
 The OAuth Module and it's members are accessible on the Magic SDK instance by the `oauth` property.
 
 To use the OAuth Module in your application, install `@magic-ext/oauth` along with `magic-sdk`.
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1141,8 +1030,6 @@ magic.oauth;
 magic.oauth.loginWithPopup;
 
 ```
-</Tab>
-</Tabs>
 
 ### `loginWithPopup`
 
@@ -1176,9 +1063,7 @@ Starts the OAuth 2.0 login flow.
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1198,9 +1083,6 @@ await magic.oauth.loginWithPopup({
 });
 ```
 
-</Tab>
-</Tabs>
-
 ## OpenID Module
 
 <Note>
@@ -1212,9 +1094,7 @@ The OpenID Module and it's members are accessible on the Magic SDK instance by t
 
 To use the OpenID Module in your application, install `@magic-ext/oidc` along with `magic-sdk`.
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1231,8 +1111,6 @@ magic.openid;
 magic.openid.loginWithOIDC;
 
 ```
-</Tab>
-</Tabs>
 
 ### `loginWithOIDC`
 
@@ -1250,9 +1128,7 @@ Authenticate users via your preferred OIDC client.
 
 **Example**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1272,9 +1148,6 @@ const DID = await magic.openid.loginWithOIDC({
   providerId: myProviderId,
 });
 ```
-
-</Tab>
-</Tabs>
 ## Response and Error Handling
 
 There are three types of error class to be aware of when working with Magic's client-side JavaScript SDK:
@@ -1287,9 +1160,7 @@ There are three types of error class to be aware of when working with Magic's cl
 
 The `SDKError` class is exposed for `instanceof` operations.
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { SDKError } from '@magic-sdk/react-native-bare';
@@ -1305,14 +1176,10 @@ if (err instanceof SDKError) {
 }
 
 ```
-</Tab>
-</Tabs>
 
 `SDKError` instances expose the `code` field which may be used to deterministically identify the error. Additionally, an enumeration of error codes is exposed for convenience and readability:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { SDKErrorCode } from '@magic-sdk/react-native-bare';
@@ -1325,9 +1192,6 @@ SDKErrorCode.MalformedResponse;
 // and so forth...
 // Please reference the `Enum Key` column of the error table below.
 ```
-
-</Tab>
-</Tabs>
 
 ### Error Codes
 
@@ -1345,9 +1209,7 @@ SDKErrorCode.MalformedResponse;
 
 The `RPCError` class is exposed for `instanceof` operations:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { RPCError } from '@magic-sdk/react-native-bare';
@@ -1363,14 +1225,10 @@ if (err instanceof RPCError) {
 }
 
 ```
-</Tab>
-</Tabs>
 
 `RPCError` instances expose the `code` field which may be used to deterministically identify the error. Additionally, an enumeration of error codes is exposed for convenience and readability:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { RPCErrorCode } from '@magic-sdk/react-native-bare';
@@ -1385,9 +1243,6 @@ RPCErrorCode.InternalError;
 // and so forth...
 // Please reference the `Enum Key` column of the error table below.
 ```
-
-</Tab>
-</Tabs>
 
 ### Magic Link Error Codes
 
@@ -1427,7 +1282,7 @@ import { ExtensionError } from '@magic-sdk/react-native-bare';
 
 try {
 // Something async...
-catch (err) {
+} catch (err) {
 if (err instanceof ExtensionError) {
 // Handle...
 }
@@ -1530,36 +1385,26 @@ Magic supports the following EVM RPC Methods that can be called through a web3 p
 
 As of **v14.0.0** our React Native package offerings wrap the `<magic.Relayer />` in [react-native-safe-area-context's](https://github.com/th3rdwave/react-native-safe-area-context) `<SafeAreaView />`. To prevent any adverse behavior in your app, please place the Magic iFrame React component at the root view of your application wrapped in a [SafeAreaProvider](https://github.com/th3rdwave/react-native-safe-area-context#safeareaprovider) as described in the documentation.
 
-We hreaView`showing the background. By default, the background will be white. If you have changedave also added an optional`backgroundColor`prop to the`Relayer`to fix issues with`SafeA the background color as part of your [custom branding setup](docs/embedded-wallet/authentication/customization/login-ui#configuration), make sure to pass your custom background color to `magic.Relayer`:
+We have also added an optional `backgroundColor` prop to the `Relayer` to fix issues with `SafeAreaView` showing the background. By default, the background will be white. If you have changed the background color as part of your [custom branding setup](docs/embedded-wallet/authentication/customization/login-ui#configuration), make sure to pass your custom background color to `magic.Relayer`:
 
-<Tabs>
-  <Tab title="Javascript">
-    ```javascript
-    <magic.Relayer backgroundColor="#0000FF" />
-    ```
-  </Tab>
-</Tabs>
+```javascript JavaScript
+<magic.Relayer backgroundColor="#0000FF" />
+```
 
 Handle internet connection problems
 
 When an app is opened without an internet connection, any request to the Magic SDK will result in a rejection with a `MagicSDKError`:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 {
   "code": "MODAL_NOT_READY",
   "rawMessage": "Modal is not ready."
 }
 ```
-</Tab>
-</Tabs>
 
 It's good practice to use [@react-native-community/netinfo](https://www.npmjs.com/package/@react-native-community/netinfo) to track the internet connection state of the device. For your convenience, we've also added a hook that uses this library behind the scenes:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 import { useInternetConnection } from '@magic-sdk/react-native-expo';
 
 export default function App() {
@@ -1584,8 +1429,6 @@ return <>
 }
 
 ```
-</Tab>
-</Tabs>
 
 ### Re-authenticate Users
 
@@ -1595,9 +1438,7 @@ Note: the session length is customizable by the developer through the [Magic das
 
 Before re-authenticating a user, [install the Magic Client SDK​](#installation).
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript
 
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
@@ -1620,9 +1461,6 @@ const user = await magic.auth.loginWithEmailOTP({ email });
 }
 
 ```
-
-</Tab>
-</Tabs>
 
 ## Resources
 
