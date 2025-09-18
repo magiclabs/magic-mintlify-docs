@@ -1,8 +1,20 @@
+html.dark {
+  background-color: #18171a !important;
+}
+
+html.dark body {
+  background-color: #18171a !important;
+}
+
+.sticky.top-0.h-8.z-10.bg-gradient-to-b {
+  background: none !important;
+}
+
 /* Topbar CTA Button Light/Dark Mode Styling */
 /* Default - light mode (black background with white text) */
 #topbar-cta-button .bg-primary-dark {
   background-color: #18171a !important;
-  border-radius: 15px !important;
+  border-radius: 10px !important;
 }
 
 #topbar-cta-button .text-white {
