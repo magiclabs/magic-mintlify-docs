@@ -10,6 +10,11 @@ html.dark body {
   background: none !important;
 }
 
+/* Card background colors */
+html.dark .card {
+  background-color: #18171a !important;
+}
+
 /* Topbar CTA Button Light/Dark Mode Styling */
 /* Default - light mode (black background with white text) */
 #topbar-cta-button .bg-primary-dark {
