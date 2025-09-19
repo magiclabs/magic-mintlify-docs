@@ -7,34 +7,28 @@ description: "Magic allows you to customize the popup modal, email, and confirma
 
 To initialize magic with a specific language, pass the `locale` value to the `Magic` instance upon creation.
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
-
+```javascript JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
 
 const magic = new Magic('API_KEY', { locale: 'es' });
 
 const did = await magic.auth.loginWithMagicLink({ email });
-
 ```
-</Tab>
-</Tabs>
 
 <Frame>
-  <img src="/images/email.webp" alt=""/>
+  <img src="/images/email.webp" alt="email" />
 </Frame>
 
 
 <Frame>
-  <img src="/images/modal.webp" alt=""/>
+  <img src="/images/modal.webp" alt="modal" />
 </Frame>
 
 ## Supported Languages
 
 |     |     |
 | --- | --- |
-| Language | Locale Code |
+| **Language** | **Locale Code** |
 | Afrikaans | `af` |
 | Azerbaijani | `az` |
 | Bulgarian | `bg` |
@@ -73,5 +67,3 @@ const did = await magic.auth.loginWithMagicLink({ email });
 | Turkish | `tr` |
 | Vietnamese | `vi` |
 | Welsh | `cy` |
-
-```

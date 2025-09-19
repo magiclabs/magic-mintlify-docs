@@ -8,7 +8,7 @@ import { Button } from "/snippets/button.mdx";
 
 <Card>
   This feature requires a subscription to Startup or Growth Plan
-  <br />
+
   <Button href="https://magic.link/pricing#features">View pricing</Button>
 </Card>
 
@@ -31,7 +31,7 @@ Multi-factor auth SDK methods are available via the following client-side SDKs:
 - [iOS](/docs/embedded-wallet/api/client-side-sdks/ios)
 - [Android](/docs/embedded-wallet/api/client-side-sdks/android)
 
-## Benefits of MFA
+### Benefits of MFA
 
 The most obvious benefit of MFA is increased security. Magic's MFA increases your users' security by requiring additional proof of ownership to their wallet. If a bad actor has found a way to compromise a user’s primary email or SMS, Magic's MFA provides a second layer of protection to prevent account compromise. Enabling MFA can also help you meet regulatory requirements. If you are required to meet HIPAA, PCI, or CJIS compliance standards, then MFA should be enabled for your users.
 
@@ -39,13 +39,13 @@ This does come with some drawbacks, specifically a lengthier sign-in process for
 
 ## Usage
 
-## Implementation
+### Implementation
 
-### Unlocking MFA
+**Unlocking MFA**
 
 Multi-factor auth is a premium feature available to all customers for an additional monthly charge. To unlock MFA for your workspace, please upgrade to the [**Startup Plan**](https://dashboard.magic.link/checkout/upgrade-to-startup) within your developer dashboard.
 
-### [#Pre-requisites](#pre-requisites)
+**Pre-requisites**
 
 - [Client-side SDK](/docs/embedded-wallet/api/client-side-sdks/web#installation)
 - Feature unlocked by upgrading to the Startup
@@ -55,7 +55,7 @@ Multi-factor auth is a premium feature available to all customers for an additio
   <img src="/images/MFA-Disabled.webp" alt="MFA-Disabled" />
 </Frame>
 
-### Add MFA to your app
+**Add MFA to your app**
 
 You can allow users to add MFA via one of several SDK method options
 
@@ -64,13 +64,13 @@ You can allow users to add MFA via one of several SDK method options
 
 Calling the SDK method [`magic.user.getInfo()`](/docs/embedded-wallet/api/client-side-sdks/web#getinfo) will return whether the user has MFA enabled or not. This can be used to progressively introduce MFA to users via a banner reminding them to enable it or similar.
 
-## Disabling MFA
+### Disabling MFA
 
 To disable MFA, remove any settings implementation for the Magic SDK or Login Form. Existing users with MFA enabled will still be able to use their second factor to login.
 
 ### End-user account recovery
 
-#### MFA recovery codes
+**MFA recovery codes**
 
 When registering for MFA, end users are given one-time use recovery codes. If an end-user loses access to their MFA, they can use their one-time recovery code to self-service recover their account.
 
@@ -80,7 +80,7 @@ Using the recovery code will authenticate the user and deactivate MFA in the pro
   <img src="/images/recovery-code.webp" alt="recovery-code" />
 </Frame>
 
-#### Admin reset
+**Admin reset**
 
 If a user loses their recovery code, you can reset their MFA via the Users section in the Magic dashboard. Simply search for the user, and use the action menu on the right side to disable MFA. You will be asked to confirm the user again before MFA will be disabled.
 

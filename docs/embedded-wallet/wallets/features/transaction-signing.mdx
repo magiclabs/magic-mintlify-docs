@@ -30,39 +30,38 @@ Once the method is invoked, Magic will provide information about the transaction
 
 <Tabs>
 <Tab title="Web3.js">
-```javascript
+```javascript JavaScript icon="square-js"
 import Web3 from 'web3';
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('YOUR_API_KEY', {
-network: "sepolia", // Ethereum testnet
+  network: "sepolia", // Ethereum testnet
 });
 
 const web3 = new Web3(magic.rpcProvider);
 
 const txnParams = {
-from: account,
-to: toAddress,
-value: web3.utils.toWei(amount, "ether"),
-gas: 21000
+  from: account,
+  to: toAddress,
+  value: web3.utils.toWei(amount, "ether"),
+  gas: 21000
 };
 
 web3.eth
-.sendTransaction(txnParams)
-.on("transactionHash", (hash) => {
-console.log("Transaction hash:", hash);
-})
-.then((receipt) => {
-console.log("Transaction receipt:", receipt);
-})
-.catch((error) => {
-console.error(error);
-});
-
+  .sendTransaction(txnParams)
+  .on("transactionHash", (hash) => {
+    console.log("Transaction hash:", hash);
+  })
+  .then((receipt) => {
+    console.log("Transaction receipt:", receipt);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
 ```
 </Tab>
 <Tab title="Ethers (v6)">
-```javascript
+```javascript JavaScript icon="square-js"
 import { ethers } from 'ethers';
 import { Magic } from 'magic-sdk';
 
@@ -79,12 +78,11 @@ const txnParams = {
 const tx = await signer.sendTransaction(txnParams);
 
 console.log(tx);
-
 ```
 
 </Tab>
 <Tab title="Ethers (v5)">
-```javascript
+```javascript JavaScript icon="square-js"
 import { ethers } from 'ethers';
 import { Magic } from 'magic-sdk';
 
@@ -94,14 +92,13 @@ const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
 const signer = provider.getSigner();
 
 const txnParams = {
-to: toAddress,
-value: ethers.utils.parseUnits('0.001', 'ether')
+  to: toAddress,
+  value: ethers.utils.parseUnits('0.001', 'ether')
 };
 
 const tx = await signer.sendTransaction(txnParams);
 
 console.log(tx);
-
 ```
 </Tab>
 </Tabs>

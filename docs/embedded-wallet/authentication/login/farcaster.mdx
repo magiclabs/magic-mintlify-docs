@@ -49,9 +49,7 @@ yarn add magic-sdk @magic-ext/farcaster
 
 When creating your Magic instance, you'll need to add an instance of `FarcasterExtension` to the Magic constructor:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { FarcasterExtension } from '@magic-ext/farcaster';
 
@@ -59,9 +57,7 @@ const magic = new Magic('YOUR_API_KEY', {
 extensions: [new FarcasterExtension()],
 });
 
-````
-</Tab>
-</Tabs>
+```
 
 
 ### Arguments
@@ -74,9 +70,7 @@ extensions: [new FarcasterExtension()],
 
 ### Example
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { FarcasterExtension } from '@magic-ext/farcaster';
 
@@ -96,16 +90,12 @@ try {
   // Handle errors if required!
 }
 ```
-</Tab>
-</Tabs>
 
 ### Event Handling
 
 A white-label Farcaster Login flow is available when passing `showUI: false` to this login method. Here's a short example to illustrate listening for and emitting events during the login flow:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { FarcasterExtension } from '@magic-ext/farcaster';
 
@@ -140,9 +130,6 @@ try {
   // handle errors
 }
 ```
-
-</Tab>
-</Tabs>
 
 ## Resources
 

@@ -5,16 +5,13 @@ title: Key Export
 ### SDK Method
 
 <Note>
-
 This method is currently only available through our [web](/docs/embedded-wallet/api/client-side-sdks/web#revealprivatekey), [React Native](/docs/embedded-wallet/api/client-side-sdks/react-native#revealprivatekey), and [Android](/docs/embedded-wallet/api/client-side-sdks/android#revealprivatekey) SDKs. For all other SDKs, refer to our [Reveal Page](/docs/embedded-wallet/wallets/features/key-export#reveal-page) section below.
-
 </Note>
 
 <Info>
 **Important**
 
 Implementing this SDK method will allow your end users to access their private key. Be sure to read through this document carefully before implementing.
-
 </Info>
 
 <Frame>
@@ -27,23 +24,17 @@ You can use Magic's [`user.revealPrivateKey`](/docs/embedded-wallet/api/client-s
 
 Once you have verified the correct setup of the Magic SDK and successfully authenticated the user, the reveal private key modal can then be displayed by calling the `revealPrivateKey` method:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
-
+```javascript JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-await magic.user.revealPrivateKey();
+  await magic.user.revealPrivateKey();
 } catch {
-// Handle errors if required!
+  // Handle errors if required!
 }
-
 ```
-</Tab>
-</Tabs>
 
 ### Reveal Page
 

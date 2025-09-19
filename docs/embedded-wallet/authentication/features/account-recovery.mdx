@@ -38,7 +38,7 @@ Account recovery methods are available on the following client-side SDKs:
 
 To enable SMS recovery for your users:
 
-```javascript Javascript
+```javascript JavaScript icon="square-js"
 ⁠magic.user.showSettings();
 ```
 
@@ -46,7 +46,7 @@ This will display a settings modal where users will be able to add a recovery fa
 
 Additionally, Magic supports a deep linking flow where you can send users straight to adding a recovery factor. [The flow can also be whitelabeled](/docs/embedded-wallet/api/client-side-sdks/web#show-settings-show-ui-false-page-recovery):
 
-```javascript Javascript
+```javascript JavaScript icon="square-js"
 magic.user.showSettings({ page: 'recovery'  });
 ```
 
@@ -58,7 +58,7 @@ magic.user.showSettings({ page: 'recovery'  });
 
 Once a recovery factor is a set up, a user can recover their account. To enable this, the developer should call the following:
 
-```javascript Javascript
+```javascript JavaScript icon="square-js"
 magic.user.recoverAccount({ email: email })
 ```
 

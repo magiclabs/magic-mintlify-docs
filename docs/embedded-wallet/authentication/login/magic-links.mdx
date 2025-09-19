@@ -14,9 +14,7 @@ Magic link SDK methods are available via the [Web client-side SDK](/docs/embedde
 
 The `loginWithMagicLink` function sends an authentication request to the user. The resolved value is a Decentralized ID token with a default 15-minute lifespan. **Refer to the **[**API documentation**](/docs/embedded-wallet/api/overview) **for information on how to install and initialize Magic.**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript icon="square-js"
 import  {  Magic  }  from  'magic-sdk';
 
 const magic = new Magic('API_KEY');
@@ -34,18 +32,13 @@ await magic.auth.loginWithMagicLink({ email: 'hello@example.com', showUI: false 
 } catch {
 // Handle errors if required!
 }
-
-````
-</Tab>
-</Tabs>
+```
 
 ## Error Handling
 
 To achieve a fully white-labeled experience, you will need to implement some custom error handling according to your UI needs. Here's a short example to illustrate how errors can be caught and identified by their code:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript icon="square-js"
 import  {  Magic,  RPCError,  RPCErrorCode  }  from  'magic-sdk';
 
 const magic =  new  Magic('API_KEY');
@@ -64,27 +57,19 @@ try  {
     }
   }
 }
-````
-
-</Tab>
-</Tabs>
+```
 
 ## Test Mode
 
-Magic's client-side Web SDK provides **Test Mode** as a quick way to test your integration locally by asserting specific error codes or bypassing the magic link flow completely. Test Mode only works when logging in with Magic links. As the name suggests, **this is for testing**. Users and wallets created in test mode should not be treated as secure or production-ready. Data surfaced while in Test Mode should not be considered secure, accurate, or production-ready.
+Magic&apos;s client-side Web SDK provides **Test Mode** as a quick way to test your integration locally by asserting specific error codes or bypassing the magic link flow completely. Test Mode only works when logging in with Magic links. As the name suggests, **this is for testing**. Users and wallets created in test mode should not be treated as secure or production-ready. Data surfaced while in Test Mode should not be considered secure, accurate, or production-ready.
 
 To enable Test Mode, provide `testMode: true` to the SDK constructor.
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('YOUR_API_KEY', { testMode: true });
-
-````
-</Tab>
-</Tabs>
+```
 
 
 
@@ -96,19 +81,19 @@ With Test Mode enabled, you can assert the desired behavior through the email ad
 
 <Tabs>
 <Tab title="Succeed">
-```javascript
+```javascript JavaScript icon="square-js"
 magic.auth.loginWithMagicLink({ email: 'test+success@magic.link' });
 ````
 
 </Tab>
 <Tab title="Fail">
-```javascript
+```javascript JavaScript icon="square-js"
 magic.auth.loginWithMagicLink({ email: 'test+fail@magic.link' });
 ```
 </Tab>
 
 <Tab title="Fail With Error">
-```javascript
+```javascript JavaScript icon="square-js"
 import { RPCErrorCode } from 'magic-sdk';
 
 magic.auth.loginWithMagicLink({ email: `test+fail_with_{${RPCErrorCode.MagicLinkFailedVerification}}@magic.link` });
@@ -127,25 +112,21 @@ Web3 and blockchain use-cases sometimes require access to deterministic key-pair
 
 In practice, you can assert a successful login with:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+
+```javascript JavaScript icon="square-js"
 magic.auth.loginWithMagicLink({
   email:
     'test+success_with_{0x89A3983da27fF0eFCF901F74C4df84e0450A17B7:0x19de850af732e9e5745915162d707d6d8cf013ce7b2862e93081b0c8883bdfae}@magic.link',
 });
-````
+```
 
-</Tab>
-</Tabs>
-
-In the example above, we encode an Ethereum-compatible key-pair in the test user's email address. The login method will immediately resolve with a success state, bypassing the passwordless flow and enabling Ethereum or EVM-compatible signing methods to work seamlessly with your existing Web3 code.
+In the example above, we encode an Ethereum-compatible key-pair in the test user&apos;s email address. The login method will immediately resolve with a success state, bypassing the passwordless flow and enabling Ethereum or EVM-compatible signing methods to work seamlessly with your existing Web3 code.
 
 ## Security Notes
 
 ### IP Address Verification
 
-Magic’s top priority is ensuring secure authentication for your end users in your app. Magic recently implemented and added a layer of security for all login flows with email magic link. Specifically, the change ensures that the IP address associated with the device that a user enters their email address on matches the IP address associated with the device that clicks the magic link. If the IP address does not match, the following error is shown to the user when they click on the magic link.
+Magic&apos;s top priority is ensuring secure authentication for your end users in your app. Magic recently implemented and added a layer of security for all login flows with email magic link. Specifically, the change ensures that the IP address associated with the device that a user enters their email address on matches the IP address associated with the device that clicks the magic link. If the IP address does not match, the following error is shown to the user when they click on the magic link.
 
 <Frame>
   <img src="/images/ip-mismatch.webp" alt="" />

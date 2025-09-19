@@ -14,17 +14,11 @@ The DID token is encoded as a Base64 JSON string tuple representing `**[proof, c
 - `proof`: A digital signature that proves the validity of the given `claim`.
 - `claim`: Unsigned data the user asserts. This should equal the `proof` after Elliptic Curve recovery.
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
-
+```javascript JavaScript icon="square-js"
 const claim = javascript.stringify({ ... }); // Data representing the user's access
 const proof = sign(claim); // Sign data with Ethereum's `personal_sign` method
 const DIDToken = btoa(JSON.stringify([proof, claim]));
-
-````
-</Tab>
-</Tabs>
+```
 
 ### Use Cases
 
@@ -37,10 +31,7 @@ const DIDToken = btoa(JSON.stringify([proof, claim]));
 
 ### Generating a DID Token (Pseudo-code)
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
-
+```javascript JavaScript icon="square-js"
 // Construct the user's claim
 const claim = JSON.stringify({
     iat: Math.floor(Date.now() / 1000),
@@ -58,10 +49,7 @@ const proof = sign(claim);
 
 // Encode the DIDToken so it can be transported over HTTP.
 const DIDToken = btoa(JSON.stringify([proof, claim]));
-````
-
-</Tab>
-</Tabs>
+```
 
 ### Token Specification
 

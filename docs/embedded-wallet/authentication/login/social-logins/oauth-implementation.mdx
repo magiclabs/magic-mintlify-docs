@@ -40,7 +40,7 @@ Social Logins work as an extension to Magic SDK. To add Social Login to your Mag
 <Tab title="NPM">
 ```bash
 npm install magic-sdk @magic-ext/oauth2
-or
+# or
 npm install magic-sdk @magic-ext/oauth
 
 ```
@@ -59,22 +59,17 @@ yarn add magic-sdk @magic-ext/oauth
 
 When creating your Magic instance, you'll need to add an instance of `OAuthExtension` to the Magic constructor:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
+
 import { OAuthExtension } from '@magic-ext/oauth2';
-or
+// or
 import { OAuthExtension } from '@magic-ext/oauth';
 
 const magic = new Magic('YOUR_API_KEY', {
-extensions: [new OAuthExtension()],
+  extensions: [new OAuthExtension()],
 });
-
 ```
-</Tab>
-</Tabs>
-
 
 ## Login
 
@@ -83,9 +78,7 @@ Once you've created a Magic instance, kick off the OAuth login with `loginWithRe
 Once logged in, you will have access to a DID token that can be used with our [Admin SDK](/docs/embedded-wallet/api/server-side-sdks/node#token-module) to verify the user's information and wallet address on the backend. On mobile SDKs, this is provided as the result of `loginWithPopup`, while on the web SDK you can retrieve this and other information about the OAuth result with `getRedirectResult`. The `getRedirectResult` function returns an object that includes user information. On mobile, you can get similar user info, such as wallet address and email, with `getMetadata`.
 
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript icon="square-js"
 const beginOAuthFlow = () => {
   // if v1, use oauth module
   await magic.oauth2.loginWithRedirect({ //
@@ -106,14 +99,9 @@ const handleOAuthResult = () => {
 
 ```
 
-</Tab>
-</Tabs>
-
 The interface for the result of `getRedirectResult` is as follows:
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```typescript
 interface OAuthRedirectResult {
   magic: {
     idToken: string;
@@ -128,8 +116,6 @@ interface OAuthRedirectResult {
   }
 };
 ```
-</Tab>
-</Tabs>
 
 ## Resources
 

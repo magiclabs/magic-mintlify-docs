@@ -13,37 +13,23 @@ The Magic class is the entry-point to the Magic SDK. It must be instantiated wit
 ### Installation
 
 Add `magic_sdk` to your `pubspec.yaml`:
-
-<Tabs>
-<Tab title="Yaml">
-```json
-
+```dart Dart icon="flutter"
 dependencies:
-flutter:
-sdk: flutter
-magic_sdk: ^6.0.1
-
-````
-</Tab>
-</Tabs>
+  flutter:
+    sdk: flutter
+  magic_sdk: ^6.0.1
+```
 
 Run the following command to install dependencies:
-
-<Tabs>
-<Tab title="Bash">
-```json
-
+```dart Dart icon="flutter"
 $ dart pub get
-````
+```
 
-</Tab>
-</Tabs>
 
 ### Performance improvement (optional)
 
 We use service workers for for better performance on web3 operations. They are enabled by default on Android, but if you'd like to take advantage of this performance boost on iOS as well, you'd have to enable app bound domains. To do that, add the following to your `Info.plist` and rebuild your app:
-
-```json
+```dart Dart icon="flutter"
 <key>WKAppBoundDomains</key>
 <array>
   <string>https://auth.magic.link</string>
@@ -52,7 +38,7 @@ We use service workers for for better performance on web3 operations. They are e
 
 ### Constructor
 
-### `Magic()`
+`Magic()`
 
 `Magic(apiKey, {MagicLocale locale})`
 
@@ -79,10 +65,7 @@ We use service workers for for better performance on web3 operations. They are e
 
 ### Initialization
 
-<Tabs>
-<Tab title="Dart">
-```json
-
+```dart Dart icon="flutter"
 import "package:magic_sdk/magic_sdk.dart";
 
 // Construct with an API key:
@@ -96,19 +79,12 @@ Magic.instance = Magic.eth("PUBLISHABLE_API_KEY", network: EthNetwork.goerli);
 
 // Construct with an API key and custom node options:
 Magic.instance = Magic.custom("PUBLISHABLE_API_KEY", rpcUrl: "https://your.custom.url/", chainId: 1);
-
-````
-</Tab>
-</Tabs>
+```
 
 ## Auth Module
 
 The Auth Module and its members are accessible on the Magic SDK instance by the `auth` property.
-
-<Tabs>
-<Tab title="Dart">
-```json
-
+```dart Dart icon="flutter"
 import 'package:magic_sdk/magic_sdk.dart';
 
 Magic magic = Magic.instance;
@@ -116,10 +92,8 @@ Magic magic = Magic.instance;
 magic.auth;
 magic.auth.loginWithSMS;
 magic.auth.loginWithEmailOTP;
-````
+```
 
-</Tab>
-</Tabs>
 
 ### `loginWithSMS`
 
@@ -127,7 +101,7 @@ Authenticate a user passwordlessly using a one-time code sent to the specified p
 
 [List of Currently Blocked Country Codes](/docs/home/faq#questions-around-sms)
 
-#### [Public Methods](#public-methods)
+**Public Methods**
 
 `Future<String> loginWithSMS({ required String email })`
 
@@ -136,37 +110,30 @@ Authenticate a user passwordlessly using a one-time code sent to the specified p
 | Parameter     | Type   | Definition                       |
 | `phoneNumber` | String | The phone number to log in with. |
 
-#### Returns
+**Returns**
 
 - `Future<string>` The future resolves upon authentication request success and throws with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
-#### Example
-
-<Tabs>
-<Tab title="Dart">
-```json
-
+**Example**
+```dart Dart icon="flutter"
 import "package:magic_sdk/magic_sdk.dart";
 
 Magic.instance = Magic("PUBLISHABLE_API_KEY");
 
 // log in a user by using text input Controller
 try {
-var magic = Magic.instance;
-await magic.auth.loginWithSMS(phoneNumber: textController.text);
+  var magic = Magic.instance;
+  await magic.auth.loginWithSMS(phoneNumber: textController.text);
 } catch {
-// Handle errors if required!
+  // Handle errors if required!
 }
-
-````
-</Tab>
-</Tabs>
+```
 
 ### `loginWithEmailOTP`
 
 Authenticate a user passwordlessly using an email one-time code sent to the specified user's email address.
 
-#### Public Methods
+**Public Methods**
 
 `Future<String> loginWithEmailOTP({ required String email })`
 
@@ -175,16 +142,12 @@ Authenticate a user passwordlessly using an email one-time code sent to the spec
 | Parameter | Type | Definition |
 | `email` | String | The user email to log in with. |
 
-#### Returns
+**Returns**
 
 * `Future<string>` The future resolves upon authentication request success and throws with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
 
-#### Example
-
-<Tabs>
-<Tab title="Dart">
-```json
-
+**Example**
+```dart Dart icon="flutter"
 import 'package:magic_sdk/magic_sdk.dart';
 
 Magic.instance = Magic("PUBLISHABLE_API_KEY");
@@ -196,19 +159,13 @@ try {
 } catch {
   // Handle errors if required!
 }
-````
+```
 
-</Tab>
-</Tabs>
 
 ## User Module
 
 The User Module and it's members are accessible on the Magic SDK instance by the user property.
-
-<Tabs>
-<Tab title="Dart">
-```json
-
+```dart Dart icon="flutter"
 import "package:magic_sdk/magic_sdk.dart";
 
 Magic.instance = Magic("PUBLISHABLE_API_KEY");
@@ -222,16 +179,13 @@ m.user.getInfo;
 m.user.isLoggedIn;
 m.user.updateEmail;
 m.user.logout;
-
-````
-</Tab>
-</Tabs>
+```
 
 ### `updateEmail`
 
 Initiates the update email flow that allows a user to change their email address.
 
-#### Arguments
+**Arguments**
 
 `Future<bool> updateEmail({required String email, bool showUI = true})`
 
@@ -241,16 +195,12 @@ Initiates the update email flow that allows a user to change their email address
 | `email` | String | The new email to update to. |
 | `showUI?` | Boolean | If `true`, shows an out-of-the-box pending UI which includes instructions on which step of the confirmation process the user is on. Dismisses automatically when the process is complete. |
 
-#### Returns
+**Returns**
 
 * `Future<boolean>`: The future resolves with a true boolean value if update email is successful and rejects with a specific error code if the request fails
 
-#### Example
-
-<Tabs>
-<Tab title="Dart">
-```json
-
+**Example**
+```dart Dart icon="flutter"
 import 'package:magic_sdk/magic_sdk.dart';
 
 Magic.instance = Magic("PUBLISHABLE_API_KEY");
@@ -277,16 +227,14 @@ try {
 } catch {
   // Handle errors if required!
 }
-````
+```
 
-</Tab>
-</Tabs>
 
 ### `getIdToken`
 
 Generates a [Decentralized Id Token](/docs/embedded-wallet/authentication/features/decentralized-id) which acts as a proof of authentication to resource servers.
 
-#### Arguments
+**Arguments**
 
 `Future<String> getIdToken({int lifespan = 900})`
 
@@ -295,16 +243,12 @@ Generates a [Decentralized Id Token](/docs/embedded-wallet/authentication/featur
 | Parameter   | Type | Definition                                                               |
 | `lifespan?` | int  | Will set the lifespan of the generated token. Defaults to 900s (15 mins) |
 
-#### Returns
+**Returns**
 
 - `Future<string>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
 
-#### Example
-
-<Tabs>
-<Tab title="Dart">
-```json
-
+**Example**
+```dart Dart icon="flutter"
 import "package:magic_sdk/magic_sdk.dart";
 
 Magic.instance = Magic("PUBLISHABLE_API_KEY");
@@ -316,16 +260,13 @@ const idToken = await m.user.getIdToken();
 } catch {
 // Handle errors if required!
 }
-
-````
-</Tab>
-</Tabs>
+```
 
 ### `generateIdToken`
 
 Generates a [Decentralized Id Token](/docs/embedded-wallet/authentication/features/decentralized-id) with optional serialized data.
 
-#### Arguments
+**Arguments**
 
 `Future<String> generateIdToken({int lifespan = 900, String attachment = 'none'})`
 
@@ -335,16 +276,12 @@ Generates a [Decentralized Id Token](/docs/embedded-wallet/authentication/featur
 | `lifespan?` | int | Will set the lifespan of the generated token. Defaults to 900s (15 mins) |
 | `attachment?` | String | Will set a signature of serialized data in the generated token. Defaults to `"none"` |
 
-#### Returns
+**Returns**
 
 * `Future<string>`: Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
 
-#### Example
-
-<Tabs>
-<Tab title="Dart">
-```json
-
+**Example**
+```dart Dart icon="flutter"
 import 'package:magic_sdk/magic_sdk.dart';
 
 Magic.instance = Magic("PUBLISHABLE_API_KEY");
@@ -357,20 +294,18 @@ try {
 } catch {
   // Handle errors if required!
 }
-````
+```
 
-</Tab>
-</Tabs>
 
 ### `getInfo`
 
 Retrieves information for the authenticated user.
 
-#### Arguments
+**Arguments**
 
 - _None_
 
-#### Returns
+**Returns**
 
 - `Future<UserInfo>`: an object containing the issuer, email and cryptographic public address of the authenticated user
 
@@ -383,12 +318,8 @@ Retrieves information for the authenticated user.
 | `isMfaEnabled`    | Boolean                                                | A boolean indicating if user has multi-factor authentication enabled.                                                             |
 | `recoveryFactors` | _ `List<RecoveryFactor>`<br/> _ `value`<br/> \* `type` |                                                                                                                                   |
 
-#### Example
-
-<Tabs>
-<Tab title="Dart">
-```json
-
+**Example**
+```dart Dart icon="flutter"
 import "package:magic_sdk/magic_sdk.dart";
 
 Magic.instance = Magic("PUBLISHABLE_API_KEY");
@@ -400,29 +331,22 @@ await m.user.getInfo();
 } catch {
 // Handle errors if required!
 }
-
-````
-</Tab>
-</Tabs>
+```
 
 ### `isLoggedIn`
 
 Checks if a user is currently logged in to the Magic SDK.
 
-#### Arguments
+**Arguments**
 
 * _None_
 
-#### Returns
+**Returns**
 
 * `Future<Boolean>`
 
-#### Example
-
-<Tabs>
-<Tab title="Dart">
-```json
-
+**Example**
+```dart Dart icon="flutter"
 import 'package:magic_sdk/magic_sdk.dart';
 
 Magic.instance = Magic("PUBLISHABLE_API_KEY");
@@ -433,51 +357,39 @@ try {
 } catch {
   // Handle errors if required!
 }
-````
+```
 
-</Tab>
-</Tabs>
 
 ### `logout`
 
 Logs out the currently authenticated Magic user
 
-#### Arguments
+**Arguments**
 
 - _None_
 
-#### Returns
+**Returns**
 
 - `Future<Boolean>`
 
-#### Example
+**Example**
+```dart Dart icon="flutter"
+import 'package:magic_sdk/magic_sdk.dart';
 
-<Tabs>
-<Tab title="Dart">
-```json
-
-import { Magic } from "magic-sdk";
-
-const m = new Magic('PUBLISHABLE_API_KEY');
+Magic.instance = Magic("PUBLISHABLE_API_KEY");
 
 try {
-await m.user.logout();
-debugPrint(await m.user.isLoggedIn()); // => `false`
+  await m.user.logout();
+  debugPrint(await m.user.isLoggedIn()); // => `false`
 } catch {
-// Handle errors if required!
+  // Handle errors if required!
 }
-
-````
-</Tab>
-</Tabs>
+```
 
 ## OAuth Module
 
 The OAuth Module and it's members are accessible on the Magic SDK instance by the `oauth` property.
-
-<Tabs>
-<Tab title="Dart">
-```json
+```dart Dart icon="flutter"
 import 'package:magic_sdk/magic_sdk.dart';
 import 'package:magic_ext_oauth/magic_ext_oauth.dart';
 
@@ -485,26 +397,24 @@ Magic magic = Magic.instance;
 
 magic.oauth;
 magic.oauth.loginWithPopup;
-````
+```
 
-</Tab>
-</Tabs>
 
 ### `loginWithPopup`
 
 Starts the OAuth 2.0 login flow.
 
-#### Arguments
+**Arguments**
 
 - `provider` (String): The OAuth provider being used for login
 - `redirectURI` (String): A URL a user is sent to after they successfully log in
 - `scope?` (Array): Defines the specific permissions an application requests from a user
 
-#### Returns
+**Returns**
 
 - _None_
 
-#### [Valid Providers](#valid-providers)
+**Valid Providers**
 
 |           |               |
 | --------- | ------------- |
@@ -521,13 +431,9 @@ Starts the OAuth 2.0 login flow.
 | Twitch    | `'twitch'`    |
 | Microsoft | `'microsoft'` |
 
-#### Example
+**Example**
 
-Dart
-
-<Tabs>
-<Tab title="">
-```json
+```dart Dart icon="flutter"
 import 'package:magic_sdk/magic_sdk.dart';
 import 'package:magic_ext_oauth/magic_ext_oauth.dart';
 
@@ -536,10 +442,7 @@ Magic magic = Magic.instance;
 
 var configuration = OAuthConfiguration(provider: OAuthProvider.GITHUB, redirectURI: 'YOUR_APP_SCHEME://');
 var result = await magic.oauth.loginWithPopup(configuration);
-
-````
-</Tab>
-</Tabs>
+```
 
 ## OpenID Module
 
@@ -550,11 +453,8 @@ This module requires an enterprise agreement. For more details [click here](doc
 The OpenID Module and it's members are accessible on the Magic Flutter SDK instance by the `openid` property.
 
 To use the OpenID Module in your application, install `magic-ext/oidc` along with `magic-sdk`.
-
-<Tabs>
-<Tab title="Dart">
-```json
-# pubspec.yaml
+```dart Dart icon="flutter"
+// pubspec.yaml
 dependencies:
   flutter:
     sdk: flutter
@@ -563,57 +463,46 @@ dependencies:
 
 magic.openid;
 magic.openid.loginWithOIDC;
-````
+```
 
-</Tab>
-</Tabs>
 
 ### `loginWithOIDC`
 
 Authenticate users via your preferred OIDC client.
 
-#### Arguments
+**Arguments**
 
 - `jwt` (String): The OIDC token from your identity provider
 
 - `providerId` (String): An alphanumeric ID provided by Magic after successful configuration of your identity provider
 
-#### Returns
+**Returns**
 
 - `String`: The resolved value is a Decentralized ID token with a default 15-minute lifespan
 
-#### Example
-
-<Tabs>
-<Tab title="Dart">
-```json
-
+**Example**
+```dart Dart icon="flutter"
 import "package:magic_sdk/magic_sdk.dart";
 import "package:magic_ext_oidc/magic_ext_oidc.dart";
 
 void main() {
-Magic.instance = Magic("PUBLISHABLE_API_KEY");
+  Magic.instance = Magic("PUBLISHABLE_API_KEY");
 
-// Use the OIDC extension to perform login
-var configuration = OpenIdConfiguration(
-jwt: 'JWT_FROM_YOUR_OPEN_ID_PROVIDER',
-⁠ providerId:'YOUR_MAGIC_PROVIDER_ID');
-⁠
-var didToken = await magic.openid.loginWithOIDC(configuration);
+  // Use the OIDC extension to perform login
+  var configuration = OpenIdConfiguration(
+    jwt: 'JWT_FROM_YOUR_OPEN_ID_PROVIDER',
+    providerId: 'YOUR_MAGIC_PROVIDER_ID'
+  );
 
-// Use the DID token for further authentication or requests
-print('DID Token: $didToken');
+  var didToken = await magic.openid.loginWithOIDC(configuration);
+
+  // Use the DID token for further authentication or requests
+  print('DID Token: $didToken');
 }
-
 ```
-</Tab>
-</Tabs>
 
 ## Resources
 
 * [GitHub](https://github.com/magiclabs/magic-flutter)
 * ⁠[Demo](https://github.com/magiclabs/magic-flutter/tree/main/magic_demo)
 * [Goerli Testnet Faucet](https://goerlifaucet.com)
-
-
-```

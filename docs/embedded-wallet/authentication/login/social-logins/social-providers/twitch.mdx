@@ -16,7 +16,7 @@ Magic SDK offers two OAuth extensions: [v1](https://www.npmjs.com/package/@magic
 * You will need to have the [Magic SDK installed](/docs/embedded-wallet/api/overview) into your web app
 * You will need to have the [Magic SDK - OAuth Extension](/docs/embedded-wallet/authentication/login/social-logins/oauth-implementation) installed into your web app
 
-## Twitch Setup (v1 extension)
+### Twitch Setup (v1 extension)
 
 After installing the OAuth extension, you can now enable Twitch Login for your Magic app:
 
@@ -48,22 +48,17 @@ After installing the OAuth extension, you can now enable Twitch Login for your M
 12. In Magic Dashboard, click **“Save”**
 13. Click **"Test Connection"** to give your new Twitch OAuth flow a try!
 
-## Twitch Setup (v2 extension)
+### Twitch Setup (v2 extension)
 
 * Follow above steps, but disregard Magic's **Redirect URI** in step 5
 * In step 7, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
 
-
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript icon="square-js"
 await magic.oauth2.loginWithRedirect({
   provider: 'twitch',
   redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with Twitch
 });
 ```
-</Tab>
-</Tabs>
 
 ## Resources
 

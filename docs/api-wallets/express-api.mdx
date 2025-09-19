@@ -41,7 +41,7 @@ You must provide either `X-Magic-API-Key` or `X-Magic-Secret-Key` along with the
 
 Get or create a wallet for the given chain and return its public address.
 
-```bash cURL
+```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
@@ -57,10 +57,6 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
 
 <ParamField body="chain" type="string" required>
 The blockchain to create the wallet for. Available values: `ETH`, `SOL`, `BTC`
-</ParamField>
-
-<ParamField body="should_sync_to_fortmatic" type="boolean" default="true">
-Whether to sync the wallet to Fortmatic for backwards compatibility.
 </ParamField>
 
 **Response:**
@@ -81,7 +77,7 @@ The newly created wallet's public address.
 
 Sign a hash of arbitrary data using the wallet's private key.
 
-```bash cURL
+```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
@@ -139,7 +135,7 @@ The recovery parameter of the ECDSA signature.
 
 Sign an arbitrary message using the wallet's private key. Useful for authentication and off-chain verification.
 
-```bash cURL
+```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \

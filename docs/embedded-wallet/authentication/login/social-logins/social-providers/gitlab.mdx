@@ -5,7 +5,7 @@ description: "You can allow your users to sign up & login into your web applicat
 ---
 
 
-### Usage
+## Usage
 
 ### Prerequisites
 
@@ -42,25 +42,19 @@ After installing the OAuth extension, you can now enable GitLab Login for your M
 14. Return to your Magic Dashboard and input the **Application Id** and **Secret** for your GitLab OAuth app
 15. In Magic Dashboard, click **“Save”** – Done!
 
-## GitLab Setup (v2 extension)
+### GitLab Setup (v2 extension)
 
 * Follow above steps, but disregard Magic's **Redirect URI** in step 5
 * In step 11, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
 
-
-<Tabs>
-<Tab title="Javascript">
-```javascript
+```javascript JavaScript icon="square-js"
 await magic.oauth2.loginWithRedirect({
   provider: 'gitlab',
   redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with Gitlab
 });
 ```
-</Tab>
-</Tabs>
 
-
-### Resources
+## Resources
 
 * [GitLab Social Login Demo](https://magic-oauth-v2-dun.vercel.app/)
 

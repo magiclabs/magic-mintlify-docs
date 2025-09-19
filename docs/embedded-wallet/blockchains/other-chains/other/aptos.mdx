@@ -70,13 +70,13 @@ The **nodeUrl** you specify will determine whether you are using the **mainnet**
 
 The first step will be getting the logged in user's Aptos account address. Follow any of the login guides on the [Authentication tab](/docs/embedded-wallet/authentication/overview) to get started. You can check if a user is logged in with the following code:
 
-```javascript Javascript
+```javascript JavaScript icon="square-js"
 const isLoggedIn = await magic.user.isLoggedIn();
 ```
 
 Once the user is logged in, you can get their Aptos account address by running:
 
-```Javascript Javascript
+```javascript JavaScript icon="square-js"
 const { address } = await magic.aptos.getAccountInfo();
 ```
 <Info>
@@ -85,7 +85,7 @@ const { address } = await magic.aptos.getAccountInfo();
 
 Alternatively, you can use MagicAptosWallet's `account()` method:
 
-```Javascript Javascript
+```javascript JavaScript icon="square-js"
 const { address } = await magicAptosAccount.account();
 ```
 
@@ -94,7 +94,7 @@ const { address } = await magicAptosAccount.account();
 
 Next up for our testing, you'll need to fund the account using the Faucet. This code snippet is taken from the [Aptos Tutorial](https://aptos.dev/tutorials/your-first-transaction#step-43-creating-blockchain-accounts)
 
-```Javascript Javascript
+```javascript JavaScript icon="square-js"
 const DEVNET_NODE_URL = 'https://fullnode.testnet.aptoslabs.com';
 const DEVNET_FAUCET_URL = 'https://faucet.testnet.aptoslabs.com';
 const faucetClient = new FaucetClient(DEVNET_NODE_URL, DEVNET_FAUCET_URL);
@@ -115,7 +115,7 @@ The Beta version of the Magic Aptos Extension only supports Raw transactions. Fu
 In the meantime, you can find the equivalent RawTransactions in the Aptos source code for any of the object methods above. See the bottom of this page for a detailed example.
 </Warning>
 
-```javascript Javascript
+```javascript JavaScript icon="square-js"
 // Set the input variables
 const MAGIC_WALLET_ADDRESS = '0x906fd65afe31b7237cd4d7c4073d8bf76c61b6a24ec64dd26f0c16de5c2444d5'
 const SAMPLE_RAW_TRANSACTION = {
@@ -140,7 +140,7 @@ const result = await client.waitForTransactionWithResult(transaction.hash, {
 
 ## Get Balance
 
-```Javascript Javascript
+```javascript JavaScript icon="square-js"
 const address = await magic.aptos.getAccountInfo();
 const client = new AptosClient(DEVNET_NODE_URL);
 const coinClient = new CoinClient(client);

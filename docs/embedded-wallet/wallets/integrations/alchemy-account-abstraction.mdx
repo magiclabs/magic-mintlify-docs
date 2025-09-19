@@ -22,37 +22,26 @@ We’ll use the `make-scoped-magic-app` CLI tool to bootstrap a Next.js app wi
 
 The `make-scoped-magic-app` CLI tool is an easy way to bootstrap new projects with Magic. To get started, simply run the command below in the shell of your choice. Be sure to replace `<PUBLISHABLE_API_KEY>` with the **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link/).
 
-
-<Tabs>
-<Tab title="Bash">
 ```bash
-npx make-scoped-magic-app \\
-    --template nextjs-dedicated-wallet \\
-    --network ethereum-sepolia \\
-    --login-methods EmailOTP \\
+npx make-scoped-magic-app \
+    --template nextjs-dedicated-wallet \
+    --network ethereum-sepolia \
+    --login-methods EmailOTP \
     --publishable-api-key <YOUR_PUBLISHABLE_API_KEY>
-
 ```
-</Tab>
-</Tabs>
 
 This will bootstrap the starting point of the tutorial for you. In the scaffolded project, be sure to add your Magic Publishable API Key and Alchemy RPC URL to the `.env` as `NEXT_PUBLIC_MAGIC_API_KEY` and `NEXT_PUBLIC_SEPOLIA_RPC`, respectively.
 
-<Tabs>
-<Tab title="Plaintext">
 ```bash
-// Publishable API Key found in the Magic Dashboard
+# Publishable API Key found in the Magic Dashboard
 NEXT_PUBLIC_MAGIC_API_KEY=pk_live_1234567890
 
-// The RPC URL for the blockchain network
+# The RPC URL for the blockchain network
 NEXT_PUBLIC_BLOCKCHAIN_NETWORK=ethereum-sepolia
 
-// The Alchemy RPC URL for the blockchain network
+# The Alchemy RPC URL for the blockchain network
 NEXT_PUBLIC_SEPOLIA_RPC=https://eth-sepolia.g.alchemy.com/v2/{ALCHEMY_API_KEY}
 ```
-</Tab>
-</Tabs>
-
 
 ### Install additional project dependencies
 
@@ -64,13 +53,11 @@ Run the following command to install the required dependencies:
 <Tab title="NPM">
 ```bash
 npm install @alchemy/aa-accounts @alchemy/aa-alchemy @alchemy/aa-core viem@\^1.16.0
-
 ```
 </Tab>
 <Tab title="Yarn">
 ```bash
 yarn add @alchemy/aa-accounts @alchemy/aa-alchemy @alchemy/aa-core viem@\^1.16.0
-
 ```
 </Tab>
 </Tabs>
@@ -101,9 +88,7 @@ When a user logs in with Magic, we need to associate their Magic account with a 
 
 Below is an example of how to connect to a Magic user’s smart contract account:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
 const lightAccountFactoryAddress = getDefaultLightAccountFactoryAddress(chain)
 
 const magicSigner: SmartAccountSigner | undefined = useMemo(() => {
@@ -127,8 +112,6 @@ provider.connect((provider) => {
 })
 
 ```
-</Tab>
-</Tabs>
 
 ### Disconnect from smart contract account
 
@@ -138,9 +121,7 @@ When a user logs out, you’ll need to disconnect from their smart contract acco
 
 When we put all of this together, we get the following:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
 import {
   getDefaultLightAccountFactoryAddress,
   LightSmartContractAccount,
@@ -220,10 +201,6 @@ export const useAlchemyProvider = () => {
   }
 }
 ```
-</Tab>
-</Tabs>
-
-
 
 ### Update UI Components
 
@@ -235,9 +212,8 @@ Now that the project successfully creates and connects to users’ smart contrac
 
 First things first. Open `src/components/magic/cards/UserInfoCard.tsx` and change the state declaration of `balance`, `setBalance`, and `publicAddress` to `magicBalance`, `setMagicBalance`, and `magicAddress`. While you’re at it, add a state declaration for `scaBalance`, `setScaBalance`, `scaAddress`, and `setScaAddress` to store the smart contract account balance and address.
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+
+```typescript TypeScript
 // Change this
 const [balance, setBalance] = useState("...")
 const [publicAddress] = useState(
@@ -251,10 +227,7 @@ const [magicAddress] = useState(
   localStorage.getItem("user")
 )
 const [scaAddress, setScaAddress] = useState<string>("")
-
 ```
-</Tab>
-</Tabs>
 
 
 ### [#Update `getBalance`](#update-get-balance)
@@ -262,9 +235,8 @@ const [scaAddress, setScaAddress] = useState<string>("")
 Next, update the `getBalance` function to set both balances:
 
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+
+```typescript TypeScript
 const getBalance = useCallback(async () => {
   if (magicAddress && web3) {
     const magicBalance = await web3.eth.getBalance(magicAddress)
@@ -283,18 +255,14 @@ const getBalance = useCallback(async () => {
     }
   }
 }, [web3, magicAddress, scaAddress])
-
 ```
-</Tab>
-</Tabs>
 
 ### Update balance display
 
 Next, update the TSX for displaying the balance to show both balances:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+
+```typescript TypeScript
 <div className="flex flex-col gap-2">
   <div className="code">
     Magic: {magicBalance.substring(0, 7)} {getNetworkToken()}
@@ -303,19 +271,14 @@ Next, update the TSX for displaying the balance to show both balances:
     AA: {scaBalance.substring(0, 7)} {getNetworkToken()}
   </div>
 </div>
-
 ```
-</Tab>
-</Tabs>
 
 
 ### Update initial balances
 
 The only remaining balance reference is to set the initial balance while loading to `"..."`. This is in a short `useEffect` that calls `setBalance`. Update this `useEffect` to set both balances:
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
 // Change this
 useEffect(() => {
   setBalance('...');
@@ -326,17 +289,11 @@ useEffect(() => {
   setMagicBalance("...")
   setScaBalance("...")
 }, [magic])
-
 ```
-</Tab>
-</Tabs>
-
 
 ### Set `scaAddress`
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
 const { provider } = useAlchemyProvider()
 
 const getSmartContractAccount = useCallback(async () => {
@@ -347,19 +304,14 @@ const getSmartContractAccount = useCallback(async () => {
 useEffect(() => {
   getSmartContractAccount()
 }, [provider, provider.account, getSmartContractAccount])
-
 ```
-</Tab>
-</Tabs>
 
 
 ### Update address display
 
 Now find the `CardLabel` and div that displays the address and modify it to use the new naming for `magicAddress` and also display the `scaAddress`.
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
 <CardLabel
   leftHeader="Addresses"
   rightAction={
@@ -376,11 +328,7 @@ Now find the `CardLabel` and div that displays the address and modify it to use 
     {scaAddress?.length == 0 ? "Fetching address..." : scaAddress}
   </div>
 </div>
-
 ```
-</Tab>
-</Tabs>
-
 
 Now when a user logs in using Magic, both their Magic and smart contract account address and balances will be displayed!
 
@@ -401,9 +349,7 @@ In `src/components/magic/cards/SendTransactionCard.tsx`, import the the `provide
 To transfer funds from your smart contract account, ensure you have enough test tokens to send. You can get some test Sepolia tokens [here](https://sepoliafaucet.com/).
 </Note>
 
-<Tabs>
-<Tab title="Typescript">
-```typescript
+```typescript TypeScript
 const sendTransaction = useCallback(async () => {
     if (!web3?.utils.isAddress(toAddress)) {
       return setToAddressError(true);
@@ -434,11 +380,7 @@ const sendTransaction = useCallback(async () => {
     console.log(txHash);
     setDisabled(false);
   }, [web3, amount, publicAddress, toAddress]);
-
 ```
-</Tab>
-</Tabs>
-
 
 Thats it! You’ve just transferred tokens from your newly created smart contract account!
 
