@@ -53,6 +53,11 @@ html.dark div[data-component-part="code-block-root"] {
   background-color: #1f1f23 !important;
 }
 
+/* Code block scrollbar containment */
+div[data-component-part="code-block-root"] {
+  clip-path: inset(0 round 1rem) !important;
+}
+
 /* Topbar CTA Button Light/Dark Mode Styling */
 /* Default - light mode (black background with white text) */
 #topbar-cta-button .bg-primary-dark {
