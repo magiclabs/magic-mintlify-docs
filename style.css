@@ -15,6 +15,39 @@ html.dark .card {
   background-color: #18171a !important;
 }
 
+/* Navbar transition background colors */
+#navbar-transition {
+  background-color: #ffffff !important;
+}
+
+html.dark #navbar-transition {
+  background-color: #18171a !important;
+}
+
+#navbar-transition[data-is-opaque="true"] {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.dark #navbar-transition[data-is-opaque="true"] {
+  background-color: rgba(24, 23, 26, 0.9) !important;
+}
+
+/* Anchor link underline colors */
+html.dark a.link:not(.nav-tabs-item):not(.nav-anchor) {
+  text-decoration-color: #ffffff !important;
+  border-bottom: 1px solid #ffffff !important;
+}
+
+html.dark a.link:not(.nav-tabs-item):not(.nav-anchor):hover {
+  text-decoration-color: #ffffff !important;
+  border-bottom: 2px solid #ffffff !important;
+}
+
+/* Search bar button background */
+html.dark #search-bar-entry {
+  background-color: #18171a !important;
+}
+
 /* Topbar CTA Button Light/Dark Mode Styling */
 /* Default - light mode (black background with white text) */
 #topbar-cta-button .bg-primary-dark {
