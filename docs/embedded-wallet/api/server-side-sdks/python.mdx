@@ -49,7 +49,7 @@ conda install magic-admin
 ### Initialization
 
 Initialize Magic instance.
-```python Python
+```python Python icon="python"
 from magic_admin import Magic
 
 magic = Magic(
@@ -67,7 +67,7 @@ The token resource and its methods are accessible on the Magic instance by the `
 <Note>
 The token resource does **not** make any API calls to the Magic server.
 </Note>
-```python Python
+```python Python icon="python"
 from magic_admin import Magic
 
 magic = Magic(api_secret_key='<SECRET_API_KEY>')
@@ -84,7 +84,7 @@ magic.Token.validate
 
 Extracts the `iss` from the [DID Token](/docs/embedded-wallet/authentication/features/decentralized-id).
 
-```python Python
+```python Python icon="python"
 Token.get_issuer(did_token)
 ```
 
@@ -103,7 +103,7 @@ Token.get_issuer(did_token)
 ### `get_public_address`
 
 Gets the cryptographic [public address](https://support.blockchain.com/hc/en-us/articles/4417082520724-What-are-public-and-private-keys-and-how-do-they-work-) of the Magic User who generated the supplied DID Token.
-```python Python
+```python Python icon="python"
 Token.get_public_address(did_token)
 ```
 
@@ -123,7 +123,7 @@ Token.get_public_address(did_token)
 ### `decode`
 
 Decodes a DID Token from a Base64 string into a tuple of its individual components: `proof` and `claim`. This method allows you decode the DID Token and inspect the token. You can apply your own rules and validations on top of the current [Token.validate](#validate) method.
-```python Python
+```python Python icon="python"
 Token.decode(did_token)
 ```
 
@@ -143,7 +143,7 @@ Token.decode(did_token)
 ### `validate`
 
 Validates a DID token.
-```python Python
+```python Python icon="python"
 magic.Token.validate(did_token)
 ```
 
@@ -164,7 +164,7 @@ magic.Token.validate(did_token)
 ## User Resource
 
 The user resource and its methods are accessible on the Magic instance by the `User` attribute. It provides methods to interact with the User.
-```python Python
+```python Python icon="python"
 from magic_admin import Magic
 
 magic = Magic(api_secret_key='<SECRET_API_KEY>')
@@ -181,7 +181,7 @@ magic.User.logout_by_token
 ### `get_metadata_by_issuer`
 
 Retrieves information about the user by the supplied `iss` from the DID Token. This method is useful if you store the `iss` with your user data, **which is recommended**.
-```python Python
+```python Python icon="python"
 User.get_metadata_by_issuer(issuer)
 ```
 
@@ -215,7 +215,7 @@ User.get_metadata_by_issuer(issuer)
 ### `get_metadata_by_public_address`
 
 Retrieves information about the user by the supplied `public_address`. This method is useful if you store the `public_address` with your user data.
-```python Python
+```python Python icon="python"
 User.get_metadata_by_public_address(public_address)
 ```
 
@@ -249,7 +249,7 @@ See [Error Handling](#response-and-error-handling) for more examples.
 ### `get_metadata_by_token`
 
 Retrieves information about the user by the supplied DID Token.
-```python Python
+```python Python icon="python"
 User.get_metadata_by_token(did_token)
 ```
 
@@ -284,7 +284,7 @@ User.get_metadata_by_token(did_token)
 ### `logout_by_issuer`
 
 Logs a user out of all Magic SDK sessions given the user's Decentralized ID (`iss`). This method is useful if you store the `iss` with your user data, which is recommended.
-```python Python
+```python Python icon="python"
 User.logout_by_issuer(issuer)
 ```
 
@@ -311,7 +311,7 @@ See [Error Handling](#response-and-error-handling) for more examples.
 ### `logout_by_public_address`
 
 Logs a user out of all Magic SDK sessions given the user's public address. This method is useful if you store the `public_address`.
-```python Python
+```python Python icon="python"
 User.logout_by_public_address(public_address)
 ```
 
@@ -340,7 +340,7 @@ User.logout_by_public_address(public_address)
 ### `logout_by_token`
 
 Logs a user out of all Magic SDK sessions given the DID Token.
-```python Python
+```python Python icon="python"
 User.logout_by_token(did_token)
 ```
 
@@ -380,7 +380,7 @@ You will have access to the following attributes:
 * `content` (bytes): Raw content returned by the API response
 * `status_code` (num): HTTP status code for the given request
 * `data` (dict): Parsed content
-```python Python
+```python Python icon="python"
 from magic_admin.response import MagicResponse
 
 MagicResponse.content
@@ -420,14 +420,14 @@ MagicError
 ### MagicError
 
 This is the base class of all the Magic SDK errors.
-```python Python
+```python Python icon="python"
 MagicError(message=None)
 ```
 
 ### RequestError
 
 This is the base class of all the Magic API request errors. This error class will provide details of unsuccessful API requests.
-```python Python
+```python Python icon="python"
 RequestError(
     message=None, http_status=None, http_code=None, http_resp_data=None,
     http_message=None, http_error_code=None, http_request_params=None,
@@ -461,7 +461,7 @@ This means the given token has expired.
 ### Error Handling
 
 It is recommended to implement error handling for API responses.
-```python Python
+```python Python icon="python"
 try:  # Make requests to Magic server.
     pass
 except RateLimitingError as e:

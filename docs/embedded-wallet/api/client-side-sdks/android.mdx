@@ -17,7 +17,7 @@ The `Magic` class is the entry-point to the Magic SDK. It must be instantiated w
 
 Magic SDK is available in `mavenCentral`. Simply add the following to your `build.gradle` and `settings.gradle`, respectively.
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 // build.gradle file
 dependencies {
   implementation 'link.magic:magic-android:9.1.0'
@@ -25,7 +25,7 @@ dependencies {
 }
 ```
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 // settings.gradle file
 repositories {
   mavenCentral()
@@ -49,7 +49,7 @@ Sync the project with new dependencies settings.
 
 ### Initialization
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 class MagicDemoApp: Application() {
     lateinit var magic: Magic
 
@@ -66,7 +66,7 @@ class MagicDemoApp: Application() {
 The Auth Module and its members are accessible on the Magic SDK instance by the `auth` property.
 
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 import link.magic.android.Magic
 
 var magic: Magic
@@ -96,7 +96,7 @@ number.
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
     lateinit var magic: Magic
 
@@ -143,7 +143,7 @@ Authenticate a user passwordlessly using an email one-time code sent to the spec
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
     lateinit var magic: Magic
 
@@ -177,7 +177,7 @@ class MagicActivity: AppCompatActivity() {
 
 The Wallet Module and its members are accessible on the Magic SDK instance by the `wallet` property.
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 import link.magic.android.Magic
 
 var magic: Magic
@@ -203,7 +203,7 @@ Renders a simple login form UI to collect the user's email address and authentic
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 private fun mcLogin(v: View) {
     val accounts = (magic as Magic).wallet.connectWithUI(this)
     accounts.whenComplete { response: ConnectWithUIResponse?, error: Throwable? ->
@@ -239,7 +239,7 @@ Optionally, add a `.on()` handler to catch the `disconnect` event emitted when t
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 fun showUI(v: View) {
     val completable = magic.wallet.showUI(this.requireContext())
     completable.whenComplete { response: ShowWalletResponse?, error: Throwable? ->
@@ -257,7 +257,7 @@ fun showUI(v: View) {
 
 The User Module and its members are accessible on the Magic SDK instance by the `user` property.
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 import link.magic.android.Magic
 
 var magic: Magic
@@ -295,7 +295,7 @@ Initiates the update email flow that allows a user to change to a new email.
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
     lateinit var magic: Magic
 
@@ -337,7 +337,7 @@ servers.
 
 - `PromiEvent<string>` \- Base64-encoded string representation of a JSON tuple representing `[proof, claim]`
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
     lateinit var magic: Magic
 
@@ -380,7 +380,7 @@ Generates a Decentralized Id Token with optional serialized data.
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
     lateinit var magic: Magic
 
@@ -425,7 +425,7 @@ Retrieves information for the authenticated user.
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
 
     lateinit var magic: Magic
@@ -469,7 +469,7 @@ Checks if a user is currently logged in to the Magic SDK.
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
 
     lateinit var magic: Magic
@@ -510,7 +510,7 @@ Logs out the currently authenticated Magic user.
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
     lateinit var magic: Magic
 
@@ -554,7 +554,7 @@ Access to [MFA](/docs/embedded-wallet/authentication/features/mfa) and [account 
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
     lateinit var magic: Magic
 
@@ -598,7 +598,7 @@ Initiates the update phone number flow that allows a user to change their phone 
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 fun updateSMS(v: View) {
     val completable = magic.user.updatePhoneNumber(this.requireActivity())
     completable.whenComplete { updatePhoneNumberResponse: UpdatePhoneNumberResponse?, error: Throwable? ->
@@ -626,7 +626,7 @@ Initiates the account recovery flow that allows a user to recover their account 
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 private fun recoverAccount(v: View) {
     val email = findViewById<EditText>(R.id.recovery_email_input)
     val configuration = RecoverAccountConfiguration(email = email.text.toString())
@@ -662,7 +662,7 @@ Displays an iframe revealing the current user’s private key. Allows for users 
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 fun revealPrivateKey(v: View) {
     val result = magic.user.revealPrivateKey(this.requireContext())
     result.whenComplete { response: RevealPrivateKeyResponse?, error: Throwable? ->
@@ -686,7 +686,7 @@ The OpenID Module and it's members are accessible on the Magic SDK instance by t
 
 To use the OpenID Module in your application, install `:magic:ext:oidc` along with `magic-android`.
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 // In build.gradle
 
 implementation project(':magic:core')
@@ -716,7 +716,7 @@ Authenticate users via your preferred OIDC client.
 
 **Example**
 
-```kotlin Kotlin
+```kotlin Kotlin icon="android"
 package link.magic.android.extension.oidc.*
 ⁠
 magic = Magic(this, '<your_magic_api_key>')
