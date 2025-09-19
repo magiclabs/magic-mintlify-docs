@@ -48,6 +48,11 @@ html.dark #search-bar-entry {
   background-color: #18171a !important;
 }
 
+/* Code block background for dark mode */
+html.dark div[data-component-part="code-block-root"] {
+  background-color: #1f1f23 !important;
+}
+
 /* Topbar CTA Button Light/Dark Mode Styling */
 /* Default - light mode (black background with white text) */
 #topbar-cta-button .bg-primary-dark {
