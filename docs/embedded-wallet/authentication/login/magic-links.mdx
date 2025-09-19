@@ -14,7 +14,7 @@ Magic link SDK methods are available via the [Web client-side SDK](/docs/embedde
 
 The `loginWithMagicLink` function sends an authentication request to the user. The resolved value is a Decentralized ID token with a default 15-minute lifespan. **Refer to the **[**API documentation**](/docs/embedded-wallet/api/overview) **for information on how to install and initialize Magic.**
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 import  {  Magic  }  from  'magic-sdk';
 
 const magic = new Magic('API_KEY');
@@ -38,7 +38,7 @@ await magic.auth.loginWithMagicLink({ email: 'hello@example.com', showUI: false 
 
 To achieve a fully white-labeled experience, you will need to implement some custom error handling according to your UI needs. Here's a short example to illustrate how errors can be caught and identified by their code:
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 import  {  Magic,  RPCError,  RPCErrorCode  }  from  'magic-sdk';
 
 const magic =  new  Magic('API_KEY');
@@ -65,7 +65,7 @@ Magic&apos;s client-side Web SDK provides **Test Mode** as a quick way to test 
 
 To enable Test Mode, provide `testMode: true` to the SDK constructor.
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('YOUR_API_KEY', { testMode: true });
@@ -81,19 +81,19 @@ With Test Mode enabled, you can assert the desired behavior through the email ad
 
 <Tabs>
 <Tab title="Succeed">
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 magic.auth.loginWithMagicLink({ email: 'test+success@magic.link' });
 ````
 
 </Tab>
 <Tab title="Fail">
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 magic.auth.loginWithMagicLink({ email: 'test+fail@magic.link' });
 ```
 </Tab>
 
 <Tab title="Fail With Error">
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 import { RPCErrorCode } from 'magic-sdk';
 
 magic.auth.loginWithMagicLink({ email: `test+fail_with_{${RPCErrorCode.MagicLinkFailedVerification}}@magic.link` });
@@ -113,7 +113,7 @@ Web3 and blockchain use-cases sometimes require access to deterministic key-pair
 In practice, you can assert a successful login with:
 
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 magic.auth.loginWithMagicLink({
   email:
     'test+success_with_{0x89A3983da27fF0eFCF901F74C4df84e0450A17B7:0x19de850af732e9e5745915162d707d6d8cf013ce7b2862e93081b0c8883bdfae}@magic.link',

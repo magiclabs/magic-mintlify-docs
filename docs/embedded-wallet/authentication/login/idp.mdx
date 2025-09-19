@@ -267,7 +267,7 @@ To use your own identity provider, you must install both `magic-sdk` and the OID
 
 Import the necessary modules into your application. You&apos;ll need the `magic-sdk`, `@magic-ext/oidc`, and your identity provider&apos;s OIDC client library. Here&apos;s an example in JavaScript:
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 import { Magic } from "magic-sdk"; 
 import { OpenIdExtension } from "@magic-ext/oidc"; 
 // this is an example of an OIDC client library 
@@ -278,7 +278,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 Create an instance of the Magic SDK with your API key. Ensure that you include the `OpenIdExtension` to enable OIDC functionality:
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 const magic = new Magic('<your_magic_api_key>', {
   // exposes the openid module in your magic instance
   extensions: [new OpenIdExtension()],
@@ -289,7 +289,7 @@ const magic = new Magic('<your_magic_api_key>', {
 
 Now that you've set up a Magic client, you can proceed to authenticate users via your preferred OIDC Client:
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 // identity providers have different ways to authenticate a user
 // this is an example of an OIDC client library's login methods
 import { useAuth0 } from "@auth0/auth0-react";
@@ -303,7 +303,7 @@ async function loginUser() {
 
 After authentication, you can obtain the OIDC token from the identity provider. Pass this token, along with the `providerId`, to the Magic method `loginWithOIDC`:
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 // identity providers have varying ways to obtain an OIDC token
 // this is an example of an OIDC client library's token methods
 import { useAuth0 } from "@auth0/auth0-react";
@@ -322,7 +322,7 @@ async function getMagicWallet() {
 
 You can also utilize relevant Magic client SDK methods in the User Module to extend further functionality:
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 // metadata will only contain issuer and publicAddress 
 const metadata = await magic.user.getInfo(); 
 // DID token default lifespan 15 minutes 
@@ -333,7 +333,7 @@ const boolean = await magic.user.isLoggedIn();
 
 A full example incorporating web3 and Magic OIDC:
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 import Web3 from 'web3';
 import { Magic } from 'magic-sdk';
 import { OpenIdExtension } from '@magic-ext/oidc';

@@ -59,7 +59,7 @@ yarn add magic-sdk @magic-ext/oauth
 
 When creating your Magic instance, you'll need to add an instance of `OAuthExtension` to the Magic constructor:
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 import { OAuthExtension } from '@magic-ext/oauth2';
@@ -78,7 +78,7 @@ Once you've created a Magic instance, kick off the OAuth login with `loginWithRe
 Once logged in, you will have access to a DID token that can be used with our [Admin SDK](/docs/embedded-wallet/api/server-side-sdks/node#token-module) to verify the user's information and wallet address on the backend. On mobile SDKs, this is provided as the result of `loginWithPopup`, while on the web SDK you can retrieve this and other information about the OAuth result with `getRedirectResult`. The `getRedirectResult` function returns an object that includes user information. On mobile, you can get similar user info, such as wallet address and email, with `getMetadata`.
 
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 const beginOAuthFlow = () => {
   // if v1, use oauth module
   await magic.oauth2.loginWithRedirect({ //

@@ -43,7 +43,7 @@ After installing the OAuth extension, you can now enable LinkedIn Login for your
 * Follow above steps, but disregard Magic's **Redirect URI** in step 6
 * In step 8, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 await magic.oauth2.loginWithRedirect({
   provider: 'linkedin',
   redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with LinkedIn

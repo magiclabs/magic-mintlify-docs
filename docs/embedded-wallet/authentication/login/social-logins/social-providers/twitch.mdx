@@ -53,7 +53,7 @@ After installing the OAuth extension, you can now enable Twitch Login for your M
 * Follow above steps, but disregard Magic's **Redirect URI** in step 5
 * In step 7, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 await magic.oauth2.loginWithRedirect({
   provider: 'twitch',
   redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with Twitch

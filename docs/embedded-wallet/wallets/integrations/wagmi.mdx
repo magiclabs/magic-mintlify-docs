@@ -30,7 +30,7 @@ To initialize, import the necessary dependencies from Magic and WAGMI in your ro
 
 Finally, pass the configuration to the `WagmiConfig` component to make WAGMI hooks available across the whole application.
 
-```javascript Javascript
+```javascript JavaScript icon="square-js"
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
@@ -87,7 +87,7 @@ With the Magic connector added, you can use WAGMI hooks for everything else per 
 
 ### Connect to the network
 
-```javascript Javascript
+```javascript JavaScript icon="square-js"
 import { useConnect } from 'wagmi'
 
 const SignIn = () => {
@@ -109,7 +109,7 @@ export default SignIn
 
 ### Sign message
 
-```javascript Javascript
+```javascript JavaScript icon="square-js"
 import { useSignMessage } from 'wagmi'
 
 function Component() {
@@ -131,7 +131,7 @@ function Component() {
 
 ### Send transaction
 
-```javascript Javascript
+```javascript JavaScript icon="square-js"
 import { useSendTransaction } from 'wagmi'
 ⁠import { parseEther } from "ethers/lib/utils"
 
@@ -160,7 +160,7 @@ function Component() {
 ### Check balance
 
 
-```javascript Javascript
+```javascript JavaScript icon="square-js"
 import { useBalance } from 'wagmi'
 
 function Component() {

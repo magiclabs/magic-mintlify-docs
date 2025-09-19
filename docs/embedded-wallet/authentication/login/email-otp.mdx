@@ -19,7 +19,7 @@ Once you've created a Magic instance, log users in using `loginWithEmailOTP`. In
 
 Once logged in, you will receive a DID token that can be used with our [Admin SDK](/docs/embedded-wallet/api/server-side-sdks/node#token-module) to verify the user's information and wallet address on the backend. You can also retrieve the user's wallet address and email using [`getInfo`](/docs/embedded-wallet/api/client-side-sdks/web#getinfo) for Web/React Native and `getMetadata` for iOS, Android, and Flutter.
 
-```Javascript Javascript
+```javascript JavaScript icon="square-js"
 const login = async (emailAddress, showUI) => {
   try {
     const did = await magic.auth.loginWithEmailOTP({ email: emailAddress, showUI: showUI});

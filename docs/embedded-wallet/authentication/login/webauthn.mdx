@@ -48,7 +48,7 @@ yarn add magic-sdk @magic-ext/webauthn
 
 Create your Magic SDK instance with the WebAuthn extension:
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { WebAuthnExtension } from '@magic-ext/webauthn';
 
@@ -61,7 +61,7 @@ const magic = new Magic('YOUR_API_KEY', {
 
 Register new users with the `registerNewUser` function in the `webauthn` module. You must provide the user's selected username and can optionally provide a nickname for the device.
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 try {
   const token = await magic.webauthn.registerNewUser({ username: 'username' });
 } catch (e) {
@@ -73,7 +73,7 @@ try {
 
 Authenticate users with the `login` method in the `webauthn` module. You must provide the user's username.
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 try {
   const token = await magic.webauthn.login({ username: 'username' });
 } catch (e) {
@@ -85,7 +85,7 @@ try {
 
 Get WebAuthn-specific metadata with the `getMetadata` method in the `webauthn` module. The response includes the user's username as well as device info like the device ID, device nickname, etc.
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 try {
   const metadata = await magic.webauthn.getMetadata();
 

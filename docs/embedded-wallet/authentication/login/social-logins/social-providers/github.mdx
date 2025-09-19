@@ -49,7 +49,7 @@ After installing the OAuth extension, you can now enable GitHub Login for your M
 * Follow above steps, but disregard Magic's **Redirect URI** in step 6
 * In step 7, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 await magic.oauth2.loginWithRedirect({
   provider: 'github',
   redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with GitHub

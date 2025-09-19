@@ -87,7 +87,7 @@ Next, we create the kernel client by calling `createEcdsaKernelAccountClient` an
 3.  `signer`: The `smartAccountSigner` we create using the Magic provider and `providerToSmartAccountSigner` function.
 4.  `paymaster?`: Sponsoring gas paymaster. This is optional but allows you to pay transaction fees on behalf of your users.
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 const magicProvider = await magic?.wallet.getProvider();
 const smartAccountSigner = await providerToSmartAccountSigner(magicProvider);
 
