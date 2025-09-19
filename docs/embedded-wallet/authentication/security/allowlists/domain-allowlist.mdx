@@ -54,9 +54,8 @@ To obtain the required information, follow the steps below:
 
 Provide the Secret Key and/or Client ID in your Curl commands, along with the chosen domains for the interaction:
 
-<Tabs>
-<Tab title="Add">
-```bash
+<CodeGroup>
+```bash Add icon="square-terminal"
 curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allowlist/add' \
 --header 'X-Magic-Secret-Key: sk_live_06FC010DA25ED4F2' \
 --header 'Content-Type: application/json' \
@@ -65,11 +64,9 @@ curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allow
     "target_client_id": "etjubJsY5Cvn6ukDzJYpd3MEAtgw45oetxxoX1PxvP4=",
     "value": "https://magic.link"
 }'
-
 ```
-</Tab>
-<Tab title="Remove">
-```bash
+
+```bash Remove icon="square-terminal"
 curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allowlist/remove' \
 --header 'X-Magic-Secret-Key: sk_live_06FC010DA25ED4F2' \
 --header 'Content-Type: application/json' \
@@ -78,11 +75,9 @@ curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allow
     "target_client_id": "etjubJsY5Cvn6ukDzJYpd3MEAtgw45oetxxoX1PxvP4=",
     "value": "https://magic.link"
 }'
-
 ```
-</Tab>
-<Tab title="Retrieve">
-```bash
+
+```bash Retrieve icon="square-terminal"
 curl --location --request GET 'https://api.magic.link/v2/api/magic_client/allowlist' \
 --header 'X-Magic-Secret-Key: sk_live_3DACC9A06D5CDC09' \
 --header 'Content-Type: application/json' \
@@ -91,7 +86,6 @@ curl --location --request GET 'https://api.magic.link/v2/api/magic_client/allowl
     "target_client_id": "cdoE6PoD1Kp5I4Jr_gZGAZ2-qDnYaI9Zroj6DqTV1gI="
 }'
 ```
-</Tab>
-</Tabs>
+</CodeGroup>
 
 

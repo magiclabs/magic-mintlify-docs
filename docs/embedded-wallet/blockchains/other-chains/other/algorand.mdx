@@ -33,7 +33,7 @@ yarn add @magic-ext/algorand
 ## Initialization
 
 
-```TypeScript Typescript
+```typescript TypeScript icon="square-js"
 ```
 
 ## Common Methods
@@ -59,7 +59,7 @@ Before you can send transaction on the Algorand blockchain, you'll need to acqui
 
 Use the `getWallet` function to get the Algorand public address for the current user.
 
-```TypeScript Typescript
+```typescript TypeScript icon="square-js"
 
 import { Magic } from 'magic-sdk';
 import { AlgorandExtension } from '@magic-ext/algorand';
@@ -80,7 +80,7 @@ console.log('algorand public address', publicAddress);
 
 Note that the Magic Algorand extension follows the method names and conventions by [**Algorand's Javascript SDK**](https://www.npmjs.com/package/@magic-ext/algorand). To sign a standard Algorand blockchain transaction, you can call the `magic.algorand.signTransaction()` method.
 
-```TypeScript Typescript
+```typescript TypeScript icon="square-js"
 
 import { Magic } from 'magic-sdk';
 import { AlgorandExtension } from '@magic-ext/algorand';
@@ -181,14 +181,14 @@ const sendAssetTransferTransaction = async () => {
 
 Note that the Magic Algorand extension follows the method names and conventions by [**Algorand's Javascript SDK**](https://www.npmjs.com/package/@magic-ext/algorand). To sign a standard Algorand blockchain Bid, you can call the `magic.algorand.signBid()` method.
 
-```TypeScript Typescript
+```typescript TypeScript icon="square-js"
 ```
 
 ## Sign Group Transaction V2
 
 To sign a standard Algorand blockchain Group transaction with magic user, you can call the `magic.algorand.signGroupTransactionV2()` method.
 
-```TypeScript Typescript
+```typescript TypeScript icon="square-js"
 
 import { Magic } from "magic-sdk";
 import { AlgorandExtension } from "@magic-ext/algorand";

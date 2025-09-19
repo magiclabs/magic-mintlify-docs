@@ -36,7 +36,7 @@ Grab your Magic **Publishable** API Key from your [Magic Dashboard](https://dash
 To get started, simply initialize an instance of Magic with your Publishable API Key and your choice of blockchain. Then initialize your chosen blockchain library, like Web3.js or Ethers.js, with the RPC provider in a separate file.
 Here's how you would initialize the Magic instance.
 
-```typescript Typescript
+```typescript TypeScript icon="square-js"
 const magic = new Magic(process.env.NEXT_PUBLIC_MAGIC_API_KEY, {
   network: {
     rpcUrl: "https://rpc2.sepolia.org/",
@@ -47,7 +47,7 @@ const magic = new Magic(process.env.NEXT_PUBLIC_MAGIC_API_KEY, {
 
 The suggested approach for the Magic instance is to create a hook so Magic can be made available and used across the whole application like the one below.
 
-```typescript Typescript
+```typescript TypeScript icon="square-js"
 import { Magic as MagicBase } from 'magic-sdk';
 import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
 

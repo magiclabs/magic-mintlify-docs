@@ -11,9 +11,8 @@ The Magic class is the entry-point to the Magic SDK. It must be instantiated wit
 
 The Magic SDK for React Native supports both Bare and Expo. Follow the installation steps relevant to your setup.
 
-<Tabs>
-  <Tab title="Bare NPM">
-  ```bash
+<CodeGroup>
+  ```bash Bare NPM icon="npm"
   npm install --save @magic-sdk/react-native-bare
   npm install --save react-native-device-info # Required Peer Dependency
   npm install --save @react-native-community/async-storage # Required Peer Dependency
@@ -27,9 +26,8 @@ The Magic SDK for React Native supports both Bare and Expo. Follow the installat
   ⁠cd /path/to/project/root
   yarn start
   ```
-  </Tab>
-  <Tab title="Bare Yarn">
-  ```bash
+
+  ```bash Bare Yarn icon="yarn"
   yarn add @magic-sdk/react-native-bare
   ⁠yarn add react-native-device-info # Required Peer Dependency
   yarn add @react-native-community/async-storage # Required Peer Dependency
@@ -44,9 +42,8 @@ The Magic SDK for React Native supports both Bare and Expo. Follow the installat
   yarn start
   ```
 
-  </Tab>
-  <Tab title="Expo NPM">
-  ```bash
+
+  ```bash Expo NPM icon="npm"
   npm install --save @magic-sdk/react-native-expo
   npm install --save react-native-webview@^11.26.0 # Required Peer Dependency
   npm install --save react-native-safe-area-context # Required Peer Dependency
@@ -54,9 +51,8 @@ The Magic SDK for React Native supports both Bare and Expo. Follow the installat
   # Start your app
   expo start
   ```
-  </Tab>
-  <Tab title="Expo Yarn">
-  ```bash
+
+  ```bash Expo Yarn icon="yarn"
   yarn add @magic-sdk/react-native-expo
   yarn add react-native-webview@^11.26.0 # Required Peer Dependency
   yarn add react-native-safe-area-context # Required Peer Dependency
@@ -64,9 +60,7 @@ The Magic SDK for React Native supports both Bare and Expo. Follow the installat
   # Start your app
   expo start
   ```
-  </Tab>
-</Tabs>
-
+</CodeGroup>
 ### Constructor
 
 `Magic()`
@@ -87,22 +81,21 @@ Configure and construct your Magic SDK instance.
 
 Initialize Magic instance.
 
-<Tabs>
-<Tab title="Bare">
-```javascript JavaScript icon="react"
+<CodeGroup>
+
+```javascript Bare icon="react"
 import { Magic } from '@magic-sdk/react-native-bare'
 
 const magic = new Magic('PUBLISHABLE_API_KEY')
 ```
-</Tab>
-<Tab title="Expo">
-```javascript JavaScript icon="react"
+
+```javascript Expo icon="react"
 import { Magic } from '@magic-sdk/react-native-expo'
 
 const magic = new Magic('PUBLISHABLE_API_KEY')
 ```
-</Tab>
-</Tabs>
+
+</CodeGroup>
 
 ## `Relayer`
 
@@ -1219,9 +1212,8 @@ RPCErrorCode.InternalError;
 
 The `ExtensionError` class is exposed for `instanceof` operations:
 
-<Tabs>
-<Tab title="Bare">
-```javascript
+<CodeGroup>
+```javascript Bare icon="react"
 import { ExtensionError } from '@magic-sdk/react-native-bare';
 
 try {
@@ -1232,9 +1224,8 @@ try {
   }
 }
 ```
-</Tab>
-<Tab title="Expo">
-```javascript
+
+```javascript Expo icon="react"
 import { ExtensionError } from '@magic-sdk/react-native-expo';
 try {
   // Something async...
@@ -1244,9 +1235,9 @@ try {
   }
 }
 ```
+</CodeGroup>
 
-</Tab>
-</Tabs>
+
 
 `ExtensionError` instances expose the `code` field which may be used to deterministically identify the error. Magic SDK does not export a global enumeration of Extension error codes. Instead, Extension authors are responsible for exposing and documenting error codes relevant to the Extension's use-case.
 
@@ -1262,9 +1253,8 @@ Magic SDK provides a flexible interface for handling methods which encompass mul
 
 Look for additional event types documented near the method they relate to. Events are strongly-typed by TypeScript to offer developer hints and conveniant IDE auto-complete.
 
-<Tabs>
-<Tab title="Bare">
-```javascript
+<CodeGroup>
+```javascript Bare icon="react"
 import { Magic } from "@magic-sdk/react-native-bare";
 
 const req = magic.auth.loginWithEmailOTP({ email: 'hello@magic.link' });
@@ -1276,9 +1266,8 @@ req
 .catch(error => {/* ... */})
 .on('error', error => {/* ... */});
 ```
-</Tab>
-<Tab title="Expo">
-```javascript
+
+```javascript Expo icon="react"
 import { Magic } from '@magic-sdk/react-native-expo';
 
 const req = magic.auth.loginWithEmailOTP({ email: 'hello@magic.link' });
@@ -1300,9 +1289,7 @@ req
     /* ... */
   });
 ```
-
-</Tab>
-</Tabs>
+</CodeGroup>
 
 ## Usage
 

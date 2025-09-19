@@ -88,7 +88,7 @@ When a user logs in with Magic, we need to associate their Magic account with a 
 
 Below is an example of how to connect to a Magic user’s smart contract account:
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 const lightAccountFactoryAddress = getDefaultLightAccountFactoryAddress(chain)
 
 const magicSigner: SmartAccountSigner | undefined = useMemo(() => {
@@ -121,7 +121,7 @@ When a user logs out, you’ll need to disconnect from their smart contract acco
 
 When we put all of this together, we get the following:
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 import {
   getDefaultLightAccountFactoryAddress,
   LightSmartContractAccount,
@@ -213,7 +213,7 @@ Now that the project successfully creates and connects to users’ smart contrac
 First things first. Open `src/components/magic/cards/UserInfoCard.tsx` and change the state declaration of `balance`, `setBalance`, and `publicAddress` to `magicBalance`, `setMagicBalance`, and `magicAddress`. While you’re at it, add a state declaration for `scaBalance`, `setScaBalance`, `scaAddress`, and `setScaAddress` to store the smart contract account balance and address.
 
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 // Change this
 const [balance, setBalance] = useState("...")
 const [publicAddress] = useState(
@@ -236,7 +236,7 @@ Next, update the `getBalance` function to set both balances:
 
 
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 const getBalance = useCallback(async () => {
   if (magicAddress && web3) {
     const magicBalance = await web3.eth.getBalance(magicAddress)
@@ -262,7 +262,7 @@ const getBalance = useCallback(async () => {
 Next, update the TSX for displaying the balance to show both balances:
 
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 <div className="flex flex-col gap-2">
   <div className="code">
     Magic: {magicBalance.substring(0, 7)} {getNetworkToken()}
@@ -278,7 +278,7 @@ Next, update the TSX for displaying the balance to show both balances:
 
 The only remaining balance reference is to set the initial balance while loading to `"..."`. This is in a short `useEffect` that calls `setBalance`. Update this `useEffect` to set both balances:
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 // Change this
 useEffect(() => {
   setBalance('...');
@@ -293,7 +293,7 @@ useEffect(() => {
 
 ### Set `scaAddress`
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 const { provider } = useAlchemyProvider()
 
 const getSmartContractAccount = useCallback(async () => {
@@ -311,7 +311,7 @@ useEffect(() => {
 
 Now find the `CardLabel` and div that displays the address and modify it to use the new naming for `magicAddress` and also display the `scaAddress`.
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 <CardLabel
   leftHeader="Addresses"
   rightAction={
@@ -349,7 +349,7 @@ In `src/components/magic/cards/SendTransactionCard.tsx`, import the the `provide
 To transfer funds from your smart contract account, ensure you have enough test tokens to send. You can get some test Sepolia tokens [here](https://sepoliafaucet.com/).
 </Note>
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 const sendTransaction = useCallback(async () => {
     if (!web3?.utils.isAddress(toAddress)) {
       return setToAddressError(true);
