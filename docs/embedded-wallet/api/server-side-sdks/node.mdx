@@ -38,7 +38,7 @@ yarn add @magic-sdk/admin
 
 ### Initialization
 
-```javascript JavaScript
+```javascript Node.js icon="node-js"
 const { Magic } = require('@magic-sdk/admin');
 
 let magic;
@@ -53,7 +53,7 @@ magic = await Magic.init('SECRET_API_KEY', { endpoint: '...' });
 ## Token Module
 
 The Token Module and its members are accessible on the Magic Admin SDK instance by the `token` property.
-```javascript JavaScript
+```javascript Node.js icon="node-js"
 const { Magic } = require('@magic-sdk/admin');
 
 const magic = await Magic.init('SECRET_API_KEY');
@@ -102,7 +102,7 @@ Decodes a Decentralized ID Token from a Base64 string into a tuple of its indivi
 - `claim` (Object): Unsigned data the user asserts. This should equal the `proof` after Elliptic Curve recovery. See [Decentralized ID Token Specification](/docs/embedded-wallet/authentication/features/decentralized-id#decentralized-id-token-specification) for fields inside the `claim`.
 
 The `claim` is automatically parsed to the following interface:
-```javascript JavaScript
+```javascript Node.js icon="node-js"
 interface Claim {
   iat: number; // Issued At Timestamp
   ext: number; // Expiration Timestamp
@@ -116,7 +116,7 @@ interface Claim {
 ```
 
 As a convenience, the above interface is available to your code in [TypeScript](https://www.typescriptlang.org/):
-```javascript JavaScript
+```javascript Node.js icon="node-js"
 import { Claim } from '@magic-sdk/admin';
 ```
 
@@ -229,7 +229,7 @@ Logs a user out of all client-side Magic SDK sessions given the user's DID token
 ### Multichain Methods
 
 The following multichain methods require the use of the enum `WalletType` that is exported from the Magic Admin SDK.
-```javascript JavaScript
+```javascript Node.js icon="node-js"
 ⁠enum WalletType {
   ETH = 'ETH',
   HARMONY = 'HARMONY',
@@ -316,7 +316,7 @@ Retrieves information about user, including their multichain wallets, by the sup
 ## Utils Module
 
 The Utils Module and it's members are accessible on the Magic Admin SDK instance by the `utils` property.
-```javascript JavaScript
+```javascript Node.js icon="node-js"
 const { Magic } = require('@magic-sdk/admin');
 
 const magic = new Magic();
@@ -340,7 +340,7 @@ magic.utils.parseAuthorizationHeader;
 ### `SDKError`
 
 The `SDKError` class is exposed for `instanceof` operations.
-```javascript JavaScript
+```javascript Node.js icon="node-js"
 import { SDKError } from '@magic-sdk/admin';
 
 try {
@@ -354,7 +354,7 @@ try {
 
 
 Additionally, an enumeration of relevant error codes is also exposed for convenience and human readability:
-```javascript JavaScript
+```javascript Node.js icon="node-js"
 import { ErrorCode } from "@magic-sdk/admin";
 
 ErrorCode.ApiKeyMissing;
