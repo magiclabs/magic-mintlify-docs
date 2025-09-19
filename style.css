@@ -58,6 +58,15 @@ div[data-component-part="code-block-root"] {
   clip-path: inset(0 round 1rem) !important;
 }
 
+/* Card content container centering */
+.card {
+  display: flex !important;
+}
+
+div[data-component-part="card-content-container"] {
+  flex: 1 !important;
+}
+
 /* Topbar CTA Button Light/Dark Mode Styling */
 /* Default - light mode (black background with white text) */
 #topbar-cta-button .bg-primary-dark {
