@@ -14,6 +14,9 @@
       "light": "#ffffff"
     }
   },
+  "contextual": {
+    "options": ["copy", "chatgpt", "claude", "cursor", "vscode"]
+  },
   "navigation": {
     "tabs": [
       {
@@ -231,8 +234,7 @@
                       "docs/embedded-wallet/blockchains/featured-chains/ethereum/javascript",
                       "docs/embedded-wallet/blockchains/featured-chains/ethereum/flutter",
                       "docs/embedded-wallet/blockchains/featured-chains/ethereum/ios",
-                      "docs/embedded-wallet/blockchains/featured-chains/ethereum/android",
-                      "docs/embedded-wallet/blockchains/featured-chains/ethereum/unity"
+                      "docs/embedded-wallet/blockchains/featured-chains/ethereum/android"
                     ]
                   },
                   "docs/embedded-wallet/blockchains/featured-chains/tezos",

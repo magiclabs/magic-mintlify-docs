@@ -19,7 +19,7 @@ SMS Login SDK methods are available on all [client-side SDKs](/docs/embedded-wa
 
 ## Usage
 
-You can use SMS login by creating a project with our [CLI tool](/docs/home/quickstart) and picking 'SMS' when prompted. Alternatively, you can directly integrate it into your existing projects using the sample below. **Refer to the** [**API documentation**](/docs/embedded-wallet/api/overview) **for information on how to install and initialize Magic for your existing project.**
+You can use SMS login by creating a project with our [CLI tool](/docs/embedded-wallet/quickstart/overview) and picking 'SMS' when prompted. Alternatively, you can directly integrate it into your existing projects using the sample below. **Refer to the** [**API documentation**](/docs/embedded-wallet/api/overview) **for information on how to install and initialize Magic for your existing project.**
 
 Once you've created a Magic instance, log users in using `loginWithSMS`. Once logged in, you will receive a DID token that can be used with our [Admin SDK](/docs/embedded-wallet/api/server-side-sdks/node#token-module) to verify the user's information and wallet address on the backend. You can also retrieve the user's wallet address and email using the `user` module's [`getInfo`](/docs/embedded-wallet/api/client-side-sdks/web#getinfo) function for Web/React Native and `getMetadata` for iOS, Android and Flutter.
 
@@ -48,4 +48,3 @@ const login = async (phoneNumber) => {
 - [iOS API documentation](/docs/embedded-wallet/api/client-side-sdks/ios#loginwithsms)
 - [Android API documentation](/docs/embedded-wallet/api/client-side-sdks/android#loginwithsms)
 - [Flutter API documentation](/docs/embedded-wallet/api/client-side-sdks/flutter#loginwithsms)
-- [Unity API documentation](/docs/embedded-wallet/api/client-side-sdks/unity#loginwithsms)
