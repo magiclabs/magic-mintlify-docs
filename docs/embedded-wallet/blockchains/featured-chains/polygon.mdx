@@ -2,59 +2,47 @@
 title: Polygon
 ---
 
-###Installation
+## Installation
 
 To interact with the Polygon network, you can use _either_ [`ethers.js`](https://docs.ethers.io/v5/getting-started/) or [`web3.js`](https://web3js.readthedocs.io/en/v1.2.8/getting-started.html) libraries with Magic. For a more in-depth guide on available functions provided, refer to the [EVM documentation](/docs/embedded-wallet/blockchains/featured-chains/ethereum/javascript).⁠
 
 ⁠To get started, install the following dependencies for your project:
 
-### Ethers.js
+**Ethers.js**
 
 
-<Tabs>
-<Tab title="NPM">
-```bash
+<CodeGroup>
+
+```bash NPM icon="npm"
 npm install ethers magic-sdk
-
 ```
-</Tab>
-<Tab title="Yarn">
-```bash
+
+```bash Yarn icon="yarn"
 yarn add ethers magic-sdk
-
 ```
-</Tab>
-<Tab title="CDN">
-```javascript
+
+```javascript CDN icon="code"
 <script src="https://cdn.ethers.io/scripts/ethers-v4.min.js"></script>
 ```
-</Tab>
-</Tabs>
 
-### Web3.js
+</CodeGroup>
+
+**Web3.js**
 
 
-<Tabs>
-<Tab title="NPM">
-```bash
+<CodeGroup>
+```bash NPM icon="npm"
 npm install web3 magic-sdk
-
 ```
-</Tab>
-<Tab title="Yarn">
-```bash
+```bash Yarn icon="yarn"
 yarn add web3 magic-sdk
-
 ```
-</Tab>
-<Tab title="CDN">
-```javascript
+```javascript CDN icon="code"
 <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 ```
-</Tab>
-</Tabs>
+</CodeGroup>
 
-### Initialization
+## Initialization
 
 The Magic class is the entry-point to the Magic SDK. It must be instantiated with a Magic **publishable** key.
 
@@ -69,10 +57,7 @@ Ethereum provider is only supported in **magic-sdk@1.0.1 or later** versions.
 
 Mainnet Block Explorer URL: [https://polygonscan.com/](https://polygonscan.com/)
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
-
+```javascript JavaScript icon="square-js"
 const customNodeOptions = {
   rpcUrl: 'https://polygon-rpc.com/', // Polygon RPC URL
   chainId: 137, // Polygon chain id
@@ -81,8 +66,6 @@ const customNodeOptions = {
 // Setting network to Polygon
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: customNodeOptions });
 ```
-</Tab>
-</Tabs>
 
 ### Testnet
 
@@ -90,10 +73,7 @@ Mumbai Block Explorer: [https://www.oklink.com/amoy](https://www.oklink.com/amoy
 
 Mumbai ⁠Testnet Faucet: [https://faucet.polygon.technology/](https://faucet.polygon.technology/)
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
-
+```javascript JavaScript icon="square-js"
 const customNodeOptions = {
   rpcUrl: 'https://rpc-amoy.polygon.technology/', // Polygon RPC URL
   chainId: 80002, // Polygon chain id
@@ -102,19 +82,14 @@ const customNodeOptions = {
 // Setting network to Polygon - Testnet
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: customNodeOptions });
 ```
-</Tab>
-</Tabs>
 
-### Common Methods
+## Send Transaction
 
-#### Send Transaction
+### Ethers.js
 
-#### Ethers.js
+<CodeGroup>
 
-
-<Tabs>
-<Tab title="Ethers (v6)">
-```javascript
+```javascript Ethers (v6) icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -136,11 +111,10 @@ const tx = await signer.sendTransaction({
 
 // Wait for transaction to be mined
 const receipt = await tx.wait();
-
 ```
-</Tab>
-<Tab title="Ethers (v5)">
-```javascript
+
+
+```javascript Ethers (v5) icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -162,20 +136,18 @@ const tx = await signer.sendTransaction({
 
 // Wait for transaction to be mined
 const receipt = await tx.wait();
-
 ```
-</Tab>
-</Tabs>
 
-#### Web3.js
+</CodeGroup>
+
+### Web3.js
 
 <Note>
 Example is using **web3@1.2.0** or later version.
 </Note>
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+<CodeGroup>
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';
 
@@ -193,19 +165,17 @@ const receipt = await web3.eth.sendTransaction({
   value: amount,
 });
 ```
-</Tab>
-</Tabs>
+</CodeGroup>
 
-### Sign Message
+## Sign Message
 
-### [#Ethers.js](#ethers.js-0)
+### Ethers.js
 
 #### Personal Sign
 
 
-<Tabs>
-<Tab title="Ethers (v6)">
-```javascript
+<CodeGroup>
+```javascript Ethers (v6) icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -219,11 +189,8 @@ const signer = await provider.getSigner();
 const originalMessage = 'YOUR_MESSAGE';
 
 const signedMessage = await signer.signMessage(originalMessage);
-
-```
-</Tab>
-<Tab title="Ethers (v5)">
-```javascript
+``` 
+```javascript Ethers (v5) icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -238,14 +205,12 @@ const signer = provider.getSigner();
 const originalMessage = 'YOUR_MESSAGE';
 const signedMessage = await signer.signMessage(originalMessage);
 ```
-</Tab>
-</Tabs>
+</CodeGroup>
 
 #### Sign Typed Data v1
 
-<Tabs>
-<Tab title="Ethers (v6)">
-```javascript
+<CodeGroup>
+```javascript Ethers (v6) icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -274,11 +239,8 @@ const params = [originalMessage, fromAddress];
 const method = 'eth_signTypedData';
 
 const signedMessage = await signer.provider.send(method, params);
-
 ```
-</Tab>
-<Tab title="Ethers (v5)">
-```javascript
+```javascript Ethers (v5) icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -309,14 +271,12 @@ const method = 'eth_signTypedData';
 
 const signedMessage = await signer.provider.send(method, params);
 ```
-</Tab>
-</Tabs>
+</CodeGroup>
 
 #### Sign Typed Data v3
 
-<Tabs>
-<Tab title="Ethers (v6)">
-```javascript
+<CodeGroup>
+```javascript Ethers (v6) icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -366,11 +326,8 @@ const params = [fromAddress, originalMessage];
 const method = 'eth_signTypedData_v3';
 
 const signedMessage = await signer.provider.send(method, params);
-
 ```
-</Tab>
-<Tab title="Ethers (v5)">
-```javascript
+```javascript Ethers (v5) icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -422,14 +379,12 @@ const method = 'eth_signTypedData_v3';
 
 const signedMessage = await signer.provider.send(method, params);
 ```
-</Tab>
-</Tabs>
+</CodeGroup>
 
 #### Sign Typed Data v4
 
-<Tabs>
-<Tab title="Ethers (v6)">
-```javascript
+<CodeGroup>
+```javascript Ethers (v6) icon="square-js"
 /*
   Sign Typed Data v4 adds support for
   arrays and recursive data types.
@@ -486,11 +441,8 @@ const params = [fromAddress, originalMessage];
 const method = 'eth_signTypedData_v4';
 
 const signedMessage = await signer.provider.send(method, params);
-
 ```
-</Tab>
-<Tab title="Ethers (v5)">
-```javascript
+```javascript Ethers (v5) icon="square-js"
 /*
   Sign Typed Data v4 adds support for
   arrays and recursive data types.
@@ -548,10 +500,9 @@ const method = 'eth_signTypedData_v4';
 
 const signedMessage = await signer.provider.send(method, params);
 ```
-</Tab>
-</Tabs>
+</CodeGroup>
 
-### [#Web3.js](#web3.js-0)
+### Web3.js
 
 <Note>
 
@@ -561,10 +512,7 @@ The following examples assume **web3@>=4.0.2**
 #### Personal Sign
 
 
-<Tabs>
-<Tab title="Typescript">
-```javascript
-
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';
 
@@ -580,15 +528,10 @@ const originalMessage = 'YOUR_MESSAGE';
 
 const signedMessage = await web3.eth.personal.sign(originalMessage, fromAddress, "ACCOUNT_PASSWORD");
 ```
-</Tab>
-</Tabs>
 
 #### Sign Typed Data v1
 
-<Tabs>
-<Tab title="Typescript">
-```javascript
-
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';
 
@@ -615,16 +558,11 @@ const message = [
 
 const signedMessage = await web3.eth.signTypedData(fromAddress, message, true)
 ```
-</Tab>
-</Tabs>
 
 
 #### Sign Typed Data v4
 
-<Tabs>
-<Tab title="Typescript">
-```javascript
-
+```javascript JavaScript icon="square-js"
 /*
   Sign Typed Data v4 adds support for
   arrays and recursive data types.
@@ -679,17 +617,14 @@ const message = {
 
 const signedMessage = await web3.eth.signTypedData(fromAddress, message);
 ```
-</Tab>
-</Tabs>
 
-### Get Balance
+## Get Balance
 
 ### Ethers.js
 
 
-<Tabs>
-<Tab title="Ethers (v6)">
-```javascript
+<CodeGroup>
+```javascript Ethers (v6) icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -705,11 +640,8 @@ const address = await signer.getAddress();
 const balance = ethers.formatEther(
   await provider.getBalance(address), // Balance is in wei
 );
-
 ```
-</Tab>
-<Tab title="Ethers (v5)">
-```javascript
+```javascript Ethers (v5) icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ethers } from 'ethers';
 
@@ -727,15 +659,11 @@ const balance = ethers.utils.formatEther(
   await provider.getBalance(address), // Balance is in wei
 );
 ```
-</Tab>
-</Tabs>
+</CodeGroup>
 
 ### Web3.js
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
-
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import Web3 from 'web3';
 
@@ -751,10 +679,8 @@ const balance = web3.utils.fromWei(
   'wei' // Balance is in wei
 );
 ```
-</Tab>
-</Tabs>
 
-### Resources
+## Resources
 
 * [Magic JavaScript SDK](https://github.com/magiclabs/magic-js)
 * [EVM Documentation](/docs/embedded-wallet/blockchains/featured-chains/ethereum/javascript)
