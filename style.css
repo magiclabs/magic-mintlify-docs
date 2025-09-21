@@ -44,3 +44,14 @@ html.dark #topbar-cta-button .text-white {
 html.dark #topbar-cta-button .text-white\/90 {
   color: #18171a !important;
 }
+
+/* Anchor link underline colors */
+html.dark a.link:not(.nav-tabs-item):not(.nav-anchor) {
+  text-decoration-color: #ffffff !important;
+  border-bottom: 1px solid #ffffff !important;
+}
+
+html.dark a.link:not(.nav-tabs-item):not(.nav-anchor):hover {
+  text-decoration-color: #ffffff !important;
+  border-bottom: 2px solid #ffffff !important;
+}
