@@ -12,30 +12,26 @@ title: Etherlink
 
 Ensure you have installed the Magic SDK and have access to your API key, follow the [quickstart](/docs/embedded-wallet/quickstart/overview) to get started.
 
-<Tabs>
-    <Tab title="Testnet">
-```js
+<CodeGroup>
+```js Testnet icon="square-js"
 // Setting network to point to Etherlink testnet
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
-    network: {
-        rpcUrl: 'https://node.ghostnet.etherlink.com',
-        chainId: 128123,
-    }
-);
+  network: {
+    rpcUrl: 'https://node.ghostnet.etherlink.com',
+    chainId: 128123,
+  }
+});
 ```
-    </Tab>
-    <Tab title="Mainnet">
-```js
+```js Mainnet icon="square-js"
 // Setting network to point to Etherlink mainnet
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
-    network: {
-        rpcUrl: 'https://node.mainnet.etherlink.com',
-        chainId: 42793,
-    }
-);
+  network: {
+    rpcUrl: 'https://node.mainnet.etherlink.com',
+    chainId: 42793,
+  }
+});
 ```
-    </Tab>
-</Tabs>
+</CodeGroup>
 
 ## Compatibility
 

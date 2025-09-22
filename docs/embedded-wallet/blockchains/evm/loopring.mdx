@@ -12,21 +12,18 @@ title: Loopring
 
 Magic interacts with the Loopring blockchain via Magic SDK and the `loopring-sdk` package.
 
-<Tabs>
-  <Tab title="NPM">
-    ```bash npm install --save magic-sdk @loopring-web/loopring-sdk ```
-  </Tab>
-  <Tab title="Yarn">
-    ```bash yarn add magic-sdk @loopring-web/loopring-sdk ```
-  </Tab>
-</Tabs>
+<CodeGroup>
+```bash NPM icon="npm"
+npm install --save magic-sdk @loopring-web/loopring-sdk
+```
+```bash Yarn icon="yarn"
+yarn add magic-sdk @loopring-web/loopring-sdk
+```
+</CodeGroup>
 
 ## Send Transaction
 
-#### ES Modules/TypeScript
-
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
 import * as sdk from '@loopring-web/loopring-sdk';
 import {LOOPRING_EXPORTED_ACCOUNT, LoopringAPI, signatureKeyPairMock, TOKEN_INFO, web3} from "./Loopring";

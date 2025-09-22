@@ -11,9 +11,8 @@ description: "Users can effortlessly create wallets and interact with XDC using 
 
 ## Configure XDC Network
 
-<Tabs>
-    <Tab title="Testnet">
-```js
+<CodeGroup>
+```js Testnet icon="square-js"
 const XdcNetworkOptions = {
   rpcUrl: 'https://erpc.apothem.network', // XDC Apothem testnet RPC URL
   chainId: 51, // XDC Apothem chain id
@@ -21,11 +20,8 @@ const XdcNetworkOptions = {
 
 // Setting network to point to XDC
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: XdcNetworkOptions });
-
-````
-    </Tab>
-    <Tab title="Mainnet">
-```js
+```
+```js Mainnet icon="square-js"
 const XdcNetworkOptions = {
   rpcUrl: 'https://erpc.xinfin.network', // XDC mainnet RPC URL
   chainId: 50, // XDC chain id
@@ -33,11 +29,8 @@ const XdcNetworkOptions = {
 
 // Setting network to point to XDC
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: XdcNetworkOptions });
-````
-
-    </Tab>
-
-</Tabs>
+```
+</CodeGroup>
 
 ## Compatibility
 

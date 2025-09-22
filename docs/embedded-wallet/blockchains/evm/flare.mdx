@@ -10,9 +10,8 @@ title: Flare
 
 ## Configure Flare
 
-<Tabs>
-    <Tab title="Testnet">
-```js
+<CodeGroup>
+```js Testnet icon="square-js"
 const FlareOptions = {
   rpcUrl: 'https://coston-api.flare.network/ext/bc/C/rpc',
   chainId: 16,
@@ -20,11 +19,8 @@ const FlareOptions = {
 
 // Setting network to point to Coston Testnet
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: FlareOptions });
-
-````
-    </Tab>
-    <Tab title="Mainnet">
-```js
+```
+```js Mainnet icon="square-js"
 const FlareOptions = {
   rpcUrl: 'https://flare-api.flare.network/ext/bc/C/rpc',
   chainId: 14,
@@ -32,11 +28,8 @@ const FlareOptions = {
 
 // Setting network to point to Flare
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: FlareOptions });
-````
-
-    </Tab>
-
-</Tabs>
+```
+</CodeGroup>
 
 ## Compatibility
 

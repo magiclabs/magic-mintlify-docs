@@ -12,24 +12,25 @@ title: Hedera
 
 Magic interacts with the [Hedera](https://hedera.com/) blockchain via Magic's extension NPM package [`@magic-ext/hedera`](https://www.npmjs.com/package/@magic-ext/hedera). The Hedera extension also lets you interact with the blockchain using methods from [Hedera SDK](https://www.npmjs.com/package/hedera-sdk-js).
 
-<Tabs>
-  <Tab title="NPM">```bash npm install --save @magic-ext/hedera ```</Tab>
-  <Tab title="Yarn">```bash yarn add @magic-ext/hedera ```</Tab>
-</Tabs>
+<CodeGroup>
+```bash NPM icon="npm"
+npm install --save @magic-ext/hedera
+```
+```bash Yarn icon="yarn"
+yarn add @magic-ext/hedera
+```
+</CodeGroup>
 
 ## Configure Hedera
 
-#### ES Modules/TypeScript
-
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { HederaExtension } from '@magic-ext/hedera';
 
 const magic = new Magic("YOUR_API_KEY", {
-    extensions: [new HederaExtension({
-        network: 'testnet' // 'mainnet' or 'testnet'
-    })]
+  extensions: [new HederaExtension({
+    network: 'testnet' // 'mainnet' or 'testnet'
+  })]
 });
 ```
 
@@ -39,31 +40,26 @@ const magic = new Magic("YOUR_API_KEY", {
 
 Note that the Magic Hedera extension follows the method names and conventions by [hedera-sdk-js](https://www.npmjs.com/package/hedera-sdk-js). To send a standard Hedera blockchain transaction, you can call the inject the MagicWallet to hedera-sdk-js. More details please reference to [example-hedera](https://github.com/magiclabs/example-hedera) github repo.
 
-#### ES Modules/TypeScript
-
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { HederaExtension } from '@magic-ext/hedera';
 
 const magic = new Magic("YOUR_API_KEY", {
-    extensions: [new HederaExtension({
-        network: 'testnet' // 'mainnet' or 'testnet'
-    })]
+  extensions: [new HederaExtension({
+    network: 'testnet' // 'mainnet' or 'testnet'
+  })]
 });
 
 const { publicKeyDer } = await magic.hedera.getPublicKey()
 
 const magicSign = message => magic.hedera.sign(message);
-const magicWallet = new MagicWallet(publicAddress, new MagicProvider('testnet'),                publicKeyDer, magicSign)
+const magicWallet = new MagicWallet(publicAddress, new MagicProvider('testnet'), publicKeyDer, magicSign);
 
 let transaction = await new TransferTransaction()
-       .setNodeAccountIds([new AccountId(3)])
-       .addHbarTransfer(publicAddress, -1 * sendAmount)
-       .addHbarTransfer(destinationAddress, sendAmount)
-       .freezeWithSigner(magicWallet);
-
-
+  .setNodeAccountIds([new AccountId(3)])
+  .addHbarTransfer(publicAddress, -1 * sendAmount)
+  .addHbarTransfer(destinationAddress, sendAmount)
+  .freezeWithSigner(magicWallet);
 
 transaction = await transaction.signWithSigner(magicWallet);
 const result = await transaction.executeWithSigner(magicWallet);

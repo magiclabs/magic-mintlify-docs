@@ -12,33 +12,26 @@ title: RARI Chain
 
 Ensure you have installed the Magic SDK and have access to your API key, follow the [quickstart](/docs/embedded-wallet/quickstart/overview) to get started.
 
-<Tabs>
-    <Tab title="Testnet">
-```js
+<CodeGroup>
+```js Testnet icon="square-js"
 // Setting network to point to RARI testnet
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
-    network: {
-        rpcUrl: 'https://testnet.rpc.rarichain.org/http',
-        chainId: 1918988905,
+  network: {
+    rpcUrl: 'https://testnet.rpc.rarichain.org/http',
+    chainId: 1918988905,
   }
-);
-
-````
-    </Tab>
-    <Tab title="Mainnet">
-```js
+});
+```
+```js Mainnet icon="square-js"
 // Setting network to point to RARI mainnet
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
-    network: {
-        rpcUrl: 'https://mainnet.rpc.rarichain.org/http',
-        chainId: 1380012617,
+  network: {
+    rpcUrl: 'https://mainnet.rpc.rarichain.org/http',
+    chainId: 1380012617,
   }
-);
-````
-
-    </Tab>
-
-</Tabs>
+});
+```
+</CodeGroup>
 
 ## Compatibility
 

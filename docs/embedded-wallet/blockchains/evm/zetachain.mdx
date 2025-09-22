@@ -10,9 +10,8 @@ title: ZetaChain
 
 ## Configure Zetachain
 
-<Tabs>
-    <Tab title="Testnet">
-```js
+<CodeGroup>
+```js Testnet icon="square-js"
 const ZetaChainOptions = {
   rpcUrl: 'https://rpc.ankr.com/zetachain_evm_athens_testnet', // Zetachain testnet RPC URL
   chainId: 7001, // ZetaChain chain id
@@ -20,11 +19,8 @@ const ZetaChainOptions = {
 
 // Setting network to point to ZetaChain
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: ZetaChainOptions });
-
-````
-    </Tab>
-    <Tab title="Mainnet">
-```js
+```
+```js Mainnet icon="square-js"
 const ZetaChainOptions = {
   rpcUrl: 'https://zetachain-evm.blockpi.network/v1/rpc/public', // Zetachain mainnet RPC URL
   chainId: 7000, // ZetaChain chain id
@@ -32,11 +28,8 @@ const ZetaChainOptions = {
 
 // Setting network to point to ZetaChain
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: ZetaChainOptions });
-````
-
-    </Tab>
-
-</Tabs>
+```
+</CodeGroup>
 
 ## Compatibility
 

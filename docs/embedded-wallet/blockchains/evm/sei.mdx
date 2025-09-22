@@ -10,9 +10,8 @@ title: Sei
 
 ## Configure Sei
 
-<Tabs>
-    <Tab title="Devnet">
-```js
+<CodeGroup>
+```js Devnet icon="square-js"
 const SeiOptions = {
   rpcUrl: 'https://evm-rpc-arctic-1.sei-apis.com', // Sei devnet RPC URL
   chainId: 713715, // Sei chain id
@@ -20,11 +19,8 @@ const SeiOptions = {
 
 // Setting network to point to Sei
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: SeiOptions });
-
-````
-    </Tab>
-    <Tab title="Mainnet">
-```js
+```
+```js Mainnet icon="square-js"
 const SeiOptions = {
   rpcUrl: 'https://evm-rpc.sei-apis.com', // Sei mainnet RPC URL
   chainId: 1329, // Sei chain id
@@ -32,11 +28,8 @@ const SeiOptions = {
 
 // Setting network to point to Sei
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: SeiOptions });
-````
-
-    </Tab>
-
-</Tabs>
+```
+</CodeGroup>
 
 ## Compatibility
 

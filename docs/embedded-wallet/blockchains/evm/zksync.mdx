@@ -12,9 +12,8 @@ title: zkSync
 
 Ensure you have installed the Magic SDK and have access to your API key, follow the [quickstart](/docs/embedded-wallet/quickstart/overview) to get started.
 
-<Tabs>
-    <Tab title="Testnet">
-```js
+<CodeGroup>
+```js Testnet icon="square-js"
 // Setting network to point to zkSync testnet
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
   network: {
@@ -22,12 +21,8 @@ const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
     chainId: 300,
   },
 });
-
-````
-    </Tab>
-    <Tab title="Mainnet">
-```js
-
+```
+```js Mainnet icon="square-js"
 // Setting network to point to zkSync mainnet
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
   network: {
@@ -35,11 +30,8 @@ const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
     chainId: 324,
   },
 });
-````
-
-    </Tab>
-
-</Tabs>
+```
+</CodeGroup>
 
 ## Compatibility
 

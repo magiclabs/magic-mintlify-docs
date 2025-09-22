@@ -10,9 +10,8 @@ title: Horizen EON
 
 ## Configure EON
 
-<Tabs>
-    <Tab title="Testnet">
-```js
+<CodeGroup>
+```js Testnet icon="square-js"
 const EonOptions = {
   rpcUrl: 'https://gobi-rpc.horizenlabs.io/ethv1',
   chainId: 1663,
@@ -20,11 +19,8 @@ const EonOptions = {
 
 // Setting network to point to EON Testnet
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: EonOptions });
-
-````
-    </Tab>
-    <Tab title="Mainnet">
-```js
+```
+```js Mainnet icon="square-js"
 const EonOptions = {
   rpcUrl: 'https://eon-rpc.horizenlabs.io/ethv1',
   chainId: 7332,
@@ -32,11 +28,8 @@ const EonOptions = {
 
 // Setting network to point to EON Mainnet
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: EonOptions });
-````
-
-    </Tab>
-
-</Tabs>
+```
+</CodeGroup>
 
 ## Compatibility
 

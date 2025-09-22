@@ -10,9 +10,28 @@ title: Soneium
 
 ## Configure Soneium
 
-```Javascript
+<CodeGroup>
+```js Testnet icon="square-js"
+// Get your Startale API key here - https://portal.scs.startale.com/
+const SoneiumOptions = {
+  rpcUrl: 'https://soneium-minato.rpc.scs.startale.com?apikey=your-api-key', // Soneium testnet RPC URL
+  chainId: 1946, // Soneium chain id
+};
 
+// Setting network to point to Soneium
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: SoneiumOptions });
 ```
+```js Mainnet icon="square-js"
+// Get your Startale API key here - https://portal.scs.startale.com/
+const SoneiumOptions = {
+  rpcUrl: 'https://soneium.rpc.scs.startale.com?apikey=your-api-key', // Soneium mainnet RPC URL
+  chainId: 1868, // Soneium chain id
+};
+
+// Setting network to point to Soneium
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: SoneiumOptions });
+```
+</CodeGroup>
 
 - All `Auth`, `User` and most `Wallet` module methods\*
 - All EVM Provider functionality to respond to supported [RPC methods](/docs/embedded-wallet/api/client-side-sdks/web#evm-rpc-methods)
