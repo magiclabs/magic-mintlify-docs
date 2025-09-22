@@ -15,65 +15,12 @@ Magic's Core API is a server-side wallet management solution that provides enter
 - **Flexible architecture**: Integrate with any tech stack
 - **Key sharding**: Advanced cryptographic key management
 
-### Base URL
-
-All API requests should be made to:
-
-```
-https://tee.magiclabs.com
-```
-
 <Info>
 Core API is designed for developers who need maximum control over their wallet infrastructure. It's ideal for applications requiring custom key management, compliance with specific regulations, or integration with existing backend systems.
 </Info>
 
 <Warning>
 Core API provides the tools for both custodial and non-custodial implementations. The choice depends on how you manage the `encryption_context` and key shards. Consult legal professionals about custodial vs non-custodial distinctions in your target markets.
-</Warning>
-
-## Getting Started
-
-### Prerequisites
-
-Before using Core API, you'll need:
-
-1. **Magic Developer Account**: Sign up at [Magic Dashboard](https://dashboard.magic.link/)
-2. **Application Setup**: Create a new application in your dashboard
-3. **API Key Allowlisting**: Contact Magic to allowlist your `Publishable API Key`
-4. **Secret Key**: Use your `Secret Key` for API authentication
-
-<Steps>
-<Step title="Create Magic Account">
-Visit [https://dashboard.magic.link/](https://dashboard.magic.link/) and sign up for a Magic developer account.
-</Step>
-
-<Step title="Create Application">
-In your dashboard, create a new application and note your `Publishable API Key`.
-</Step>
-
-<Step title="Configure Allowlisting">
-In your Magic dashboard, go to **Settings** → **Allowed Origins & Redirects** to configure domain allowlisting for Core API access.
-</Step>
-
-<Step title="Get Your Secret Key">
-Once allowlisted, you'll receive your `Secret Key` (format: `sk_live_XXXXXXXX`) for API authentication.
-</Step>
-</Steps>
-
-<Frame>
-<img src="/images/api-wallets-core-getting-started.webp" alt="Magic Dashboard showing API key configuration" />
-</Frame>
-
-## Authentication
-
-Core API requires authentication using your Magic secret key:
-
-<ParamField header="x-magic-secret-key" type="string" required>
-Your Magic secret key for service authentication. Format: `sk_live_XXXXXXXX`
-</ParamField>
-
-<Warning>
-This secret key should be treated as extremely sensitive, as it would allow anyone to trigger the creation of a wallet and return the access and recovery key.
 </Warning>
 
 ## Security Architecture
@@ -226,7 +173,7 @@ Enable users to create wallets for NFT trading while maintaining non-custodial c
 </Card>
 
 <Card title="Enterprise Solutions" icon="building">
-Build custodial solutions for businesses managing crypto assets on behalf of customers or employees.
+Build enterprise-grade wallet infrastructure for businesses while ensuring users maintain full control over their assets.
 </Card>
 
 <Card title="Cross-Chain Bridges" icon="link">

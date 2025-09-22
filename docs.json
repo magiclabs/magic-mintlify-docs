@@ -63,6 +63,7 @@
             "group": "Core API",
             "pages": [
               "docs/api-wallets/core-api/overview",
+              "docs/api-wallets/core-api/getting-started",
               "docs/api-wallets/core-api/wallet-groups",
               "docs/api-wallets/core-api/wallet-management",
               "docs/api-wallets/core-api/transaction-signing",
