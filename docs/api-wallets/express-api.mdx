@@ -1,9 +1,21 @@
 ---
 title: "Express API"
-description: "Complete reference for Magic's API Wallets Express API - a secure wallet management service that handles key management internally using trusted execution environment technology"
+description: "Simplified wallet management API with built-in key management. Create wallets and sign transactions for EVM, Solana, and Bitcoin with minimal setup."
 ---
 
-## Base URL
+## Overview
+
+Magic's Express API is a streamlined wallet management solution designed for rapid development and deployment. Express API provides non-custodial wallet functionality using trusted execution environment technology, allowing you to focus on building your application while maintaining full control over your private keys.
+
+### Key Benefits
+
+- **Non-custodial security**: Your private keys remain under your control using TEE technology
+- **Multi-chain support**: EVM chains, Solana, and Bitcoin
+- **Simple authentication**: JWT-based user authentication
+- **Rapid development**: Get started in minutes, not hours, with production-ready infrastructure
+- **Enterprise security**: AWS Nitro TEE protection for all operations
+
+### Base URL
 
 All API requests should be made to:
 
@@ -11,9 +23,46 @@ All API requests should be made to:
 https://tee.express.magiclabs.com
 ```
 
+<Info>
+Express API is a production-ready solution for applications that need wallet functionality with non-custodial security. It's designed for both rapid development and enterprise-scale applications that require full control over private keys while leveraging Magic's secure infrastructure.
+</Info>
+
+<Tip>
+Express API uses AWS Nitro TEE technology to ensure your private keys are never exposed to Magic or any third party, maintaining true non-custodial security while providing enterprise-grade infrastructure.
+</Tip>
+
+## Getting Started
+
+### Prerequisites
+
+Before using Express API, you'll need:
+
+1. **Magic Developer Account**: Sign up at [Magic Dashboard](https://dashboard.magic.link/)
+2. **Application Setup**: Create a new application in your dashboard
+3. **OIDC Provider**: Configure an OIDC provider for user authentication
+4. **API Keys**: Obtain your Magic API key or secret key
+
+<Steps>
+<Step title="Create Magic Account">
+Visit [https://dashboard.magic.link/](https://dashboard.magic.link/) and sign up for a Magic developer account.
+</Step>
+
+<Step title="Create Application">
+In your dashboard, create a new application and note your API keys.
+</Step>
+
+<Step title="Configure OIDC Provider">
+Set up an OIDC provider (like Auth0, Firebase Auth, or custom) for user authentication.
+</Step>
+
+<Step title="Get Your API Keys">
+Obtain your Magic API key or secret key from your dashboard for service authentication.
+</Step>
+</Steps>
+
 ## Authentication
 
-API Wallets Express requires multiple authentication headers for secure access:
+Express API requires multiple authentication headers for secure access:
 
 <ParamField header="Authorization" type="string" required>
 Bearer token (JWT) for user authentication. Format: `Bearer YOUR_JWT_TOKEN`
@@ -35,11 +84,15 @@ The OIDC provider ID for your application.
 You must provide either `X-Magic-API-Key` or `X-Magic-Secret-Key` along with the other required headers.
 </Warning>
 
-## Wallet Endpoints
+<Tip>
+The JWT token should contain user identification information that Magic can use to associate wallets with specific users. Ensure your OIDC provider is configured to include necessary user claims.
+</Tip>
+
+## Wallet Management
 
 ### Get or Create Wallet
 
-Get or create a wallet for the given chain and return its public address.
+Get or create a wallet for the given chain and return its public address. If a wallet doesn't exist for the user and chain combination, one will be created automatically.
 
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
@@ -52,18 +105,7 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
   }'
 ```
 
-
-**Parameters:**
-
-<ParamField body="chain" type="string" required>
-The blockchain to create the wallet for. Available values: `ETH`, `SOL`, `BTC`
-</ParamField>
-
 **Response:**
-
-<ResponseField name="public_address" type="string">
-The newly created wallet's public address.
-</ResponseField>
 
 ```json
 {
@@ -71,11 +113,23 @@ The newly created wallet's public address.
 }
 ```
 
-## Sign Endpoints
+<ParamField body="chain" type="string" required>
+The blockchain to create the wallet for. Available values: `ETH`, `SOL`, `BTC`
+</ParamField>
+
+<ResponseField name="public_address" type="string">
+The wallet's public address on the specified blockchain.
+</ResponseField>
+
+<Info>
+Each user can have one wallet per blockchain. Calling this endpoint multiple times with the same user and chain will return the same wallet address.
+</Info>
+
+## Signing Operations
 
 ### Sign Data
 
-Sign a hash of arbitrary data using the wallet's private key.
+Sign a hash of arbitrary data using the wallet's private key. This is useful for signing transaction data, typed data, or any structured information.
 
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
@@ -89,7 +143,17 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
   }'
 ```
 
-**Parameters:**
+**Response:**
+
+```json
+{
+  "message_hash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
+  "signature": "0x8e7d6c5b4a3928172635445566778899aabbccddeeff00112233445566778899",
+  "r": "0x3d4e5f678901234567890abcdef1234567890abcdef1234567890abcdef1234",
+  "s": "0x4e5f678901234567890abcdef1234567890abcdef1234567890abcdef123456",
+  "v": "27"
+}
+```
 
 <ParamField body="chain" type="string" required>
 The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
@@ -98,8 +162,6 @@ The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
 <ParamField body="raw_data_hash" type="string" required>
 The keccak256 hash of the data to sign (hex string with 0x prefix).
 </ParamField>
-
-**Response:**
 
 <ResponseField name="message_hash" type="string">
 The hash that was signed.
@@ -121,19 +183,9 @@ The s component of the ECDSA signature.
 The recovery parameter of the ECDSA signature.
 </ResponseField>
 
-```json
-{
-  "message_hash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
-  "signature": "0x8e7d6c5b4a3928172635445566778899aabbccddeeff00112233445566778899",
-  "r": "0x3d4e5f678901234567890abcdef1234567890abcdef1234567890abcdef1234",
-  "s": "0x4e5f678901234567890abcdef1234567890abcdef1234567890abcdef123456",
-  "v": "27"
-}
-```
-
 ### Sign Message
 
-Sign an arbitrary message using the wallet's private key. Useful for authentication and off-chain verification.
+Sign an arbitrary message using the wallet's private key. Useful for authentication, off-chain verification, and personal signatures.
 
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
@@ -147,7 +199,16 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
   }'
 ```
 
-**Parameters:**
+**Response:**
+
+```json
+{
+  "signature": "0x0cebb670d8375ac74122b46c44def7e1ce593e80434a3e6557108ae124f8b44f3c5068fc104279fe7f51918cbe4c249d707bc1c0ce2fdee8d",
+  "r": "0x0cebb670d8375ac74122b46c44def7e1ce593e80434a3e6557108ae124f8b44f",
+  "s": "0x3c5068fc104279fe7f51918cbe4c249d707bc1c0ce2fdee8d",
+  "v": "27"
+}
+```
 
 <ParamField body="chain" type="string" required>
 The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
@@ -156,8 +217,6 @@ The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
 <ParamField body="message_base64" type="string" required>
 The message to sign, encoded as base64.
 </ParamField>
-
-**Response:**
 
 <ResponseField name="signature" type="string">
 The complete signature in hex format.
@@ -175,24 +234,15 @@ The s component of the ECDSA signature.
 The recovery parameter of the ECDSA signature.
 </ResponseField>
 
-```json
-{
-  "signature": "0x0cebb670d8375ac74122b46c44def7e1ce593e80434a3e6557108ae124f8b44f3c5068fc104279fe7f51918cbe4c249d707bc1c0ce2ffb6d201d3cf4e2fdee8d1b",
-  "r": "0x0cebb670d8375ac74122b46c44def7e1ce593e80434a3e6557108ae124f8b44f",
-  "s": "0x3c5068fc104279fe7f51918cbe4c249d707bc1c0ce2fdee8d",
-  "v": "27"
-}
-```
-
-## Data Hashing for Signing
+## Data Preparation
 
 When signing messages or data, you need to properly encode your data:
 
 ### Message Signing
 
-For signing messages, encode your data as base64:
+For signing messages (personal signatures), encode your data as base64:
 
-```javascript Personal Sign
+```javascript JavaScript icon="square-js"
 const personalSign = async (data: string) => {
   const message = Buffer.from(data, 'utf-8').toString('base64');
   const body = { message_base64: message, chain: 'ETH' };
@@ -278,11 +328,32 @@ const signTransaction = async (tx: TransactionRequest) => {
 ```
 </CodeGroup>
 
+## Use Cases
+
+<CardGroup cols={2}>
+<Card title="Direct Frontend Integration" icon="rocket">
+Perfect for client-side applications that authenticate users with JWTs and call Express API directly from the browser or mobile app.
+</Card>
+
+<Card title="Backend Proxy Pattern" icon="server">
+Ideal for server-side applications that receive user JWTs from frontend clients and proxy requests to Express API for enhanced security and control.
+</Card>
+
+<Card title="Non-Custodial Applications" icon="shield">
+Perfect for applications that need non-custodial wallet security while leveraging secure infrastructure, such as DeFi protocols or self-custody solutions.
+</Card>
+
+<Card title="Multi-Chain Support" icon="link">
+Support Ethereum, Solana, and Bitcoin with a single API integration.
+</Card>
+</CardGroup>
+
 ## Error Handling
 
-The API uses standard HTTP status codes and returns detailed error information for validation errors:
+Express API uses standard HTTP status codes and returns detailed error information for validation errors:
 
-**Validation Error (422):**
+### Validation Error (422)
+
 ```json
 {
   "detail": [
@@ -313,3 +384,26 @@ Array of validation error details.
 </Expandable>
 </ResponseField>
 
+### Common Error Scenarios
+
+**401 Unauthorized**
+- Invalid or expired JWT token
+- Missing or invalid API key/secret key
+- Invalid OIDC provider ID
+
+**422 Unprocessable Entity**
+- Invalid chain parameter
+- Malformed hash format
+- Invalid base64 encoding
+
+**500 Internal Server Error**
+- Server-side processing errors
+- Contact Magic support if persistent
+
+<Tip>
+Always implement proper error handling in your application:
+- Check HTTP status codes before processing responses
+- Log error details for debugging
+- Provide meaningful error messages to your users
+- Implement retry logic for transient errors
+</Tip>
