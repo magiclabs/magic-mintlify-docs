@@ -1,9 +1,21 @@
 ---
 title: "Core API"
-description: "Complete reference for Magic's API Wallets Core API - a server-side wallet management solution that provides flexible key management with AWS Nitro Trusted Execution Environment security"
+description: "Server-side wallet management API with AWS Nitro TEE security. Create, manage, and sign transactions for EVM, Solana, and Bitcoin wallets without client-side dependencies."
 ---
 
-## Base URL
+## Overview
+
+Magic's Core API is a server-side wallet management solution that provides enterprise-grade security through AWS Nitro Trusted Execution Environment (TEE). Unlike traditional wallet solutions, Core API operates entirely server-side, giving you complete control over your wallet infrastructure while maintaining the highest security standards.
+
+### Key Benefits
+
+- **Server-side only**: No client-side dependencies, iframes, or local sessions
+- **Multi-chain support**: EVM chains, Solana, and Bitcoin
+- **Enterprise security**: AWS Nitro TEE protection for all key operations
+- **Flexible architecture**: Integrate with any tech stack
+- **Key sharding**: Advanced cryptographic key management
+
+### Base URL
 
 All API requests should be made to:
 
@@ -11,23 +23,42 @@ All API requests should be made to:
 https://tee.magiclabs.com
 ```
 
-## Introduction
-
-Magic's Core API is a server-side solution that can be seamlessly incorporated into any tech stack. This API gives developers the freedom to choose how key management is handled, without having to rebuild that infrastructure.
-
-This un-opinionated server-side solution to key management has no client-side dependencies like iframes or local sessions, which helps developers build smooth onchain user experiences.
-
-Magic's Core API leverages the security of AWS Nitro Trusted Execution Environment to provide enhanced security for all key operations, like wallet generation and signing transaction payloads.
+<Info>
+Core API is designed for developers who need maximum control over their wallet infrastructure. It's ideal for applications requiring custom key management, compliance with specific regulations, or integration with existing backend systems.
+</Info>
 
 <Warning>
-Simply using Core API does not constitute a non-custodial implementation. While we provide the tools to make anything possible, we recommend that developers consult legal professionals about the distinctions between custodial and non-custodial solutions in the markets where they plan to deploy their applications.
+Core API provides the tools for both custodial and non-custodial implementations. The choice depends on how you manage the `encryption_context` and key shards. Consult legal professionals about custodial vs non-custodial distinctions in your target markets.
 </Warning>
 
 ## Getting Started
 
-Use of Core API requires a Magic developer account and an allowlisted application. Register a Magic account at [https://dashboard.magic.link/](https://dashboard.magic.link/) and create an application. Provide the application's `Publishable API Key` to Magic for allowlisting.
+### Prerequisites
 
-After the application is allowlisted, you can make requests to the API by passing the corresponding `Secret Key` in the request headers as `x-magic-secret-key`.
+Before using Core API, you'll need:
+
+1. **Magic Developer Account**: Sign up at [Magic Dashboard](https://dashboard.magic.link/)
+2. **Application Setup**: Create a new application in your dashboard
+3. **API Key Allowlisting**: Contact Magic to allowlist your `Publishable API Key`
+4. **Secret Key**: Use your `Secret Key` for API authentication
+
+<Steps>
+<Step title="Create Magic Account">
+Visit [https://dashboard.magic.link/](https://dashboard.magic.link/) and sign up for a Magic developer account.
+</Step>
+
+<Step title="Create Application">
+In your dashboard, create a new application and note your `Publishable API Key`.
+</Step>
+
+<Step title="Configure Allowlisting">
+In your Magic dashboard, go to **Settings** → **Allowed Origins & Redirects** to configure domain allowlisting for Core API access.
+</Step>
+
+<Step title="Get Your Secret Key">
+Once allowlisted, you'll receive your `Secret Key` (format: `sk_live_XXXXXXXX`) for API authentication.
+</Step>
+</Steps>
 
 <Frame>
 <img src="/images/api-wallets-core-getting-started.webp" alt="Magic Dashboard showing API key configuration" />
@@ -45,41 +76,88 @@ Your Magic secret key for service authentication. Format: `sk_live_XXXXXXXX`
 This secret key should be treated as extremely sensitive, as it would allow anyone to trigger the creation of a wallet and return the access and recovery key.
 </Warning>
 
-## Key Management Considerations
+## Security Architecture
 
-### Disclaimer
+### AWS Nitro Trusted Execution Environment
 
-Magic does not act as a custodian of your or your users' digital assets. Ownership and control of digital assets remain entirely with you and your users and do not transfer to Magic at any point.
+Core API leverages AWS Nitro TEE to provide hardware-level security for all cryptographic operations. This ensures that:
 
-At all times, you and your users maintain sole control over the authentication credentials required to utilize your or their private keys. Only you and your users have the authority to transfer the digital assets associated with those private keys. Once implemented by you, the management of these keys is entirely under you and/or your users control.
+- Private keys are never exposed in plaintext
+- All cryptographic operations happen in an isolated, tamper-proof environment
+- Even Magic cannot access your private keys without proper authorization
 
-### Key Custody Guidelines
+### Key Sharding System
 
-Magic's Core API provides the tools for the developer to build either a custodial or a non-custodial application. Carefully consider the ramifications around these 2 areas when building your application.
-
-First, this API is meant to be called from the application's server because the request header contains the `Secret Key`. 
-
-Second, the application decides on what piece of data (`encryption_context`) is used to generate a wallet. More significantly, the application also decides on how that piece of data is managed and recalled when executing a non-recovery sign operation.
-
-If the `encryption_context` is readily available to the application to use at will, then the application can call a sign operation without the user's knowledge or intent.
-
-### Wallet Generation Schema
+Core API uses advanced cryptographic key sharding to distribute private key material across multiple components, ensuring no single entity has complete access to your wallets.
 
 <Frame>
 <img src="/images/api-wallets-core-shard-diagram.webp" alt="Diagram showing how private keys are split into 5 shards for security" />
 </Frame>
 
-When a wallet is created, the PK is split into 3 shards. Reconstruction requires 2 of 3 shards.
+#### How Key Sharding Works
 
-- **Shard 1** is held by Magic and will always be available. It is used to recreate the PK for all key operations, including recovery.
-- **Shard 2** is returned from the wallet creation endpoint as the `recovery_key`. It is intended to be stored by the application's database and used to recover the PK when the `encryption_context` is lost.
-- **Shard 3** is encrypted with the `encryption_context` and split into shards 4 and 5. All non-recovery key operations, like signing the transaction payload, requires shard 3 to recreate the PK. Carefully consider the ramifications regarding how you choose to manage this `encryption_context`.
-- **Shard 4** is returned from the wallet creation endpoint as the `access_key`. This must be stored by the application's database because it is required to recreate shard 3.
-- **Shard 5** is held by Magic and will always be available. It will be used with shard 4, to recreate shard 3.
-- Non-recovery key operations will always use Shard 1 and Shard 3 (Shard 4 + Shard 5 + `encryption_context`).
-- Recovering the PK will always use Shard 1 and Shard 2. Recovery will update the shard values.
+When a wallet is created, the private key is split using a **2-of-3 threshold scheme**:
 
-## Exemplary Implementation Guidelines
+<CardGroup cols={2}>
+<Card title="Shard 1 (Magic)" icon="shield">
+Always available from Magic's secure infrastructure. Used for all key operations including recovery.
+</Card>
+
+<Card title="Shard 2 (Recovery Key)" icon="key">
+Returned to your application. Store securely in your database. Used only for wallet recovery when `encryption_context` is lost.
+</Card>
+
+<Card title="Shard 3 (Encrypted)" icon="lock">
+Encrypted with your `encryption_context` and split into Shards 4 & 5. Required for all non-recovery operations.
+</Card>
+
+<Card title="Shard 4 (Access Key)" icon="database">
+Returned to your application. Store securely in your database. Combined with Shard 5 to recreate Shard 3.
+</Card>
+
+<Card title="Shard 5 (Magic)" icon="shield">
+Always available from Magic's secure infrastructure. Used with Shard 4 to recreate Shard 3.
+</Card>
+</CardGroup>
+
+#### Operation Types
+
+**Non-Recovery Operations** (Signing transactions, messages)
+- Uses: Shard 1 + Shard 3 (recreated from Shards 4 + 5 + `encryption_context`)
+- Requires: User's `encryption_context` + stored `access_key`
+
+**Recovery Operations** (When `encryption_context` is lost)
+- Uses: Shard 1 + Shard 2
+- Requires: Stored `recovery_key`
+- Updates: All shard values with new `encryption_context`
+
+### Custodial vs Non-Custodial Implementation
+
+<Warning>
+Magic does not act as a custodian of your or your users' digital assets. Ownership and control remain entirely with you and your users. Consult legal professionals about custodial vs non-custodial distinctions in your target markets.
+</Warning>
+
+The implementation type depends on how you manage the `encryption_context`:
+
+**Non-Custodial Approach:**
+- `encryption_context` is derived from user input (e.g., passphrase, biometric data)
+- User must provide `encryption_context` for each operation
+- Application cannot perform operations without user consent
+
+**Custodial Approach:**
+- `encryption_context` is managed by your application
+- Application can perform operations on behalf of users
+- Requires careful consideration of user consent and regulatory compliance
+
+<Tip>
+For non-custodial implementations, consider using user-derived `encryption_context` such as:
+- User-entered passphrase (hashed)
+- Biometric data
+- Hardware security module (HSM) keys
+- Multi-party computation (MPC) protocols
+</Tip>
+
+## Implementation Patterns
 
 ### Wallet Generation Flow
 
@@ -87,7 +165,18 @@ When a wallet is created, the PK is split into 3 shards. Reconstruction requires
 <img src="/images/example-wallet-generation-flow-diagram.webp" alt="Flow diagram showing client-server wallet creation process" />
 </Frame>
 
-The above flow illustrates an application taking the user's passcode (`encryption_context`) from the client, passing it to the server before it is provided to the wallet creation endpoint.
+This flow shows how to securely create a wallet using user-provided `encryption_context`:
+
+1. **Client**: User enters passphrase/biometric data
+2. **Client**: Hash the user input to create `encryption_context`
+3. **Client**: Send `encryption_context` to your server
+4. **Server**: Call Core API to create wallet with `encryption_context`
+5. **Server**: Store `access_key` and `recovery_key` securely
+6. **Client**: Display wallet address to user
+
+<Tip>
+Always hash user input before using it as `encryption_context`. Never send raw user data to Core API.
+</Tip>
 
 ### Non-Recovery Key Operation Flow
 
@@ -95,7 +184,15 @@ The above flow illustrates an application taking the user's passcode (`encryptio
 <img src="/images/example-non-recovery-key-operation-flow-diagram.webp" alt="Flow diagram showing client-server key signing process" />
 </Frame>
 
-The above flow illustrates an application prompting the user for the same passcode (`encryption_context`) used to create their wallet. It is passed from the client to the server before it is provided to any sign operation endpoint.
+This flow shows how to sign transactions using the user's `encryption_context`:
+
+1. **Client**: User initiates transaction (e.g., transfer tokens)
+2. **Client**: User re-enters passphrase/biometric data
+3. **Client**: Hash the user input to recreate `encryption_context`
+4. **Client**: Send transaction + `encryption_context` to server
+5. **Server**: Retrieve stored `access_key` from database
+6. **Server**: Call Core API to sign transaction
+7. **Server**: Broadcast signed transaction to blockchain
 
 ### Recovery Flow
 
@@ -103,14 +200,49 @@ The above flow illustrates an application prompting the user for the same passco
 <img src="/images/example-recovery-flow-diagram.webp" alt="Flow diagram showing client-server wallet recovery process" />
 </Frame>
 
-The above flow illustrates an application accepting the user's new passcode (`encryption_context`) to recover the PK because the original passcode was lost. The new passcode will serve as the updated `encryption_context`.
+This flow shows how to recover a wallet when the original `encryption_context` is lost:
 
-## Organization Endpoints
+1. **Client**: User indicates they've forgotten their passphrase
+2. **Client**: User enters new passphrase/biometric data
+3. **Client**: Hash the new input to create new `encryption_context`
+4. **Client**: Send new `encryption_context` to server
+5. **Server**: Retrieve stored `recovery_key` from database
+6. **Server**: Call Core API recovery endpoint
+7. **Server**: Update stored keys with new `access_key` and `recovery_key`
 
-### Create Wallet Group
+<Warning>
+Recovery operations update all key shards. Ensure you have proper backup procedures before initiating recovery.
+</Warning>
 
-Creates a group to logically organize created wallets.
+### Common Use Cases
 
+<CardGroup cols={2}>
+<Card title="DeFi Applications" icon="coins">
+Create wallets for users to interact with DeFi protocols. Users maintain control through passphrase-based `encryption_context`.
+</Card>
+
+<Card title="NFT Marketplaces" icon="image">
+Enable users to create wallets for NFT trading while maintaining non-custodial control over their assets.
+</Card>
+
+<Card title="Enterprise Solutions" icon="building">
+Build custodial solutions for businesses managing crypto assets on behalf of customers or employees.
+</Card>
+
+<Card title="Cross-Chain Bridges" icon="link">
+Support multiple blockchain networks (EVM, Solana, Bitcoin) with unified wallet management.
+</Card>
+</CardGroup>
+
+## API Reference
+
+### Wallet Groups
+
+Wallet groups allow you to logically organize wallets for better management and organization.
+
+#### Create Wallet Group
+
+Creates a new wallet group for organizing wallets.
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.magiclabs.com/v1/api/wallet_group' \
   -H 'Content-Type: application/json' \
@@ -118,32 +250,10 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet_group' \
   -d '{
     "metadata": {
       "resource_id": "customer-resource-id"
-  }'
+    }'
 ```
 
-**Parameters:**
-
-<ParamField body="metadata.resource_id" type="string">
-Optional name/identifier for wallet group
-</ParamField>
-
 **Response:**
-
-<ResponseField name="data.uuid" type="string">
-The identifier of the created wallet group
-</ResponseField>
-
-<ResponseField name="data.time_created" type="integer">
-Epoch timestamp in UTC
-</ResponseField>
-
-<ResponseField name="data.time_updated" type="integer">
-Epoch timestamp in UTC
-</ResponseField>
-
-<ResponseField name="data.metadata.resource_id" type="string">
-Provided `resource_id` during group creation. `Null` if not provided
-</ResponseField>
 
 ```json
 {
@@ -157,11 +267,25 @@ Provided `resource_id` during group creation. `Null` if not provided
   }
 }
 ```
+<ParamField body="metadata.resource_id" type="string">
+Optional identifier for the wallet group. Useful for organizing wallets by customer, project, or environment.
+</ParamField>
 
-### List Wallet Groups
+<ResponseField name="data.uuid" type="string">
+Unique identifier for the created wallet group. Use this when creating wallets.
+</ResponseField>
 
-Lists created wallet groups.
+<ResponseField name="data.time_created" type="integer">
+Unix timestamp (UTC) when the wallet group was created.
+</ResponseField>
 
+<ResponseField name="data.time_updated" type="integer">
+Unix timestamp (UTC) when the wallet group was last updated.
+</ResponseField>
+
+#### List Wallet Groups
+
+Retrieve all wallet groups for your application.
 ```bash cURL icon="square-terminal"
 curl -X GET 'https://tee.magiclabs.com/v1/api/wallet_groups' \
   -H 'x-magic-secret-key: sk_live_XXXXXXXX'
@@ -169,31 +293,29 @@ curl -X GET 'https://tee.magiclabs.com/v1/api/wallet_groups' \
 
 **Response:**
 
-<ResponseField name="data" type="array">
-Array of wallet group objects
-</ResponseField>
-
 ```json
 {
   "data": [
     {
+      "uuid": "7313a996-eb9c-4568-acef-f622a6b151fd",
+      "time_created": 1709931542,
       "time_updated": 1718035165,
       "metadata": {
         "resource_id": "customer-resource-id"
-      },
-      "uuid": "7313a996-eb9c-4568-acef-f622a6b151fd",
-      "time_created": 1709931542
+      }
     }
   ]
 }
 ```
+<ResponseField name="data" type="array">
+Array of wallet group objects, each containing the same fields as the create response.
+</ResponseField>
 
-## Wallet Endpoints
+### Wallet Management
 
-### Create Wallet
+#### Create Wallet
 
-Create a wallet for the user. Returns a `recovery_key` (shard 2), `access_key` (shard 4), and `uuid` (Magic's unique wallet ID).
-
+Create a new wallet for a user. Returns the `recovery_key`, `access_key`, and wallet `uuid` for future operations.
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.magiclabs.com/v1/api/wallet' \
   -H 'Content-Type: application/json' \
@@ -204,44 +326,9 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet' \
     "wallet_group_id": "58a08494-3c83-439a-8a07-551f2022c3fc",
     "metadata": {
       "resource_id": "customer-resource-id"
+    }
   }'
 ```
-
-**Parameters:**
-
-<ParamField body="encryption_context" type="string" required>
-The context that should be applied to encrypt returned key shares (where applicable)
-</ParamField>
-
-<ParamField body="network" type="string" required>
-Network for wallet creation. Values: `BTC_MAINNET`, `BTC_TESTNET`, `BTC_REGTEST` for Bitcoin; `SOL_MAINNET`, `SOL_TESTNET` for Solana; all other values create EVM wallet
-</ParamField>
-
-<ParamField body="wallet_group_id" type="string">
-The UUID returned from wallet group creation
-</ParamField>
-
-<ParamField body="metadata.resource_id" type="string">
-Optional name/identifier for wallet
-</ParamField>
-
-**Response:**
-
-<ResponseField name="data.uuid" type="string">
-The identifier for the created wallet
-</ResponseField>
-
-<ResponseField name="data.public_address" type="string">
-The public address of the created wallet
-</ResponseField>
-
-<ResponseField name="data.recovery_key" type="string">
-To be used if key recovery operation is needed
-</ResponseField>
-
-<ResponseField name="data.access_key" type="string">
-To be used for all non-recovery wallet operations
-</ResponseField>
 
 ```json
 {
@@ -261,13 +348,49 @@ To be used for all non-recovery wallet operations
   }
 }
 ```
+<ParamField body="encryption_context" type="string" required>
+The context used to encrypt key shards. Should be derived from user input (e.g., hashed passphrase).
+</ParamField>
 
-### Sign Transaction
+<ParamField body="network" type="string" required>
+Target blockchain network. Values: `BTC_MAINNET`, `BTC_TESTNET`, `BTC_REGTEST` for Bitcoin; `SOL_MAINNET`, `SOL_TESTNET` for Solana; all other values create EVM wallet.
+</ParamField>
 
-Sign a transaction payload. The payload format varies by network (EVM, SVM, BTC).
+<ParamField body="wallet_group_id" type="string">
+UUID of the wallet group to organize this wallet under.
+</ParamField>
+
+<ParamField body="metadata.resource_id" type="string">
+Optional identifier for the wallet (e.g., user ID, customer ID).
+</ParamField>
+
+<ResponseField name="data.uuid" type="string">
+Unique wallet identifier. Use this for all subsequent operations.
+</ResponseField>
+
+<ResponseField name="data.public_address" type="string">
+The wallet's public address on the specified network.
+</ResponseField>
+
+<ResponseField name="data.recovery_key" type="string">
+Key shard for wallet recovery. Store securely in your database.
+</ResponseField>
+
+<ResponseField name="data.access_key" type="string">
+Key shard for non-recovery operations. Store securely in your database.
+</ResponseField>
+
+<Warning>
+Store both `recovery_key` and `access_key` securely in your database. These are required for wallet operations and recovery.
+</Warning>
+
+### Transaction Signing
+
+Sign transaction payloads for different blockchain networks. The payload format varies by network type.
 
 #### EVM Transaction Signing
 
+Sign Ethereum and EVM-compatible chain transactions.
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
   -H 'Content-Type: application/json' \
@@ -288,9 +411,9 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
     "wallet_id": "wallet_id"
   }'
 ```
-
 #### Solana Transaction Signing
 
+Sign Solana blockchain transactions.
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
   -H 'Content-Type: application/json' \
@@ -302,9 +425,9 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
     "wallet_id": "wallet_id"
   }'
 ```
-
 #### Bitcoin Transaction Signing
 
+Sign Bitcoin blockchain transactions.
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
   -H 'Content-Type: application/json' \
@@ -332,34 +455,6 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
   }'
 ```
 
-**Parameters:**
-
-<ParamField body="payload" type="object" required>
-The transaction payload to be signed. Format varies by network
-</ParamField>
-
-<ParamField body="encryption_context" type="string" required>
-The encryption context of the key shards
-</ParamField>
-
-<ParamField body="access_key" type="string" required>
-The access_key returned from wallet creation
-</ParamField>
-
-<ParamField body="wallet_id" type="string" required>
-The uuid returned from wallet creation
-</ParamField>
-
-**Response:**
-
-<ResponseField name="data.signed_transaction" type="string">
-Result of signing unsigned_transaction with user's private key
-</ResponseField>
-
-<ResponseField name="data.transaction_hash" type="string">
-Hashed version of signed_transaction which is what you'll get when you submit
-</ResponseField>
-
 ```json
 {
   "data": {
@@ -368,11 +463,36 @@ Hashed version of signed_transaction which is what you'll get when you submit
   }
 }
 ```
+<ParamField body="payload" type="object" required>
+Transaction payload to be signed. Format varies by network:
+- **EVM**: Standard Ethereum transaction object
+- **Solana**: Base64-encoded transaction string
+- **Bitcoin**: Object with inputs and outputs arrays
+</ParamField>
+
+<ParamField body="encryption_context" type="string" required>
+The encryption context used to decrypt key shards. Must match the context used during wallet creation.
+</ParamField>
+
+<ParamField body="access_key" type="string" required>
+The access key returned from wallet creation. Retrieve from your database.
+</ParamField>
+
+<ParamField body="wallet_id" type="string" required>
+The wallet UUID returned from wallet creation.
+</ParamField>
+
+<ResponseField name="data.signed_transaction" type="string">
+The signed transaction ready for broadcast to the blockchain.
+</ResponseField>
+
+<ResponseField name="data.transaction_hash" type="string">
+The transaction hash that will be generated when the transaction is submitted to the network.
+</ResponseField>
 
 ### Sign Data
 
 Sign arbitrary data using keccak256 hash.
-
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_data' \
   -H 'Content-Type: application/json' \
@@ -385,25 +505,32 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_data' \
   }'
 ```
 
-**Parameters:**
-
+```json
+{
+  "data": {
+    "messageHash": "0xabc...",
+    "signature": "0xabc...",
+    "r": "",
+    "s": "",
+    "v": ""
+  }
+}
+```
 <ParamField body="raw_data_hash" type="string" required>
 The keccak256 hash of the data to sign
 </ParamField>
 
 <ParamField body="encryption_context" type="string" required>
-The encryption context of the key shards
+The encryption context used to decrypt key shards. Must match the context used during wallet creation.
 </ParamField>
 
 <ParamField body="access_key" type="string" required>
-The access_key returned from wallet creation
+The access key returned from wallet creation. Retrieve from your database.
 </ParamField>
 
 <ParamField body="wallet_id" type="string" required>
-The uuid returned from wallet creation
+The wallet UUID returned from wallet creation.
 </ParamField>
-
-**Response:**
 
 <ResponseField name="data.messageHash" type="string">
 The hash that was signed
@@ -425,22 +552,9 @@ The s component of the ECDSA signature
 The recovery parameter of the ECDSA signature
 </ResponseField>
 
-```json
-{
-  "data": {
-    "messageHash": "0xabc...",
-    "signature": "0xabc...",
-    "r": "",
-    "s": "",
-    "v": ""
-  }
-}
-```
-
 ### Sign Message (Solana)
 
 Sign an arbitrary message using a Solana wallet.
-
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/svm/sign_message' \
   -H 'Content-Type: application/json' \
@@ -453,30 +567,6 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/svm/sign_message' \
   }'
 ```
 
-**Parameters:**
-
-<ParamField body="message_base64" type="string" required>
-The message to be signed, encoded in base64
-</ParamField>
-
-<ParamField body="encryption_context" type="string" required>
-The encryption context of the key shards
-</ParamField>
-
-<ParamField body="access_key" type="string" required>
-The access_key returned from wallet creation
-</ParamField>
-
-<ParamField body="wallet_id" type="string" required>
-The uuid returned from wallet creation
-</ParamField>
-
-**Response:**
-
-<ResponseField name="data.signature" type="string">
-The signature in base64 format
-</ResponseField>
-
 ```json
 {
   "data": {
@@ -484,6 +574,25 @@ The signature in base64 format
   }
 }
 ```
+<ParamField body="message_base64" type="string" required>
+The message to be signed, encoded in base64
+</ParamField>
+
+<ParamField body="encryption_context" type="string" required>
+The encryption context used to decrypt key shards. Must match the context used during wallet creation.
+</ParamField>
+
+<ParamField body="access_key" type="string" required>
+The access key returned from wallet creation. Retrieve from your database.
+</ParamField>
+
+<ParamField body="wallet_id" type="string" required>
+The wallet UUID returned from wallet creation.
+</ParamField>
+
+<ResponseField name="data.signature" type="string">
+The signature in base64 format
+</ResponseField>
 
 ### Reveal Private Key
 
@@ -552,7 +661,6 @@ const decryptedBuffer = await window.crypto.subtle.decrypt(
 );
 const eoa_pk = new TextDecoder().decode(decryptedBuffer);
 ```
-
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/reveal_pk' \
   -H 'Content-Type: application/json' \
@@ -565,25 +673,28 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/reveal_pk' \
   }'
 ```
 
-**Parameters:**
-
+```json
+{
+  "data": {
+    "encrypted_private_key": "encrypted_key_data"
+  }
+}
+```
 <ParamField body="rsa_public_key" type="string" required>
 PEM Base64 encoded RSA public key
 </ParamField>
 
 <ParamField body="encryption_context" type="string" required>
-The encryption context of the key shards
+The encryption context used to decrypt key shards. Must match the context used during wallet creation.
 </ParamField>
 
 <ParamField body="access_key" type="string" required>
-The access_key returned from wallet creation
+The access key returned from wallet creation. Retrieve from your database.
 </ParamField>
 
 <ParamField body="wallet_id" type="string" required>
-The uuid returned from wallet creation
+The wallet UUID returned from wallet creation.
 </ParamField>
-
-**Response:**
 
 <ResponseField name="data.encrypted_private_key" type="string">
 Private key encrypted by RSA public key sent to the endpoint and can only be decrypted by owner of RSA private key
@@ -591,8 +702,7 @@ Private key encrypted by RSA public key sent to the endpoint and can only be dec
 
 ### Wallet Recovery
 
-Recover a wallet using the recovery key.
-
+Recover a wallet using the recovery key when the original `encryption_context` is lost.
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/recovery/confirm' \
   -H 'Content-Type: application/json' \
@@ -603,34 +713,6 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/recovery/confirm' \
     "recovery_key": "recovery_key"
   }'
 ```
-
-**Parameters:**
-
-<ParamField body="wallet_id" type="string" required>
-The uuid returned from wallet creation
-</ParamField>
-
-<ParamField body="encryption_context" type="string" required>
-The context that should be applied to encrypt returned key shares
-</ParamField>
-
-<ParamField body="recovery_key" type="string" required>
-The recovery_key returned from wallet creation
-</ParamField>
-
-**Response:**
-
-<ResponseField name="data.id" type="string">
-The identifier of the wallet
-</ResponseField>
-
-<ResponseField name="data.recovery_key" type="string">
-To be used if key recovery operation is needed
-</ResponseField>
-
-<ResponseField name="data.access_key" type="string">
-To be used for all non-recovery wallet operations
-</ResponseField>
 
 ```json
 {
@@ -648,35 +730,102 @@ To be used for all non-recovery wallet operations
   }
 }
 ```
+<ParamField body="wallet_id" type="string" required>
+The wallet UUID returned from wallet creation.
+</ParamField>
+
+<ParamField body="encryption_context" type="string" required>
+The new encryption context to be applied to the recovered wallet's key shards.
+</ParamField>
+
+<ParamField body="recovery_key" type="string" required>
+The recovery key returned from wallet creation. Retrieve from your database.
+</ParamField>
+
+<ResponseField name="data.id" type="string">
+The identifier of the recovered wallet.
+</ResponseField>
+
+<ResponseField name="data.recovery_key" type="string">
+New recovery key for future recovery operations. Update your database with this value.
+</ResponseField>
+
+<ResponseField name="data.access_key" type="string">
+New access key for non-recovery operations. Update your database with this value.
+</ResponseField>
+
+<Warning>
+Recovery operations update all key shards. Ensure you update your database with the new `recovery_key` and `access_key` values returned from this operation.
+</Warning>
 
 ## Error Handling
 
-The API uses standard HTTP status codes and returns detailed error information:
+Core API uses standard HTTP status codes and returns detailed error information to help you troubleshoot issues.
 
-### 400 Bad Request
+### Common Error Responses
+
+#### 400 Bad Request
 
 **`INVALID_REQUEST_FIELDS`**
-- This error occurs if one of the required fields is missing or invalid
+- **Cause**: Missing or invalid required fields in the request body
+- **Solution**: Verify all required parameters are present and properly formatted
 
 **`MISSING_REQUIRED_HEADER`**
-- This error occurs if the x-magic-secret-key header is not included in the request
+- **Cause**: The `x-magic-secret-key` header is missing from the request
+- **Solution**: Include the header: `x-magic-secret-key: sk_live_XXXXXXXX`
 
 **`INVALID_API_KEY`**
-- This error occurs if the x-magic-secret-key header is invalid
+- **Cause**: The provided secret key is invalid or expired
+- **Solution**: Verify your secret key is correct and your application is allowlisted
 
 **`INVALID_USER_PASSCODE`**
-- This error occurs if the `encryption_context` and/or access_key is incorrect
+- **Cause**: The `encryption_context` or `access_key` is incorrect
+- **Solution**: Ensure the `encryption_context` matches what was used during wallet creation
 
-### 403 Forbidden
+#### 403 Forbidden
 
 **`METHOD_NOT_AVAILABLE`**
-- The requested resource/method is not available
+- **Cause**: The requested endpoint or method is not available for your application
+- **Solution**: Contact Magic support to enable the required functionality
 
-### 408 Timeout
+#### 408 Timeout
 
 **`REQUEST_TIMEOUT`**
+- **Cause**: The request took too long to process
+- **Solution**: Retry the request or contact support if the issue persists
 
-### 500 Internal Server Error
+#### 500 Internal Server Error
 
 **`INTERNAL_SERVER_ERROR`**
-- If you receive a 500 status code, it indicates an unexpected condition or error on our backend server that was not handled properly. If this error persists, please contact our support team for assistance.
+- **Cause**: An unexpected error occurred on Magic's servers
+- **Solution**: If this error persists, contact Magic support for assistance
+
+### Error Response Format
+
+All error responses follow this format:
+
+**Response:**
+
+```json
+{
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable error description",
+    "details": "Additional context or troubleshooting information"
+  }
+}
+```
+
+### Best Practices
+
+<Tip>
+Always implement proper error handling in your application:
+- Check HTTP status codes before processing responses
+- Log error details for debugging
+- Implement retry logic for transient errors (5xx status codes)
+- Provide meaningful error messages to your users
+</Tip>
+
+<Warning>
+Never expose sensitive error details (like secret keys or encryption contexts) to end users. Log them securely for debugging purposes only.
+</Warning>
