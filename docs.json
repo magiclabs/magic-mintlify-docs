@@ -64,10 +64,9 @@
             "pages": [
               "docs/api-wallets/core-api/overview",
               "docs/api-wallets/core-api/getting-started",
-              "docs/api-wallets/core-api/wallet-groups",
-              "docs/api-wallets/core-api/wallet-management",
-              "docs/api-wallets/core-api/transaction-signing",
-              "docs/api-wallets/core-api/message-signing",
+              "docs/api-wallets/core-api/architecture",
+              "docs/api-wallets/core-api/wallet-operations",
+              "docs/api-wallets/core-api/signing-operations",
               "docs/api-wallets/core-api/private-key-operations",
               "docs/api-wallets/core-api/wallet-recovery",
               "docs/api-wallets/core-api/error-handling"
