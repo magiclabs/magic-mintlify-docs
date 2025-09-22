@@ -20,12 +20,14 @@ import { Button } from "/snippets/button.mdx";
 
 To install Magic and Celo, follow the instructions below.
 
-<Tabs>
-  <Tab title="NPM">
-    ```NPM npm install --save magic-sdk @celo/contractkit ```
-  </Tab>
-  <Tab title="Yarn">```Yarn yarn add magic-sdk @celo/contractkit ```</Tab>
-</Tabs>
+<CodeGroup>
+```bash NPM icon="npm"
+npm install --save magic-sdk @celo/contractkit
+```
+```bash Yarn icon="yarn"
+yarn add magic-sdk @celo/contractkit
+```
+</CodeGroup>
 
 ## Send Transaction
 
@@ -42,10 +44,7 @@ Before you can send transaction on the Celo blockchain, you'll need to acquire s
 
 ### Use Magic Rpc Provider
 
-#### ES Modules/TypeScript
-
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { newKitFromWeb3 } from '@celo/contractkit';
 import Web3 from 'web3';
@@ -95,9 +94,7 @@ Before you can send transaction on the Celo blockchain, you'll need to acquire s
 
 #### ES Modules/TypeScript
 
-```typescript TypeScript icon="square-js"
-
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { newKitFromWeb3 } from '@celo/contractkit';
 import Web3 from 'web3';
@@ -165,7 +162,7 @@ console.log('contract send result: ', hash, receipt);
 - All `Auth`, `User` and most `Wallet` module methods\*
 - All EVM Provider functionality to respond to supported [RPC methods](/docs/embedded-wallet/api/client-side-sdks/web#evm-rpc-methods)
 
-_\*Some features are not yet compatible such as NFT Viewer and Fiat On-ramps._
+_Some features are not yet compatible such as NFT Viewer and Fiat On-ramps._
 
 _Need a feature or see a problem?_ File an issue on our [github repo](https://github.com/magiclabs/magic-js).
 
