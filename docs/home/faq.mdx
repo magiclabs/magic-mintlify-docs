@@ -11,9 +11,6 @@ sidebarTitle: FAQ
 ## General
 
 <AccordionGroup>
-<Accordion title="Can the magic link redirect to a specific URL?">
-Yes! When calling the [`loginWithMagicLink`](/docs/embedded-wallet/api/client-side-sdks/web#loginwithmagiclink) sdk method you can pass in an optional [`redirectURI`](/docs/embedded-wallet/api/client-side-sdks/web#loginwithmagiclink) value which specifies the URL to redirect your user back to once the magic link is clicked. If no redirect is specified, the user will see a confirmation screen telling them to go back to the original tab where they will be logged in. We recommend this for an improved UX flow.
-</Accordion>
 <Accordion title="Can I delete users from the dashboard?">
 
 We don't support deleting users from your dashboard view. However if you are requesting to delete any PII user data on behalf of the user we can absolutely process those requests.
@@ -58,22 +55,11 @@ Magic comes with essentially no vendor lock-in, so migrating away is easy. You w
 
 <AccordionGroup>
 <Accordion title="What to do if emails are delayed">
-Rarely, a user may not receive a magic link email immediately after requesting one. This is usually due to a spam filter holding onto the email before eventually displaying it in the user's inbox. If it's a personal email, adding our sending domain [noreply@trymagic.com](mailto:noreply@trymagic.com) to their email contacts list should solve the problem. If it's a corporate email, asking the user to have their IT team add our [noreply@trymagic.com](mailto:noreply@trymagic.com) email domain to their internal allowlist should prevent emails from being held up by the spam filters.
+Rarely, a user may not receive an email immediately after requesting one. This is usually due to a spam filter holding onto the email before eventually displaying it in the user's inbox. If it's a personal email, adding our sending domain [noreply@trymagic.com](mailto:noreply@trymagic.com) to their email contacts list should solve the problem. If it's a corporate email, asking the user to have their IT team add our [noreply@trymagic.com](mailto:noreply@trymagic.com) email domain to their internal allowlist should prevent emails from being held up by the spam filters.
 </Accordion>
 <Accordion title="What if a user loses access to their email?
 ">
 If a user loses access to their email account, they need to contact their email service provider (i.e.: Gmail, Microsoft Outlook, iCloud Mail) and follow steps for account recovery.
-</Accordion>
-<Accordion title="What if someone tries to phish users with a fraudulent magic link email?">
-[Phishing attacks](https://en.wikipedia.org/wiki/Phishing) are an ongoing problem that exists in our industry today. However, this doesn't mean we are sticking to the status quo; we are actively working on ways to mitigate this. We have minimized the attack vectors significantly by going passwordless—**no credentials are passed around!** Compared to traditional password-based solutions, Magic eliminates the case where users can be phished for compromising account information.
-
-Plus, if a magic link email is lost or stolen (or even somehow compromised in transit), a user's account is safe! The token included in the magic link email is only privileged to verify a login request _from the device and/or browsing context that initiated the request._ An attacker would require physical access to the user's device _and_ unencrypted email inbox to be malicious.
-
-However, a motivated attacker could create an identical replica of your application, which is a known phishing pattern that occurs today. For this case, we recommend developers to whitelist **specific domains for their Publishable API Keys on the** [**Magic Dashboard**](https://dashboard.magic.link) so that illegitimate applications cannot forge requests through the Magic SDKs.
-
-</Accordion>
-<Accordion title="Is there a way to add custom text to the magic link email?">
-Right now there isn't a way, but we will soon implement a feature that enables developers to be able to completely customize the magic link email, and that will include being able to add your company-specific Terms of Service.
 </Accordion>
 </AccordionGroup>
 
