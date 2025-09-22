@@ -1,0 +1,116 @@
+---
+title: "Private Key Operations"
+description: "Reveal private keys using RSA encryption with Core API"
+---
+
+## Private Key Operations
+
+### Reveal Private Key
+
+Enable a user to reveal their raw private key using RSA encryption.
+
+#### Using Magic's iframe
+
+```javascript JavaScript icon="square-js"
+import { Magic } from 'magic-api-wallet';
+
+const magic = new Magic()
+
+// fetch PEM Base64 encoded RSA public key from iframe
+const rsaPublicKey = await magic.wallet.getRSAPublicKey();
+
+// send rsa_public_key to your backend service to be relayed to TEE API
+const encryptedPrivateKey = await HttpService.BackendService.Post(
+  Endpoint.BackendService.RevealPrivateKey,
+  { authorization: `Bearer ${access_token}` },
+  { rsa_public_key: rsaPublicKey },
+);
+
+// unwrap and render private key in secure iframe
+await magic.wallet.unwrapPrivateKey(encryptedPrivateKey.privateKey);
+```
+
+#### Custom RSA Implementation
+
+```javascript JavaScript icon="square-js"
+// Step 1: Create RSA encryption keypair using the Web Crypto API
+const keyPair = await window.crypto.subtle.generateKey(
+  {
+    name: 'RSA-OAEP',
+    modulusLength: 4096,
+    publicExponent: new Uint8Array([1, 0, 1]),
+    hash: 'SHA-1',
+  },
+  false, // non-exportable from the browser (important)
+  ['encrypt', 'decrypt'],
+);
+
+// Step 2: Export the raw public key
+const exported = await window.crypto.subtle.exportKey('spki', keyPair.publicKey);
+
+// Step 3: Convert the ArrayBuffer to a Base64 string
+const exportedAsString = String.fromCharCode(...new Uint8Array(exported));
+const exportedAsBase64 = window.btoa(exportedAsString);
+
+// Step 4: Split the Base64 string into manageable chunks
+const maxLineLength = 64;
+let formattedBase64 = '';
+for (let i = 0; i < exportedAsBase64.length; i += maxLineLength) {
+  formattedBase64 += exportedAsBase64.slice(i, i + maxLineLength) + '\n';
+}
+
+// Step 5: Create the PEM header and footer
+const rsa_public_key = `-----BEGIN PUBLIC KEY-----\n${formattedBase64}-----END PUBLIC KEY-----\n`;
+
+// Step 6: Send rsa_public_key to backend to call /v1/api/wallet/reveal_pk
+// Step 7: Use the RSA private key to decrypt the encrypted_private_key
+const encryptedBuffer = base64ToUint8(encryptedKey);
+const decryptedBuffer = await window.crypto.subtle.decrypt(
+  { name: 'RSA-OAEP' },
+  keypair.privateKey,
+  encryptedBuffer,
+);
+const eoa_pk = new TextDecoder().decode(decryptedBuffer);
+```
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/reveal_pk' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "encryption_context": "hashed_passcode",
+    "access_key": "key_shard",
+    "wallet_id": "wallet_id",
+    "rsa_public_key": "rsa_public_key"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "data": {
+    "encrypted_private_key": "encrypted_key_data"
+  }
+}
+```
+
+<ParamField body="rsa_public_key" type="string" required>
+PEM Base64 encoded RSA public key
+</ParamField>
+
+<ParamField body="encryption_context" type="string" required>
+The encryption context used to decrypt key shards. Must match the context used during wallet creation.
+</ParamField>
+
+<ParamField body="access_key" type="string" required>
+The access key returned from wallet creation. Retrieve from your database.
+</ParamField>
+
+<ParamField body="wallet_id" type="string" required>
+The wallet UUID returned from wallet creation.
+</ParamField>
+
+<ResponseField name="data.encrypted_private_key" type="string">
+Private key encrypted by RSA public key sent to the endpoint and can only be decrypted by owner of RSA private key
+</ResponseField>

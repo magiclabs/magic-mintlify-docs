@@ -1,0 +1,118 @@
+---
+title: "Transaction Signing"
+description: "Sign transactions for EVM, Solana, and Bitcoin networks using Core API"
+---
+
+## Transaction Signing
+
+Sign transaction payloads for different blockchain networks. The payload format varies by network type.
+
+### EVM Transaction Signing
+
+Sign Ethereum and EVM-compatible chain transactions.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "payload": {
+      "type": 2,
+      "chainId": 888888,
+      "nonce": 1,
+      "value": "0x616263646566",
+      "gas": 100000,
+      "maxFeePerGas": 2000000000,
+      "maxPriorityFeePerGas": 2000000000,
+      "to": "0x0aA818d7952c0B6a56ee97581708866C154f63AD"
+    },
+    "encryption_context": "hashed_passcode",
+    "access_key": "key_shard",
+    "wallet_id": "wallet_id"
+  }'
+```
+
+### Solana Transaction Signing
+
+Sign Solana blockchain transactions.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "payload": "transaction_base64",
+    "encryption_context": "hashed_passcode",
+    "access_key": "key_shard",
+    "wallet_id": "wallet_id"
+  }'
+```
+
+### Bitcoin Transaction Signing
+
+Sign Bitcoin blockchain transactions.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "payload": {
+      "inputs": [
+        {
+          "address": "bc1q59ehj6mza09gk8v5558dqpy8m4c...",
+          "value": 5,
+          "txid": "d12beb629cebe086149c9c7b558f09531f8...",
+          "tx_num": 0
+        }
+      ],
+      "outputs": [
+        {
+          "address": "bc1q59ehj6mza09gk8v5558dqpy8m4c...",
+          "value": 5
+        }
+      ]
+    },
+    "encryption_context": "hashed_passcode",
+    "access_key": "key_shard",
+    "wallet_id": "wallet_id"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "data": {
+    "signed_transaction": "0xabc...",
+    "transaction_hash": "0xabc..."
+  }
+}
+```
+
+<ParamField body="payload" type="object" required>
+Transaction payload to be signed. Format varies by network:
+- **EVM**: Standard Ethereum transaction object
+- **Solana**: Base64-encoded transaction string
+- **Bitcoin**: Object with inputs and outputs arrays
+</ParamField>
+
+<ParamField body="encryption_context" type="string" required>
+The encryption context used to decrypt key shards. Must match the context used during wallet creation.
+</ParamField>
+
+<ParamField body="access_key" type="string" required>
+The access key returned from wallet creation. Retrieve from your database.
+</ParamField>
+
+<ParamField body="wallet_id" type="string" required>
+The wallet UUID returned from wallet creation.
+</ParamField>
+
+<ResponseField name="data.signed_transaction" type="string">
+The signed transaction ready for broadcast to the blockchain.
+</ResponseField>
+
+<ResponseField name="data.transaction_hash" type="string">
+The transaction hash that will be generated when the transaction is submitted to the network.
+</ResponseField>

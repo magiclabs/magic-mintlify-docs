@@ -49,8 +49,20 @@
             "group": "API Wallets",
             "pages": [
               "docs/api-wallets/api-wallets",
-              "docs/api-wallets/express-api",
-              "docs/api-wallets/core-api"
+              "docs/api-wallets/express-api"
+            ]
+          },
+          {
+            "group": "Core API",
+            "pages": [
+              "docs/api-wallets/core-api/overview",
+              "docs/api-wallets/core-api/wallet-groups",
+              "docs/api-wallets/core-api/wallet-management",
+              "docs/api-wallets/core-api/transaction-signing",
+              "docs/api-wallets/core-api/message-signing",
+              "docs/api-wallets/core-api/private-key-operations",
+              "docs/api-wallets/core-api/wallet-recovery",
+              "docs/api-wallets/core-api/error-handling"
             ]
           }
         ]

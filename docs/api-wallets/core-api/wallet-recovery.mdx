@@ -1,0 +1,68 @@
+---
+title: "Wallet Recovery"
+description: "Recover wallets when encryption context is lost using Core API"
+---
+
+## Wallet Recovery
+
+### Wallet Recovery
+
+Recover a wallet using the recovery key when the original `encryption_context` is lost.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/recovery/confirm' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "wallet_id": "wallet_id",
+    "encryption_context": "hashed_passcode",
+    "recovery_key": "recovery_key"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "data": {
+    "id": "e982b4a3-14d3-4d66-a3ac-fadfc3ae1875",
+    "recovery_key": "f41c504489531934a147413865913f24",
+    "access_key": "c6b2565c12a24b1e86f23e2196486541",
+    "network": "ETH",
+    "wallet_group_id": "58a08494-3c83-439a-8a07-551f2...",
+    "metadata": {
+      "resource_id": "customer-resource-id"
+    },
+    "time_created": 1709931542,
+    "time_updated": 1809931542
+  }
+}
+```
+
+<ParamField body="wallet_id" type="string" required>
+The wallet UUID returned from wallet creation.
+</ParamField>
+
+<ParamField body="encryption_context" type="string" required>
+The new encryption context to be applied to the recovered wallet's key shards.
+</ParamField>
+
+<ParamField body="recovery_key" type="string" required>
+The recovery key returned from wallet creation. Retrieve from your database.
+</ParamField>
+
+<ResponseField name="data.id" type="string">
+The identifier of the recovered wallet.
+</ResponseField>
+
+<ResponseField name="data.recovery_key" type="string">
+New recovery key for future recovery operations. Update your database with this value.
+</ResponseField>
+
+<ResponseField name="data.access_key" type="string">
+New access key for non-recovery operations. Update your database with this value.
+</ResponseField>
+
+<Warning>
+Recovery operations update all key shards. Ensure you update your database with the new `recovery_key` and `access_key` values returned from this operation.
+</Warning>

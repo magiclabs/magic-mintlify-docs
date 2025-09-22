@@ -1,0 +1,235 @@
+---
+title: "Overview"
+description: "Introduction to Magic's Core API - server-side wallet management with AWS Nitro TEE security"
+---
+
+## Overview
+
+Magic's Core API is a server-side wallet management solution that provides enterprise-grade security through AWS Nitro Trusted Execution Environment (TEE). Unlike traditional wallet solutions, Core API operates entirely server-side, giving you complete control over your wallet infrastructure while maintaining the highest security standards.
+
+### Key Benefits
+
+- **Server-side only**: No client-side dependencies, iframes, or local sessions
+- **Multi-chain support**: EVM chains, Solana, and Bitcoin
+- **Enterprise security**: AWS Nitro TEE protection for all key operations
+- **Flexible architecture**: Integrate with any tech stack
+- **Key sharding**: Advanced cryptographic key management
+
+### Base URL
+
+All API requests should be made to:
+
+```
+https://tee.magiclabs.com
+```
+
+<Info>
+Core API is designed for developers who need maximum control over their wallet infrastructure. It's ideal for applications requiring custom key management, compliance with specific regulations, or integration with existing backend systems.
+</Info>
+
+<Warning>
+Core API provides the tools for both custodial and non-custodial implementations. The choice depends on how you manage the `encryption_context` and key shards. Consult legal professionals about custodial vs non-custodial distinctions in your target markets.
+</Warning>
+
+## Getting Started
+
+### Prerequisites
+
+Before using Core API, you'll need:
+
+1. **Magic Developer Account**: Sign up at [Magic Dashboard](https://dashboard.magic.link/)
+2. **Application Setup**: Create a new application in your dashboard
+3. **API Key Allowlisting**: Contact Magic to allowlist your `Publishable API Key`
+4. **Secret Key**: Use your `Secret Key` for API authentication
+
+<Steps>
+<Step title="Create Magic Account">
+Visit [https://dashboard.magic.link/](https://dashboard.magic.link/) and sign up for a Magic developer account.
+</Step>
+
+<Step title="Create Application">
+In your dashboard, create a new application and note your `Publishable API Key`.
+</Step>
+
+<Step title="Configure Allowlisting">
+In your Magic dashboard, go to **Settings** → **Allowed Origins & Redirects** to configure domain allowlisting for Core API access.
+</Step>
+
+<Step title="Get Your Secret Key">
+Once allowlisted, you'll receive your `Secret Key` (format: `sk_live_XXXXXXXX`) for API authentication.
+</Step>
+</Steps>
+
+<Frame>
+<img src="/images/api-wallets-core-getting-started.webp" alt="Magic Dashboard showing API key configuration" />
+</Frame>
+
+## Authentication
+
+Core API requires authentication using your Magic secret key:
+
+<ParamField header="x-magic-secret-key" type="string" required>
+Your Magic secret key for service authentication. Format: `sk_live_XXXXXXXX`
+</ParamField>
+
+<Warning>
+This secret key should be treated as extremely sensitive, as it would allow anyone to trigger the creation of a wallet and return the access and recovery key.
+</Warning>
+
+## Security Architecture
+
+### AWS Nitro Trusted Execution Environment
+
+Core API leverages AWS Nitro TEE to provide hardware-level security for all cryptographic operations. This ensures that:
+
+- Private keys are never exposed in plaintext
+- All cryptographic operations happen in an isolated, tamper-proof environment
+- Even Magic cannot access your private keys without proper authorization
+
+### Key Sharding System
+
+Core API uses advanced cryptographic key sharding to distribute private key material across multiple components, ensuring no single entity has complete access to your wallets.
+
+<Frame>
+<img src="/images/api-wallets-core-shard-diagram.webp" alt="Diagram showing how private keys are split into 5 shards for security" />
+</Frame>
+
+#### How Key Sharding Works
+
+When a wallet is created, the private key is split using a **2-of-3 threshold scheme**:
+
+<CardGroup cols={2}>
+<Card title="Shard 1 (Magic)" icon="shield">
+Always available from Magic's secure infrastructure. Used for all key operations including recovery.
+</Card>
+
+<Card title="Shard 2 (Recovery Key)" icon="key">
+Returned to your application. Store securely in your database. Used only for wallet recovery when `encryption_context` is lost.
+</Card>
+
+<Card title="Shard 3 (Encrypted)" icon="lock">
+Encrypted with your `encryption_context` and split into Shards 4 & 5. Required for all non-recovery operations.
+</Card>
+
+<Card title="Shard 4 (Access Key)" icon="database">
+Returned to your application. Store securely in your database. Combined with Shard 5 to recreate Shard 3.
+</Card>
+
+<Card title="Shard 5 (Magic)" icon="shield">
+Always available from Magic's secure infrastructure. Used with Shard 4 to recreate Shard 3.
+</Card>
+</CardGroup>
+
+#### Operation Types
+
+**Non-Recovery Operations** (Signing transactions, messages)
+- Uses: Shard 1 + Shard 3 (recreated from Shards 4 + 5 + `encryption_context`)
+- Requires: User's `encryption_context` + stored `access_key`
+
+**Recovery Operations** (When `encryption_context` is lost)
+- Uses: Shard 1 + Shard 2
+- Requires: Stored `recovery_key`
+- Updates: All shard values with new `encryption_context`
+
+### Custodial vs Non-Custodial Implementation
+
+<Warning>
+Magic does not act as a custodian of your or your users' digital assets. Ownership and control remain entirely with you and your users. Consult legal professionals about custodial vs non-custodial distinctions in your target markets.
+</Warning>
+
+The implementation type depends on how you manage the `encryption_context`:
+
+**Non-Custodial Approach:**
+- `encryption_context` is derived from user input (e.g., passphrase, biometric data)
+- User must provide `encryption_context` for each operation
+- Application cannot perform operations without user consent
+
+**Custodial Approach:**
+- `encryption_context` is managed by your application
+- Application can perform operations on behalf of users
+- Requires careful consideration of user consent and regulatory compliance
+
+<Tip>
+For non-custodial implementations, consider using user-derived `encryption_context` such as:
+- User-entered passphrase (hashed)
+- Biometric data
+- Hardware security module (HSM) keys
+- Multi-party computation (MPC) protocols
+</Tip>
+
+## Implementation Patterns
+
+### Wallet Generation Flow
+
+<Frame>
+<img src="/images/example-wallet-generation-flow-diagram.webp" alt="Flow diagram showing client-server wallet creation process" />
+</Frame>
+
+This flow shows how to securely create a wallet using user-provided `encryption_context`:
+
+1. **Client**: User enters passphrase/biometric data
+2. **Client**: Hash the user input to create `encryption_context`
+3. **Client**: Send `encryption_context` to your server
+4. **Server**: Call Core API to create wallet with `encryption_context`
+5. **Server**: Store `access_key` and `recovery_key` securely
+6. **Client**: Display wallet address to user
+
+<Tip>
+Always hash user input before using it as `encryption_context`. Never send raw user data to Core API.
+</Tip>
+
+### Non-Recovery Key Operation Flow
+
+<Frame>
+<img src="/images/example-non-recovery-key-operation-flow-diagram.webp" alt="Flow diagram showing client-server key signing process" />
+</Frame>
+
+This flow shows how to sign transactions using the user's `encryption_context`:
+
+1. **Client**: User initiates transaction (e.g., transfer tokens)
+2. **Client**: User re-enters passphrase/biometric data
+3. **Client**: Hash the user input to recreate `encryption_context`
+4. **Client**: Send transaction + `encryption_context` to server
+5. **Server**: Retrieve stored `access_key` from database
+6. **Server**: Call Core API to sign transaction
+7. **Server**: Broadcast signed transaction to blockchain
+
+### Recovery Flow
+
+<Frame>
+<img src="/images/example-recovery-flow-diagram.webp" alt="Flow diagram showing client-server wallet recovery process" />
+</Frame>
+
+This flow shows how to recover a wallet when the original `encryption_context` is lost:
+
+1. **Client**: User indicates they've forgotten their passphrase
+2. **Client**: User enters new passphrase/biometric data
+3. **Client**: Hash the new input to create new `encryption_context`
+4. **Client**: Send new `encryption_context` to server
+5. **Server**: Retrieve stored `recovery_key` from database
+6. **Server**: Call Core API recovery endpoint
+7. **Server**: Update stored keys with new `access_key` and `recovery_key`
+
+<Warning>
+Recovery operations update all key shards. Ensure you have proper backup procedures before initiating recovery.
+</Warning>
+
+### Common Use Cases
+
+<CardGroup cols={2}>
+<Card title="DeFi Applications" icon="coins">
+Create wallets for users to interact with DeFi protocols. Users maintain control through passphrase-based `encryption_context`.
+</Card>
+
+<Card title="NFT Marketplaces" icon="image">
+Enable users to create wallets for NFT trading while maintaining non-custodial control over their assets.
+</Card>
+
+<Card title="Enterprise Solutions" icon="building">
+Build custodial solutions for businesses managing crypto assets on behalf of customers or employees.
+</Card>
+
+<Card title="Cross-Chain Bridges" icon="link">
+Support multiple blockchain networks (EVM, Solana, Bitcoin) with unified wallet management.
+</Card>
+</CardGroup>
