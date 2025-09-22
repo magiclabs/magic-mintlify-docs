@@ -1,0 +1,64 @@
+---
+title: "Error Handling"
+description: "Understand Express API error responses and learn how to handle common error scenarios effectively."
+---
+
+## Error Handling
+
+Express API uses standard HTTP status codes and returns detailed error information for validation errors:
+
+### Validation Error (422)
+
+```json
+{
+  "detail": [
+    {
+      "loc": ["string", 0],
+      "msg": "string", 
+      "type": "string"
+    }
+  ]
+}
+```
+
+<ResponseField name="detail" type="array">
+Array of validation error details.
+
+<Expandable title="Error detail properties">
+  <ResponseField name="loc" type="array">
+  Location of the error in the request (path to the invalid field).
+  </ResponseField>
+  
+  <ResponseField name="msg" type="string">
+  Human-readable error message.
+  </ResponseField>
+  
+  <ResponseField name="type" type="string">
+  Machine-readable error type identifier.
+  </ResponseField>
+</Expandable>
+</ResponseField>
+
+### Common Error Scenarios
+
+**401 Unauthorized**
+- Invalid or expired JWT token
+- Missing or invalid API key/secret key
+- Invalid OIDC provider ID
+
+**422 Unprocessable Entity**
+- Invalid chain parameter
+- Malformed hash format
+- Invalid base64 encoding
+
+**500 Internal Server Error**
+- Server-side processing errors
+- Contact Magic support if persistent
+
+<Tip>
+Always implement proper error handling in your application:
+- Check HTTP status codes before processing responses
+- Log error details for debugging
+- Provide meaningful error messages to your users
+- Implement retry logic for transient errors
+</Tip>

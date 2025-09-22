@@ -47,9 +47,16 @@
         "groups": [
           {
             "group": "API Wallets",
+            "pages": ["docs/api-wallets/api-wallets"]
+          },
+          {
+            "group": "Express API",
             "pages": [
-              "docs/api-wallets/api-wallets",
-              "docs/api-wallets/express-api"
+              "docs/api-wallets/express-api/overview",
+              "docs/api-wallets/express-api/getting-started",
+              "docs/api-wallets/express-api/wallet-operations",
+              "docs/api-wallets/express-api/data-preparation",
+              "docs/api-wallets/express-api/error-handling"
             ]
           },
           {
