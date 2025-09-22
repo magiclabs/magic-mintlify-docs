@@ -222,7 +222,7 @@
             "pages": [
               "docs/embedded-wallet/api/overview",
               {
-                "group": "Client Side SDKs",
+                "group": "Client-side",
                 "pages": [
                   "docs/embedded-wallet/api/client-side-sdks/web",
                   "docs/embedded-wallet/api/client-side-sdks/react-native",
@@ -232,7 +232,7 @@
                 ]
               },
               {
-                "group": "Server-side SDKs",
+                "group": "Server-side",
                 "pages": [
                   "docs/embedded-wallet/api/server-side-sdks/overview",
                   "docs/embedded-wallet/api/server-side-sdks/python",
