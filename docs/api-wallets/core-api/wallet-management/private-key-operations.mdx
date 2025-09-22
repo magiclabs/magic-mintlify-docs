@@ -1,15 +1,27 @@
 ---
-title: "Private Key Operations"
-description: "Reveal private keys using RSA encryption with Core API"
+title: "Private Keys"
+description: "Reveal private keys using RSA encryption with Core API for key export and backup operations"
 ---
 
 ## Private Key Operations
 
-### Reveal Private Key
+Core API allows you to reveal private keys for wallet export, backup, or migration purposes. Private keys are encrypted using RSA encryption to ensure secure transmission and can only be decrypted by the holder of the corresponding RSA private key.
 
-Enable a user to reveal their raw private key using RSA encryption.
+### Security Considerations
 
-#### Using Magic's iframe
+<Warning>
+Private key revelation should only be used for legitimate purposes such as wallet export, backup, or migration. Once revealed, the private key provides full access to the wallet and should be handled with extreme care.
+</Warning>
+
+<Info>
+The private key is encrypted using RSA-OAEP encryption before transmission, ensuring that only the holder of the RSA private key can decrypt it.
+</Info>
+
+## Implementation Approaches
+
+### Using Magic's iframe
+
+The simplest approach uses Magic's built-in iframe for secure key handling:
 
 ```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-api-wallet';
@@ -30,7 +42,9 @@ const encryptedPrivateKey = await HttpService.BackendService.Post(
 await magic.wallet.unwrapPrivateKey(encryptedPrivateKey.privateKey);
 ```
 
-#### Custom RSA Implementation
+### Custom RSA Implementation
+
+For applications requiring custom RSA key handling, you can implement the RSA encryption process manually:
 
 ```javascript JavaScript icon="square-js"
 // Step 1: Create RSA encryption keypair using the Web Crypto API
@@ -72,6 +86,12 @@ const decryptedBuffer = await window.crypto.subtle.decrypt(
 );
 const eoa_pk = new TextDecoder().decode(decryptedBuffer);
 ```
+
+## API Reference
+
+### Reveal Private Key
+
+Reveal a wallet's private key encrypted with the provided RSA public key.
 
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/reveal_pk' \

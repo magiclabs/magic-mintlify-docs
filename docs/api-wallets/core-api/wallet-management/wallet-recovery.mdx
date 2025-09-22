@@ -1,13 +1,42 @@
 ---
 title: "Wallet Recovery"
-description: "Recover wallets when encryption context is lost using Core API"
+description: "Restore wallet access when encryption context is lost using Core API recovery mechanisms"
 ---
 
-## Wallet Recovery
+## Recovery Operations
 
-### Wallet Recovery
+When users lose their encryption context (passphrase, biometric data, etc.), you can restore wallet access using the recovery key stored during wallet creation. This process updates all key shards with a new encryption context while maintaining the same wallet address.
 
-Recover a wallet using the recovery key when the original `encryption_context` is lost.
+### When to Use Recovery
+
+<CardGroup cols={2}>
+<Card title="Forgotten Passphrase" icon="key">
+User has forgotten their original passphrase but still has access to your application.
+</Card>
+
+<Card title="Device Loss" icon="mobile">
+User lost their device containing biometric data or other encryption context.
+</Card>
+</CardGroup>
+
+### Recovery Process
+
+The recovery operation performs the following steps:
+
+1. **Retrieve** stored `recovery_key` from your database
+2. **Call** Core API recovery endpoint with new `encryption_context`
+3. **Update** stored keys with new `access_key` and `recovery_key`
+4. **Maintain** the same wallet address and public key
+
+<Warning>
+Recovery operations update all key shards. Ensure you have proper backup procedures before initiating recovery.
+</Warning>
+
+## API Reference
+
+### Confirm Recovery
+
+Restore wallet access with a new encryption context using the recovery key.
 
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/recovery/confirm' \
