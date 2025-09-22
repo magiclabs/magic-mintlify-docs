@@ -28,9 +28,13 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
 }
 ```
 
+### Request Parameters
+
 <ParamField body="chain" type="string" required>
 The blockchain to create the wallet for. Available values: `ETH`, `SOL`, `BTC`
 </ParamField>
+
+### Response Fields
 
 <ResponseField name="public_address" type="string">
 The wallet's public address on the specified blockchain.
@@ -70,6 +74,8 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
 }
 ```
 
+### Request Parameters
+
 <ParamField body="chain" type="string" required>
 The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
 </ParamField>
@@ -77,6 +83,8 @@ The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
 <ParamField body="raw_data_hash" type="string" required>
 The keccak256 hash of the data to sign (hex string with 0x prefix).
 </ParamField>
+
+### Response Fields
 
 <ResponseField name="message_hash" type="string">
 The hash that was signed.
@@ -125,6 +133,8 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
 }
 ```
 
+### Request Parameters
+
 <ParamField body="chain" type="string" required>
 The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
 </ParamField>
@@ -132,6 +142,8 @@ The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
 <ParamField body="message_base64" type="string" required>
 The message to sign, encoded as base64.
 </ParamField>
+
+### Response Fields
 
 <ResponseField name="signature" type="string">
 The complete signature in hex format.

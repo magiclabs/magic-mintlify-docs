@@ -54,6 +54,7 @@
             "pages": [
               "docs/api-wallets/express-api/overview",
               "docs/api-wallets/express-api/getting-started",
+              "docs/api-wallets/express-api/identity-provider",
               "docs/api-wallets/express-api/wallet-operations",
               "docs/api-wallets/express-api/data-preparation",
               "docs/api-wallets/express-api/error-handling"

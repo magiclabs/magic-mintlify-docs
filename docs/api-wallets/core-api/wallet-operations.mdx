@@ -37,9 +37,13 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet_group' \
 }
 ```
 
+### Request Parameters
+
 <ParamField body="metadata.resource_id" type="string">
 Optional identifier for the wallet group. Useful for organizing wallets by customer, project, or environment.
 </ParamField>
+
+### Response Fields
 
 <ResponseField name="data.uuid" type="string">
 Unique identifier for the created wallet group. Use this when creating wallets.
@@ -124,6 +128,8 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet' \
 }
 ```
 
+### Request Parameters
+
 <ParamField body="encryption_context" type="string" required>
 The context used to encrypt key shards. Should be derived from user input (e.g., hashed passphrase).
 </ParamField>
@@ -139,6 +145,8 @@ UUID of the wallet group to organize this wallet under.
 <ParamField body="metadata.resource_id" type="string">
 Optional identifier for the wallet (e.g., user ID, customer ID).
 </ParamField>
+
+### Response Fields
 
 <ResponseField name="data.uuid" type="string">
 Unique wallet identifier. Use this for all subsequent operations.

@@ -1,0 +1,245 @@
+---
+title: "Identity Provider"
+description: "Manage OIDC identity providers for Express API authentication, including creating, updating, retrieving, and deleting provider configurations."
+---
+
+## Overview
+
+Identity providers are essential for Express API authentication. They define how users authenticate and provide the necessary configuration for JWT token validation. Each provider includes an issuer, audience, and JWKS URI for secure token verification.
+
+<Info>
+You must configure at least one identity provider before users can authenticate with your Express API application.
+</Info>
+
+## Create Identity Provider
+
+Create a new identity provider configuration for your application.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.express.magiclabs.com/v1/identity/provider' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Magic-API-Key: your-magic-api-key' \
+  -H 'X-Magic-Secret-Key: your-magic-secret-key' \
+  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
+  -d '{
+    "issuer": "https://your-auth-provider.com",
+    "audience": "your-app-audience",
+    "jwks_uri": "https://your-auth-provider.com/.well-known/jwks.json"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "issuer": "https://your-auth-provider.com",
+  "audience": "your-app-audience",
+  "jwks_uri": "https://your-auth-provider.com/.well-known/jwks.json"
+}
+```
+
+### Request Parameters
+
+<ParamField body="issuer" type="string" required>
+The issuer identifier for your OIDC provider. This should match the `iss` claim in JWT tokens.
+</ParamField>
+
+<ParamField body="audience" type="string" required>
+The audience identifier for your application. This should match the `aud` claim in JWT tokens.
+</ParamField>
+
+<ParamField body="jwks_uri" type="string" required>
+The JSON Web Key Set URI where Magic can fetch public keys for JWT verification.
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="id" type="string">
+Unique identifier for the created identity provider.
+</ResponseField>
+
+<ResponseField name="issuer" type="string">
+The issuer identifier returned from the request.
+</ResponseField>
+
+<ResponseField name="audience" type="string">
+The audience identifier returned from the request.
+</ResponseField>
+
+<ResponseField name="jwks_uri" type="string">
+The JWKS URI returned from the request.
+</ResponseField>
+
+## Get Identity Providers
+
+Retrieve all configured identity providers for your application.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://tee.express.magiclabs.com/v1/identity/provider' \
+  -H 'X-Magic-API-Key: your-magic-api-key' \
+  -H 'X-Magic-Secret-Key: your-magic-secret-key' \
+  -H 'X-OIDC-Provider-ID: your-oidc-provider-id'
+```
+
+**Response:**
+
+```json
+[
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "issuer": "https://your-auth-provider.com",
+    "audience": "your-app-audience",
+    "jwks_uri": "https://your-auth-provider.com/.well-known/jwks.json"
+  }
+]
+```
+
+### Response Fields
+
+<ResponseField name="providers" type="array">
+Array of identity provider objects.
+
+<Expandable title="Provider object">
+<ResponseField name="id" type="string">
+Unique identifier for the identity provider.
+</ResponseField>
+
+<ResponseField name="issuer" type="string">
+The issuer identifier for the provider.
+</ResponseField>
+
+<ResponseField name="audience" type="string">
+The audience identifier for the provider.
+</ResponseField>
+
+<ResponseField name="jwks_uri" type="string">
+The JWKS URI for the provider.
+</ResponseField>
+</Expandable>
+</ResponseField>
+
+## Update Identity Provider
+
+Update an existing identity provider configuration.
+
+```bash cURL icon="square-terminal"
+curl -X PATCH 'https://tee.express.magiclabs.com/v1/identity/provider/{id}' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Magic-API-Key: your-magic-api-key' \
+  -H 'X-Magic-Secret-Key: your-magic-secret-key' \
+  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
+  -d '{
+    "issuer": "https://updated-auth-provider.com",
+    "audience": "updated-app-audience",
+    "jwks_uri": "https://updated-auth-provider.com/.well-known/jwks.json"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "id": "your-passed-in-id",
+  "issuer": "https://updated-auth-provider.com",
+  "audience": "updated-app-audience",
+  "jwks_uri": "https://updated-auth-provider.com/.well-known/jwks.json"
+}
+```
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+The unique identifier of the identity provider to update.
+</ParamField>
+
+### Request Parameters
+
+<ParamField body="issuer" type="string" required>
+The updated issuer identifier for your OIDC provider.
+</ParamField>
+
+<ParamField body="audience" type="string" required>
+The updated audience identifier for your application.
+</ParamField>
+
+<ParamField body="jwks_uri" type="string" required>
+The updated JSON Web Key Set URI.
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="id" type="string">
+The identity provider ID (unchanged).
+</ResponseField>
+
+<ResponseField name="issuer" type="string">
+The updated issuer identifier.
+</ResponseField>
+
+<ResponseField name="audience" type="string">
+The updated audience identifier.
+</ResponseField>
+
+<ResponseField name="jwks_uri" type="string">
+The updated JWKS URI.
+</ResponseField>
+
+## Delete Identity Provider
+
+Remove an identity provider configuration from your application.
+
+```bash cURL icon="square-terminal"
+curl -X DELETE 'https://tee.express.magiclabs.com/v1/identity/provider/{id}' \
+  -H 'X-Magic-API-Key: your-magic-api-key' \
+  -H 'X-Magic-Secret-Key: your-magic-secret-key' \
+  -H 'X-OIDC-Provider-ID: your-oidc-provider-id'
+```
+
+**Response:**
+
+```json
+No content (204 status code)
+```
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+The unique identifier of the identity provider to delete.
+</ParamField>
+
+<Warning>
+Deleting an identity provider will prevent users authenticated through that provider from accessing your Express API. Ensure you have alternative authentication methods configured before deletion.
+</Warning>
+
+## Common Use Cases
+
+### Auth0 Integration
+
+```json
+{
+  "issuer": "https://your-domain.auth0.com/",
+  "audience": "https://your-api-identifier",
+  "jwks_uri": "https://your-domain.auth0.com/.well-known/jwks.json"
+}
+```
+
+### Firebase Auth Integration
+
+```json
+{
+  "issuer": "https://securetoken.google.com/your-project-id",
+  "audience": "your-project-id",
+  "jwks_uri": "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"
+}
+```
+
+### Custom OIDC Provider
+
+```json
+{
+  "issuer": "https://your-custom-provider.com",
+  "audience": "your-app-client-id",
+  "jwks_uri": "https://your-custom-provider.com/.well-known/jwks.json"
+}
+```
