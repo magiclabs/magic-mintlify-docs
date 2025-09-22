@@ -1,0 +1,44 @@
+---
+title: "Overview"
+description: "Introduction to Magic's Core API - server-side wallet management with AWS Nitro TEE security"
+---
+
+## Overview
+
+Magic's Core API is a server-side wallet management solution that provides enterprise-grade security through AWS Nitro Trusted Execution Environment (TEE). Unlike traditional wallet solutions, Core API operates entirely server-side, giving you complete control over your wallet infrastructure while maintaining the highest security standards.
+
+### Key Benefits
+
+- **Server-side only**: No client-side dependencies, iframes, or local sessions
+- **Multi-chain support**: EVM chains, Solana, and Bitcoin
+- **Enterprise security**: AWS Nitro TEE protection for all key operations
+- **Flexible architecture**: Integrate with any tech stack
+- **Key sharding**: Advanced cryptographic key management
+
+<Info>
+Core API is designed for developers who need maximum control over their wallet infrastructure. It's ideal for applications requiring custom key management, compliance with specific regulations, or integration with existing backend systems.
+</Info>
+
+<Warning>
+Core API provides the tools for both custodial and non-custodial implementations. The choice depends on how you manage the `encryption_context` and key shards. Consult legal professionals about custodial vs non-custodial distinctions in your target markets.
+</Warning>
+
+## Use Cases
+
+<CardGroup cols={2}>
+<Card title="DeFi Applications" icon="coins">
+Create wallets for users to interact with DeFi protocols. Users maintain control through passphrase-based `encryption_context`.
+</Card>
+
+<Card title="NFT Marketplaces" icon="image">
+Enable users to create wallets for NFT trading while maintaining non-custodial control over their assets.
+</Card>
+
+<Card title="Enterprise Solutions" icon="building">
+Build enterprise-grade wallet infrastructure for businesses while ensuring users maintain full control over their assets.
+</Card>
+
+<Card title="Cross-Chain Bridges" icon="link">
+Support multiple blockchain networks (EVM, Solana, Bitcoin) with unified wallet management.
+</Card>
+</CardGroup>

@@ -13,11 +13,11 @@ If you want to jump straight into the code, check out this [GitHub Repository](h
 Navigate to your project directory and install the Magic SDK as a project dependency.
 
 <CodeGroup>
-```bash NPM
+```bash NPM icon="npm"
 npm install magic-sdk
 ```
 
-```bash Yarn
+```bash Yarn icon="yarn"
 yarn add magic-sdk
 ```
 </CodeGroup>
@@ -93,13 +93,13 @@ export default MagicProvider;
 
 When you want to use the Magic instance, import the hook and destructure the required properties from it, which in this case is the Magic instance itself.
 
-```typescript
+```typescript TypeScript icon="square-js"
 const { magic } = useMagic();
 ```
 
 In a separate file, create a hook to initialize your web3 instance. For this quickstart we will be using the Web3.js library but you can use other web3 blockchain libraries such as Ethers.js.
 
-```typescript
+```typescript TypeScript icon="square-js"
 import { Web3 } from  'web3';
 import { useEffect, useState } from  'react';
 import { useMagic } from  './MagicProvider';
@@ -124,7 +124,7 @@ export default useWeb3;
 
 Now whenever you need to use the web3 instance, import the hook into the file you need it in and call it within your component to get the web3 instance.
 
-```typescript
+```typescript TypeScript icon="square-js"
 const web3 = useWeb3();
 ```
 
@@ -144,7 +144,7 @@ Display the authenticated user's wallet with `magic.wallet.showUI()`. This will 
 
 One thing you may want to do is retrieve the address and balance of a logged in user. To do this, call the getInfo function and set it as a variable. Then on that variable call the publicAddress property to get the user's address.
 
-```typescript
+```typescript TypeScript icon="square-js"
 const metadata = await magic?.user.getInfo();
 const publicAddress = metadata.publicAddress;
 ```
@@ -155,7 +155,7 @@ To get the token balance of a user, import the web3 instance and then inside an 
 
 In this we will be using the web3 instance mentioned earlier.
 
-```typescript
+```typescript TypeScript icon="square-js"
 const web3 = useWeb3();
 const balance = await web3.eth.getBalance(publicAddress);
 ```
@@ -166,7 +166,7 @@ Magic integrates with all popular blockchain libraries so that you don't have to
 
 Here is an example of sending a transaction:
 
-```typescript
+```typescript TypeScript icon="square-js"
 async function sendEth(amount: number, recipientAddress: string) {
   const metadata = await magic?.user.getInfo();
   const senderAddress = metadata.publicAddress;
