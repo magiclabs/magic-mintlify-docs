@@ -47,7 +47,7 @@
         "groups": [
           {
             "group": "API Wallets",
-            "pages": ["docs/api-wallets/api-wallets"]
+            "pages": ["docs/api-wallets/introduction"]
           },
           {
             "group": "Express API",
@@ -86,6 +86,7 @@
           {
             "group": "Embedded Wallets",
             "pages": [
+              "docs/embedded-wallet/introduction",
               {
                 "group": "Quickstart",
                 "pages": [
