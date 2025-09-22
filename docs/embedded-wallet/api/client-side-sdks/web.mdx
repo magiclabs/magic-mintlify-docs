@@ -15,7 +15,7 @@ To use Magic in your application, install the `magic-sdk` dependency.
 <Info>
 **NOTE**
 
-⁠If you're integrating with [OAuth](/docs/embedded-wallet/api/client-side-sdks/web#o-auth-module), [OpenID](#open-id-module) or [WebAuthn](/docs/embedded-wallet/api/client-side-sdks/web#web-authn-module), additional dependencies are needed. You'll find the installation instructions in their dedicated sections within this documentation.
+⁠If you're integrating with [OAuth](/docs/embedded-wallet/api/client-side-sdks/web#o-auth-module) or [OpenID](#open-id-module), additional dependencies are needed. You'll find the installation instructions in their dedicated sections within this documentation.
 
 </Info>
 
@@ -107,80 +107,18 @@ magic.preload;
 
 ## Auth Module
 
-### `loginWithMagicLink`
-
-Authenticate a user passwordlessly using a "magic link" sent to the specified user's email address.
-
-**Arguments**
-
-- `email` (String): The user email to log in with
-- `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
-- `showUI?` (Boolean): If `true`, show an out-of-the-box UI to accept the OTP from user. Defaults to `true`
-- `redirectURI?` (String): You can provide a redirect URI that Magic will point to after the user clicks their email link. If included, don't forget to call [`loginWithCredential`](#loginwithcredential) at the specified redirect location
-
-⁠**Note**: If you are securing a resource server and have your own signup flow after this call resolves, be mindful of where you're calling signup in your implementation to avoid potential concurrency issues!
-
-**Returns**
-
-- `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
-
-**Example**
+The Auth Module and it's members are accessible on the Magic SDK instance by the `auth` property.
 
 ```Javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
-// log in a user by their email
-try {
-  await magic.auth.loginWithMagicLink({ email: 'hello@example.com' });
-} catch {
-  // Handle errors if required!
-}
-
-// log in a user by their email, without showing an out-of-the box UI.
-try {
-  await magic.auth.loginWithMagicLink({ email: 'hello@example.com', showUI: false });
-} catch {
-  // Handle errors if required!
-}
+magic.auth;
+magic.auth.loginWithEmailOTP;
+magic.auth.loginWithSMS;
+⁠magic.auth.updateEmailWithUI;
 ```
-
-**Error Handling**
-
-[Relevant Error Codes](#error-codes)
-
-To achieve a fully white-labeled experience, you will need to implement some custom error handling according to your UI needs. Here's a short example to illustrate how errors can be caught and identified by their code:
-
-```Javascript JavaScript icon="square-js"
-import { Magic, RPCError, RPCErrorCode } from 'magic-sdk';
-
-const magic = new Magic('PUBLISHABLE_API_KEY');
-
-try {
-  await magic.auth.loginWithMagicLink({ email: 'hello@example.com', showUI: false });
-} catch (err) {
-  if (err instanceof RPCError) {
-    switch (err.code) {
-      case RPCErrorCode.MagicLinkFailedVerification:
-      case RPCErrorCode.MagicLinkExpired:
-      case RPCErrorCode.MagicLinkRateLimited:
-      case RPCErrorCode.UserAlreadyLoggedIn:
-        // Handle errors accordingly
-        break;
-    }
-  }
-}
-```
-
-**Events**
-
-|                         |                                                                                             |
-| ----------------------- | ------------------------------------------------------------------------------------------- |
-| Event Name              | Definition                                                                                  |
-| `email-not-deliverable` | Dispatched if the magic link email is unable to be delivered.                               |
-| `email-sent`            | Dispatched when the magic link email has been successfully sent from the Magic Link server. |
-| `retry`                 | Dispatched when the user restarts the flow. This can only happen if `showUI: true`.         |
 
 ### `loginWithEmailOTP`
 
@@ -430,74 +368,6 @@ try {
   }
 }
 ```
-
-
-### `loginWithCredential`
-
-
-Authenticate a user via a "Magic Credential," a special, one-time-use DID Token created by the user to hydrate their authentication between page reloads. For example: when executing the [`loginWithMagicLink`](#loginwithmagiclink) flow with a `redirectURI` specified, you can invoke this method to complete the authentication "callback," similar in principal to OAuth 2.0 flows.
-
-If given **no arguments**, this method will parse the credential token automatically from `window.location.search`.
-
-**Arguments**
-
-* `credentialOrQueryString` (String): A credential token _or_ a valid query string (prefixed with `?` or `#`). By default, this method will look for the a credential token on the `magic_credential` key of `window.location.search`
-
-**Returns**
-
-* `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
-
-**Example**
-
-From your login page:
-
-```Javascript JavaScript icon="square-js"
-import { Magic } from 'magic-sdk';
-
-const magic = new Magic('PUBLISHABLE_API_KEY');
-
-try {
-  await magic.auth.loginWithMagicLink({
-    email: 'hello@example.com',
-    redirectURI: 'https://yourdomain.com/your/magic/link/callback',
-  });
-
-  // When the user clicks their magic link, they will be logged-in here
-  // and in the "callback" context.
-} catch {
-  // Handle errors if required!
-}
-```
-
-From your authentication callback page:
-
-```Javascript JavaScript icon="square-js"
-import { Magic } from "magic-sdk";
-
-const magic = new Magic('PUBLISHABLE_API_KEY');
-
-try {
-  await magic.auth.loginWithCredential();
-} catch {
-  // Handle errors if required!
-}
-
-// You can also provide the credential yourself
-try {
-  await magic.auth.loginWithCredential('iamacredentialtoken');
-} catch {
-  // Handle errors if required!
-}
-
-// You can also provide the credential as a query string
-try {
-  await magic.auth.loginWithCredential(window.location.search);
-} catch {
-  // Handle errors if required!
-}
-```
-
-
 
 ### `updateEmailWithUI`
 
@@ -1628,308 +1498,6 @@ const DID = await magic.openid.loginWithOIDC({
 });
 ```
 
-## WebAuthn Module
-
-The WebAuthn Module and it's members are accessible on the Magic SDK instance by the `webauthn` property.
-
-To use the WebAuthn Module in your application, install `@magic-ext/webauthn` along with `magic-sdk`.
-
-```Javascript JavaScript icon="square-js"
-import { Magic } from "magic-sdk";
-import { WebAuthnExtension } from "@magic-ext/webauthn";
-
-const magic = new Magic('PUBLISHABLE_API_KEY', {
-  extensions: [new WebAuthnExtension()],
-});
-
-magic.webauthn;
-magic.webauthn.registerNewUser;
-magic.webauthn.login;
-magic.webauthn.getMetadata;
-magic.webauthn.registerNewDevice;
-magic.webauthn.updateInfo;
-magic.webauthn.unregisterDevice;
-```
-
-### `registerNewUser`
-
-Registers a new WebAuthn user.
-
-**Arguments**
-
-- `username` (String): The username to register with
-- `nickname?` (String): The nickname of the WebAuthn device the user wants to set
-
-**Returns**
-
-- `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
-
-**Example**
-
-```Javascript JavaScript icon="square-js"
-import { Magic } from "magic-sdk";
-import { WebAuthnExtension } from "@magic-ext/webauthn";
-
-const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
-});
-
-// register a user by their username
-try {
-  const token = await magic.webauthn.registerNewUser({ username: 'username' });
-} catch (e) {
-  // Handle errors if required!
-}
-
-// log in a user by their username and set webauthn device nickname.
-try {
-  const token = await magic.webauthn.registerNewUser({ username: 'username', nickname: 'nickname' });
-} catch (e) {
-  // Handle errors if required!
-}
-```
-
-**Error**
-
-```Javascript JavaScript icon="square-js"
-import { Magic, SDKErrorCode } from "magic-sdk";
-import { WebAuthnExtension } from "@magic-ext/webauthn";
-
-const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
-});
-
-try {
-  await magic.webauthn.registerNewUser({ username: 'username' });
-} catch (err) {
-  if (err instanceof SDKErrorCode) {
-    switch (err.code) {
-      case SDKErrorCode.WebAuthnNotSupported:
-      case SDKErrorCode.WebAuthnCreateCredentialError:
-      // Handle errors accordingly
-      break;
-    }
-  }
-}
-```
-
-### `login`
-
-Logs in a registered WebAuthn user.
-
-**Arguments**
-
-- `username` (String): The username to log in with
-
-**Returns**
-
-- `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
-
-**Example**
-
-```Javascript JavaScript icon="square-js"
-import { Magic } from "magic-sdk";
-import { WebAuthnExtension } from "@magic-ext/webauthn";
-
-const magic = new Magic('YOUR API KEY', {
-extensions: [new WebAuthnExtension()],
-});
-
-// login a user by their username
-try {
-  const token = await magic.webauthn.login({ username: 'username' });
-} catch (e) {
-  // Handle errors if required!
-}
-```
-
-**Error**
-
-```Javascript JavaScript icon="square-js"
-import { Magic, SDKErrorCode } from "magic-sdk";
-import { WebAuthnExtension } from "@magic-ext/webauthn";
-
-const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
-});
-
-try {
-  await magic.webauthn.login({ username: 'username' });
-} catch (err) {
-  if (err instanceof SDKErrorCode) {
-    switch (err.code) {
-      case SDKErrorCode.WebAuthnNotSupported:
-      case SDKErrorCode.WebAuthnCreateCredentialError:
-      // Handle errors accordingly
-      break;
-    }
-  }
-}
-```
-
-### `getMetadata`
-
-Returns information about the currently logged in user.
-
-**Arguments**
-
-- _None_
-
-**Returns**
-
-- `PromiEvent<object | null>`: an object containing the WebAuthn devices information and username of the authenticated user
-  - `devicesInfo` (Array): List of devices info contains device ID, device nickname, transport, user agent
-  - `username` (String): Username of the authenticated user
-
-**Example**
-
-```Javascript JavaScript icon="square-js"
-import { Magic, SDKErrorCode } from "magic-sdk";
-import { WebAuthnExtension } from "@magic-ext/webauthn";
-
-const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
-});
-
-// Initiates the flow to get webauthn metadata for current account.
-try {
-  const metadata = await magic.webauthn.getMetadata();
-
-  // webauthn metadata
-  {
-    "devicesInfo": [
-      {
-      "id": "EjI_EFJhB6cdCj6rHPRHUcFCn6NnywALuWjQyPe0_dI=",
-      "nickname": "",
-      "transport": "internal",
-      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36"
-      }
-    ],
-    "username": "username"
-  }
-
-} catch (e) {
-  // Handle errors if required!
-}
-```
-
-### `registerNewDevice`
-
-Registers a new WebAuthn device.
-
-**Arguments**
-
-- `nickname` (String): The nickname of the WebAuthn device the user wants to set
-
-**Returns**
-
-- `PromiEvent<boolean>`: The promise resolves with a true boolean value if register webauthn device is successful and rejects with a specific error code if the request fails.
-
-**Example**
-
-```Javascript JavaScript icon="square-js"
-import { Magic, SDKErrorCode } from "magic-sdk";
-import { WebAuthnExtension } from "@magic-ext/webauthn";
-
-const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
-});
-
-// Initiates the flow to a new WebAuthn Device for current account.
-try {
-  await magic.webauthn.registerNewDevice('new device nickname');
-} catch (e) {
-  // Handle errors if required!
-}
-```
-
-**Error**
-
-```Javascript JavaScript icon="square-js"
-
-import { Magic, SDKErrorCode } from "magic-sdk";
-import { WebAuthnExtension } from "@magic-ext/webauthn";
-
-const magic = new Magic('YOUR API KEY', {
-extensions: [new WebAuthnExtension()],
-});
-
-try {
-  await magic.webauthn.registerNewDevice('new device nickname');
-} catch (err) {
-  if (err instanceof SDKErrorCode) {
-    switch (err.code) {
-      case SDKErrorCode.WebAuthnNotSupported:
-      case SDKErrorCode.WebAuthnCreateCredentialError:
-      // Handle errors accordingly
-      break;
-    }
-  }
-}
-```
-
-### `updateInfo`
-
-Allows a user to update their device nickname.
-
-**Arguments**
-
-- `nickname` (String): The nickname of the WebAuthn device the user wants to set
-- `id` (String): The WebAuthn ID returned from `getMetaData` function's `devicesInfo` field
-
-**Returns**
-
-- `PromiEvent<boolean>`: The promise resolves with a true boolean value if update webauthn device nickname is successful and rejects with a specific error code if the request fails
-
-**Example**
-
-```Javascript JavaScript icon="square-js"
-import { Magic, SDKErrorCode } from "magic-sdk";
-import { WebAuthnExtension } from "@magic-ext/webauthn";
-
-const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
-});
-
-// Initiates the flow to update WebAuthn Device's nickname.
-try {
-  await magic.webauthn.updateInfo({ id, nickname });
-} catch (e) {
-  // Handle errors if required!
-}
-```
-
-### `unregisterDevice`
-
-Unregisters a user's device.
-
-**Arguments**
-
-- `id` (String): The WebAuthn ID returned from `getMetaData` function's `devicesInfo` field
-
-**Returns**
-
-- `PromiEvent<boolean>`: The promise resolves with a true boolean value if unregister webauthn device is successful and rejects with a specific error code if the request fails
-
-**Example**
-
-```Javascript JavaScript icon="square-js"
-import { Magic, SDKErrorCode } from "magic-sdk";
-import { WebAuthnExtension } from "@magic-ext/webauthn";
-
-const magic = new Magic('YOUR API KEY', {
-  extensions: [new WebAuthnExtension()],
-});
-
-// Initiates the flow to unregister WebAuthn Device.
-try {
-  // Assuming user is logged in
-  await magic.webauthn.unregisterDevice(id);
-} catch (e) {
-  // Handle errors if required!
-}
-```
-
 ## Response and Error Handling
 
 There are three types of error class to be aware of when working with Magic's client-side JavaScript SDK:
@@ -1999,7 +1567,6 @@ try {
 ```Javascript JavaScript icon="square-js"
 import { RPCErrorCode } from "magic-sdk";
 
-RPCErrorCode.MagicLinkExpired;
 RPCErrorCode.UserAlreadyLoggedIn;
 RPCErrorCode.ParseError;
 RPCErrorCode.MethodNotFound;
@@ -2008,15 +1575,11 @@ RPCErrorCode.InternalError;
 // Please reference the `Enum Key` column of the error table below.
 ```
 
-### Magic Link Error Codes
+### Magic Error Codes
 
 |        |                               |                                                                                                                                                                   |
 | ------ | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Code   | Enum Key                      | Description                                                                                                                                                       |
-| -10000 | `MagicLinkFailedVerification` | The magic link failed verification, possibly due to an internal service error or a generic network error.                                                         |
-| -10001 | `MagicLinkExpired`            | The user clicked their magic link after it had expired (this can happen if the user takes more than 20 minutes to check their email).                             |
-| -10002 | `MagicLinkRateLimited`        | If the `showUI` parameter is set to `false`, this error will communicate the email rate limit has been reached. Please debounce your method calls if this occurs. |
-| -10006 | `MagicLinkInvalidRedirectURL` | If using the `redirectURI` parameter for the magic link flow, this error is recevied if the provided value is invalid for some reason.                            |
 | -10003 | `UserAlreadyLoggedIn`         | A user is already logged in. If a new user should replace the existing user, make sure to call [`logout`](#logout) before proceeding.                             |
 | -10004 | `UpdateEmailFailed`           | An update email request was unsuccessful, either due to an invalid email being supplied or the user canceled the action.                                          |
 | -10005 | `UserRequestEditEmail`        | The user has stopped the login request because they want to edit the provided email.                                                                              |
@@ -2078,7 +1641,7 @@ req
 
 ## EVM RPC Methods
 
-Magic supports the following EVM RPC Methods that can be called through a web3 provider library such as `web3.js` or `ethers.js`.
+Magic supports the following EVM RPC Methods that can be called through a web3 provider library such as `ethers.js`.
 
 **Note**: starting from `magic-sdk@17.0.0`, `eth_accounts` will return an empty array if no user is logged in, instead of prompting the login form. To prompt the login form, use `connectWithUI()`.
 

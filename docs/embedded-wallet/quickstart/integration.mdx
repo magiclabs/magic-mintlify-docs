@@ -33,7 +33,7 @@ Grab your Magic **Publishable** API Key from your [Magic Dashboard](https://dash
 
 ## Initialize Magic
 
-To get started, simply initialize an instance of Magic with your Publishable API Key and your choice of blockchain. Then initialize your chosen blockchain library, like Web3.js or Ethers.js, with the RPC provider in a separate file.
+To get started, simply initialize an instance of Magic with your Publishable API Key and your choice of blockchain. Then initialize your chosen blockchain library, like Ethers.js, with the RPC provider in a separate file.
 Here's how you would initialize the Magic instance.
 
 ```typescript TypeScript icon="square-js"
@@ -191,7 +191,7 @@ async function sendEth(amount: number, recipientAddress: string) {
 
 ## Customize Your App
 
-This application uses our Dedicated Wallet. The Dedicated Wallet meets the widest variety of needs while still being incredibly simple to implement. In addition to the baked-in [Login UI](/docs/embedded-wallet/authentication/customization/login-ui), it has plenty of customization options, supports [social login](/docs/embedded-wallet/authentication/login/social-logins/oauth-implementation) through providers like GitHub and Discord, allows for [enterprise multi-factor authentication](/docs/embedded-wallet/authentication/features/advanced-mfa), and more.
+This application uses our Dedicated Wallet. The Dedicated Wallet meets the widest variety of needs while still being incredibly simple to implement. In addition to the baked-in [Login UI](/docs/embedded-wallet/authentication/customization/login-ui), it has plenty of customization options, supports [social login](/docs/embedded-wallet/authentication/login/oauth/oauth-implementation) through providers like GitHub and Discord, allows for [enterprise multi-factor authentication](/docs/embedded-wallet/authentication/features/advanced-mfa), and more.
 
 ## Next Steps
 
@@ -199,7 +199,7 @@ We have a suite of resources to help developers and companies with a wide variet
 
 - Take a look at this demo's [GitHub Repository](https://github.com/magiclabs/embedded-wallet-quickstart) or [CodeSandbox](https://codesandbox.io/s/magic-embedded-wallet-quickstart-7h8wj)
 
-- Add support for OAuth social providers like [Google](/docs/embedded-wallet/authentication/login/social-logins/social-providers/google), [GitHub](/docs/embedded-wallet/authentication/login/social-logins/social-providers/github), and [Discord](/docs/embedded-wallet/authentication/login/social-logins/social-providers/discord)
+- Add support for OAuth social providers like [Google](/docs/embedded-wallet/authentication/login/oauth/social-providers/google), [GitHub](/docs/embedded-wallet/authentication/login/oauth/social-providers/github), and [Discord](/docs/embedded-wallet/authentication/login/oauth/social-providers/discord)
 
 - Add support for one or more of the [25+ blockchains accessible through Magic](/docs/embedded-wallet/blockchains/overview)
 

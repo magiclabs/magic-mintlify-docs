@@ -452,10 +452,10 @@ try {
 |     |     |
 | --- | --- |
 | Event Name | Definition |
-| `new-email-confirmed` | Dispatched when the magic link has been clicked from the user’s new email address. |
-| `email-sent` | Dispatched when the magic link email has been successfully sent from the Magic Link server to the user’s new email address. |
-| `email-not-deliverable` | Dispatched if the magic link email is unable to be delivered to the user’s new email address. |
-| `old-email-confirmed` | Dispatched when the magic link has been clicked from the user’s previous email address. |
+| `new-email-confirmed` | Dispatched when the OTP from the user’s new email address has been confirmed. |
+| `email-sent` | Dispatched when the email OTP has been successfully sent from the Magic server to the user’s new email address. |
+| `email-not-deliverable` | Dispatched if the email is unable to be delivered to the user’s new email address. |
+| `old-email-confirmed` | Dispatched when the OTP from the user’s previous email address has been confirmed. |
 | `retry` | Dispatched when the user restarts the flow. This can only happen if `showUI: true`. |
 
 ## Wallet Module
@@ -1181,19 +1181,15 @@ RPCErrorCode.InternalError;
 // Please reference the `Enum Key` column of the error table below.
 ```
 
-### Magic Link Error Codes
+### Magic Error Codes
 
 |        |                               |                                                                                                                                                                   |
 | ------ | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Code   | Enum Key                      | Description                                                                                                                                                       |
-| -10000 | `MagicLinkFailedVerification` | The magic link failed verification, possibly due to an internal service error or a generic network error.                                                         |
-| -10001 | `MagicLinkExpired`            | The user clicked their magic link after it had expired (this can happen if the user takes more than 10 minutes to check their email).                             |
-| -10002 | `MagicLinkRateLimited`        | If the `showUI` parameter is set to `false`, this error will communicate the email rate limit has been reached. Please debounce your method calls if this occurs. |
-| -10006 | `MagicLinkInvalidRedirectURL` | If using the `redirectURI` parameter for the magic link flow, this error is recevied if the provided value is invalid for some reason.                            |
 | -10003 | `UserAlreadyLoggedIn`         | A user is already logged in. If a new user should replace the existing user, make sure to call [`logout`](#logout) before proceeding.                             |
 | -10004 | `UpdateEmailFailed`           | An update email request was unsuccessful, either due to an invalid email being supplied or the user canceled the action.                                          |
 | -10005 | `UserRequestEditEmail`        | The user has stopped the login request because they want to edit the provided email.                                                                              |
-| -10010 | `InactiveRecipient`           | We were unable to deliver a Magic Link to the specified email address. The email address might be invalid.                                                        |
+| -10010 | `InactiveRecipient`           | We were unable to deliver an OTP to the specified email address. The email address might be invalid.                                                        |
 | -10011 | `AccessDeniedToUser`          | User denied account access.                                                                                                                                       |
 | -10015 | `RedirectLoginComplete`       | User has already completed authentication in the redirect window.                                                                                                 |
 
@@ -1295,7 +1291,7 @@ req
 
 ### EVM RPC Methods
 
-Magic supports the following EVM RPC Methods that can be called through a web3 provider library such as `web3.js` or `ethers.js`.
+Magic supports the following EVM RPC Methods that can be called through a web3 provider library such as `ethers.js`.
 
 **Note**: starting from `magic-sdk@17.0.0`, `eth_accounts` will return an empty array if no user is logged in, instead of prompting the login form. To prompt the login form, use `connectWithUI()`.
 

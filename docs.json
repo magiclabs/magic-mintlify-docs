@@ -106,33 +106,31 @@
                 "group": "Login",
                 "pages": [
                   "docs/embedded-wallet/authentication/login/email-otp",
-                  "docs/embedded-wallet/authentication/login/magic-links",
-                  "docs/embedded-wallet/authentication/login/sms-login",
+                  "docs/embedded-wallet/authentication/login/sms",
                   {
-                    "group": "Social Logins",
+                    "group": "OAuth",
                     "pages": [
-                      "docs/embedded-wallet/authentication/login/social-logins/oauth-implementation",
+                      "docs/embedded-wallet/authentication/login/oauth/oauth-implementation",
                       {
                         "group": "Social Providers",
                         "pages": [
-                          "docs/embedded-wallet/authentication/login/social-logins/social-providers/google",
-                          "docs/embedded-wallet/authentication/login/social-logins/social-providers/facebook",
-                          "docs/embedded-wallet/authentication/login/social-logins/social-providers/twitter",
-                          "docs/embedded-wallet/authentication/login/social-logins/social-providers/apple",
-                          "docs/embedded-wallet/authentication/login/social-logins/social-providers/discord",
-                          "docs/embedded-wallet/authentication/login/social-logins/social-providers/github",
-                          "docs/embedded-wallet/authentication/login/social-logins/social-providers/linkedin",
-                          "docs/embedded-wallet/authentication/login/social-logins/social-providers/bitbucket",
-                          "docs/embedded-wallet/authentication/login/social-logins/social-providers/twitch",
-                          "docs/embedded-wallet/authentication/login/social-logins/social-providers/microsoft",
-                          "docs/embedded-wallet/authentication/login/social-logins/social-providers/gitlab",
-                          "docs/embedded-wallet/authentication/login/social-logins/social-providers/telegram"
+                          "docs/embedded-wallet/authentication/login/oauth/social-providers/google",
+                          "docs/embedded-wallet/authentication/login/oauth/social-providers/facebook",
+                          "docs/embedded-wallet/authentication/login/oauth/social-providers/twitter",
+                          "docs/embedded-wallet/authentication/login/oauth/social-providers/apple",
+                          "docs/embedded-wallet/authentication/login/oauth/social-providers/discord",
+                          "docs/embedded-wallet/authentication/login/oauth/social-providers/github",
+                          "docs/embedded-wallet/authentication/login/oauth/social-providers/linkedin",
+                          "docs/embedded-wallet/authentication/login/oauth/social-providers/bitbucket",
+                          "docs/embedded-wallet/authentication/login/oauth/social-providers/twitch",
+                          "docs/embedded-wallet/authentication/login/oauth/social-providers/microsoft",
+                          "docs/embedded-wallet/authentication/login/oauth/social-providers/gitlab",
+                          "docs/embedded-wallet/authentication/login/oauth/social-providers/telegram"
                         ]
                       }
                     ]
                   },
-                  "docs/embedded-wallet/authentication/login/farcaster",
-                  "docs/embedded-wallet/authentication/login/webauthn"
+                  "docs/embedded-wallet/authentication/login/farcaster"
                 ]
               },
               {
@@ -175,8 +173,7 @@
                     ]
                   },
                   "docs/embedded-wallet/authentication/security/device-registration",
-                  "docs/embedded-wallet/authentication/security/session-management",
-                  "docs/embedded-wallet/authentication/security/magic-link-security-check"
+                  "docs/embedded-wallet/authentication/security/session-management"
                 ]
               }
             ]
@@ -225,7 +222,7 @@
             "pages": [
               "docs/embedded-wallet/api/overview",
               {
-                "group": "Client Side SDKs",
+                "group": "Client-side",
                 "pages": [
                   "docs/embedded-wallet/api/client-side-sdks/web",
                   "docs/embedded-wallet/api/client-side-sdks/react-native",
@@ -235,7 +232,7 @@
                 ]
               },
               {
-                "group": "Server-side SDKs",
+                "group": "Server-side",
                 "pages": [
                   "docs/embedded-wallet/api/server-side-sdks/overview",
                   "docs/embedded-wallet/api/server-side-sdks/python",

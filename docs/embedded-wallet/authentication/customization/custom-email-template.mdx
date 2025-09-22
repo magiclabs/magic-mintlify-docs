@@ -12,7 +12,7 @@ import { GrowthPlanCallout } from "/snippets/paid-feature-callouts.mdx";
   <img src="/images/image.png" />
 </Frame>
 
-Magic's Custom Email Template feature allows you to fully tailor your app's login email using your own custom HTML. With this feature, developers can customize emails that use one-time passcodes or magic links.
+Magic's Custom Email Template feature allows you to fully tailor your app's login email using your own custom HTML. With this feature, developers can customize emails that use one-time passcodes.
 
 **Note: Custom email templates require using your own existing email provider.** You can register a custom email provider through the Settings page in the Magic dashboard. This feature is available to developers on our Growth or Enterprise Plans - you can head [here](https://magic.link/pricing) to learn more.
 
@@ -23,7 +23,6 @@ Custom Email Templates can be figured in the [Magic dashboard](https://dashboard
 The following is a list of variables that can be used when creating a custom email template in Magic. From the dashboard editor, variables must be wrapped in `{{}}` in order to be resolved to their value. For example, to use the one-time passcode, insert `{{otp}}` into the template.
 
 - `otp`: One-time passcode. Example: 412320
-- `magic_link`: Magic link URL. Example: “https://auth.magic.link/confirm?tlt=eyJh…”
 - `app.name`: The name of the application. Example: “My test app”
 - `user.email`: Email address of the user receiving the login email. Example: joe@magic.link
 - `template.locale`: Language of the user receiving the login email. Example: en_US
@@ -55,12 +54,4 @@ magic.auth.loginWithEmailOTP({
     variation: 'template name',
   }
 })⁠
-
-//magic link⁠
-magic.auth.loginWithMagicLink({
-  email: 'john@example.com',
-  overrides: {
-    variation: 'template name',
-  }
-})
 ```

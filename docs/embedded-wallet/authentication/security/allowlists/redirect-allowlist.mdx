@@ -4,7 +4,7 @@ title: Redirect Allowlist
 
 ## Overview
 
-In the process of authenticating a user, the `redirectURI` parameter is utilized as a callback URL and will redirect users once the authentication is complete. For Magic, this is only relevant when using magic links or an OAuth provider (such as Google) as your user’s authentication method. For magic links, when using the [`loginWithMagicLink`](/docs/embedded-wallet/api/client-side-sdks/web) feature, you have the option to include a `redirectURI` value. If you do not include a `redirectURI`, the user will be asked to go back to the original tab to complete the login process. It's recommended to use a redirectURI for a smoother user experience.
+In the process of authenticating a user, the `redirectURI` parameter is utilized as a callback URL and will redirect users once the authentication is complete. For Magic, this is only relevant when using an OAuth provider (such as Google) as your user’s authentication method. For OAuth, when using the [`loginWithCredential`](/docs/embedded-wallet/api/client-side-sdks/web) feature, you have the option to include a `redirectURI` value. If you do not include a `redirectURI`, the user will be asked to go back to the original tab to complete the login process. It's recommended to use a redirectURI for a smoother user experience.
 
 ## Configuration
 
