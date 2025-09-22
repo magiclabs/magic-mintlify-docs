@@ -1,0 +1,161 @@
+---
+title: "Wallet Operations"
+description: "Create and manage wallets and wallet groups using Core API"
+---
+
+## Wallet Groups
+
+Wallet groups allow you to logically organize wallets for better management and organization.
+
+### Create Wallet Group
+
+Creates a new wallet group for organizing wallets.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet_group' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "metadata": {
+      "resource_id": "customer-resource-id"
+    }
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "data": {
+    "uuid": "7313a996-eb9c-4568-acef-f622a6b151fd",
+    "time_created": 1709931542,
+    "time_updated": 1709931542,
+    "metadata": {
+      "resource_id": "customer-resource-id"
+    }
+  }
+}
+```
+
+<ParamField body="metadata.resource_id" type="string">
+Optional identifier for the wallet group. Useful for organizing wallets by customer, project, or environment.
+</ParamField>
+
+<ResponseField name="data.uuid" type="string">
+Unique identifier for the created wallet group. Use this when creating wallets.
+</ResponseField>
+
+<ResponseField name="data.time_created" type="integer">
+Unix timestamp (UTC) when the wallet group was created.
+</ResponseField>
+
+<ResponseField name="data.time_updated" type="integer">
+Unix timestamp (UTC) when the wallet group was last updated.
+</ResponseField>
+
+### List Wallet Groups
+
+Retrieve all wallet groups for your application.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://tee.magiclabs.com/v1/api/wallet_groups' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX'
+```
+
+**Response:**
+
+```json
+{
+  "data": [
+    {
+      "uuid": "7313a996-eb9c-4568-acef-f622a6b151fd",
+      "time_created": 1709931542,
+      "time_updated": 1718035165,
+      "metadata": {
+        "resource_id": "customer-resource-id"
+      }
+    }
+  ]
+}
+```
+
+<ResponseField name="data" type="array">
+Array of wallet group objects, each containing the same fields as the create response.
+</ResponseField>
+
+## Wallet Management
+
+### Create Wallet
+
+Create a new wallet for a user. Returns the `recovery_key`, `access_key`, and wallet `uuid` for future operations.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "encryption_context": "hashed_passcode",
+    "network": "mainnet",
+    "wallet_group_id": "58a08494-3c83-439a-8a07-551f2022c3fc",
+    "metadata": {
+      "resource_id": "customer-resource-id"
+    }
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "data": {
+    "uuid": "e982b4a3-14d3-4d66-a3ac-fadfc3ae1875",
+    "time_created": 1709931542,
+    "time_updated": null,
+    "network": "mainnet",
+    "wallet_group_id": "58a08494-3c83-439a-8a07-551f2022c3fc",
+    "metadata": {
+      "resource_id": "customer-resource-id"
+    },
+    "key_type": "CORE",
+    "public_address": "0x797063FB2e3C31a8b9a10D7EDF6dE612d6aE7Fde",
+    "recovery_key": "3130cc5b8fb4c5a835067f8c1aba3872",
+    "access_key": "ebf0e16c5c22cd734083c803562b5dc0"
+  }
+}
+```
+
+<ParamField body="encryption_context" type="string" required>
+The context used to encrypt key shards. Should be derived from user input (e.g., hashed passphrase).
+</ParamField>
+
+<ParamField body="network" type="string" required>
+Target blockchain network. Values: `BTC_MAINNET`, `BTC_TESTNET`, `BTC_REGTEST` for Bitcoin; `SOL_MAINNET`, `SOL_TESTNET` for Solana; all other values create EVM wallet.
+</ParamField>
+
+<ParamField body="wallet_group_id" type="string">
+UUID of the wallet group to organize this wallet under.
+</ParamField>
+
+<ParamField body="metadata.resource_id" type="string">
+Optional identifier for the wallet (e.g., user ID, customer ID).
+</ParamField>
+
+<ResponseField name="data.uuid" type="string">
+Unique wallet identifier. Use this for all subsequent operations.
+</ResponseField>
+
+<ResponseField name="data.public_address" type="string">
+The wallet's public address on the specified network.
+</ResponseField>
+
+<ResponseField name="data.recovery_key" type="string">
+Key shard for wallet recovery. Store securely in your database.
+</ResponseField>
+
+<ResponseField name="data.access_key" type="string">
+Key shard for non-recovery operations. Store securely in your database.
+</ResponseField>
+
+<Warning>
+Store both `recovery_key` and `access_key` securely in your database. These are required for wallet operations and recovery.
+</Warning>

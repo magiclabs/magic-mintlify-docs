@@ -47,10 +47,34 @@
         "groups": [
           {
             "group": "API Wallets",
+            "pages": ["docs/api-wallets/introduction"]
+          },
+          {
+            "group": "Express API",
             "pages": [
-              "docs/api-wallets/api-wallets",
-              "docs/api-wallets/express-api",
-              "docs/api-wallets/core-api"
+              "docs/api-wallets/express-api/overview",
+              "docs/api-wallets/express-api/getting-started",
+              "docs/api-wallets/express-api/wallet-operations",
+              "docs/api-wallets/express-api/data-preparation",
+              "docs/api-wallets/express-api/error-handling"
+            ]
+          },
+          {
+            "group": "Core API",
+            "pages": [
+              "docs/api-wallets/core-api/overview",
+              "docs/api-wallets/core-api/getting-started",
+              "docs/api-wallets/core-api/wallet-operations",
+              "docs/api-wallets/core-api/signing-operations",
+              {
+                "group": "Wallet Management",
+                "pages": [
+                  "docs/api-wallets/core-api/wallet-management/private-key-operations",
+                  "docs/api-wallets/core-api/wallet-management/wallet-recovery"
+                ]
+              },
+              "docs/api-wallets/core-api/architecture",
+              "docs/api-wallets/core-api/error-handling"
             ]
           }
         ]
@@ -60,11 +84,17 @@
         "icon": "wallet",
         "groups": [
           {
-            "group": "Quickstart",
+            "group": "Embedded Wallets",
             "pages": [
-              "docs/embedded-wallet/quickstart/overview",
-              "docs/embedded-wallet/quickstart/cli",
-              "docs/embedded-wallet/quickstart/integration"
+              "docs/embedded-wallet/introduction",
+              {
+                "group": "Quickstart",
+                "pages": [
+                  "docs/embedded-wallet/quickstart/overview",
+                  "docs/embedded-wallet/quickstart/cli",
+                  "docs/embedded-wallet/quickstart/integration"
+                ]
+              }
             ]
           },
           {

@@ -1,0 +1,67 @@
+---
+title: "Getting Started"
+description: "Set up Express API integration with step-by-step instructions for account creation, authentication configuration, and API key setup."
+---
+
+## Base URL
+
+All API requests should be made to:
+
+```
+https://tee.express.magiclabs.com
+```
+
+## Prerequisites
+
+Before using Express API, you'll need:
+
+1. **Magic Developer Account**: Sign up at [Magic Dashboard](https://dashboard.magic.link/)
+2. **Application Setup**: Create a new application in your dashboard
+3. **OIDC Provider**: Configure an OIDC provider for user authentication
+4. **API Keys**: Obtain your Magic API key or secret key
+
+<Steps>
+<Step title="Create Magic Account">
+Visit [https://dashboard.magic.link/](https://dashboard.magic.link/) and sign up for a Magic developer account.
+</Step>
+
+<Step title="Create Application">
+In your dashboard, create a new application and note your API keys.
+</Step>
+
+<Step title="Configure OIDC Provider">
+Set up an OIDC provider (like Auth0, Firebase Auth, or custom) for user authentication.
+</Step>
+
+<Step title="Get Your API Keys">
+Obtain your Magic API key or secret key from your dashboard for service authentication.
+</Step>
+</Steps>
+
+## Authentication
+
+Express API requires multiple authentication headers for secure access:
+
+<ParamField header="Authorization" type="string" required>
+Bearer token (JWT) for user authentication. Format: `Bearer YOUR_JWT_TOKEN`
+</ParamField>
+
+<ParamField header="X-Magic-API-Key" type="string">
+Your Magic API key for service authentication.
+</ParamField>
+
+<ParamField header="X-Magic-Secret-Key" type="string">
+Alternative to API key - your Magic secret key for service authentication.
+</ParamField>
+
+<ParamField header="X-OIDC-Provider-ID" type="string" required>
+The OIDC provider ID for your application.
+</ParamField>
+
+<Warning>
+You must provide either `X-Magic-API-Key` or `X-Magic-Secret-Key` along with the other required headers.
+</Warning>
+
+<Tip>
+The JWT token should contain user identification information that Magic can use to associate wallets with specific users. Ensure your OIDC provider is configured to include necessary user claims.
+</Tip>

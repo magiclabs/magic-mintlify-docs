@@ -1,373 +1,59 @@
 ---
 title: Magic Home
-description: "Welcome to Magic docs!"
+description: "Welcome to Magic docs! Build Web3 applications with our server-side wallet management solutions and embedded wallet infrastructure."
 sidebarTitle: Welcome
 ---
 
-Magic's SDKs integrate into any web or mobile application to enable:
+Magic provides comprehensive Web3 infrastructure solutions for developers and enterprises:
 
-- Passwordless [authentication](/docs/embedded-wallet/authentication/overview) (e.g., email OTP, magic link, social, WebAuthn, 3rd party ID provider)
+## API Wallets
 
-- Non-custodial [wallets-as-a-service](/docs/embedded-wallet/wallets/customization/widget-ui) with best-in-class security and performance
-
-- Customizable embedded wallet [widget UI](/docs/embedded-wallet/wallets/customization/widget-ui)
-
-- Compatibility with [30+ blockchains](/docs/embedded-wallet/blockchains/overview)
+**Server-side wallet management with enterprise-grade security**
 
 <CardGroup cols={2}>
-  <Card
-    title="Read Magic Guides"
-    icon="book-open"
-    href="https://magic.link/guides"
-  />
-  <Card
-    title="Video Tutorials"
-    icon="youtube"
-    href="https://www.youtube.com/@Magiclabs/videos"
-  />
+<Card title="Core API" icon="server" href="/docs/api-wallets/core-api/overview">
+Advanced server-side wallet management with AWS Nitro TEE security and key sharding for maximum control and compliance.
+</Card>
+
+<Card title="Express API" icon="rocket" href="/docs/api-wallets/express-api/overview">
+Streamlined wallet management with JWT authentication and trusted execution environment technology for rapid development.
+</Card>
 </CardGroup>
 
-## ⁠Features
+### Key Features
 
-### Authentication
+- **Enterprise Security**: AWS Nitro TEE security and advanced key sharding for maximum control
+- **Non-custodial Security**: Users maintain full control over their private keys
+- **Multi-chain Support**: EVM chains, Solana, and Bitcoin support
+- **Production Ready**: Enterprise-grade infrastructure for scalable applications
 
-Choose between a variety of passwordless login options to best suit your audience and use case.
+## Embedded Wallets
 
-<CardGroup cols={3}>
-  <Card
-    title="Email OTP"
-    icon="envelope"
-    href="/docs/embedded-wallet/authentication/login/email-otp"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Magic Links"
-    icon="link"
-    href="/docs/embedded-wallet/authentication/login/magic-links"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="SMS Login"
-    icon="comment-dots"
-    href="/docs/embedded-wallet/authentication/login/sms-login"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="WebAuthn"
-    icon="fingerprint"
-    href="/docs/embedded-wallet/authentication/login/webauthn"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Bring Your Own IDP"
-    icon="id-card"
-    href="/docs/embedded-wallet/authentication/login/idp"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Farcaster"
-    icon="tower-observation"
-    href="/docs/embedded-wallet/authentication/login/farcaster"
-    horizontal
-    iconType="solid"
-  />
+**Seamless Web3 onboarding with non-custodial wallets**
+
+<CardGroup cols={2}>
+<Card title="Authentication" icon="key" href="/docs/embedded-wallet/authentication/overview">
+Passwordless login options including email OTP, SMS, social logins, and custom IDP integration.
+</Card>
+
+<Card title="Wallets" icon="wallet" href="/docs/embedded-wallet/wallets/overview">
+Non-custodial embedded wallets with transaction signing, personal signatures, fiat on-ramps, and key export capabilities.
+</Card>
+
+<Card title="SDKs" icon="code" href="/docs/embedded-wallet/api/overview">
+Client-side and server-side SDKs for web, mobile (iOS/Android), React Native, Python, and Node.js applications.
+</Card>
+
+<Card title="Quickstart" icon="bolt" href="/docs/embedded-wallet/quickstart/overview">
+Get started with embedded wallets using our CLI tool or manual integration guide for seamless Web3 onboarding.
+</Card>
 </CardGroup>
 
-## Wallets
+### Key Features
 
-Magic creates wallets for your users when they sign up. Our patented [Delegated Key Management System (DKMS)](/docs/home/security/product-security#private-keys-can-be-lost-or-stolen-how-do-you-protect-my-private-key) keeps keys secure and non-custodial.
+- **Passwordless Authentication**: Email OTP, SMS, social logins, and more
+- **Instant Wallet Creation**: Users get wallets immediately upon authentication
+- **Patented TKMS**: TEE Key Management System for secure key management
+- **Multi-chain Support**: 30+ blockchain networks supported
+- **Customizable UI**: Embedded wallet widgets with full branding control
 
-<CardGroup cols={3}>
-  <Card
-    title="Transaction Signing"
-    icon="rotate"
-    href="/docs/embedded-wallet/wallets/features/transaction-signing"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Personal Signatures"
-    icon="circle-user"
-    href="/docs/embedded-wallet/wallets/features/personal-signatures"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Fiat On-Ramps"
-    icon="money-bill-wave"
-    href="/docs/embedded-wallet/wallets/features/fiat-on-ramps"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Key Export"
-    icon="up-right-from-square"
-    href="/docs/embedded-wallet/wallets/features/key-export"
-    horizontal
-    iconType="solid"
-  />
-</CardGroup>
-
-## Blockchains
-
-We support 30+ blockchains and integrate with their respective web3 libraries to minimize additional code needed to use Magic.
-
-<CardGroup cols={3}>
-  <Card
-    title="Polygon"
-    icon="draw-polygon"
-    href="/docs/embedded-wallet/blockchains/featured-chains/polygon"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Ethereum"
-    icon="ethereum"
-    href="/docs/embedded-wallet/blockchains/featured-chains/ethereum/javascript"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Solana"
-    icon="sun"
-    href="/docs/embedded-wallet/blockchains/featured-chains/solana"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Flow"
-    icon="water"
-    href="docs/embedded-wallet/blockchains/other-chains/other/flow"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Aptos"
-    icon="a"
-    href="/docs/embedded-wallet/blockchains/other-chains/other/aptos"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Algorand"
-    icon="chart-line"
-    href="docs/embedded-wallet/blockchains/other-chains/other/algorand"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Arbitrum"
-    icon="arrow-up-right-dots"
-    href="docs/embedded-wallet/blockchains/other-chains/evm/arbitrum"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Astar zkEVM"
-    icon="star"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/astar-zkevm"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Avalanche"
-    icon="mountain"
-    href="docs/embedded-wallet/blockchains/other-chains/other/avalanche"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Base"
-    icon="layer-group"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/base"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Berachain"
-    icon="b"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/berachain"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Binance"
-    icon="coins"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/binance-smart-chain"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Bitcoin"
-    icon="bitcoin"
-    href="/docs/embedded-wallet/blockchains/other-chains/other/bitcoin"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Celo"
-    icon="mobile"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/celo"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Chiliz"
-    icon="pepper-hot"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/chiliz"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Cosmos"
-    icon="atom"
-    href="/docs/embedded-wallet/blockchains/other-chains/other/cosmos"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Cronos"
-    icon="clock"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/cronos"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Etherlink"
-    icon="link"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/etherlink"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Fantom"
-    icon="ghost"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/fantom"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Flare"
-    icon="fire"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/flare"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Harmony"
-    icon="music"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/harmony"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Hedera"
-    icon="h"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/hedera"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Horizen EON"
-    icon="h"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/horizen-eon"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="ICON"
-    icon="cube"
-    href="/docs/embedded-wallet/blockchains/other-chains/other/icon"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Loopring"
-    icon="ring"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/loopring"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Moonbeam"
-    icon="moon"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/moonbeam"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Near"
-    icon="n"
-    href="/docs/embedded-wallet/blockchains/other-chains/other/near"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Optimism"
-    icon="thumbs-up"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/optimism"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Polkadot"
-    icon="P"
-    href="/docs/embedded-wallet/blockchains/other-chains/other/polkadot"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="RARI Chain"
-    icon="r"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/rari-chain"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Sei"
-    icon="s"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/sei"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Stability"
-    icon="S"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/stability"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Tezos"
-    icon="t"
-    href="/docs/embedded-wallet/blockchains/featured-chains/tezos"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="ZetaChain"
-    icon="z"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/zetachain"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="Zilliqa"
-    icon="z"
-    href="/docs/embedded-wallet/blockchains/other-chains/other/zilliqa"
-    horizontal
-    iconType="solid"
-  />
-  <Card
-    title="XDC Network"
-    icon="x"
-    href="/docs/embedded-wallet/blockchains/other-chains/evm/xdc-network"
-    horizontal
-    iconType="solid"
-  />
-</CardGroup>
