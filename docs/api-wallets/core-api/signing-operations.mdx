@@ -90,12 +90,28 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
 }
 ```
 
+### Request Parameters
+
 <ParamField body="payload" type="object" required>
 Transaction payload to be signed. Format varies by network:
 - **EVM**: Standard Ethereum transaction object
 - **Solana**: Base64-encoded transaction string
 - **Bitcoin**: Object with inputs and outputs arrays
 </ParamField>
+
+<ParamField body="encryption_context" type="string" required>
+The context used to decrypt key shards. Should match the context used during wallet creation.
+</ParamField>
+
+<ParamField body="access_key" type="string" required>
+The access key shard for this wallet.
+</ParamField>
+
+<ParamField body="wallet_id" type="string" required>
+The UUID of the wallet to sign with.
+</ParamField>
+
+### Response Fields
 
 <ResponseField name="data.signed_transaction" type="string">
 The signed transaction ready for broadcast to the blockchain.
@@ -137,9 +153,25 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_data' \
 }
 ```
 
+### Request Parameters
+
 <ParamField body="raw_data_hash" type="string" required>
 The keccak256 hash of the data to sign
 </ParamField>
+
+<ParamField body="encryption_context" type="string" required>
+The context used to decrypt key shards. Should match the context used during wallet creation.
+</ParamField>
+
+<ParamField body="access_key" type="string" required>
+The access key shard for this wallet.
+</ParamField>
+
+<ParamField body="wallet_id" type="string" required>
+The UUID of the wallet to sign with.
+</ParamField>
+
+### Response Fields
 
 <ResponseField name="data.messageHash" type="string">
 The hash that was signed
@@ -187,24 +219,26 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/svm/sign_message' \
 }
 ```
 
+### Request Parameters
+
 <ParamField body="message_base64" type="string" required>
 The message to be signed, encoded in base64
 </ParamField>
 
-<ResponseField name="data.signature" type="string">
-The signature in base64 format
-</ResponseField>
-
-## Common Parameters
-
 <ParamField body="encryption_context" type="string" required>
-The encryption context used to decrypt key shards. Must match the context used during wallet creation.
+The context used to decrypt key shards. Should match the context used during wallet creation.
 </ParamField>
 
 <ParamField body="access_key" type="string" required>
-The access key returned from wallet creation. Retrieve from your database.
+The access key shard for this wallet.
 </ParamField>
 
 <ParamField body="wallet_id" type="string" required>
-The wallet UUID returned from wallet creation.
+The UUID of the wallet to sign with.
 </ParamField>
+
+### Response Fields
+
+<ResponseField name="data.signature" type="string">
+The signature in base64 format
+</ResponseField>
