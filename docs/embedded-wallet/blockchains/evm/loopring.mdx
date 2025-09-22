@@ -1,0 +1,112 @@
+---
+title: Loopring
+---
+
+## Overview
+
+[Loopring](https://loopring.org/#/) is a zkRollup layer 2 open protocol for building decentralized exchanges (DEXs) on the Ethereum blockchain. It allows for high-throughput, low-cost trading and payment on Ethereum.
+
+**As Loopring is EVM compatible**, you can follow the [Ethereum](/docs/embedded-wallet/blockchains/featured-chains/ethereum/javascript)documentation to send your first transaction and utilize all other wallet features.
+
+## Installation
+
+Magic interacts with the Loopring blockchain via Magic SDK and the `loopring-sdk` package.
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install --save magic-sdk @loopring-web/loopring-sdk
+```
+```bash Yarn icon="yarn"
+yarn add magic-sdk @loopring-web/loopring-sdk
+```
+</CodeGroup>
+
+## Send Transaction
+
+```js JavaScript icon="square-js"
+import { Magic } from "magic-sdk";
+import * as sdk from '@loopring-web/loopring-sdk';
+import {LOOPRING_EXPORTED_ACCOUNT, LoopringAPI, signatureKeyPairMock, TOKEN_INFO, web3} from "./Loopring";
+
+const customNodeOptions = {
+    // Your own ethereum node URL
+    rpcUrl: 'https://goerli.infura.io/v3/a06ed9c6b5424b61beafff27ecc3abf3',
+    chainId: 5, // chainId
+};
+
+const magic = new Magic("YOUR API KEY", {network: customNodeOptions});
+
+const web3 = new Web3(magic.rpcProvider)
+
+// Step1. get account info payerAddress should be magic wallet public address
+const { accInfo } = await LoopringAPI.exchangeAPI.getAccount({owner: payerAddress});
+console.log("accInfo:", accInfo);
+
+// Step 2. eddsaKey
+const eddsaKey = await signatureKeyPairMock(accInfo, web3);
+console.log("eddsaKey:", eddsaKey.sk);
+// Step 3. get apikey
+const { apiKey } = await LoopringAPI.userAPI.getUserApiKey({
+    accountId: accInfo.accountId,
+  },
+    eddsaKey.sk);
+console.log("apiKey:", apiKey);
+
+// Step 4. get storageId
+const storageId = await LoopringAPI.userAPI.getNextStorageId({
+    accountId: accInfo.accountId,
+    sellTokenId: TOKEN_INFO.tokenMap["LRC"].tokenId
+  },
+    apiKey);
+console.log("storageId:", storageId);
+
+const fee = await LoopringAPI.userAPI.getOffchainFeeAmt({
+    accountId: accInfo.accountId,
+    requestType: sdk.OffchainFeeReqType.TRANSFER_AND_UPDATE_ACCOUNT
+  },
+    apiKey);
+console.log("fee:", fee);
+
+const request = {
+    exchange: LOOPRING_EXPORTED_ACCOUNT.exchangeAddress,
+    payerAddr: accInfo.owner,
+    payerId: accInfo.accountId,
+    payeeAddr: payeeAddress,
+    payeeId: payeeAccountId,
+    storageId: storageId.offchainId,
+    token: {
+        tokenId: TOKEN_INFO.tokenMap.LRC.tokenId,
+        volume: amount.toString()
+    },
+    maxFee: {
+        tokenId: TOKEN_INFO.tokenMap["LRC"].tokenId,
+        volume: fee.fees["LRC"].fee ?? "9400000000000000000"
+    },
+    validUntil: LOOPRING_EXPORTED_ACCOUNT.validUntil,
+    payPayeeUpdateAccount: true
+  };
+
+const transactionResult = await LoopringAPI.userAPI.submitInternalTransfer({
+    request,
+    web3,
+    chainId: sdk.ChainId.GOERLI,
+    walletType: sdk.ConnectorNames.Unknown,
+    eddsaKey: eddsaKey.sk,
+    apiKey: apiKey,});
+
+console.log(transactionResult)
+```
+
+## Compatibility
+
+- All `Auth`, `User` methods and
+- All EVM Provider functionality to respond to supported [RPC methods](/docs/embedded-wallet/api/client-side-sdks/web#evm-rpc-methods)
+
+_\*Some features are not yet compatible such as the Widget UI._
+
+_Need a feature or see a problem?_ File an issue on our [github repo](https://github.com/magiclabs/magic-js).
+
+## Resources & Tools
+
+- Block Explorer: [https://explorer.loopring.io/](https://explorer.loopring.io/)
+- [Example](https://github.com/magiclabs/example-loopring)

@@ -1,0 +1,101 @@
+---
+title: Avalanche
+---
+
+## Installation
+
+Magic interacts with the [Avalanche](https://www.avalabs.org/) blockchain via Magic's extension NPM package [`@magic-ext/avalanche`](https://www.npmjs.com/package/@magic-ext/avalanche). The Avalanche extension also lets you interact with the blockchain using methods from [Avalanche's Javascript SDK](https://github.com/ava-labs/avalanche.js).
+
+<Note>
+**NOTE**
+
+You can skip straight to our github example directly:
+
+[**Avalanche Example**](https://go.magic.link/example-avalanche)
+
+</Note>
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install --save @magic-ext/avalanche
+```
+```bash Yarn icon="yarn"
+yarn add @magic-ext/avalanche
+```
+</CodeGroup>
+
+## Initialization
+
+_Note: This is for X-Chain implementation._
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { AvalancheExtension } from '@magic-ext/avalanche';
+
+const magic = new Magic('YOUR API KEY', {
+  extensions: {
+    xchain: new AvalancheExtension({
+      rpcUrl: 'Avalanche node url',
+      chainId: 'Avalanche chain id',
+      networkId: 4, // Avalanche networkId
+    }),
+  },
+});
+```
+
+## Common Methods
+
+**Get Test AVAX**
+
+Before you can send transaction on the Avalanche blockchain, you'll need to acquire some test AVAX (Avalanche's native cryptocurrency for test network).
+
+1.  Go to our [**Avalanche Example**](https://go.magic.link/example-avalanche)
+2.  Login with your email address
+3.  Copy your Avalanche public address
+4.  Go to the [**Avalanche Faucet**](https://faucet.avax.network/)
+5.  Paste your copied Avalanche public address in the text input
+6.  You can receive 10000000 nAVAX
+7.  Now you can use your test AVAX in our [**example app**](https://go.magic.link/example-avalanche)
+
+### Send Transaction
+
+Note that the Magic Avalanche extension follows the method names and conventions by [**Avalanche's Javascript SDK**](https://www.npmjs.com/package/@magic-ext/avalanche). To send a standard Avalanche blockchain transaction, you can call the `magic.xchain.signTransaction()` method.
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { AvalancheExtension } from '@magic-ext/avalanche';
+import { Avalanche, BinTools, Buffer, BN } from 'avalanche';
+
+const magic = new Magic('YOUR API KEY', {
+  extensions: {
+    xchain: new AvalancheExtension({
+      rpcUrl: 'Avalanche node url',
+      chainId: 'Avalanche chain id',
+      networkId: 4, // Avalanche networkId
+    }),
+  },
+});
+
+const metadata = await magic.user.getMetadata();
+let myNetworkID = 4; //default is 3, we want to override that for our local network
+let myBlockchainID = 'X'; // The XChain blockchainID on this network
+let ava = new Avalanche('testapi.avax.network', 443, 'https', myNetworkID, myBlockchainID);
+let xchain = ava.XChain();
+let assetId = 'nznftJBicce1PfWQeNEVBmDyweZZ6zcM3p78z9Hy9Hhdhfaxm';
+
+let fromAddresses = [metadata.publicAddress];
+let toAddresses = ['X-everest1zr334udmau3xruusmwnyng3hug38errx83h6xq'];
+let sendAmount = 1000000;
+
+const signedTx = await magic.xchain.signTransaction(sendAmount, assetId, toAddresses, fromAddresses, toAddresses);
+
+console.log('signedTX', signedTx);
+
+let txid = await xchain.issueTx(signedTx);
+
+console.log('send transaction', txid);
+```
+
+## Resources
+
+* [Avalanche Developer Academy](https://academy.avax.network/?utm_source=avalanche&utm_medium=website&utm_content=navbar)

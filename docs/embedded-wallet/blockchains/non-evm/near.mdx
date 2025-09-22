@@ -1,0 +1,72 @@
+---
+title: Near
+---
+
+
+## Installation
+
+Magic interacts with the Near blockchain via Magic's extension NPM package [`@magic-ext/near`](https://www.npmjs.com/package/@magic-ext/near). The Near extension also lets you interact with the blockchain using methods from [near-api-js](https://www.npmjs.com/package/near-api-js).
+
+<Note>
+**NOTE**
+
+You can skip straight to our Near Guide directly:
+
+[**Near Guide**](https://magic.link/posts/near)
+</Note>
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install --save @magic-ext/near
+```
+```bash Yarn icon="yarn"
+yarn add @magic-ext/near
+```
+</CodeGroup>
+
+## Initialization
+
+```js JavaScript icon="square-js"
+import { Magic } from "magic-sdk";
+import { NearExtension } from "@magic-ext/near";
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new NearExtension({
+        rpcUrl: '',
+    }),
+  ]});
+```
+
+## Common Methods
+
+###  Sign Transaction
+
+To sign a standard Near blockchain transaction, you can call the `magic.near.signTransaction` method to get the signature and raw transaction then send to blockchain by yourself.
+
+```javascript JavaScript icon="square-js"
+import { Magic } from "magic-sdk";
+import { NearExtension } from "@magic-ext/near";
+import { transactions, utils } from 'near-api-js'
+
+const publicKeyString = await magic.near.getPublicKey();
+
+const publicKey = utils.PublicKey.fromString(publicKeyString);
+
+const actions = [
+    transactions.transfer(sendAmount)
+];
+const transaction = transactions.createTransaction(publicAddress, publicKey, destinationAddress, 0, actions, '9av2U6cova7LZPA9NPij6CTUrpBbgPG6');
+
+const rawTransaction = transaction.encode();
+
+const result = await magic.near.signTransaction({rawTransaction, networkID: 'testnet'});
+
+const signedTransaction = transactions.SignedTransaction.decode(Buffer.from(result.encodedSignedTransaction));
+
+console.log('signedTransaction', signedTransaction)
+```
+
+## Resources
+
+* [Near Developer Guide](https://near.org/blog/the-beginners-guide-to-the-near-blockchain)

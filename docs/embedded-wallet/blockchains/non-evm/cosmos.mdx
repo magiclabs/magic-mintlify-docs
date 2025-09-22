@@ -1,0 +1,131 @@
+---
+title: Cosmos
+---
+
+## Installation
+
+Magic interacts with the [Cosmos](https://cosmos.network/) blockchain via Magic's extension NPM package [`@magic-ext/cosmos`](https://www.npmjs.com/package/@magic-ext/cosmos). The Cosmos extension also lets you interact with the blockchain using methods from cosmjs.
+
+<Note>
+**NOTE**
+
+You can skip straight to our kitchen sink example directly:
+
+[**Cosmos Example**](https://go.magic.link/example-cosmos)
+</Note>
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install --save @magic-ext/cosmos
+```
+
+```bash Yarn icon="yarn"
+yarn add @magic-ext/cosmos
+```
+</CodeGroup>
+
+## Initialization
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { CosmosExtension } from '@magic-ext/cosmos';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new CosmosExtension({
+      rpcUrl: 'cosmos rpc url',
+    }),
+  ],
+});
+```
+
+
+## Common Methods
+
+### Sign and Send Transaction
+
+To send or sign a standard Cosmos blockchain transaction, you can call the `magic.cosmos.signAndBroadcast` method or `magic.cosmos.sign` method.
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { CosmosExtension } from '@magic-ext/cosmos';
+import { coins } from '@cosmjs/launchpad';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new CosmosExtension({
+      rpcUrl: 'cosmos rpc url',
+    }),
+  ],
+});
+
+const handlerSendTransaction = async () => {
+  const metadata = await magic.user.getMetadata();
+
+  const message = [
+    {
+      typeUrl: '/cosmos.bank.v1beta1.MsgSend',
+      value: {
+        fromAddress: metadata.publicAddress,
+        toAddress: destinationAddress,
+        amount: [
+          {
+            amount: String(sendAmount),
+            denom: 'atom',
+          },
+        ],
+      },
+    },
+  ];
+  const fee = {
+    amount: [{ denom: 'uatom', amount: '500' }],
+    gas: '200000',
+  };
+
+  const sendTransactionResult = await magic.cosmos.signAndBroadcast(message, fee);
+  //or
+  const signTransactionResult = await magic.cosmos.sign(message, fee);
+};
+```
+
+### Send Tokens
+
+Using `magic.cosmos.sendTokens` function to native tokens on Cosmos blockchain.
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { CosmosExtension } from '@magic-ext/cosmos';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new CosmosExtension({
+      rpcUrl: 'cosmos rpc url',
+    }),
+  ],
+});
+
+const result = await magic.cosmos.sendTokens('recipientAddress', 'transferAmount', 'denom', 'memo');
+```
+
+### Change Address
+
+Using `magic.cosmos.changeAddress` function to change the address prefix.
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { CosmosExtension } from '@magic-ext/cosmos';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new CosmosExtension({
+      rpcUrl: 'cosmos rpc url',
+    }),
+  ],
+});
+
+const result = await magic.cosmos.changeAddress('address prefix');
+```
+
+## Resources
+
+* [Cosmos Developer Portal](https://tutorials.cosmos.network)

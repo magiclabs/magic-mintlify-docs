@@ -1,0 +1,49 @@
+---
+title: Flare
+---
+
+## Overview
+
+[Flare](https://flare.network/) is a Layer 1 blockchain with native data acquisition protocols, providing developers with decentralized access to high-integrity data from other blockchains without relying on third party oracles. Users can effortlessly create wallets and interact with Flare using the Magic SDK.
+
+**As Flare is EVM compatible**, you can follow the [Ethereum](/docs/embedded-wallet/blockchains/featured-chains/ethereum/javascript) documentation to send your first transaction and utilize all other features.
+
+## Configure Flare
+
+<CodeGroup>
+```js Testnet icon="square-js"
+const FlareOptions = {
+  rpcUrl: 'https://coston-api.flare.network/ext/bc/C/rpc',
+  chainId: 16,
+};
+
+// Setting network to point to Coston Testnet
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: FlareOptions });
+```
+```js Mainnet icon="square-js"
+const FlareOptions = {
+  rpcUrl: 'https://flare-api.flare.network/ext/bc/C/rpc',
+  chainId: 14,
+};
+
+// Setting network to point to Flare
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: FlareOptions });
+```
+</CodeGroup>
+
+## Compatibility
+
+- All `Auth`, `User` and most `Wallet` module methods\*
+- All EVM Provider functionality to respond to supported [RPC methods](/docs/embedded-wallet/api/client-side-sdks/web#evm-rpc-methods)
+
+_\*Some features are not yet compatible such as NFT Viewer and Fiat On-ramps._
+
+_Need a feature or see a problem?_ File an issue on our [github repo](https://github.com/magiclabs/magic-js).
+
+## Resources & Tools
+
+- Documentation: [https://docs.flare.network/](https://docs.flare.network/)
+- Block Explorer:
+  - [https://mainnet.flarescan.com/](https://mainnet.flarescan.com/) (Mainnet)
+  - [https://coston-explorer.flare.network/](https://coston-explorer.flare.network/) (Testnet)
+- Testnet Faucet: [https://faucet.flare.network/coston](https://faucet.flare.network/coston)

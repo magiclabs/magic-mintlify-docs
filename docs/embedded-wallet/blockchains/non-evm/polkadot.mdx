@@ -1,0 +1,133 @@
+---
+title: Polkadot
+---
+
+## Installation
+
+Magic interacts with the [Polkadot](https://polkadot.network/) blockchain via Magic's extension NPM package [`@magic-ext/polkadot`](https://www.npmjs.com/package/@magic-ext/polkadot). The Polkadot extension also lets you interact with the blockchain using methods from polkadot-js.
+
+<Note>
+**NOTE**
+
+You can skip straight to our kitchen sink example directly:
+
+[**Polkadot Example**](https://go.magic.link/example-polkadot)
+</Note>
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install --save @magic-ext/polkadot
+```
+```bash Yarn icon="yarn"
+yarn add @magic-ext/polkadot
+```
+</CodeGroup>
+
+## Initialization
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { PolkadotExtension } from '@magic-ext/polkadot';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new PolkadotExtension({
+      rpcUrl: 'polkadot rpc url',
+    }),
+  ],
+});
+```
+
+## Common Methods
+
+### Get User Info
+
+Using `getAccount` function to get Polkadot public address for current user.
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { PolkadotExtension } from '@magic-ext/polkadot';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new PolkadotExtension({
+      rpcUrl: 'polkadot rpc url',
+    }),
+  ],
+});
+
+// Get user's Polkadot public address
+const publicAddress = await magic.polkadot.getAccount();
+console.log('Polkadot Public Address: ', publicAddress);
+```
+
+### Send Transaction
+
+To send a standard Polkadot blockchain transaction, you can call the `magic.polkadot.sendTransaction` method.
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { PolkadotExtension } from '@magic-ext/polkadot';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new PolkadotExtension({
+      rpcUrl: 'polkadot rpc url',
+    }),
+  ],
+});
+
+const tx = await magic.polkadot.sendTransaction(
+  // to address
+  '5H3pELHbg9skXE2HfLqP23UPgrgu2Juj55CH6sdDGWc2HKNs',
+  1000000000000000, // amount
+);
+
+console.log('transaction hash', tx);
+```
+
+
+### Smart Contract
+
+To call a Polkadot blockchain contract as transaction, you can call the `magic.polkadot.contractCall` method.
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { PolkadotExtension } from '@magic-ext/polkadot';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new PolkadotExtension({
+      rpcUrl: 'polkadot rpc url',
+    }),
+  ],
+});
+
+const api = await ApiPromise.create({
+  provider: new WsProvider('polkadot rpc url'),
+});
+await api.isReady;
+const abi = new Abi(api.registry, contractABI);
+
+const data = abi.messages.flip();
+
+const tx = await magic.polkadot.contractCall(
+  // contract address
+  '5C52CfgkwANdFuN3VgPSprQwNWKfkLWMHJbMRzp12h4YarCa',
+  0, // value
+  1000000, // max gas
+  data, // contract data
+);
+
+console.log('transaction hash', tx);
+```
+
+
+#### Deploy ink contract on substrate
+
+Please follow [substrate documention](https://substrate.dev/substrate-contracts-workshop/#/0/introduction) to create and deploy contract on substrate.
+
+## Resources
+
+* [Polkadot Block Explorer](https://explorer.polkascan.io/)
+* [Polkadot Blockchain Academy](https://polkadot.network/development/blockchain-academy/)

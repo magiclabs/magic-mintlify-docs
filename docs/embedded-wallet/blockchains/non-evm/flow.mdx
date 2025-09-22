@@ -1,0 +1,176 @@
+---
+title: Flow
+---
+
+## Overview
+
+[Flow](https://flow.com/) is an L1 blockchain featuring a distinctive multi-role architecture designed to increase throughput and efficiency without resorting to sharding. It adopts Cadence as its smart contract language and [FCL (Flow Client Library)](https://developers.flow.com/tools/clients/fcl-js) as the primary protocol for dapp, wallet, and user interactions with the chain.
+
+## Magic Extension
+
+This section will cover how to use our previous Flow integration via a custom extension that can be used alongside the core Magic SDK. You can use this extension to access Magic functionality alongside your FCL integration, however you do not need to use the authorization function shown here.
+
+## Installation
+
+Magic interacts with the [Flow](https://www.onflow.org/) blockchain via Magic's extension NPM package [`@magic-ext/flow`](https://www.npmjs.com/package/@magic-ext/flow). The Flow extension also lets you interact with the blockchain using methods from [Flow's Javascript SDK](https://github.com/onflow/flow-js-sdk/tree/master/packages/fcl).
+
+To get started, install the following dependencies for your project:
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install @magic-ext/flow magic-sdk
+```
+```bash Yarn icon="yarn"
+yarn add @magic-ext/flow magic-sdk
+```
+</CodeGroup>
+
+## Initialization
+
+The Magic class is the entry-point to the Magic SDK. It must be instantiated with a Magic **publishable** key.
+
+<Warning>
+**NOTE**
+
+If this is your first time using Magic with Flow, you may need to wait up to 30 seconds after clicking the magic link before your login completes because Magic has to wait for the Flow blockchain to confirm a transaction that creates your account.
+
+</Warning>
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { FlowExtension } from '@magic-ext/flow';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new FlowExtension({
+      // testnet or mainnet to connect different network
+      rpcUrl: 'https://rest-testnet.onflow.org',
+      network: 'testnet'
+    }),
+  ],
+});
+```
+
+## Login
+
+You can use `magic.flow.getAccount()` method to let users login.
+
+```js JavaScript icon="square-js"
+import * as fcl from '@onflow/fcl';
+
+import { Magic } from 'magic-sdk';
+import { FlowExtension } from '@magic-ext/flow';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new FlowExtension({
+      rpcUrl: 'https://rest-testnet.onflow.org',
+      network: 'testnet' // testnet or mainnet to connect different network
+    }),
+  ],
+});
+
+const login = async () => {
+  const account = await magic.flow.getAccount();
+  console.log(account)
+}
+
+login()
+```
+
+## Common Methods
+
+### Send Transaction
+
+#### Getting Test Flow
+
+Before you can send transaction on the Flow blockchain, you'll need to acquire some test Flow (Flow's native cryptocurrency for test network).
+
+1.  Go to our [**Flow Example**](https://go.magic.link/example-flow) application
+2.  Login with your email address
+3.  Copy your Flow public address
+4.  Go to the [**Flow Faucet**](https://testnet-faucet.onflow.org/fund-account)
+5.  Fill in the form and paste your copied Flow public address in the Address field
+6.  You can receive **1000 test Flow**
+7.  Now you can use your test Flow in our [**example app**](https://go.magic.link/example-flow)
+
+#### Call Extension Method
+
+Note that the Magic Flow extension follows the method names and conventions of [**Flow's Javascript SDK**](https://github.com/onflow/flow-js-sdk/tree/master/packages/fcl). You can use the `magic.flow.authorization()` method to replace the `fcl.authenticate()`.
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { FlowExtension } from '@magic-ext/flow';
+import * as fcl from '@onflow/fcl';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new FlowExtension({
+      // testnet or mainnet to connect different network
+      rpcUrl: 'https://rest-testnet.onflow.org',
+      network: 'testnet'
+    }),
+  ],
+});
+
+// CONFIGURE ACCESS NODE
+fcl.config().put('accessNode.api', 'https://rest-testnet.onflow.org');
+
+// CONFIGURE WALLET
+// replace with your own wallets configuration
+// Below is the local environment configuration for the dev-wallet
+fcl.config().put('challenge.handshake', 'http://access-001.devnet9.nodes.onflow.org:8000');
+
+const AUTHORIZATION_FUNCTION = magic.flow.authorization;
+
+const verify = async () => {
+  try {
+    const getReferenceBlock = async () => {
+      const response = await fcl.send([fcl.getBlock()]);
+      const data = await fcl.decode(response);
+      return data.id;
+    };
+
+    console.log('SENDING TRANSACTION');
+    var response = await fcl.send([
+      fcl.transaction`
+      transaction {
+        var acct: AuthAccount
+
+        prepare(acct: AuthAccount) {
+          self.acct = acct
+        }
+
+        execute {
+          log(self.acct.address)
+        }
+      }
+    `,
+      fcl.ref(await getReferenceBlock()),
+      fcl.proposer(AUTHORIZATION_FUNCTION),
+      fcl.authorizations([AUTHORIZATION_FUNCTION]),
+      fcl.payer(AUTHORIZATION_FUNCTION),
+    ]);
+    console.log('TRANSACTION SENT');
+    console.log('TRANSACTION RESPONSE', response);
+
+    console.log('WAITING FOR TRANSACTION TO BE SEALED');
+    var data = await fcl.tx(response).onceSealed();
+    console.log('TRANSACTION SEALED', data);
+
+    if (data.status === 4 && data.statusCode === 0) {
+      console.log('Congrats!!! I Think It Works');
+    } else {
+      console.log(`Oh No: ${data.errorMessage}`);
+    }
+  } catch (error) {
+    console.error('FAILED TRANSACTION', error);
+  }
+};
+```
+
+## Resources
+
+* [Flow Developer Portal](https://developers.flow.com/)
+
+* [Flow Faucet](https://testnet-faucet.onflow.org/fund-account)

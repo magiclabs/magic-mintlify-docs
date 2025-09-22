@@ -1,0 +1,207 @@
+---
+title: ICON
+---
+
+
+## Installation
+
+Magic interacts with the [ICON](https://icon.foundation/) blockchain via Magic's extension NPM package [`@magic-ext/icon`](https://www.npmjs.com/package/@magic-ext/icon). The ICON extension also lets you interact with the blockchain using methods from [ICON's Javascript SDK](https://www.icondev.io/icon-sdks/javascript).
+
+<Note>
+**NOTE**
+
+You can skip straight to our kitchen sink example directly:
+
+[**ICON Example**](https://go.magic.link/example-icon)
+</Note>
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install --save @magic-ext/icon
+```
+```bash Yarn icon="yarn"
+yarn add @magic-ext/icon
+```
+</CodeGroup>
+
+## Initialization
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { IconExtension } from '@magic-ext/icon';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new IconExtension({
+      rpcUrl: 'ICON_RPC_NODE_URL',
+    }),
+  ],
+});
+```
+## Common Methods
+
+**Get Test ICON**
+
+Before you can send transaction on the ICON blockchain, you'll need to acquire some test ICON (ICON's native cryptocurrency for test network).
+
+1.  Go to our [**ICON Example**](https://go.magic.link/example-icon) application
+2.  Login with your email address
+3.  Copy your ICON public address
+4.  Go to the [**ICON Faucet**](https://icon-faucet.ibriz.ai/)
+5.  Paste your copied ICON public address in the text input
+6.  You can receive up to **100 test ICON per day**
+7.  Now you can use your test ICON in our [**example app**](https://go.magic.link/example-icon)
+
+### Get User Info
+
+Using `getAccount` function to get ICON public address for current user.
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { IconExtension } from '@magic-ext/icon';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new IconExtension({
+      rpcUrl: 'ICON_RPC_NODE_URL',
+    }),
+  ],
+});
+
+// Get user's ICON public address
+const publicAddress = await magic.icon.getAccount();
+console.log('ICON Public Address: ', publicAddress);
+```
+
+### Send Transaction
+
+Note that the Magic ICON extension follows the method names and conventions by [**ICON's Javascript SDK**](https://www.icondev.io/icon-sdks/javascript). To send a standard ICON blockchain transaction, you can call the `magic.icon.sendTransaction` method.
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { IconExtension } from '@magic-ext/icon';
+
+import IconService from 'icon-sdk-js';
+
+const { IconBuilder, IconAmount, IconConverter } = IconService;
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new IconExtension({
+      rpcUrl: 'ICON_RPC_NODE_URL',
+    }),
+  ],
+});
+
+const metadata = await magic.user.getMetadata();
+const destinationAddress = 'hx19f4fc31c6e51d5facccb52e3ccbe6b7d61f409e';
+const sendICXAmount = '10';
+
+// Build a transaction
+const txObj = new IconBuilder.IcxTransactionBuilder()
+  .from(metadata.publicAddress)
+  .to(destinationAddress)
+  .value(IconAmount.of(sendICXAmount, IconAmount.Unit.ICX).toLoop())
+  .stepLimit(IconConverter.toBigNumber(100000))
+  .nid(IconConverter.toBigNumber(3))
+  .nonce(IconConverter.toBigNumber(1))
+  .version(IconConverter.toBigNumber(3))
+  .timestamp(new Date().getTime() * 1000)
+  .build();
+
+// Send a transaction
+const txhash = await magic.icon.sendTransaction(txObj);
+
+console.log(`Transaction Hash: ${txhash}`);
+```
+
+### Sign Transaction
+
+To send a standard ICON blockchain transaction, you can call the `magic.icon.signTransaction` method to get the signature and raw transaction then send to blockchain by yourself.
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { IconExtension } from '@magic-ext/icon';
+
+import IconService from 'icon-sdk-js';
+
+const { IconBuilder, IconAmount, IconConverter } = IconService;
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new IconExtension({
+      rpcUrl: 'ICON_RPC_NODE_URL',
+    }),
+  ],
+});
+
+const metadata = await magic.user.getMetadata();
+const destinationAddress = 'hx19f4fc31c6e51d5facccb52e3ccbe6b7d61f409e';
+const sendICXAmount = '10';
+
+// Build a transaction
+const txObj = new IconBuilder.IcxTransactionBuilder()
+  .from(metadata.publicAddress)
+  .to(destinationAddress)
+  .value(IconAmount.of(sendICXAmount, IconAmount.Unit.ICX).toLoop())
+  .stepLimit(IconConverter.toBigNumber(100000))
+  .nid(IconConverter.toBigNumber(3))
+  .nonce(IconConverter.toBigNumber(1))
+  .version(IconConverter.toBigNumber(3))
+  .timestamp(new Date().getTime() * 1000)
+  .build();
+
+// Send a transaction
+const { signature, rawTransaction } = await magic.icon.signTransaction(txObj);
+
+console.log(`result:`, signature, rawTransaction);
+```
+### Deploy Smart Contract
+
+Note that the Magic ICON extension follows the method names and conventions by [**ICON's Javascript SDK**](https://www.icondev.io/icon-sdks/javascript). Please follow [**ICON contract deploy documentation**](https://www.icondev.io/btp-gitbook/deploy-smart-contracts-icon) to create and compile the smart contract. To deploy an ICON smart contract, you can call the `magic.icon.sendTransaction` method to send deploy contract transaction.
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { IconExtension } from '@magic-ext/icon';
+
+import IconService from 'icon-sdk-js';
+
+const { DeployTransactionBuilder, IconConverter } = IconService;
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new IconExtension({
+      rpcUrl: 'ICON_RPC_NODE_URL',
+    }),
+  ],
+});
+
+const metadata = await magic.user.getMetadata();
+
+// Build a transaction
+const txObj = new DeployTransactionBuilder()
+  .from(metadata.publicAddress)
+  .to('cx0000000000000000000000000000000000000000')
+  .stepLimit(IconConverter.toBigNumber(2100000000).toString())
+  .nid(IconConverter.toBigNumber(3).toString())
+  .nonce(IconConverter.toBigNumber(1).toString())
+  .version(IconConverter.toBigNumber(3).toString())
+  .timestamp(new Date().getTime() * 1000)
+  .contentType('application/zip')
+  .content(`0x${compiledContractContent}`)
+  .params({
+    initialSupply: IconConverter.toHex('100000000000'),
+    decimals: IconConverter.toHex(18),
+    name: 'StandardToken',
+    symbol: 'ST',
+  })
+  .build();
+
+// Send transaction to deploy contract
+const txhash = await magic.icon.sendTransaction(txObj);
+
+console.log(`Transaction Hash: ${txhash}`);
+```
+
+## Resources
+* [Icon Developer Tutorials](https://icon.community/tutorials/)
