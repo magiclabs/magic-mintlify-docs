@@ -1,53 +1,3 @@
-html.dark {
-  background-color: #18171a !important;
-}
-
-html.dark body {
-  background-color: #18171a !important;
-}
-
-.sticky.top-0.h-8.z-10.bg-gradient-to-b {
-  background: none !important;
-}
-
-/* Card background colors */
-html.dark .card {
-  background-color: #18171a !important;
-}
-
-/* Navbar transition background colors */
-#navbar-transition {
-  background-color: #ffffff !important;
-}
-
-html.dark #navbar-transition {
-  background-color: #18171a !important;
-}
-
-#navbar-transition[data-is-opaque="true"] {
-  background-color: rgba(255, 255, 255, 0.9) !important;
-}
-
-html.dark #navbar-transition[data-is-opaque="true"] {
-  background-color: rgba(24, 23, 26, 0.9) !important;
-}
-
-/* Anchor link underline colors */
-html.dark a.link:not(.nav-tabs-item):not(.nav-anchor) {
-  text-decoration-color: #ffffff !important;
-  border-bottom: 1px solid #ffffff !important;
-}
-
-html.dark a.link:not(.nav-tabs-item):not(.nav-anchor):hover {
-  text-decoration-color: #ffffff !important;
-  border-bottom: 2px solid #ffffff !important;
-}
-
-/* Search bar button background */
-html.dark #search-bar-entry {
-  background-color: #18171a !important;
-}
-
 /* Code block background for dark mode */
 html.dark div[data-component-part="code-block-root"] {
   background-color: #1f1f23 !important;
@@ -56,6 +6,15 @@ html.dark div[data-component-part="code-block-root"] {
 /* Code block scrollbar containment */
 div[data-component-part="code-block-root"] {
   clip-path: inset(0 round 1rem) !important;
+}
+
+/* Card content container centering */
+.card {
+  display: flex !important;
+}
+
+div[data-component-part="card-content-container"] {
+  flex: 1 !important;
 }
 
 /* Topbar CTA Button Light/Dark Mode Styling */
@@ -84,4 +43,15 @@ html.dark #topbar-cta-button .text-white {
 
 html.dark #topbar-cta-button .text-white\/90 {
   color: #18171a !important;
+}
+
+/* Anchor link underline colors */
+html.dark a.link:not(.nav-tabs-item):not(.nav-anchor) {
+  text-decoration-color: #ffffff !important;
+  border-bottom: 1px solid #ffffff !important;
+}
+
+html.dark a.link:not(.nav-tabs-item):not(.nav-anchor):hover {
+  text-decoration-color: #ffffff !important;
+  border-bottom: 2px solid #ffffff !important;
 }

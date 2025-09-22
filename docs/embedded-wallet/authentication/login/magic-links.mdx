@@ -79,28 +79,21 @@ With Test Mode enabled, you can assert the desired behavior through the email ad
 * To assert a failed state, use `test+fail@magic.link`
 * To assert a case-specific failed state, provide an [RPC error code](/docs/embedded-wallet/api/client-side-sdks/web#rpcerror) with `test+fail_with_{RPC_ERROR_CODE}@magic.link`
 
-<Tabs>
-<Tab title="Succeed">
-```javascript JavaScript icon="square-js"
+<CodeGroup>
+```javascript Success icon="square-js"
 magic.auth.loginWithMagicLink({ email: 'test+success@magic.link' });
-````
+```
 
-</Tab>
-<Tab title="Fail">
-```javascript JavaScript icon="square-js"
+```javascript Fail icon="square-js"
 magic.auth.loginWithMagicLink({ email: 'test+fail@magic.link' });
 ```
-</Tab>
 
-<Tab title="Fail With Error">
-```javascript JavaScript icon="square-js"
+```javascript Fail With Error icon="square-js"
 import { RPCErrorCode } from 'magic-sdk';
 
 magic.auth.loginWithMagicLink({ email: `test+fail_with_{${RPCErrorCode.MagicLinkFailedVerification}}@magic.link` });
-
-````
-</Tab>
-</Tabs>
+```
+</CodeGroup>
 
 Web3 and blockchain use-cases sometimes require access to deterministic key-pairs so that testnet funds are available at runtime. To enable this, users can explicitly specify the key-pair associated to a test user with the following email: `test+success_with_{PUBLIC_KEY:PRIVATE_KEY}@magic.link`.
 
@@ -143,8 +136,6 @@ Magic Links are no longer supported on mobile as of June 20th, 2023. We advise c
 [How to add OTP email login on Android](/docs/embedded-wallet/api/client-side-sdks/android#loginwithemailotp)
 
 [How to add OTP email login on Flutter](/docs/embedded-wallet/api/client-side-sdks/flutter#loginwithemailotp)
-
-[How to add OTP email login on Unity](/docs/embedded-wallet/api/client-side-sdks/unity#loginwithemailotp)
 
 [How to add OTP email login in React Native](/docs/embedded-wallet/api/client-side-sdks/web#loginwithemailotp)
 

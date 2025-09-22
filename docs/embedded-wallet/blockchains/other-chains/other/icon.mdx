@@ -31,7 +31,7 @@ yarn add @magic-ext/icon
 
 ## Initialization
 
-```TypeScript Typescript
+```typescript TypeScript icon="square-js"
 
 import { Magic } from 'magic-sdk';
 import { IconExtension } from '@magic-ext/icon';
@@ -62,7 +62,7 @@ Before you can send transaction on the ICON blockchain, you'll need to acquire s
 
 Using `getAccount` function to get ICON public address for current user.
 
-```TypeScript Typescript
+```typescript TypeScript icon="square-js"
 
 import { Magic } from 'magic-sdk';
 import { IconExtension } from '@magic-ext/icon';
@@ -84,7 +84,7 @@ console.log('ICON Public Address: ', publicAddress);
 
 Note that the Magic ICON extension follows the method names and conventions by [**ICON's Javascript SDK**](https://www.icondev.io/icon-sdks/javascript). To send a standard ICON blockchain transaction, you can call the `magic.icon.sendTransaction` method.
 
-```Typescript Typescript
+```typescript TypeScript icon="square-js"
 
 import { Magic } from 'magic-sdk';
 import { IconExtension } from '@magic-ext/icon';
@@ -127,7 +127,7 @@ console.log(`Transaction Hash: ${txhash}`);
 
 To send a standard ICON blockchain transaction, you can call the `magic.icon.signTransaction` method to get the signature and raw transaction then send to blockchain by yourself.
 
-```TypeScript Typescript
+```typescript TypeScript icon="square-js"
 
 import { Magic } from 'magic-sdk';
 import { IconExtension } from '@magic-ext/icon';
@@ -169,7 +169,7 @@ console.log(`result:`, signature, rawTransaction);
 
 Note that the Magic ICON extension follows the method names and conventions by [**ICON's Javascript SDK**](https://www.icondev.io/icon-sdks/javascript). Please follow [**ICON contract deploy documentation**](https://www.icondev.io/btp-gitbook/deploy-smart-contracts-icon) to create and compile the smart contract. To deploy an ICON smart contract, you can call the `magic.icon.sendTransaction` method to send deploy contract transaction.
 
-```TypeScript Typescript
+```typescript TypeScript icon="square-js"
 
 import { Magic } from 'magic-sdk';
 import { IconExtension } from '@magic-ext/icon';

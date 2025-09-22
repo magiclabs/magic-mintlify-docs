@@ -30,7 +30,7 @@ yarn add @magic-ext/cosmos
 
 ## Initialization
 
-```TypeScript Typescript
+```typescript TypeScript icon="square-js"
 
 import { Magic } from 'magic-sdk';
 import { CosmosExtension } from '@magic-ext/cosmos';
@@ -51,7 +51,7 @@ const magic = new Magic('YOUR_API_KEY', {
 
 To send or sign a standard Cosmos blockchain transaction, you can call the `magic.cosmos.signAndBroadcast` method or `magic.cosmos.sign` method.
 
-```TypeScript Typescript
+```typescript TypeScript icon="square-js"
 
 import { Magic } from 'magic-sdk';
 import { CosmosExtension } from '@magic-ext/cosmos';
@@ -98,7 +98,7 @@ const handlerSendTransaction = async () => {
 
 Using `magic.cosmos.sendTokens` function to native tokens on Cosmos blockchain.
 
-```TypeScript Typescript
+```typescript TypeScript icon="square-js"
 
 import { Magic } from 'magic-sdk';
 import { CosmosExtension } from '@magic-ext/cosmos';
@@ -119,7 +119,7 @@ const result = await magic.cosmos.sendTokens('recipientAddress', 'transferAmount
 
 Using `magic.cosmos.changeAddress` function to change the address prefix.
 
-```TypeScript Typescript
+```typescript TypeScript icon="square-js"
 
 import { Magic } from 'magic-sdk';
 import { CosmosExtension } from '@magic-ext/cosmos';

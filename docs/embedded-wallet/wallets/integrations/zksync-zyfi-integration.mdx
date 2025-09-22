@@ -78,7 +78,7 @@ The code snippets provided below outline the process of initializing the `wallet
 
 Inside of `src/components/magic/MagicProvider.tsx`, import the following from Viem:
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 import { Client, createWalletClient, custom } from 'viem';
 import { zkSyncSepoliaTestnet } from 'viem/chains';
 import { eip712WalletActions } from "viem/zksync"
@@ -87,7 +87,7 @@ import { eip712WalletActions } from "viem/zksync"
 Next, create the wallet client state that will be used when we send the transaction:
 
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 const [walletClient, setWalletClient] = useState<Client | null>(null);
 ```
 
@@ -102,7 +102,7 @@ The client is also initialized with EIP712 transaction support using `eip712Wall
 Inside the useEffect underneath the `magic` variable declaration, add the following function and invocation:
 
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 const initializeWalletClient = async () => {
   const provider = await magic?.wallet.getProvider()
   const walletClient = createWalletClient({
@@ -119,7 +119,7 @@ initializeWalletClient();
 
 Now that we’ve created and set the wallet client, we want to export it so we gain global access to the client. Update the `useMemo` hook and add `walletClient`:
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 const value = useMemo(() => {
   return {
     magic,
@@ -167,7 +167,7 @@ Inside this function is where the POST request is sent to Zyfi with the required
 
 After the first conditionals, add the following API call to Zyfi:
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 const res = await fetch('<https://api.zyfi.org/api/erc20_paymaster/v1>', {
   method: 'POST',
   headers: {
@@ -239,7 +239,7 @@ It also contains additional data pertaining to the Zyfi request, not all of whic
 
 Once you receive the response, you can use destructuring assignment to extract the `txData` property from the JSON response. Next, format the transaction data necessary for submission, including key details like the account address, recipient, value, chain specifications, gas limits, and paymaster information. This structured data is tailored specifically for the transaction and ensures that all necessary parameters are correctly set for processing the transaction properly.
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 const { txData: apiTxData } = await res.json()
 
 const paymasterTxData = {
@@ -261,7 +261,7 @@ const paymasterTxData = {
 
 The data is correctly formatted and the transaction is ready to submit to the network. Add the following `try/catch` for sending the transaction beneath the rest of the code:
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 try {
   const hash = await walletClient?.sendTransaction(paymasterTxData)
   setHash(hash)

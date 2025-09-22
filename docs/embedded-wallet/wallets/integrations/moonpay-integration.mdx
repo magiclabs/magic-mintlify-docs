@@ -86,7 +86,7 @@ Inside of `src/pages/index.tsx`, we need to wrap our application with the MoonPa
 
 Since we’re using Next.js, it is recommended to import the provider dynamically. We will need to utilize `dynamic` from `next/dynamic` to do this. Inside the `Home` function, create a variable named `MoonPayProvider`:
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 import dynamic from 'next/dynamic';
 
 const MoonPayProvider = dynamic(
@@ -115,7 +115,7 @@ Now that we have MoonPay configured, we can now add the ability to use the onram
 Similarly to the provider we created in the previous step, it is recommended to import the component dynamically to avoid errors. At the top of the `src/components/magic/cards/SendTransactionCard.tsx`, below the rest of the existing imports, add the following:
 
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 import dynamic from 'next/dynamic';
 
 const MoonPayBuyWidget = dynamic(
@@ -131,7 +131,7 @@ The widget itself can take a variety of props such as themes, currency codes and
 The first thing we need to do is create a variable named `isVisible`. This will determine if the onramp overlay is displayed. Underneath the other variables, add the following:
 
 
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 const [isVisible, setIsVisible] = useState<boolean>(false)
 ```
 

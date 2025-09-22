@@ -11,7 +11,7 @@ To view all supported types, feel free to explore the [Magic SDK repo](https://g
 ## User Module
 
 ### `MagicUserMetadata`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 
 export interface MagicUserMetadata {
   issuer: string | null;
@@ -24,14 +24,14 @@ export interface MagicUserMetadata {
 ```
 
 ### `RecoveryMethodType`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export enum RecoveryMethodType {
   PhoneNumber = 'phone_number',
 }
 ```
 
 ### `RecoveryFactor`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 type RecoveryFactor = {
   type: RecoveryMethodType;
   value: string;
@@ -39,7 +39,7 @@ type RecoveryFactor = {
 ```
 
 ### `GetIdTokenConfiguration`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export interface GetIdTokenConfiguration {
   /*
    * The number of seconds until the generated ID token will expire.
@@ -49,7 +49,7 @@ export interface GetIdTokenConfiguration {
 ```
 
 ### `GenerateIdTokenConfiguration`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export interface GenerateIdTokenConfiguration extends GetIdTokenConfiguration {
   /*
    * An optional piece of data to sign with the token. Note, however, that the
@@ -61,7 +61,7 @@ export interface GenerateIdTokenConfiguration extends GetIdTokenConfiguration {
 ```
 
 ### `UpdateEmailConfiguration`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export interface UpdateEmailConfiguration {
   /*
    * The new email address to update to
@@ -78,7 +78,7 @@ export interface UpdateEmailConfiguration {
 ```
 
 ### `UpdateWebAuthnInfoConfiguration`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export interface UpdateWebAuthnInfoConfiguration {
   /*
    *  WebAuthn info id
@@ -94,7 +94,7 @@ export interface UpdateWebAuthnInfoConfiguration {
 
 
 ### `RecoverAccountConfiguration`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export interface RecoverAccountConfiguration {
   /*
    * The email to recover
@@ -104,7 +104,7 @@ export interface RecoverAccountConfiguration {
 ```
 
 ### `ShowSettingsConfiguration`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export interface ShowSettingsConfiguration {
   /*
    * deep linking destination
@@ -116,7 +116,7 @@ export interface ShowSettingsConfiguration {
 ## Wallet Module
 
 ### `GasApiResponse`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export type GasApiResponse = {
   request_id: string;
   state: string;
@@ -125,19 +125,19 @@ export type GasApiResponse = {
 ```
 
 ### `AccessListEntry`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export type AccessListEntry = { address: string; storageKeys: Array<string> };
 ```
 
 ### `AccessList`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export type AccessList = Array<AccessListEntry>;
 ```
 
 ## Auth Module
 
 ### `LoginWithMagicLinkConfiguration`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export interface LoginWithMagicLinkConfiguration {
   /*
    * The email address of the user attempting to login.
@@ -171,7 +171,7 @@ export interface LoginWithMagicLinkConfiguration {
 ```
 
 ### `LoginWithSmsConfiguration`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export interface LoginWithSmsConfiguration {
   /*
    * Specify the phone number of the user attempting to login.
@@ -182,7 +182,7 @@ export interface LoginWithSmsConfiguration {
 
 
 ### `LoginWithEmailOTPConfiguration`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export interface LoginWithEmailOTPConfiguration {
   /*
    * Specify the email address of the user attempting to login.
@@ -224,7 +224,7 @@ export interface LoginWithEmailOTPConfiguration {
 ```
 
 ### EventHandlers
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export type LoginWithMagicLinkEventHandlers = {
   // Event Received
   [LoginWithMagicLinkEventOnReceived.EmailSent]: () => void;
@@ -259,7 +259,7 @@ type DeviceVerificationEventHandlers = {
 
 
 ### Auth Events Enum
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export enum LoginWithMagicLinkEventEmit {
   Retry = 'retry',
 }
@@ -295,7 +295,7 @@ export enum DeviceVerificationEventOnReceived {
 ## NFT Module
 
 ### `NFTPurchaseRequest`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export interface NFTPurchaseRequest {
   nft: {
     name: string;
@@ -325,7 +325,7 @@ export interface NFTPurchaseRequest {
 ```
 
 ### `NFTCheckoutRequest`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export interface NFTCheckoutRequest {
   // given by magic / found in the developer dashboard in future
   contractId: string;
@@ -339,7 +339,7 @@ export interface NFTCheckoutRequest {
 ```
 
 ### `NFTTransferRequest`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export interface NFTTransferRequest {
   tokenId: string;
   contractAddress: string;
@@ -349,7 +349,7 @@ export interface NFTTransferRequest {
 ```
 
 ### Responses and `ResponseStatus`
-```typescript TypeScript
+```typescript TypeScript icon="square-js"
 export type NFTResponseStatus = 'cancelled' | 'processed' | 'declined' | 'expired';
 
 export type NFTResponse = {

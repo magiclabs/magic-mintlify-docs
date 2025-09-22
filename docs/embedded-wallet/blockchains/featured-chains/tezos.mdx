@@ -16,23 +16,21 @@ You can skip straight to our kitchen sink example directly:
 
 </Info>
 
-<Tabs>
-  <Tab title="NPM">
-```bash
+<CodeGroup>
+
+```bash NPM icon="npm"
 npm install --save @magic-ext/taquito
 ```
-  </Tab>
-  <Tab title="Yarn">
-```bash
+
+```bash Yarn icon="yarn"
 yarn add @magic-ext/taquito
 ```
-  </Tab>
-</Tabs>
+
+</CodeGroup>
 
 ## Initialization
 
-```Typescript Typescript
-
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { TaquitoExtension } from '@magic-ext/taquito';
 
@@ -45,12 +43,12 @@ const magic = new Magic('YOUR_API_KEY', {
 });
 ```
 ## Common Methods
+
 ### Send Transaction
 
 Note that the Magic Taquito extension follows the method names and conventions by [**Taquito**](https://tezostaquito.io/). To send a standard Tezos blockchain transaction, you can call the `magic.taquito.createMagicSigner` method to create a signer to inject to Tezos client.
 
-```Typescript Typescript
-
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { TaquitoExtension } from '@magic-ext/taquito';
 import { TezosToolkit } from '@taquito/taquito';
@@ -74,6 +72,8 @@ const result = await op.confirmation();
 
 console.log('result', result)
 ```
+
 ### Resources
+
 * [Tezos Block Explorer](https://tzstats.com/)
 

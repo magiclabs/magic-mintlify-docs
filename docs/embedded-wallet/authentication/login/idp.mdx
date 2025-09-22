@@ -64,9 +64,8 @@ Please call the POST endpoint for initial configuration of your application's cu
 
 **Example POST call**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+<CodeGroup>
+```javascript JavaScript icon="square-js"
 const magic_resp = await fetch("https://api.magic.link/v1/api/magic_client/federated_idp", {
   method: "POST",
   headers: {
@@ -109,9 +108,8 @@ const provider_Id = magic_json.data['id']
   "status": "ok"
 }
 ```
-</Tab>
-<Tab title="Curl">
-```bash
+
+```bash cURL icon="square-terminal"
 curl --request POST \
   --url 'https://api.magic.link/v1/api/magic_client/federated_idp' \
   --header 'X-Magic-Secret-Key: <your_magic_secret_api_key>' \
@@ -148,8 +146,7 @@ curl --request POST \
   "status": "ok"
 }
 ```
-</Tab>
-</Tabs>
+</CodeGroup>
 
 To update, you will need to affix your application's `providerId` to the PATCH endpoint. Only values passed to the request body will be updated.
 
@@ -157,9 +154,8 @@ To update, you will need to affix your application's `providerId` to the PATCH e
 
 **Example PATCH call**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
+<CodeGroup>
+```javascript JavaScript icon="square-js"
 const magic_resp = await fetch("https://api.magic.link/v1/api/magic_client/federated_idp/<provider_Id>", {
   method: "PATCH",
   headers: {
@@ -201,11 +197,9 @@ const provider_Id = magic_json.data['id']
   "message": "",
   "status": "ok"
 }
+```
 
-````
-</Tab>
-<Tab title="Curl">
-```bash
+```bash cURL icon="square-terminal"
 curl --request POST \
   --url 'https://api.magic.link/v1/api/magic_client/federated_idp/<provider_Id>' \
   --header 'X-Magic-Secret-Key: <your_magic_secret_api_key>' \
@@ -241,25 +235,21 @@ curl --request POST \
   "status": "ok"
 }
 ```
-</Tab>
-</Tabs>
+</CodeGroup>
 
 ## Installation
 
 To use your own identity provider, you must install both `magic-sdk` and the OIDC extension: `@magic-ext/oidc`
 
-<Tabs>
-  <Tab title="NPM">
-  ```bash
+<CodeGroup>
+  ```bash NPM icon="npm"
   npm install magic-sdk @magic-ext/oidc
   ```
-  </Tab>
-  <Tab title="Yarn">
-  ```bash
+
+  ```bash Yarn icon="yarn"
   yarn add magic-sdk @magic-ext/oidc
   ```
-  </Tab>
-</Tabs>
+</CodeGroup>
 
 ## Initialization
 

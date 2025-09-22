@@ -2,34 +2,29 @@
 title: Solana
 ---
 
-### Installation
+## Installation
 
 To get started, install the following dependencies for your project:
 
-<Tabs>
-<Tab title="NPM">
-```bash
-npm install @magic-ext/solana @solana/web3.js magic-sdk
+<CodeGroup>
 
+```bash NPM icon="npm"
+npm install @magic-ext/solana @solana/web3.js magic-sdk
 ```
-</Tab>
-<Tab title="Yarn">
-```bash
+
+```bash Yarn icon="yarn"
 yarn add @magic-ext/solana @solana/web3.js magic-sdk
 ```
-</Tab>
-</Tabs>
 
-### Initialization
+</CodeGroup>
 
-The Magic class is the entry-point to the Magic SDK. It must be instantiated with a Magic **publishable** key.
+## Initialization
 
-### ES Modules/TypeScript
+The Magic class is the entry-point to the Magic SDK. It must be instantiated with a Magic **publishable** key.
 
-<Tabs>
-<Tab title="Typescript">
-```javascript
+**ES Modules/TypeScript**
 
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { SolanaExtension } from '@magic-ext/solana';
 
@@ -41,15 +36,10 @@ const magic = new Magic('YOUR_API_KEY', {
   ],
 });
 ```
-</Tab>
-</Tabs>
 
-### CDN
+**CDN**
 
-<Tabs>
-<Tab title="Javascript">
-```javascript
-
+```javascript JavaScript icon="square-js"
 <script src="https://auth.magic.link/sdk"></script>
 <script type="text/javascript" src="https://auth.magic.link/sdk/extension/solana"></script>
 
@@ -63,22 +53,18 @@ const magic = new Magic('YOUR_API_KEY', {
   });
 </script>
 ```
-</Tab>
-</Tabs>
 
-### Common Methods
+## Common Methods
 
 Note that the Magic Solana extension follows the method names and conventions by [**Solana's Javascript SDK**](https://solana.com/docs/clients/javascript).
 
 ### Sign and Send Transaction
 
-### ES Modules/TypeScript
+**ES Modules/TypeScript**
 
-To sign a standard Solana blockchain transaction, call the `magic.solana.signTransaction` method. Note that you must sign with the Magic SDK method but send the transaction using the `@solana/web3.js` method `connection.sendRawTransaction`.
+To sign a standard Solana blockchain transaction, call the `magic.solana.signTransaction` method. Note that you must sign with the Magic SDK method but send the transaction using the `@solana/web3.js` method `connection.sendRawTransaction`.
 
-<Tabs>
-<Tab title="Typescript">
-```javascript
+```javascript JavaScript icon="square-js"
 import * as web3 from "@solana/web3.js";
 
 // Ensure you have Magic initialized with the Solana extension
@@ -114,32 +100,25 @@ const signedTransaction = await magic?.solana.signTransaction(
 
 const signature = await connection?.sendRawTransaction(
   Buffer.from(signedTransaction?.rawTransaction as string, "base64")
-)⁠;
+);
 
-⁠console.log(signature);
+console.log(signature);
 ```
-</Tab>
-</Tabs>
 
 ### Sign Message
 
-### ES Modules/TypeScript
+**ES Modules/TypeScript**
 
-<Tabs>
-<Tab title="Typescript">
-```javascript
-
+```javascript JavaScript icon="square-js"
 // Ensure you have Magic initialized with the Solana extension
 // Ensure that user is already authenticated
 
 const signedMessage = await magic?.solana.signMessage("Hello World")
-⁠
+
 console.log(signedMessage)
 ```
-</Tab>
-</Tabs>
 
-### Resources
+## Resources
 
 * [Magic Solana SDK](https://solana.com/docs/clients/javascript)
 * [Solana JavaScript Web3 example](https://codesandbox.io/s/github/MagicLabs/example-solana)

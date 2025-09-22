@@ -13,7 +13,7 @@ Email OTP is available on all [client-side SDKs](/docs/embedded-wallet/api/overv
 
 ## Usage
 
-You can use Email OTP login by creating a project with our [CLI tool](/docs/home/quickstart) and picking 'Quickstart' when prompted. Alternatively, you can integrate Email OTP directly into your existing projects using the sample below. **Refer to the** [**API documentation**](/docs/embedded-wallet/api/overview) **for information on how to install and initialize Magic for your existing project.**
+You can use Email OTP login by creating a project with our [CLI tool](/docs/embedded-wallet/quickstart/overview) and picking 'Quickstart' when prompted. Alternatively, you can integrate Email OTP directly into your existing projects using the sample below. **Refer to the** [**API documentation**](/docs/embedded-wallet/api/overview) **for information on how to install and initialize Magic for your existing project.**
 
 Once you've created a Magic instance, log users in using `loginWithEmailOTP`. In addition to the user's email address, you can provide a boolean indicating whether or not to show a pre-built modal interface directing the user to enter their one-time passcode. When `false`, you can implement a custom UI to continue the email OTP flow.
 
@@ -37,11 +37,10 @@ const login = async (emailAddress, showUI) => {
 
 ## Resources
 
-- [Quickstart](/docs/home/quickstart/cli)
+- [Quickstart](/docs/embedded-wallet/quickstart/overview)
 - [Email OTP Wallets on EVM chains](https://magic.link/posts/magic-evm-nextjs-guide)
 - [Web API documentation](/docs/embedded-wallet/api/client-side-sdks/web#loginwithemailotp)
 - [React Native API documentation](/docs/embedded-wallet/api/client-side-sdks/react-native#loginwithemailotp)
 - [iOS API documentation](/docs/embedded-wallet/api/client-side-sdks/ios#loginwithemailotp)
 - [Android API documentation](/docs/embedded-wallet/api/client-side-sdks/android#loginwithemailotp)
 - [Flutter API documentation](/docs/embedded-wallet/api/client-side-sdks/flutter#loginwithemailotp)
-- [Unity API documentation](/docs/embedded-wallet/api/client-side-sdks/unity#loginwithemailotp)
