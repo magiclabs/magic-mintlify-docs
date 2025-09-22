@@ -7,34 +7,28 @@ title: Zilliqa
 
 Magic interacts with the [Zilliqa](https://www.zilliqa.com/) blockchain via Magic's extension NPM package [`@magic-ext/zilliqa`](https://www.npmjs.com/package/@magic-ext/zilliqa). The Zilliqa extension also lets you interact with the blockchain using methods from [Zilliqa's Javascript SDK](https://github.com/Zilliqa/Zilliqa-JavaScript-Library).
 
-<Info>
+<Note>
 **NOTE**
 
 You can skip straight to our kitchen sink example directly:
 
 [**Zilliqa Example**](https://codesandbox.io/s/github/MagicLabs/example-zilliqa)
 
-</Info>
+</Note>
 
-<Tabs>
-  <Tab title="NPM">
-```bash
+<CodeGroup>
+```bash NPM icon="npm"
 npm install --save @magic-ext/zilliqa
 ```
-  </Tab>
-  <Tab title="Yarn">
-```bash
+```bash Yarn icon="yarn"
 yarn add @magic-ext/zilliqa
 ```
-  </Tab>
-</Tabs>
+</CodeGroup>
 
 
 ## Initialization
 
-```typescript TypeScript icon="square-js"
-
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ZilliqaExtension } from '@magic-ext/zilliqa';
 
@@ -46,10 +40,10 @@ const magic = new Magic('YOUR_API_KEY', {
   ],
 });
 ```
+
 ### CDN
 
 ```javascript JavaScript icon="square-js"
-
 <script src="https://auth.magic.link/sdk"></script>
 <script type="text/javascript" src="https://auth.magic.link/sdk/extension/zilliqa"></script>
 
@@ -64,11 +58,9 @@ const magic = new Magic('YOUR_API_KEY', {
 </script>
 ```
 
-
-
 ## Common Methods
 
-### Getting Test ZIL
+**Getting Test ZIL**
 
 Before you can send transaction on the Zilliqa blockchain, you'll need to acquire some test ZIL (Zilliqa's native cryptocurrency for test network).
 
@@ -84,8 +76,7 @@ Before you can send transaction on the Zilliqa blockchain, you'll need to acquir
 
 Using `getWallet` function to get a Zilliqa wallet for the current user.
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ZilliqaExtension } from '@magic-ext/zilliqa';
 
@@ -102,12 +93,11 @@ const wallet = await magic.zilliqa.getWallet();
 console.log('Zilliqa wallet: ', wallet);
 ```
 
-## Send Transaction
+### Send Transaction
 
 To send a standard Zilliqa blockchain transaction, you can call the `magic.Zilliqa.sendTransaction` method.
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ZilliqaExtension } from '@magic-ext/zilliqa';
 const { BN, Long, bytes, units } = require('@zilliqa-js/util');
@@ -145,8 +135,7 @@ console.log('send transaction', tx);
 
 To deploy a smart contract, you can call the `magic.zilliqa.deployContract` method.
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { ZilliqaExtension } from '@magic-ext/zilliqa';
 const { BN, Long, bytes, units } = require('@zilliqa-js/util');
@@ -236,7 +225,6 @@ const result = await magic.zil.deployContract(init, code, params, 33, 1000, fals
 
 console.log('deploy contract', result);
 ```
-
 
 ## Resources
 

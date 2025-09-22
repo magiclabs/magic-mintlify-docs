@@ -7,30 +7,26 @@ title: Bitcoin
 
 Magic interacts with the Bitcoin blockchain via Magic's extension NPM package [`@magic-ext/bitcoin`](https://www.npmjs.com/package/@magic-ext/bitcoin). The Bitcoin extension also lets you interact with the blockchain using methods from [Bitcoinjs-lib](https://github.com/bitcoinjs/bitcoinjs-lib).
 
-<Info>
+<Note>
 **NOTE**
 
 You can skip straight to our kitchen sink example directly:
 
 [**Bitcoin Example**](https://go.magic.link/example-bitcoin)
-</Info>
-<Tabs>
-  <Tab title="NPM">
-```bash
+</Note>
 
+<CodeGroup>
+```bash NPM icon="npm"
 npm install --save @magic-ext/bitcoin
 ```
-  </Tab>
-  <Tab title="Yarn">
-```bash
+```bash Yarn icon="yarn"
 yarn add @magic-ext/bitcoin
 ```
-  </Tab>
-</Tabs>
+</CodeGroup>
 
 ## Initialization
-```typescript TypeScript icon="square-js"
 
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { BitcoinExtension } from "@magic-ext/bitcoin";
 
@@ -51,7 +47,6 @@ const magic = new Magic('YOUR_API_KEY', {
 To send a standard Bitcoin blockchain transaction, you can call the `magic.bitcoin.signTransaction` method to get the signature and raw transaction then send to blockchain by yourself.
 
 ```javascript JavaScript icon="square-js"
-
 import { Magic } from 'magic-sdk';
 import { BitcoinExtension } from "@magic-ext/bitcoin";
 import * as bitcoin from 'bitcoinjs-lib'

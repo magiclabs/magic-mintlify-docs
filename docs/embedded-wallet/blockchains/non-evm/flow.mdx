@@ -15,33 +15,28 @@ This section will cover how to use our previous Flow integration via a custom ex
 Magic interacts with the [Flow](https://www.onflow.org/) blockchain via Magic's extension NPM package [`@magic-ext/flow`](https://www.npmjs.com/package/@magic-ext/flow). The Flow extension also lets you interact with the blockchain using methods from [Flow's Javascript SDK](https://github.com/onflow/flow-js-sdk/tree/master/packages/fcl).
 
 To get started, install the following dependencies for your project:
-<Tabs>
-  <Tab title="NPM">
-  ```bash
-  npm install @magic-ext/flow magic-sdk
-  ```
-  </Tab>
-  <Tab title="Yarn">
-```bash
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install @magic-ext/flow magic-sdk
+```
+```bash Yarn icon="yarn"
 yarn add @magic-ext/flow magic-sdk
 ```
-  </Tab>
-</Tabs>
+</CodeGroup>
 
 ## Initialization
 
 The Magic class is the entry-point to the Magic SDK. It must be instantiated with a Magic **publishable** key.
 
-<Info>
+<Warning>
 **NOTE**
 
 If this is your first time using Magic with Flow, you may need to wait up to 30 seconds after clicking the magic link before your login completes because Magic has to wait for the Flow blockchain to confirm a transaction that creates your account.
 
-</Info>
-#### ES Modules/TypeScript
+</Warning>
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { FlowExtension } from '@magic-ext/flow';
 
@@ -60,7 +55,7 @@ const magic = new Magic('YOUR_API_KEY', {
 
 You can use `magic.flow.getAccount()` method to let users login.
 
-```typescript TypeScript icon="square-js"
+```js JavaScript icon="square-js"
 import * as fcl from '@onflow/fcl';
 
 import { Magic } from 'magic-sdk';
@@ -76,18 +71,18 @@ const magic = new Magic('YOUR_API_KEY', {
 });
 
 const login = async () => {
-    const account = await magic.flow.getAccount();
-    console.log(account)
+  const account = await magic.flow.getAccount();
+  console.log(account)
 }
 
 login()
 ```
 
-### Common Methods
+## Common Methods
 
-#### Send Transaction
+### Send Transaction
 
-##### Getting Test Flow
+#### Getting Test Flow
 
 Before you can send transaction on the Flow blockchain, you'll need to acquire some test Flow (Flow's native cryptocurrency for test network).
 
@@ -99,13 +94,11 @@ Before you can send transaction on the Flow blockchain, you'll need to acquire s
 6.  You can receive **1000 test Flow**
 7.  Now you can use your test Flow in our [**example app**](https://go.magic.link/example-flow)
 
-##### Call Extension Method
+#### Call Extension Method
 
 Note that the Magic Flow extension follows the method names and conventions of [**Flow's Javascript SDK**](https://github.com/onflow/flow-js-sdk/tree/master/packages/fcl). You can use the `magic.flow.authorization()` method to replace the `fcl.authenticate()`.
 
-##### ES Modules/TypeScript
-
-```typescript TypeScript icon="square-js"
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { FlowExtension } from '@magic-ext/flow';
 import * as fcl from '@onflow/fcl';

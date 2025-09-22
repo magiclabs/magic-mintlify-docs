@@ -6,34 +6,29 @@ title: Avalanche
 
 Magic interacts with the [Avalanche](https://www.avalabs.org/) blockchain via Magic's extension NPM package [`@magic-ext/avalanche`](https://www.npmjs.com/package/@magic-ext/avalanche). The Avalanche extension also lets you interact with the blockchain using methods from [Avalanche's Javascript SDK](https://github.com/ava-labs/avalanche.js).
 
-<Info>
+<Note>
 **NOTE**
 
 You can skip straight to our github example directly:
 
 [**Avalanche Example**](https://go.magic.link/example-avalanche)
 
-</Info>
+</Note>
 
-<Tabs>
-  <Tab title="NPM">
-```bash
+<CodeGroup>
+```bash NPM icon="npm"
 npm install --save @magic-ext/avalanche
 ```
-  </Tab>
-  <Tab title="Yarn">
-```bash
+```bash Yarn icon="yarn"
 yarn add @magic-ext/avalanche
 ```
-  </Tab>
-</Tabs>
+</CodeGroup>
 
 ## Initialization
 
 _Note: This is for X-Chain implementation._
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { AvalancheExtension } from '@magic-ext/avalanche';
 
@@ -50,7 +45,7 @@ const magic = new Magic('YOUR API KEY', {
 
 ## Common Methods
 
-### Get Test AVAX
+**Get Test AVAX**
 
 Before you can send transaction on the Avalanche blockchain, you'll need to acquire some test AVAX (Avalanche's native cryptocurrency for test network).
 
@@ -62,12 +57,11 @@ Before you can send transaction on the Avalanche blockchain, you'll need to acqu
 6.  You can receive 10000000 nAVAX
 7.  Now you can use your test AVAX in our [**example app**](https://go.magic.link/example-avalanche)
 
-## Send Transaction
+### Send Transaction
 
 Note that the Magic Avalanche extension follows the method names and conventions by [**Avalanche's Javascript SDK**](https://www.npmjs.com/package/@magic-ext/avalanche). To send a standard Avalanche blockchain transaction, you can call the `magic.xchain.signTransaction()` method.
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { AvalancheExtension } from '@magic-ext/avalanche';
 import { Avalanche, BinTools, Buffer, BN } from 'avalanche';

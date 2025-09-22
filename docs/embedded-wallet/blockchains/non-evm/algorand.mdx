@@ -7,38 +7,43 @@ title: Algorand
 
 Magic interacts with the [Algorand](https://www.algorand.com/) blockchain via Magic's extension NPM package [`@magic-ext/algorand`](https://www.npmjs.com/package/@magic-ext/algorand). The Algorand extension also lets you interact with the blockchain using methods from [Algorand's Javascript SDK](https://github.com/algorand/js-algorand-sdk).
 
-<Info>
+<Note>
 **NOTE**
 
 You can skip straight to our kitchen sink example directly:
 
  [**Algorand Example**](https://codesandbox.io/s/github/magiclabs/example-algorand)
 
-</Info>
+</Note>
 
-<Tabs>
-  <Tab title="NPM">
-```bash
-
+<CodeGroup>
+```bash NPM icon="npm"
 npm install --save @magic-ext/algorand
 ```
-  </Tab>
-  <Tab title="Yarn">
-```bash
+```bash Yarn icon="yarn"
 yarn add @magic-ext/algorand
 ```
-  </Tab>
-</Tabs>
+</CodeGroup>
 
 ## Initialization
 
 
-```typescript TypeScript icon="square-js"
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { AlgorandExtension } from '@magic-ext/algorand';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: {
+    algorand: new AlgorandExtension({
+      rpcUrl: '', // should remain empty
+    }),
+  },
+});
 ```
 
 ## Common Methods
 
-#### Get Test Algorand
+**Get Test Algorand**
 
 Before you can send transaction on the Algorand blockchain, you'll need to acquire some test Algorand.
 
@@ -59,8 +64,7 @@ Before you can send transaction on the Algorand blockchain, you'll need to acqui
 
 Use the `getWallet` function to get the Algorand public address for the current user.
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { AlgorandExtension } from '@magic-ext/algorand';
 
@@ -76,12 +80,11 @@ const magic = new Magic('YOUR_API_KEY', {
 const publicAddress = await magic.algorand.getWallet();
 console.log('algorand public address', publicAddress);
 ```
-## Sign Transaction
+### Sign Transaction
 
 Note that the Magic Algorand extension follows the method names and conventions by [**Algorand's Javascript SDK**](https://www.npmjs.com/package/@magic-ext/algorand). To sign a standard Algorand blockchain transaction, you can call the `magic.algorand.signTransaction()` method.
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { AlgorandExtension } from '@magic-ext/algorand';
 
@@ -177,45 +180,67 @@ const sendAssetTransferTransaction = async () => {
 ```
 
 
-## Sign Bid
+### Sign Bid
 
 Note that the Magic Algorand extension follows the method names and conventions by [**Algorand's Javascript SDK**](https://www.npmjs.com/package/@magic-ext/algorand). To sign a standard Algorand blockchain Bid, you can call the `magic.algorand.signBid()` method.
 
-```typescript TypeScript icon="square-js"
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { AlgorandExtension } from '@magic-ext/algorand';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: {
+    algorand: new AlgorandExtension({
+      rpcUrl: '',
+    }),
+  },
+});
+
+const bid = {
+  bidderKey: 'IB3NJALXLDX5JLYCD4TMTMLVCKDRZNS4JONHMIWD6XM7DSKYR7MWHI6I7U',
+  auctionKey: '7ZUECA7HFLZTXENRV24SHLU4AVPUTMTTDUFUBNBD64C73F3UHRTHAIOF6Q',
+  bidAmount: 1000,
+  maxPrice: 10,
+  bidID: 2,
+  auctionID: 56,
+};
+
+const tx = await magic.algorand.signBid(bid);
+
+console.log('signed bid', tx);
 ```
+### Sign Group Transaction
 
-## Sign Group Transaction V2
+To sign a standard Algorand blockchain Group transaction with magic user, you can call the `magic.algorand.signGroupTransaction()` method.
 
-To sign a standard Algorand blockchain Group transaction with magic user, you can call the `magic.algorand.signGroupTransactionV2()` method.
-
-```typescript TypeScript icon="square-js"
+```js JavaScript icon="square-js"
 
 import { Magic } from "magic-sdk";
 import { AlgorandExtension } from "@magic-ext/algorand";
 const algosdk = require('algosdk');
 
 const magic = new Magic('YOUR_API_KEY', {
-    extensions: {
-        algorand: new AlgorandExtension({
-            rpcUrl: ''
-        })
-    }
+  extensions: {
+    algorand: new AlgorandExtension({
+      rpcUrl: ''
+    })
+  }
 });
 
 let client = null;
 async function setupClient() {
-    if( client == null){
-      const token = {
-        "x-api-key": "x api key"
-      };
-      const server = "algorand rpc url";
-      const port = '';
-      let algodClient = new algosdk.Algodv2(token, server, port);
-      client = algodClient;
-    } else {
-      return client;
-    }
+  if( client == null){
+    const token = {
+      "x-api-key": "x api key"
+    };
+    const server = "algorand rpc url";
+    const port = '';
+    let algodClient = new algosdk.Algodv2(token, server, port);
+    client = algodClient;
+  } else {
     return client;
+  }
+  return client;
 }
 
 
@@ -244,7 +269,67 @@ const txns = [{
 const signedTX = await magic.algorand.signGroupTransaction(txns);
 
 console.log("signedTX", signedTX);
+```
 
+### Sign Group Transaction V2
+
+To sign a standard Algorand blockchain Group transaction with magic user, you can call the `magic.algorand.signGroupTransactionV2()` method.
+
+```js JavaScript icon="square-js"
+import { Magic } from "magic-sdk";
+import { AlgorandExtension } from "@magic-ext/algorand";
+const algosdk = require('algosdk');
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: {
+    algorand: new AlgorandExtension({
+      rpcUrl: ''
+    })
+  }
+});
+
+let client = null;
+async function setupClient() {
+  if( client == null){
+    const token = {
+      "x-api-key": "x api key"
+    };
+    const server = "algorand rpc url";
+    const port = '';
+    let algodClient = new algosdk.Algodv2(token, server, port);
+    client = algodClient;
+  } else {
+    return client;
+  }
+  return client;
+}
+
+
+let algodClient = await setupClient();
+
+let params = await algodClient.getTransactionParams().do();
+
+const txns = [{
+  from: 'magic user public address',
+  to: 'OFHW3Z3T2RML7J2S6KYGHPAMO6IQH76PE2HSCAIN5U5NBGXAIPBOY7DCHI',
+  amount: 1000000,
+  closeRemainderTo: undefined,
+  note: undefined,
+  suggestedParams: params,
+},
+  {
+    from: 'magic user public address',
+    to: 'XRKQBEV7FINQ66SYAFY33UYHOC4GRAICWI3V6V2TXLCQMPJBGGRHLG2E74',
+    amount: 1000000,
+    closeRemainderTo: undefined,
+    note: undefined,
+    suggestedParams: params,
+  }
+]
+
+const signedTX = await magic.algorand.signGroupTransaction(txns);
+
+console.log("signedTX", signedTX);
 ```
 
 ## Resources

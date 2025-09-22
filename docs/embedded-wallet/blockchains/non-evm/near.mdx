@@ -7,44 +7,36 @@ title: Near
 
 Magic interacts with the Near blockchain via Magic's extension NPM package [`@magic-ext/near`](https://www.npmjs.com/package/@magic-ext/near). The Near extension also lets you interact with the blockchain using methods from [near-api-js](https://www.npmjs.com/package/near-api-js).
 
-<Info>
+<Note>
 **NOTE**
 
 You can skip straight to our Near Guide directly:
 
 [**Near Guide**](https://magic.link/posts/near)
-</Info>
+</Note>
 
-<Tabs>
-  <Tab title="NPM">
-  ```bash
-
+<CodeGroup>
+```bash NPM icon="npm"
 npm install --save @magic-ext/near
-
-  ```
-  </Tab>
-  <Tab title="Yarn">
-```bash
+```
+```bash Yarn icon="yarn"
 yarn add @magic-ext/near
 ```
-  </Tab>
-</Tabs>
+</CodeGroup>
 
 ## Initialization
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
 import { NearExtension } from "@magic-ext/near";
 
 const magic = new Magic('YOUR_API_KEY', {
-    extensions: [
-        new NearExtension({
-            rpcUrl: '',
-        }),
-    ]});
+  extensions: [
+    new NearExtension({
+        rpcUrl: '',
+    }),
+  ]});
 ```
-
 
 ## Common Methods
 
@@ -53,11 +45,9 @@ const magic = new Magic('YOUR_API_KEY', {
 To sign a standard Near blockchain transaction, you can call the `magic.near.signTransaction` method to get the signature and raw transaction then send to blockchain by yourself.
 
 ```javascript JavaScript icon="square-js"
-
 import { Magic } from "magic-sdk";
 import { NearExtension } from "@magic-ext/near";
 import { transactions, utils } from 'near-api-js'
-
 
 const publicKeyString = await magic.near.getPublicKey();
 
@@ -76,7 +66,6 @@ const signedTransaction = transactions.SignedTransaction.decode(Buffer.from(resu
 
 console.log('signedTransaction', signedTransaction)
 ```
-
 
 ## Resources
 

@@ -6,31 +6,26 @@ title: Polkadot
 
 Magic interacts with the [Polkadot](https://polkadot.network/) blockchain via Magic's extension NPM package [`@magic-ext/polkadot`](https://www.npmjs.com/package/@magic-ext/polkadot). The Polkadot extension also lets you interact with the blockchain using methods from polkadot-js.
 
-<Info>
+<Note>
 **NOTE**
 
 You can skip straight to our kitchen sink example directly:
 
 [**Polkadot Example**](https://go.magic.link/example-polkadot)
-</Info>
+</Note>
 
-<Tabs>
-  <Tab title="NPM">
-```bash
+<CodeGroup>
+```bash NPM icon="npm"
 npm install --save @magic-ext/polkadot
 ```
-  </Tab>
-  <Tab title="Yarn">
-```bash
+```bash Yarn icon="yarn"
 yarn add @magic-ext/polkadot
 ```
-  </Tab>
-</Tabs>
+</CodeGroup>
 
 ## Initialization
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { PolkadotExtension } from '@magic-ext/polkadot';
 
@@ -44,12 +39,12 @@ const magic = new Magic('YOUR_API_KEY', {
 ```
 
 ## Common Methods
+
 ### Get User Info
 
 Using `getAccount` function to get Polkadot public address for current user.
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { PolkadotExtension } from '@magic-ext/polkadot';
 
@@ -66,12 +61,11 @@ const publicAddress = await magic.polkadot.getAccount();
 console.log('Polkadot Public Address: ', publicAddress);
 ```
 
-## Send Transaction
+### Send Transaction
 
 To send a standard Polkadot blockchain transaction, you can call the `magic.polkadot.sendTransaction` method.
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { PolkadotExtension } from '@magic-ext/polkadot';
 
@@ -93,12 +87,11 @@ console.log('transaction hash', tx);
 ```
 
 
-## Smart Contract
+### Smart Contract
 
 To call a Polkadot blockchain contract as transaction, you can call the `magic.polkadot.contractCall` method.
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { PolkadotExtension } from '@magic-ext/polkadot';
 

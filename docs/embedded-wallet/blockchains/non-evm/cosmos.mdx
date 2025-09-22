@@ -14,24 +14,19 @@ You can skip straight to our kitchen sink example directly:
 [**Cosmos Example**](https://go.magic.link/example-cosmos)
 </Note>
 
-<Tabs>
-  <Tab title="NPM">
-```bash
-
+<CodeGroup>
+```bash NPM icon="npm"
 npm install --save @magic-ext/cosmos
 ```
-  </Tab>
-  <Tab title="Yarn">
-```bash
+
+```bash Yarn icon="yarn"
 yarn add @magic-ext/cosmos
 ```
-  </Tab>
-</Tabs>
+</CodeGroup>
 
 ## Initialization
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { CosmosExtension } from '@magic-ext/cosmos';
 
@@ -51,8 +46,7 @@ const magic = new Magic('YOUR_API_KEY', {
 
 To send or sign a standard Cosmos blockchain transaction, you can call the `magic.cosmos.signAndBroadcast` method or `magic.cosmos.sign` method.
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { CosmosExtension } from '@magic-ext/cosmos';
 import { coins } from '@cosmjs/launchpad';
@@ -94,12 +88,11 @@ const handlerSendTransaction = async () => {
 };
 ```
 
-## Send Tokens
+### Send Tokens
 
 Using `magic.cosmos.sendTokens` function to native tokens on Cosmos blockchain.
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { CosmosExtension } from '@magic-ext/cosmos';
 
@@ -112,15 +105,13 @@ const magic = new Magic('YOUR_API_KEY', {
 });
 
 const result = await magic.cosmos.sendTokens('recipientAddress', 'transferAmount', 'denom', 'memo');
-
 ```
 
-## Change Address
+### Change Address
 
 Using `magic.cosmos.changeAddress` function to change the address prefix.
 
-```typescript TypeScript icon="square-js"
-
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { CosmosExtension } from '@magic-ext/cosmos';
 
@@ -134,6 +125,7 @@ const magic = new Magic('YOUR_API_KEY', {
 
 const result = await magic.cosmos.changeAddress('address prefix');
 ```
+
 ## Resources
 
 * [Cosmos Developer Portal](https://tutorials.cosmos.network)

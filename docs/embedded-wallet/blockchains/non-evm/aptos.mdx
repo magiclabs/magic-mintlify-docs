@@ -7,34 +7,29 @@ title: Aptos
 
 Magic interacts with the [Aptos](https://aptoslabs.com/) blockchain via Magic's extension NPM package [`@magic-ext/aptos`](https://www.npmjs.com/package/@magic-ext/aptos) (beta version 0.5.0). Additionally, the Aptos extension lets you interact with the blockchain using methods from [Aptos' Typescript SDK](https://aptos.dev/sdks/ts-sdk/index) and/or [@aptos-labs/wallet-adapter-core](https://github.com/aptos-labs/aptos-wallet-adapter).
 
-<Info>
+<Note>
 **NOTE**
 
 This extension requires @magic-ext/aptos version ^0.5.0 , and magic-sdk version ^17.1.6 (latest preferred)
-</Info>
+</Note>
 
 To get started, install the following dependencies for your project:
-<Tabs>
-  <Tab title="NPM">
-```bash
+<CodeGroup>
+```bash NPM icon="npm"
 npm install @aptos-labs/wallet-adapter-core @magic-ext/aptos magic-sdk
-
 ```
-  </Tab>
-  <Tab title="Yarn">
-```bash
+```bash Yarn icon="yarn"
 yarn add @aptos-labs/wallet-adapter-core @magic-ext/aptos magic-sdk
 ```
-  </Tab>
-</Tabs>
+</CodeGroup>
 
-##Initialization
+## Initialization
 
 The Magic class is the entry-point to the Magic SDK. It must be instantiated with a Magic **publishable** key.
 
 You can then use the SDK object to initialize an AptosWallet object that meets the [Aptos Wallet standard](https://aptos.dev/standards/wallets/). You can use any [supported login method](/docs/embedded-wallet/authentication/overview) supported by Magic SDK in the "connect" function.
 
-```js Javascript
+```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { AptosExtension } from '@magic-ext/aptos';
 
@@ -79,6 +74,7 @@ Once the user is logged in, you can get their Aptos account address by running:
 ```javascript JavaScript icon="square-js"
 const { address } = await magic.aptos.getAccountInfo();
 ```
+
 <Info>
   Note: this does not return an actual AptosAccount object, only the address. See [the note below](/docs/embedded-wallet/blockchains/non-evm/aptos#sign-and-send-transaction) for more detail.
 </Info>
@@ -88,7 +84,6 @@ Alternatively, you can use MagicAptosWallet's `account()` method:
 ```javascript JavaScript icon="square-js"
 const { address } = await magicAptosAccount.account();
 ```
-
 
 #### Funding an Account with the Faucet
 
@@ -138,7 +133,7 @@ const result = await client.waitForTransactionWithResult(transaction.hash, {
 ```
 
 
-## Get Balance
+### Get Balance
 
 ```javascript JavaScript icon="square-js"
 const address = await magic.aptos.getAccountInfo();
