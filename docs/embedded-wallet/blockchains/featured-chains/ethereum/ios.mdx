@@ -267,7 +267,7 @@ import PromiseKit
 class Web3ViewController: UIViewController {
   var web3 = Web3(provider: Magic.shared.rpcProvider)
 
-  // ⭐️ After user is successfully authenticated
+  // After user is successfully authenticated
   @IBOutlet weak var accountLabel: UILabel!
 
   func getAccount() {
@@ -318,7 +318,7 @@ import MagicSDK_Web3
 class Web3ViewController: UIViewController {
   let web3 = Web3(provider: Magic.shared.rpcProvider)
   var account: EthereumAddress?
-  // ⭐️ After user is successfully authenticated
+  // After user is successfully authenticated
 
   func deployContract() {
     guard let account = self.account else { return }
@@ -355,7 +355,7 @@ class MagicViewController: UIViewController {
   let web3 = Web3(provider: Magic.shared.rpcProvider)
   var account: EthereumAddress?
 
-  // ⭐️ After user is successfully authenticated
+  // After user is successfully authenticated
 
   func getMessage() {
     do {
