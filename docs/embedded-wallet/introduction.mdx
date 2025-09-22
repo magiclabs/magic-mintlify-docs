@@ -9,51 +9,89 @@ Magic's Embedded Wallets are non-custodial wallets that are seamlessly integrate
 
 ### Key Benefits
 
-- **Non-custodial security**: Users maintain full control over their private keys through Magic's patented Delegated Key Management System (DKMS)
-- **Passwordless authentication**: No passwords to manage - users authenticate via email OTP, SMS, social logins, and more
-- **Multi-chain support**: Works with 25+ blockchain networks including Ethereum, Polygon, Solana, Bitcoin, and more
-- **Instant onboarding**: Users get a wallet immediately upon authentication, eliminating complex setup processes
+<CardGroup cols={2}>
+<Card title="Non-custodial Security" icon="shield-halved">
+Users maintain full control over their private keys through Magic's patented Delegated Key Management System (DKMS)
+</Card>
+
+<Card title="Passwordless Authentication" icon="key">
+No passwords to manage - users authenticate via email OTP, SMS, social logins, and more
+</Card>
+
+<Card title="Multi-chain Support" icon="link">
+Works with 25+ blockchain networks including Ethereum, Polygon, Solana, Bitcoin, and more
+</Card>
+
+<Card title="Instant Onboarding" icon="rocket">
+Users get a wallet immediately upon authentication, eliminating complex setup processes
+</Card>
+</CardGroup>
 
 ## How It Works
 
-1. **User Authentication**: User logs in using any supported method (email, sms, social, etc.)
-2. **Automatic Wallet Creation**: Magic instantly creates a non-custodial wallet for the user
-3. **Key Management**: Private keys are secured using Magic's patented DKMS technology
-4. **Web3 Ready**: User can immediately interact with dApps, sign transactions, and manage assets
+<Steps>
+<Step title="User Authentication" icon="user-check">
+User logs in using any supported method (email, SMS, social, etc.)
+</Step>
 
-## Core Features
+<Step title="Automatic Wallet Creation" icon="wallet">
+Magic instantly creates a non-custodial wallet for the user
+</Step>
 
-### Authentication Options
-- **Passwordless Login**: Email OTP, SMS, and more
-- **Social Logins**: Google, Facebook, Twitter, Apple, Discord, GitHub, LinkedIn, and more
-- **Multi-Factor Authentication**: Advanced MFA options including device registration
-- **Bring Your Own IDP**: Integrate with existing identity providers using JWT tokens
+<Step title="Key Management" icon="shield-halved">
+Private keys are secured using Magic's patented DKMS technology
+</Step>
 
-### Wallet Capabilities
-- **Transaction Signing**: Built-in UI for secure transaction signing with gas fee estimation
-- **Personal Signatures**: Sign arbitrary messages and data for authentication
-- **Fiat On-Ramps**: Integrated fiat-to-crypto conversion
-- **Key Export**: Export private keys for backup or migration
-
-## Getting Started
-
-<CardGroup cols={2}>
-<Card title="Quick Start with CLI" icon="bolt" href="/docs/embedded-wallet/quickstart/cli">
-Use our interactive CLI tool to set up and run an Embedded Wallet app in less than 2 minutes
-
-**Recommended for beginners**
-</Card>
-
-<Card title="Manual Integration" icon="terminal" href="/docs/embedded-wallet/quickstart/integration">
-Add Embedded Wallet to a new or existing Next.js application
-
-**For developers who prefer manual setup**
-</Card>
-</CardGroup>
+<Step title="Web3 Ready" icon="rocket">
+User can immediately interact with dApps, sign transactions, and manage assets
+</Step>
+</Steps>
 
 <Tip>
 Magic's Embedded Wallets work across web, mobile (iOS/Android), and React Native applications. Check out our [SDK documentation](/docs/embedded-wallet/api/overview) for platform-specific integration guides.
 </Tip>
+
+## Core Features
+
+### Authentication Options
+
+<CardGroup cols={2}>
+<Card title="Passwordless Login" icon="envelope">
+Email OTP, SMS, and more
+</Card>
+
+<Card title="Social Logins" icon="users">
+Google, Facebook, Twitter, Apple, Discord, GitHub, LinkedIn, and more
+</Card>
+
+<Card title="Multi-Factor Authentication" icon="shield-check">
+Advanced MFA options including device registration
+</Card>
+
+<Card title="Bring Your Own IDP" icon="id-card">
+Integrate with existing identity providers using JWT tokens
+</Card>
+</CardGroup>
+
+### Wallet Capabilities
+
+<CardGroup cols={2}>
+<Card title="Transaction Signing" icon="rotate">
+Built-in UI for secure transaction signing with gas fee estimation
+</Card>
+
+<Card title="Personal Signatures" icon="circle-user">
+Sign arbitrary messages and data for authentication
+</Card>
+
+<Card title="Fiat On-Ramps" icon="money-bill-wave">
+Integrated fiat-to-crypto conversion
+</Card>
+
+<Card title="Key Export" icon="up-right-from-square">
+Export private keys for backup or migration
+</Card>
+</CardGroup>
 
 ## Resources
 

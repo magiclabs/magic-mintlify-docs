@@ -3,43 +3,94 @@ title: Introduction
 description: "Server-side wallet management solutions with enterprise-grade security. Choose between Express API for simplified integration or Core API for maximum control."
 ---
 
-## Express API
+## API Wallets Overview
 
-API Wallets Express is a service that simplifies wallet management for developers. Unlike traditional wallet solutions that require complex key management, API Wallets Express handles all key management internally, providing a streamlined API for wallet operations.
+Magic's API Wallets provide server-side wallet management solutions with enterprise-grade security. Choose between Express API for simplified integration or Core API for maximum control and compliance.
 
-API Wallets Express leverages secure enclave technology to ensure that private keys never leave the secure environment. All wallet operations, including creation, signing, and key management, are performed within a trusted execution environment (TEE). This provides enterprise-grade security while maintaining the simplicity of a REST API.
+## Choose Your API
 
-The service supports Ethereum wallets and provides endpoints for wallet creation, transaction signing, and message signing. All operations are authenticated using JWT tokens passed in the Authorization header, ensuring secure access to user wallets.
+<CardGroup cols={2}>
+<Card title="Express API" icon="rocket" href="/docs/api-wallets/express-api/overview">
+Simplified wallet management with JWT authentication and trusted execution environment technology. Handles all key management internally for streamlined integration.
+</Card>
 
-## Core API
+<Card title="Core API" icon="server" href="/docs/api-wallets/core-api/overview">
+Advanced server-side wallet management with AWS Nitro TEE security and key sharding. Gives developers freedom to choose how key management is handled.
+</Card>
+</CardGroup>
 
-API Wallets Core is a server-side solution that can be seamlessly incorporated into any tech stack. This API gives developers the freedom to choose how key management is handled, without having to rebuild that infrastructure.
+### Key Benefits
 
-This un-opinionated server-side solution to key management has no client-side dependencies like iframes or local sessions, which helps developers build smooth onchain user experiences.
+<CardGroup cols={2}>
+<Card title="Enterprise Security" icon="shield-halved">
+Trusted Execution Environment (TEE) technology ensures private keys never leave secure hardware
+</Card>
 
-API Wallets Core leverages the security of AWS Nitro Trusted Execution Environment to provide enhanced security for all key operations, like wallet generation and signing transaction payloads.
+<Card title="Server-Side Only" icon="server">
+No client-side dependencies like iframes or local sessions for smooth user experiences
+</Card>
+
+<Card title="Multi-Chain Support" icon="link">
+Support for EVM chains, Solana, and Bitcoin with unified API endpoints
+</Card>
+
+<Card title="Flexible Integration" icon="puzzle-piece">
+Seamlessly incorporate into any tech stack with REST API endpoints
+</Card>
+</CardGroup>
 
 ## Security Features
 
 ### Trusted Execution Environment (TEE)
 
-TEE Express provides enterprise-grade security through:
+<CardGroup cols={2}>
+<Card title="Secure Enclaves" icon="shield-halved">
+Private keys never leave the secure environment
+</Card>
 
-- **Secure Enclaves**: Private keys never leave the secure environment
-- **Hardware Security**: All cryptographic operations performed in trusted hardware
-- **Isolated Execution**: Wallet operations run in completely isolated environments
-- **Tamper Resistance**: Protection against both software and hardware attacks
+<Card title="Hardware Security" icon="microchip">
+All cryptographic operations performed in trusted hardware
+</Card>
+
+<Card title="Isolated Execution" icon="lock">
+Wallet operations run in completely isolated environments
+</Card>
+
+<Card title="Tamper Resistance" icon="shield-check">
+Protection against both software and hardware attacks
+</Card>
+</CardGroup>
 
 ### Authentication Layers
 
 Multiple authentication layers ensure secure access:
 
-1. **JWT Bearer Token**: User-specific authentication
-2. **API Key/Secret Key**: Magic service authentication and authorization  
-3. **OIDC Provider ID**: Application-specific identification
+<Steps>
+<Step title="JWT Bearer Token" icon="key">
+User-specific authentication
+</Step>
+
+<Step title="API Key/Secret Key" icon="server">
+Magic service authentication and authorization
+</Step>
+
+<Step title="OIDC Provider ID" icon="id-card">
+Application-specific identification
+</Step>
+</Steps>
 
 ### Key Management
 
-- **No Key Exposure**: Private keys are generated and stored entirely within the TEE
-- **Automatic Key Derivation**: Keys are derived deterministically for consistency
-- **Secure Operations**: All signing operations happen within the secure enclave
+<CardGroup cols={2}>
+<Card title="No Key Exposure" icon="eye-slash">
+Private keys are generated and stored entirely within the TEE
+</Card>
+
+<Card title="Automatic Key Derivation" icon="gear">
+Keys are derived deterministically for consistency
+</Card>
+
+<Card title="Secure Operations" icon="shield-halved">
+All signing operations happen within the secure enclave
+</Card>
+</CardGroup>
