@@ -33,7 +33,6 @@
               {
                 "group": "Security",
                 "pages": [
-                  "docs/home/security/product-security",
                   "docs/home/security/security-compliance",
                   "docs/home/security/cloud-security"
                 ]
@@ -256,69 +255,59 @@
             "pages": [
               "docs/embedded-wallet/blockchains/overview",
               {
-                "group": "Featured Chains",
+                "group": "Ethereum",
                 "pages": [
-                  "docs/embedded-wallet/blockchains/featured-chains/polygon",
-                  {
-                    "group": "Ethereum",
-                    "pages": [
-                      "docs/embedded-wallet/blockchains/featured-chains/ethereum/javascript",
-                      "docs/embedded-wallet/blockchains/featured-chains/ethereum/flutter",
-                      "docs/embedded-wallet/blockchains/featured-chains/ethereum/ios",
-                      "docs/embedded-wallet/blockchains/featured-chains/ethereum/android"
-                    ]
-                  },
-                  "docs/embedded-wallet/blockchains/featured-chains/tezos",
-                  "docs/embedded-wallet/blockchains/featured-chains/solana"
+                  "docs/embedded-wallet/blockchains/ethereum/javascript",
+                  "docs/embedded-wallet/blockchains/ethereum/flutter",
+                  "docs/embedded-wallet/blockchains/ethereum/ios",
+                  "docs/embedded-wallet/blockchains/ethereum/android"
                 ]
               },
               {
-                "group": "Supported Chains",
+                "group": "EVM",
                 "pages": [
-                  {
-                    "group": "EVM",
-                    "pages": [
-                      "docs/embedded-wallet/blockchains/evm/arbitrum",
-                      "docs/embedded-wallet/blockchains/evm/astar-zkevm",
-                      "docs/embedded-wallet/blockchains/evm/base",
-                      "docs/embedded-wallet/blockchains/evm/berachain",
-                      "docs/embedded-wallet/blockchains/evm/binance-smart-chain",
-                      "docs/embedded-wallet/blockchains/evm/celo",
-                      "docs/embedded-wallet/blockchains/evm/chiliz",
-                      "docs/embedded-wallet/blockchains/evm/cronos",
-                      "docs/embedded-wallet/blockchains/evm/etherlink",
-                      "docs/embedded-wallet/blockchains/evm/fantom",
-                      "docs/embedded-wallet/blockchains/evm/flare",
-                      "docs/embedded-wallet/blockchains/evm/harmony",
-                      "docs/embedded-wallet/blockchains/evm/hedera",
-                      "docs/embedded-wallet/blockchains/evm/horizen-eon",
-                      "docs/embedded-wallet/blockchains/evm/loopring",
-                      "docs/embedded-wallet/blockchains/evm/moonbeam",
-                      "docs/embedded-wallet/blockchains/evm/optimism",
-                      "docs/embedded-wallet/blockchains/evm/rari-chain",
-                      "docs/embedded-wallet/blockchains/evm/sei",
-                      "docs/embedded-wallet/blockchains/evm/soneium",
-                      "docs/embedded-wallet/blockchains/evm/stability",
-                      "docs/embedded-wallet/blockchains/evm/xdc-network",
-                      "docs/embedded-wallet/blockchains/evm/zetachain",
-                      "docs/embedded-wallet/blockchains/evm/zksync"
-                    ]
-                  },
-                  {
-                    "group": "Non-EVM",
-                    "pages": [
-                      "docs/embedded-wallet/blockchains/non-evm/algorand",
-                      "docs/embedded-wallet/blockchains/non-evm/aptos",
-                      "docs/embedded-wallet/blockchains/non-evm/avalanche",
-                      "docs/embedded-wallet/blockchains/non-evm/bitcoin",
-                      "docs/embedded-wallet/blockchains/non-evm/cosmos",
-                      "docs/embedded-wallet/blockchains/non-evm/flow",
-                      "docs/embedded-wallet/blockchains/non-evm/icon",
-                      "docs/embedded-wallet/blockchains/non-evm/near",
-                      "docs/embedded-wallet/blockchains/non-evm/polkadot",
-                      "docs/embedded-wallet/blockchains/non-evm/zilliqa"
-                    ]
-                  }
+                  "docs/embedded-wallet/blockchains/evm/arbitrum",
+                  "docs/embedded-wallet/blockchains/evm/astar-zkevm",
+                  "docs/embedded-wallet/blockchains/evm/base",
+                  "docs/embedded-wallet/blockchains/evm/berachain",
+                  "docs/embedded-wallet/blockchains/evm/binance-smart-chain",
+                  "docs/embedded-wallet/blockchains/evm/celo",
+                  "docs/embedded-wallet/blockchains/evm/chiliz",
+                  "docs/embedded-wallet/blockchains/evm/cronos",
+                  "docs/embedded-wallet/blockchains/evm/etherlink",
+                  "docs/embedded-wallet/blockchains/evm/fantom",
+                  "docs/embedded-wallet/blockchains/evm/flare",
+                  "docs/embedded-wallet/blockchains/evm/harmony",
+                  "docs/embedded-wallet/blockchains/evm/hedera",
+                  "docs/embedded-wallet/blockchains/evm/horizen-eon",
+                  "docs/embedded-wallet/blockchains/evm/loopring",
+                  "docs/embedded-wallet/blockchains/evm/moonbeam",
+                  "docs/embedded-wallet/blockchains/evm/optimism",
+                  "docs/embedded-wallet/blockchains/evm/polygon",
+                  "docs/embedded-wallet/blockchains/evm/rari-chain",
+                  "docs/embedded-wallet/blockchains/evm/sei",
+                  "docs/embedded-wallet/blockchains/evm/soneium",
+                  "docs/embedded-wallet/blockchains/evm/stability",
+                  "docs/embedded-wallet/blockchains/evm/xdc-network",
+                  "docs/embedded-wallet/blockchains/evm/zetachain",
+                  "docs/embedded-wallet/blockchains/evm/zksync"
+                ]
+              },
+              {
+                "group": "Non-EVM",
+                "pages": [
+                  "docs/embedded-wallet/blockchains/non-evm/algorand",
+                  "docs/embedded-wallet/blockchains/non-evm/aptos",
+                  "docs/embedded-wallet/blockchains/non-evm/avalanche",
+                  "docs/embedded-wallet/blockchains/non-evm/bitcoin",
+                  "docs/embedded-wallet/blockchains/non-evm/cosmos",
+                  "docs/embedded-wallet/blockchains/non-evm/flow",
+                  "docs/embedded-wallet/blockchains/non-evm/icon",
+                  "docs/embedded-wallet/blockchains/non-evm/near",
+                  "docs/embedded-wallet/blockchains/non-evm/polkadot",
+                  "docs/embedded-wallet/blockchains/non-evm/solana",
+                  "docs/embedded-wallet/blockchains/non-evm/tezos",
+                  "docs/embedded-wallet/blockchains/non-evm/zilliqa"
                 ]
               },
               "docs/embedded-wallet/blockchains/multichain"
