@@ -19,7 +19,6 @@ Create a new identity provider configuration for your application.
 curl -X POST 'https://tee.express.magiclabs.com/v1/identity/provider' \
   -H 'Content-Type: application/json' \
   -H 'X-Magic-Secret-Key: your-magic-secret-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
   -d '{
     "issuer": "https://your-auth-provider.com",
     "audience": "your-app-audience",
@@ -77,7 +76,6 @@ Retrieve all configured identity providers for your application.
 ```bash cURL icon="square-terminal"
 curl -X GET 'https://tee.express.magiclabs.com/v1/identity/provider' \
   -H 'X-Magic-Secret-Key: your-magic-secret-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id'
 ```
 
 **Response:**
@@ -125,7 +123,6 @@ Update an existing identity provider configuration.
 curl -X PATCH 'https://tee.express.magiclabs.com/v1/identity/provider/{id}' \
   -H 'Content-Type: application/json' \
   -H 'X-Magic-Secret-Key: your-magic-secret-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
   -d '{
     "issuer": "https://updated-auth-provider.com",
     "audience": "updated-app-audience",
@@ -189,7 +186,6 @@ Remove an identity provider configuration from your application.
 ```bash cURL icon="square-terminal"
 curl -X DELETE 'https://tee.express.magiclabs.com/v1/identity/provider/{id}' \
   -H 'X-Magic-Secret-Key: your-magic-secret-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id'
 ```
 
 **Response:**
