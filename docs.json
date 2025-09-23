@@ -344,6 +344,13 @@
   "integrations": {
     "intercom": {
       "appId": "boaw5c39"
+    },
+    "gtm": {
+      "tagId": "GTM-M5KT69S"
+    },
+    "hightouch": {
+      "writeKey": "afefb07bc9025fa9b393a3835ca907d9747631d256935948e83d6e0e35e24803",
+      "apiHost": "us-east-1.hightouch-events.com"
     }
   },
   "navbar": {
