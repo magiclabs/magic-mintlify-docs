@@ -37,13 +37,13 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet_group' \
 }
 ```
 
-### Request Parameters
+#### Request Parameters
 
-<ParamField body="metadata.resource_id" type="string">
+<ParamField body="metadata.resource_id" type="string" post={["Body"]}>
 Optional identifier for the wallet group. Useful for organizing wallets by customer, project, or environment.
 </ParamField>
 
-### Response Fields
+#### Response Fields
 
 <ResponseField name="data.uuid" type="string">
 Unique identifier for the created wallet group. Use this when creating wallets.
@@ -82,6 +82,8 @@ curl -X GET 'https://tee.magiclabs.com/v1/api/wallet_groups' \
   ]
 }
 ```
+
+#### Response Fields
 
 <ResponseField name="data" type="array">
 Array of wallet group objects, each containing the same fields as the create response.
@@ -128,25 +130,25 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet' \
 }
 ```
 
-### Request Parameters
+#### Request Parameters
 
-<ParamField body="encryption_context" type="string" required>
+<ParamField body="encryption_context" type="string" required post={["Body"]}>
 The context used to encrypt key shards. Should be derived from user input (e.g., hashed passphrase).
 </ParamField>
 
-<ParamField body="network" type="string" required>
+<ParamField body="network" type="string" required post={["Body"]}>
 Target blockchain network. Values: `BTC_MAINNET`, `BTC_TESTNET`, `BTC_REGTEST` for Bitcoin; `SOL_MAINNET`, `SOL_TESTNET` for Solana; all other values create EVM wallet.
 </ParamField>
 
-<ParamField body="wallet_group_id" type="string">
+<ParamField body="wallet_group_id" type="string" post={["Body"]}>
 UUID of the wallet group to organize this wallet under.
 </ParamField>
 
-<ParamField body="metadata.resource_id" type="string">
+<ParamField body="metadata.resource_id" type="string" post={["Body"]}>
 Optional identifier for the wallet (e.g., user ID, customer ID).
 </ParamField>
 
-### Response Fields
+#### Response Fields
 
 <ResponseField name="data.uuid" type="string">
 Unique wallet identifier. Use this for all subsequent operations.

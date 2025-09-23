@@ -1,6 +1,6 @@
 ---
 title: "Wallet Operations"
-description: "Create wallets and sign transactions using Express API endpoints for wallet management and signing operations."
+description: "Create wallets and sign transactions using Expostss API endpoints for wallet management and signing operations."
 ---
 
 ## Wallet Management
@@ -10,14 +10,12 @@ description: "Create wallets and sign transactions using Express API endpoints f
 Get or create a wallet for the given chain and return its public address. If a wallet doesn't exist for the user and chain combination, one will be created automatically.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
+curl -X POST 'https://tee.expostss.magiclabs.com/v1/wallet' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
   -H 'X-Magic-API-Key: your-magic-api-key' \
   -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
-  -d '{
-    "chain": "ETH"
-  }'
+  -H 'X-Magic-Chain: ETH' \
 ```
 
 **Response:**
@@ -28,13 +26,13 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
 }
 ```
 
-### Request Parameters
+#### Request Parameters
 
-<ParamField body="chain" type="string" required>
-The blockchain to create the wallet for. Available values: `ETH`, `SOL`, `BTC`
+<ParamField header="X-Magic-Chain" type="string" required post={["Header"]}>
+The blockchain to create the wallet for. Available values: `ETH`, `SOL`
 </ParamField>
 
-### Response Fields
+#### Response Fields
 
 <ResponseField name="public_address" type="string">
 The wallet's public address on the specified blockchain.
@@ -51,13 +49,13 @@ Each user can have one wallet per blockchain. Calling this endpoint multiple tim
 Sign a hash of arbitrary data using the wallet's private key. This is useful for signing transaction data, typed data, or any structured information.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
+curl -X POST 'https://tee.expostss.magiclabs.com/v1/wallet/sign/data' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
   -H 'X-Magic-API-Key: your-magic-api-key' \
   -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
+  -H 'X-Magic-Chain: ETH' \
   -d '{
-    "chain": "ETH",
     "raw_data_hash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890"
   }'
 ```
@@ -74,17 +72,17 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
 }
 ```
 
-### Request Parameters
+#### Request Parameters
 
-<ParamField body="chain" type="string" required>
-The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
+<ParamField header="X-Magic-Chain" type="string" required post={["Header"]}>
+The blockchain to sign for. Available values: `ETH`, `SOL`
 </ParamField>
 
-<ParamField body="raw_data_hash" type="string" required>
-The keccak256 hash of the data to sign (hex string with 0x prefix).
+<ParamField body="raw_data_hash" type="string" required post={["Body"]}>
+The keccak256 hash of the data to sign (hex string with 0x postfix).
 </ParamField>
 
-### Response Fields
+#### Response Fields
 
 <ResponseField name="message_hash" type="string">
 The hash that was signed.
@@ -111,13 +109,13 @@ The recovery parameter of the ECDSA signature.
 Sign an arbitrary message using the wallet's private key. Useful for authentication, off-chain verification, and personal signatures.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
+curl -X POST 'https://tee.expostss.magiclabs.com/v1/wallet/sign/message' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
   -H 'X-Magic-API-Key: your-magic-api-key' \
   -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
+  -H 'X-Magic-Chain: ETH' \
   -d '{
-    "chain": "ETH",
     "message_base64": "bm9uZQ=="
   }'
 ```
@@ -133,17 +131,17 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
 }
 ```
 
-### Request Parameters
+#### Request Parameters
 
-<ParamField body="chain" type="string" required>
-The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
+<ParamField header="X-Magic-Chain" type="string" required post={["Header"]}>
+The blockchain to sign for. Available values: `ETH`, `SOL`
 </ParamField>
 
-<ParamField body="message_base64" type="string" required>
+<ParamField body="message_base64" type="string" required post={["Body"]}>
 The message to sign, encoded as base64.
 </ParamField>
 
-### Response Fields
+#### Response Fields
 
 <ResponseField name="signature" type="string">
 The complete signature in hex format.
