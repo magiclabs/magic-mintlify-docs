@@ -115,25 +115,25 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/reveal_pk' \
 }
 ```
 
-### Request Parameters
+#### Request Parameters
 
-<ParamField body="rsa_public_key" type="string" required>
+<ParamField body="rsa_public_key" type="string" required post={["Body"]}>
 PEM Base64 encoded RSA public key
 </ParamField>
 
-<ParamField body="encryption_context" type="string" required>
+<ParamField body="encryption_context" type="string" required post={["Body"]}>
 The encryption context used to decrypt key shards. Must match the context used during wallet creation.
 </ParamField>
 
-<ParamField body="access_key" type="string" required>
+<ParamField body="access_key" type="string" required post={["Body"]}>
 The access key returned from wallet creation. Retrieve from your database.
 </ParamField>
 
-<ParamField body="wallet_id" type="string" required>
+<ParamField body="wallet_id" type="string" required post={["Body"]}>
 The wallet UUID returned from wallet creation.
 </ParamField>
 
-### Response Fields
+#### Response Fields
 
 <ResponseField name="data.encrypted_private_key" type="string">
 Private key encrypted by RSA public key sent to the endpoint and can only be decrypted by owner of RSA private key

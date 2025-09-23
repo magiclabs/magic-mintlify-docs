@@ -19,7 +19,6 @@ Create a new identity provider configuration for your application.
 curl -X POST 'https://tee.express.magiclabs.com/v1/identity/provider' \
   -H 'Content-Type: application/json' \
   -H 'X-Magic-Secret-Key: your-magic-secret-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
   -d '{
     "issuer": "https://your-auth-provider.com",
     "audience": "your-app-audience",
@@ -40,15 +39,15 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/identity/provider' \
 
 ### Request Parameters
 
-<ParamField body="issuer" type="string" required>
+<ParamField body="issuer" type="string" required post={["Body"]}>
 The issuer identifier for your OIDC provider. This should match the `iss` claim in JWT tokens.
 </ParamField>
 
-<ParamField body="audience" type="string" required>
+<ParamField body="audience" type="string" required post={["Body"]}>
 The audience identifier for your application. This should match the `aud` claim in JWT tokens.
 </ParamField>
 
-<ParamField body="jwks_uri" type="string" required>
+<ParamField body="jwks_uri" type="string" required post={["Body"]}>
 The JSON Web Key Set URI where Magic can fetch public keys for JWT verification.
 </ParamField>
 
@@ -77,7 +76,6 @@ Retrieve all configured identity providers for your application.
 ```bash cURL icon="square-terminal"
 curl -X GET 'https://tee.express.magiclabs.com/v1/identity/provider' \
   -H 'X-Magic-Secret-Key: your-magic-secret-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id'
 ```
 
 **Response:**
@@ -125,7 +123,6 @@ Update an existing identity provider configuration.
 curl -X PATCH 'https://tee.express.magiclabs.com/v1/identity/provider/{id}' \
   -H 'Content-Type: application/json' \
   -H 'X-Magic-Secret-Key: your-magic-secret-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
   -d '{
     "issuer": "https://updated-auth-provider.com",
     "audience": "updated-app-audience",
@@ -144,23 +141,21 @@ curl -X PATCH 'https://tee.express.magiclabs.com/v1/identity/provider/{id}' \
 }
 ```
 
-### Path Parameters
+### Request Parameters
 
-<ParamField path="id" type="string" required>
+<ParamField path="id" type="string" required post={["Path"]}>
 The unique identifier of the identity provider to update.
 </ParamField>
 
-### Request Parameters
-
-<ParamField body="issuer" type="string" required>
+<ParamField body="issuer" type="string" required post={["Body"]}>
 The updated issuer identifier for your OIDC provider.
 </ParamField>
 
-<ParamField body="audience" type="string" required>
+<ParamField body="audience" type="string" required post={["Body"]}>
 The updated audience identifier for your application.
 </ParamField>
 
-<ParamField body="jwks_uri" type="string" required>
+<ParamField body="jwks_uri" type="string" required post={["Body"]}>
 The updated JSON Web Key Set URI.
 </ParamField>
 
@@ -189,7 +184,6 @@ Remove an identity provider configuration from your application.
 ```bash cURL icon="square-terminal"
 curl -X DELETE 'https://tee.express.magiclabs.com/v1/identity/provider/{id}' \
   -H 'X-Magic-Secret-Key: your-magic-secret-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id'
 ```
 
 **Response:**
@@ -198,9 +192,9 @@ curl -X DELETE 'https://tee.express.magiclabs.com/v1/identity/provider/{id}' \
 No content (204 status code)
 ```
 
-### Path Parameters
+### Request Parameters
 
-<ParamField path="id" type="string" required>
+<ParamField path="id" type="string" required post={["Path"]}>
 The unique identifier of the identity provider to delete.
 </ParamField>
 

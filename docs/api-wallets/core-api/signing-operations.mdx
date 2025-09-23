@@ -92,22 +92,22 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
 
 ### Request Parameters
 
-<ParamField body="payload" type="object" required>
+<ParamField body="payload" type="object" required post={["Body"]}>
 Transaction payload to be signed. Format varies by network:
 - **EVM**: Standard Ethereum transaction object
 - **Solana**: Base64-encoded transaction string
 - **Bitcoin**: Object with inputs and outputs arrays
 </ParamField>
 
-<ParamField body="encryption_context" type="string" required>
+<ParamField body="encryption_context" type="string" required post={["Body"]}>
 The context used to decrypt key shards. Should match the context used during wallet creation.
 </ParamField>
 
-<ParamField body="access_key" type="string" required>
+<ParamField body="access_key" type="string" required post={["Body"]}>
 The access key shard for this wallet.
 </ParamField>
 
-<ParamField body="wallet_id" type="string" required>
+<ParamField body="wallet_id" type="string" required post={["Body"]}>
 The UUID of the wallet to sign with.
 </ParamField>
 
@@ -153,25 +153,25 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_data' \
 }
 ```
 
-### Request Parameters
+#### Request Parameters
 
-<ParamField body="raw_data_hash" type="string" required>
+<ParamField body="raw_data_hash" type="string" required post={["Body"]}>
 The keccak256 hash of the data to sign
 </ParamField>
 
-<ParamField body="encryption_context" type="string" required>
+<ParamField body="encryption_context" type="string" required post={["Body"]}>
 The context used to decrypt key shards. Should match the context used during wallet creation.
 </ParamField>
 
-<ParamField body="access_key" type="string" required>
+<ParamField body="access_key" type="string" required post={["Body"]}>
 The access key shard for this wallet.
 </ParamField>
 
-<ParamField body="wallet_id" type="string" required>
+<ParamField body="wallet_id" type="string" required post={["Body"]}>
 The UUID of the wallet to sign with.
 </ParamField>
 
-### Response Fields
+#### Response Fields
 
 <ResponseField name="data.messageHash" type="string">
 The hash that was signed
@@ -219,25 +219,25 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/svm/sign_message' \
 }
 ```
 
-### Request Parameters
+#### Request Parameters
 
-<ParamField body="message_base64" type="string" required>
+<ParamField body="message_base64" type="string" required post={["Body"]}>
 The message to be signed, encoded in base64
 </ParamField>
 
-<ParamField body="encryption_context" type="string" required>
+<ParamField body="encryption_context" type="string" required post={["Body"]}>
 The context used to decrypt key shards. Should match the context used during wallet creation.
 </ParamField>
 
-<ParamField body="access_key" type="string" required>
+<ParamField body="access_key" type="string" required post={["Body"]}>
 The access key shard for this wallet.
 </ParamField>
 
-<ParamField body="wallet_id" type="string" required>
+<ParamField body="wallet_id" type="string" required post={["Body"]}>
 The UUID of the wallet to sign with.
 </ParamField>
 
-### Response Fields
+#### Response Fields
 
 <ResponseField name="data.signature" type="string">
 The signature in base64 format

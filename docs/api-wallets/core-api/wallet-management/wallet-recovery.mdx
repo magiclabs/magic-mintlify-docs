@@ -68,21 +68,21 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/recovery/confirm' \
 }
 ```
 
-### Request Parameters
+#### Request Parameters
 
-<ParamField body="wallet_id" type="string" required>
+<ParamField body="wallet_id" type="string" required post={["Body"]}>
 The wallet UUID returned from wallet creation.
 </ParamField>
 
-<ParamField body="encryption_context" type="string" required>
+<ParamField body="encryption_context" type="string" required post={["Body"]}>
 The new encryption context to be applied to the recovered wallet's key shards.
 </ParamField>
 
-<ParamField body="recovery_key" type="string" required>
+<ParamField body="recovery_key" type="string" required post={["Body"]}>
 The recovery key returned from wallet creation. Retrieve from your database.
 </ParamField>
 
-### Response Fields
+#### Response Fields
 
 <ResponseField name="data.id" type="string">
 The identifier of the recovered wallet.
