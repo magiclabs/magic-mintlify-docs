@@ -1,6 +1,6 @@
 ---
 title: "Wallet Operations"
-description: "Create wallets and sign transactions using Expostss API endpoints for wallet management and signing operations."
+description: "Create wallets and sign transactions using Express API endpoints for wallet management and signing operations."
 ---
 
 ## Wallet Management
@@ -10,7 +10,7 @@ description: "Create wallets and sign transactions using Expostss API endpoints 
 Get or create a wallet for the given chain and return its public address. If a wallet doesn't exist for the user and chain combination, one will be created automatically.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.expostss.magiclabs.com/v1/wallet' \
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
   -H 'X-Magic-API-Key: your-magic-api-key' \
@@ -49,7 +49,7 @@ Each user can have one wallet per blockchain. Calling this endpoint multiple tim
 Sign a hash of arbitrary data using the wallet's private key. This is useful for signing transaction data, typed data, or any structured information.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.expostss.magiclabs.com/v1/wallet/sign/data' \
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
   -H 'X-Magic-API-Key: your-magic-api-key' \
@@ -109,7 +109,7 @@ The recovery parameter of the ECDSA signature.
 Sign an arbitrary message using the wallet's private key. Useful for authentication, off-chain verification, and personal signatures.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.expostss.magiclabs.com/v1/wallet/sign/message' \
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
   -H 'X-Magic-API-Key: your-magic-api-key' \
