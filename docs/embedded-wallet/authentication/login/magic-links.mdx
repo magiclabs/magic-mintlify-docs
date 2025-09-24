@@ -8,7 +8,7 @@ Authenticate a user passwordlessly using a "magic link" sent to the specified us
 
 ### Compatibility
 
-Magic link SDK methods are available via the [Web client-side SDK](/docs/embedded-wallet/api/client-side-sdks/web). These methods are deprecated on all mobile SDKs.
+Magic link SDK methods are available via the [Web client-side SDK](/docs/embedded-wallet/api/client-side-sdks/javascript). These methods are deprecated on all mobile SDKs.
 
 ## Usage
 
@@ -77,7 +77,7 @@ With Test Mode enabled, you can assert the desired behavior through the email ad
 
 * To assert a success state, use `test+success@magic.link`
 * To assert a failed state, use `test+fail@magic.link`
-* To assert a case-specific failed state, provide an [RPC error code](/docs/embedded-wallet/api/client-side-sdks/web#rpcerror) with `test+fail_with_{RPC_ERROR_CODE}@magic.link`
+* To assert a case-specific failed state, provide an [RPC error code](/docs/embedded-wallet/api/client-side-sdks/javascript#rpcerror) with `test+fail_with_{RPC_ERROR_CODE}@magic.link`
 
 <CodeGroup>
 ```javascript Success icon="square-js"
@@ -137,8 +137,8 @@ Magic Links are no longer supported on mobile as of June 20th, 2023. We advise c
 
 [How to add OTP email login on Flutter](/docs/embedded-wallet/api/client-side-sdks/flutter#loginwithemailotp)
 
-[How to add OTP email login in React Native](/docs/embedded-wallet/api/client-side-sdks/web#loginwithemailotp)
+[How to add OTP email login in React Native](/docs/embedded-wallet/api/client-side-sdks/javascript#loginwithemailotp)
 
 ## Resources
 
-- [Error Codes](/docs/embedded-wallet/api/client-side-sdks/web#error-codes)
+- [Error Codes](/docs/embedded-wallet/api/client-side-sdks/javascript#error-codes)
