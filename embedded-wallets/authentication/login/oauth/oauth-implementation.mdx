@@ -5,7 +5,7 @@ description: "With Magic, you can use OAuth as an authentication mechanism, givi
 
 ## Overview
 
-Applications can be integrated with the following social providers: [Google](/embedded-wallet/authentication/login/oauth/social-providers/google), [Facebook](/embedded-wallet/authentication/login/oauth/social-providers/facebook), [Twitter](/embedded-wallet/authentication/login/oauth/social-providers/twitter), [Apple](/embedded-wallet/authentication/login/oauth/social-providers/apple), [Discord](/embedded-wallet/authentication/login/oauth/social-providers/discord), [GitHub](/embedded-wallet/authentication/login/oauth/social-providers/github), [LinkedIn](/embedded-wallet/authentication/login/oauth/social-providers/linkedin), [Twitch](/embedded-wallet/authentication/login/oauth/social-providers/twitch), [Bitbucket](/embedded-wallet/authentication/login/oauth/social-providers/bitbucket) and [Microsoft](/embedded-wallet/authentication/login/oauth/social-providers/microsoft).
+Applications can be integrated with the following social providers: [Google](/embedded-wallets/authentication/login/oauth/social-providers/google), [Facebook](/embedded-wallets/authentication/login/oauth/social-providers/facebook), [Twitter](/embedded-wallets/authentication/login/oauth/social-providers/twitter), [Apple](/embedded-wallets/authentication/login/oauth/social-providers/apple), [Discord](/embedded-wallets/authentication/login/oauth/social-providers/discord), [GitHub](/embedded-wallets/authentication/login/oauth/social-providers/github), [LinkedIn](/embedded-wallets/authentication/login/oauth/social-providers/linkedin), [Twitch](/embedded-wallets/authentication/login/oauth/social-providers/twitch), [Bitbucket](/embedded-wallets/authentication/login/oauth/social-providers/bitbucket) and [Microsoft](/embedded-wallets/authentication/login/oauth/social-providers/microsoft).
 
 ### Compatibility
 
@@ -19,10 +19,10 @@ Applications can be integrated with the following social providers: [Google](/em
 
 OAuth SDK methods are available via the following client-side SDKs:
 
-- [Web](/embedded-wallet/api/client-side-sdks/javascript)
-- [React Native](/embedded-wallet/api/client-side-sdks/react-native)
-- [iOS](/embedded-wallet/api/client-side-sdks/ios)
-- [Android](/embedded-wallet/api/client-side-sdks/android)
+- [Web](/embedded-wallets/sdk/client-side/javascript)
+- [React Native](/embedded-wallets/sdk/client-side/react-native)
+- [iOS](/embedded-wallets/sdk/client-side/ios)
+- [Android](/embedded-wallets/sdk/client-side/android)
 
 ## Use Cases
 
@@ -30,7 +30,7 @@ OAuth SDK methods are available via the following client-side SDKs:
 
 ## Usage
 
-You can use OAuth by creating a project with our [CLI tool](/embedded-wallet/quickstart/overview) and selecting your preferred social providers when prompted. Alternatively, you can directly integrate it into your existing projects using the instructions below. **Refer to the **[**API documentation**](/embedded-wallet/api/overview)** for information on how to install and initialize Magic for your existing project.**
+You can use OAuth by creating a project with our [CLI tool](/embedded-wallets/quickstart/overview) and selecting your preferred social providers when prompted. Alternatively, you can directly integrate it into your existing projects using the instructions below. **Refer to the **[**API documentation**](/embedded-wallets/sdk/overview)** for information on how to install and initialize Magic for your existing project.**
 
 ## Installation
 
@@ -70,7 +70,7 @@ const magic = new Magic('YOUR_API_KEY', {
 
 Once you've created a Magic instance, kick off the OAuth login with `loginWithRedirect` on the web and `loginWithPopup` on mobile.
 
-Once logged in, you will have access to a DID token that can be used with our [Admin SDK](/embedded-wallet/api/server-side-sdks/node#token-module) to verify the user's information and wallet address on the backend. On mobile SDKs, this is provided as the result of `loginWithPopup`, while on the web SDK you can retrieve this and other information about the OAuth result with `getRedirectResult`. The `getRedirectResult` function returns an object that includes user information. On mobile, you can get similar user info, such as wallet address and email, with `getMetadata`.
+Once logged in, you will have access to a DID token that can be used with our [Admin SDK](/embedded-wallets/sdk/server-side/node#token-module) to verify the user's information and wallet address on the backend. On mobile SDKs, this is provided as the result of `loginWithPopup`, while on the web SDK you can retrieve this and other information about the OAuth result with `getRedirectResult`. The `getRedirectResult` function returns an object that includes user information. On mobile, you can get similar user info, such as wallet address and email, with `getMetadata`.
 
 
 ```javascript JavaScript icon="square-js"
@@ -114,5 +114,5 @@ interface OAuthRedirectResult {
 
 ## Resources
 
-- [Web API documentation](/embedded-wallet/api/client-side-sdks/javascript#loginwithredirect)
-- [React Native API documentation](/embedded-wallet/api/client-side-sdks/react-native#loginwithpopup)
+- [Web API documentation](/embedded-wallets/sdk/client-side/javascript#loginwithredirect)
+- [React Native API documentation](/embedded-wallets/sdk/client-side/react-native#loginwithpopup)

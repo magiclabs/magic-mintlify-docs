@@ -10,10 +10,10 @@ Magic's authentication can enable passwordless Web3 onboarding (no seed phrases)
 
 The Login UI is available via the following client-side SDKs:
 
-- [Web](/embedded-wallet/api/client-side-sdks/javascript)
-- [React Native](/embedded-wallet/api/client-side-sdks/react-native)
-- [iOS](/embedded-wallet/api/client-side-sdks/ios)
-- [Android](/embedded-wallet/api/client-side-sdks/android)
+- [Web](/embedded-wallets/sdk/client-side/javascript)
+- [React Native](/embedded-wallets/sdk/client-side/react-native)
+- [iOS](/embedded-wallets/sdk/client-side/ios)
+- [Android](/embedded-wallets/sdk/client-side/android)
 
 ## Use Cases
 
@@ -44,12 +44,12 @@ const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
 const accounts = await magic.wallet.connectWithUI();
 ```
 
-The example above authenticates the user and connects to the Ethereum Sepolia Testnet. To connect to a different network, simply replace the configuration with another of [the 25+ chains supported by Magic](/embedded-wallet/blockchains/overview).
+The example above authenticates the user and connects to the Ethereum Sepolia Testnet. To connect to a different network, simply replace the configuration with another of [the 25+ chains supported by Magic](/embedded-wallets/blockchains/overview).
 
 ## Device Registration
 
 
-Find out more about Device Registration [here](/embedded-wallet/authentication/security/device-registration).
+Find out more about Device Registration [here](/embedded-wallets/authentication/security/device-registration).
 
 ## Configuration
 
@@ -57,6 +57,6 @@ Find out more about Device Registration [here](/embedded-wallet/authentication/s
 
 ## Resources
 
-* [`magic.wallet.connectWithUI()`](/embedded-wallet/api/client-side-sdks/javascript#connectwithui)
+* [`magic.wallet.connectWithUI()`](/embedded-wallets/sdk/client-side/javascript#connectwithui)
 ```
 ````

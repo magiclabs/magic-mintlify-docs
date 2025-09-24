@@ -5,7 +5,7 @@ title: Key Export
 ### SDK Method
 
 <Note>
-This method is currently only available through our [web](/embedded-wallet/api/client-side-sdks/javascript#revealprivatekey), [React Native](/embedded-wallet/api/client-side-sdks/react-native#revealprivatekey), and [Android](/embedded-wallet/api/client-side-sdks/android#revealprivatekey) SDKs. For all other SDKs, refer to our [Reveal Page](/embedded-wallet/wallets/features/key-export#reveal-page) section below.
+This method is currently only available through our [web](/embedded-wallets/sdk/client-side/javascript#revealprivatekey), [React Native](/embedded-wallets/sdk/client-side/react-native#revealprivatekey), and [Android](/embedded-wallets/sdk/client-side/android#revealprivatekey) SDKs. For all other SDKs, refer to our [Reveal Page](/embedded-wallets/wallets/features/key-export#reveal-page) section below.
 </Note>
 
 <Info>
@@ -18,7 +18,7 @@ Implementing this SDK method will allow your end users to access their private k
   <img src="/images/pk-reveal-updated.webp" alt="pk-reveal-updated" />
 </Frame>
 
-You can use Magic's [`user.revealPrivateKey`](/embedded-wallet/api/client-side-sdks/javascript#revealprivatekey) method to allow your users to view their private keys. Implementing this method will allow your end users to back up their private keys or take them to another wallet. **Neither Magic nor the developer can see this key; only the end user can.**
+You can use Magic's [`user.revealPrivateKey`](/embedded-wallets/sdk/client-side/javascript#revealprivatekey) method to allow your users to view their private keys. Implementing this method will allow your end users to back up their private keys or take them to another wallet. **Neither Magic nor the developer can see this key; only the end user can.**
 
 ### Usage
 
@@ -56,6 +56,6 @@ The login methods available on your reveal page will match the login methods tha
 Please make sure to deactivate any login methods that you are not using. Login methods can be added and removed at any point and changes will be immediately visible on your reveal page.
 </Note>
 
-The look of the UI for your reveal page will also match the settings configured within the "branding" section of your developer dashboard. This includes the logo shown, the primary color, as well as choosing between light/dark mode. More details on branding and UI customization can be [found here](/embedded-wallet/wallets/customization/brand-and-theme).
+The look of the UI for your reveal page will also match the settings configured within the "branding" section of your developer dashboard. This includes the logo shown, the primary color, as well as choosing between light/dark mode. More details on branding and UI customization can be [found here](/embedded-wallets/wallets/customization/brand-and-theme).
 
 

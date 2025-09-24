@@ -46,7 +46,7 @@ We use service workers for for better performance on web3 operations. They are e
 | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Parameter | Type        | Definition                                                                                                                                            |
 | `apiKey`  | String      | Your **publishable** API Key retrieved from the Magic Dashboard.                                                                                      |
-| `locale?` | MagicLocale | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/embedded-wallet/authentication/customization/localization) for more. |
+| `locale?` | MagicLocale | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/embedded-wallets/authentication/customization/localization) for more. |
 
 `Magic.eth(String apiKey, { required EthNetwork network, MagicLocale locale})`
 
@@ -207,7 +207,7 @@ try {
 
 ### `getIdToken`
 
-Generates a [Decentralized Id Token](/embedded-wallet/authentication/features/decentralized-id) which acts as a proof of authentication to resource servers.
+Generates a [Decentralized Id Token](/embedded-wallets/authentication/features/decentralized-id) which acts as a proof of authentication to resource servers.
 
 **Arguments**
 
@@ -239,7 +239,7 @@ const idToken = await m.user.getIdToken();
 
 ### `generateIdToken`
 
-Generates a [Decentralized Id Token](/embedded-wallet/authentication/features/decentralized-id) with optional serialized data.
+Generates a [Decentralized Id Token](/embedded-wallets/authentication/features/decentralized-id) with optional serialized data.
 
 **Arguments**
 

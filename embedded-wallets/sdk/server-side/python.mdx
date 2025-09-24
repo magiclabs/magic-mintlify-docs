@@ -60,7 +60,7 @@ The token resource does **not** make any API calls to the Magic server.
 
 ### `get_issuer`
 
-Extracts the `iss` from the [DID Token](/embedded-wallet/authentication/features/decentralized-id).
+Extracts the `iss` from the [DID Token](/embedded-wallets/authentication/features/decentralized-id).
 
 ```python Python icon="python"
 Token.get_issuer(did_token)
@@ -116,7 +116,7 @@ Token.decode(did_token)
 **Returns**
 
 * `proof` (str): A digital signature that proves the validity of the given `claim`
-* `claim` (dict): Unsigned data the user asserts. This should equal the `proof` after Elliptic Curve recovery. See [Decentralized ID Token Specification](/embedded-wallet/authentication/features/decentralized-id#decentralized-id-token-specification) for fields inside the `claim`.
+* `claim` (dict): Unsigned data the user asserts. This should equal the `proof` after Elliptic Curve recovery. See [Decentralized ID Token Specification](/embedded-wallets/authentication/features/decentralized-id#decentralized-id-token-specification) for fields inside the `claim`.
 
 ### `validate`
 
@@ -169,7 +169,7 @@ User.get_metadata_by_issuer(issuer)
 </Note>
 **Returns**
 
-- A [`MagicResponse`](/embedded-wallet/api/server-side-sdks/python#magicresponse): The `data` field contains all of the user meta information.
+- A [`MagicResponse`](/embedded-wallets/sdk/server-side/python#magicresponse): The `data` field contains all of the user meta information.
   - `issuer` (str): The user's Decentralized ID
   - `public_address` (str): The authenticated user's public address (a.k.a.: public key). Currently, this value is associated with the Ethereum blockchain.
   - `email` (str): The user's email address
@@ -203,7 +203,7 @@ See [Error Handling](#response-and-error-handling) for more examples.
 
 **Returns**
 
-* A [`MagicResponse`](/embedded-wallet/api/server-side-sdks/python#magicresponse): The `data` field contains all of the user meta information.
+* A [`MagicResponse`](/embedded-wallets/sdk/server-side/python#magicresponse): The `data` field contains all of the user meta information.
     * `issuer` (str): The user's Decentralized ID
     * `public_address` (str): The authenticated user's public address (a.k.a.: public key). Currently, this value is associated with the Ethereum blockchain.
     * `email` (str): The user's email address
@@ -238,7 +238,7 @@ User.get_metadata_by_token(did_token)
 
 **Returns**
 
-- A [`MagicResponse`](/embedded-wallet/api/server-side-sdks/python#magicresponse): The `data` field contains all of the user meta information.
+- A [`MagicResponse`](/embedded-wallets/sdk/server-side/python#magicresponse): The `data` field contains all of the user meta information.
   - `issuer` (str): The user's Decentralized ID
   - `public_address` (str): The authenticated user's public address (a.k.a.: public key). Currently, this value is associated with the Ethereum blockchain.
   - `email` (str): The user's email address
@@ -271,7 +271,7 @@ See [Error Handling](#response-and-error-handling) for more examples.
 </Note>
 **Returns**
 
-* A [`MagicResponse`](/embedded-wallet/api/server-side-sdks/python#magicresponse)
+* A [`MagicResponse`](/embedded-wallets/sdk/server-side/python#magicresponse)
 
 ### `logout_by_public_address`
 
@@ -300,7 +300,7 @@ User.logout_by_public_address(public_address)
 
 **Returns**
 
-- A [`MagicResponse`](/embedded-wallet/api/server-side-sdks/python#magicresponse)
+- A [`MagicResponse`](/embedded-wallets/sdk/server-side/python#magicresponse)
 
 ### `logout_by_token`
 
@@ -328,7 +328,7 @@ See [Error Handling](#response-and-error-handling) for more examples.
 </Note>
 **Returns**
 
-* A [`MagicResponse`](/embedded-wallet/api/server-side-sdks/python#magicresponse)
+* A [`MagicResponse`](/embedded-wallets/sdk/server-side/python#magicresponse)
 
 ## Utils Resource
 
@@ -443,7 +443,7 @@ User.get_metadata_by_issuer_and_wallet(issuer, wallet_type)
 
 **Returns**
 
-- A [`MagicResponse`](/embedded-wallet/api/server-side-sdks/python#magicresponse): The `data` field contains user metadata for the specified wallet type
+- A [`MagicResponse`](/embedded-wallets/sdk/server-side/python#magicresponse): The `data` field contains user metadata for the specified wallet type
 
 ### `get_metadata_by_public_address_and_wallet`
 
@@ -460,7 +460,7 @@ User.get_metadata_by_public_address_and_wallet(public_address, wallet_type)
 
 **Returns**
 
-- A [`MagicResponse`](/embedded-wallet/api/server-side-sdks/python#magicresponse): The `data` field contains user metadata for the specified wallet type
+- A [`MagicResponse`](/embedded-wallets/sdk/server-side/python#magicresponse): The `data` field contains user metadata for the specified wallet type
 
 ### `get_metadata_by_token_and_wallet`
 
@@ -477,7 +477,7 @@ User.get_metadata_by_token_and_wallet(did_token, wallet_type)
 
 **Returns**
 
-- A [`MagicResponse`](/embedded-wallet/api/server-side-sdks/python#magicresponse): The `data` field contains user metadata for the specified wallet type
+- A [`MagicResponse`](/embedded-wallets/sdk/server-side/python#magicresponse): The `data` field contains user metadata for the specified wallet type
 
 **Example**
 

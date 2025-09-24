@@ -8,11 +8,11 @@ Authenticate a user passwordlessly using a "magic link" sent to the specified us
 
 ### Compatibility
 
-Magic link SDK methods are available via the [Web client-side SDK](/embedded-wallet/api/client-side-sdks/javascript). These methods are deprecated on all mobile SDKs.
+Magic link SDK methods are available via the [Web client-side SDK](/embedded-wallets/sdk/client-side/javascript). These methods are deprecated on all mobile SDKs.
 
 ## Usage
 
-The `loginWithMagicLink` function sends an authentication request to the user. The resolved value is a Decentralized ID token with a default 15-minute lifespan. **Refer to the **[**API documentation**](/embedded-wallet/api/overview) **for information on how to install and initialize Magic.**
+The `loginWithMagicLink` function sends an authentication request to the user. The resolved value is a Decentralized ID token with a default 15-minute lifespan. **Refer to the **[**API documentation**](/embedded-wallets/sdk/overview) **for information on how to install and initialize Magic.**
 
 ```javascript JavaScript icon="square-js"
 import  {  Magic  }  from  'magic-sdk';
@@ -77,7 +77,7 @@ With Test Mode enabled, you can assert the desired behavior through the email ad
 
 * To assert a success state, use `test+success@magic.link`
 * To assert a failed state, use `test+fail@magic.link`
-* To assert a case-specific failed state, provide an [RPC error code](/embedded-wallet/api/client-side-sdks/javascript#rpcerror) with `test+fail_with_{RPC_ERROR_CODE}@magic.link`
+* To assert a case-specific failed state, provide an [RPC error code](/embedded-wallets/sdk/client-side/javascript#rpcerror) with `test+fail_with_{RPC_ERROR_CODE}@magic.link`
 
 <CodeGroup>
 ```javascript Success icon="square-js"
@@ -131,14 +131,14 @@ In addition, for desktop web users, magic links will now authenticate the sessio
 
 Magic Links are no longer supported on mobile as of June 20th, 2023. We advise customers to switch over to Email OTP instead. Please refer to the documentation below on how to implement OTP on mobile.
 
-[How to add OTP email login on iOS](/embedded-wallet/api/client-side-sdks/ios#loginwithemailotp)
+[How to add OTP email login on iOS](/embedded-wallets/sdk/client-side/ios#loginwithemailotp)
 
-[How to add OTP email login on Android](/embedded-wallet/api/client-side-sdks/android#loginwithemailotp)
+[How to add OTP email login on Android](/embedded-wallets/sdk/client-side/android#loginwithemailotp)
 
-[How to add OTP email login on Flutter](/embedded-wallet/api/client-side-sdks/flutter#loginwithemailotp)
+[How to add OTP email login on Flutter](/embedded-wallets/sdk/client-side/flutter#loginwithemailotp)
 
-[How to add OTP email login in React Native](/embedded-wallet/api/client-side-sdks/javascript#loginwithemailotp)
+[How to add OTP email login in React Native](/embedded-wallets/sdk/client-side/javascript#loginwithemailotp)
 
 ## Resources
 
-- [Error Codes](/embedded-wallet/api/client-side-sdks/javascript#error-codes)
+- [Error Codes](/embedded-wallets/sdk/client-side/javascript#error-codes)

@@ -21,10 +21,10 @@ Multi-factor auth is currently compatible with end-user accounts created via ema
 
 Multi-factor auth SDK methods are available via the following client-side SDKs:
 
-- [Web](/embedded-wallet/api/client-side-sdks/javascript)
-- [React Native](/embedded-wallet/api/client-side-sdks/react-native)
-- [iOS](/embedded-wallet/api/client-side-sdks/ios)
-- [Android](/embedded-wallet/api/client-side-sdks/android)
+- [Web](/embedded-wallets/sdk/client-side/javascript)
+- [React Native](/embedded-wallets/sdk/client-side/react-native)
+- [iOS](/embedded-wallets/sdk/client-side/ios)
+- [Android](/embedded-wallets/sdk/client-side/android)
 
 ### Benefits of MFA
 
@@ -42,7 +42,7 @@ Multi-factor auth is a premium feature available to all customers for an additio
 
 **Pre-requisites**
 
-- [Client-side SDK](/embedded-wallet/api/client-side-sdks/javascript#installation)
+- [Client-side SDK](/embedded-wallets/sdk/client-side/javascript#installation)
 - Feature unlocked by upgrading to the Startup
 - Feature enabled through Multi-factor Auth Dashboard page
 
@@ -57,7 +57,7 @@ You can allow users to add MFA via one of several SDK method options
 - `magicClient.user.showSettings()` \- this will bring up the entire settings modal, and one of those settings options will allow users to enable or disable MFA.
 - `magicClient.user.enableMFA()` \- this will deeplink the user to the start of the enable MFA flow. The counter part to this is `magicClient.user.disableMFA()`
 
-Calling the SDK method [`magic.user.getInfo()`](/embedded-wallet/api/client-side-sdks/javascript#getinfo) will return whether the user has MFA enabled or not. This can be used to progressively introduce MFA to users via a banner reminding them to enable it or similar.
+Calling the SDK method [`magic.user.getInfo()`](/embedded-wallets/sdk/client-side/javascript#getinfo) will return whether the user has MFA enabled or not. This can be used to progressively introduce MFA to users via a banner reminding them to enable it or similar.
 
 ### Disabling MFA
 

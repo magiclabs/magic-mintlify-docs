@@ -45,7 +45,7 @@ Sync the project with new dependencies settings.
 | `apiKey`                   | String                    | Your **publishable** API Key retrieved from the Magic Dashboard.                                                                                                                                                                                                                                                                    |
 | `ethNetwork?`              | `EthNetwork`              | An enum with values `Mainnet` and `Goerli`. Use `customNodeConfiguration` for other network options.<br/><br/>**Defaults to Ethereum Mainnet.**                                                                                                                                                                                     |
 | `customNodeConfiguration?` | `CustomNodeConfiguration` | A custom node configuration with the following shape: ⁠ ⁠<br/><br/>`rpcUrl` (String): A URL pointing to your custom Ethereum Node. ⁠ ⁠<br/><br/>`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer. ⁠ |
-| `locale?`                  | String                    | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/embedded-wallet/authentication/customization/localization) for more.                                                                                                                                                                               |
+| `locale?`                  | String                    | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/embedded-wallets/authentication/customization/localization) for more.                                                                                                                                                                               |
 
 ### Initialization
 
@@ -201,7 +201,7 @@ private fun mcLogin(v: View) {
 
 ### `showUI`
 
-Displays the fully [navigable wallet](/embedded-wallet/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google. User must be signed in for this method to return or else it will throw an error.
+Displays the fully [navigable wallet](/embedded-wallets/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google. User must be signed in for this method to return or else it will throw an error.
 
 **Arguments**
 
@@ -498,7 +498,7 @@ Displays an iframe with the current user’s settings. Allows for users to updat
 
 
 <Note>
-Access to [MFA](/embedded-wallet/authentication/features/mfa) and [account recovery](/embedded-wallet/authentication/features/account-recovery) require paid add-ons.
+Access to [MFA](/embedded-wallets/authentication/features/mfa) and [account recovery](/embedded-wallets/authentication/features/account-recovery) require paid add-ons.
 </Note>
 **Arguments**
 

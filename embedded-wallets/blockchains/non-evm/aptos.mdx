@@ -27,7 +27,7 @@ yarn add @aptos-labs/wallet-adapter-core @magic-ext/aptos magic-sdk
 
 The Magic class is the entry-point to the Magic SDK. It must be instantiated with a Magic **publishable** key.
 
-You can then use the SDK object to initialize an AptosWallet object that meets the [Aptos Wallet standard](https://aptos.dev/standards/wallets/). You can use any [supported login method](/embedded-wallet/authentication/overview) supported by Magic SDK in the "connect" function.
+You can then use the SDK object to initialize an AptosWallet object that meets the [Aptos Wallet standard](https://aptos.dev/standards/wallets/). You can use any [supported login method](/embedded-wallets/authentication/overview) supported by Magic SDK in the "connect" function.
 
 ```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
@@ -63,7 +63,7 @@ The **nodeUrl** you specify will determine whether you are using the **mainnet**
 
 #### Getting the Aptos Account
 
-The first step will be getting the logged in user's Aptos account address. Follow any of the login guides on the [Authentication tab](/embedded-wallet/authentication/overview) to get started. You can check if a user is logged in with the following code:
+The first step will be getting the logged in user's Aptos account address. Follow any of the login guides on the [Authentication tab](/embedded-wallets/authentication/overview) to get started. You can check if a user is logged in with the following code:
 
 ```javascript JavaScript icon="square-js"
 const isLoggedIn = await magic.user.isLoggedIn();
@@ -76,7 +76,7 @@ const { address } = await magic.aptos.getAccountInfo();
 ```
 
 <Info>
-  Note: this does not return an actual AptosAccount object, only the address. See [the note below](/embedded-wallet/blockchains/non-evm/aptos#sign-and-send-transaction) for more detail.
+  Note: this does not return an actual AptosAccount object, only the address. See [the note below](/embedded-wallets/blockchains/non-evm/aptos#sign-and-send-transaction) for more detail.
 </Info>
 
 Alternatively, you can use MagicAptosWallet's `account()` method:
