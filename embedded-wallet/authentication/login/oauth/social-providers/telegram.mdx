@@ -1,0 +1,65 @@
+---
+title: Telegram Social Login with Magic
+sidebarTitle: Telegram
+description: You can allow your users to sign up & log in to your web app with their Telegram account.
+---
+
+## Usage
+
+### Prerequisites
+
+<Note>
+Magic SDK offers two OAuth extensions: [v1](https://www.npmjs.com/package/@magic-ext/oauth) and [v2](https://www.npmjs.com/package/@magic-ext/oauth2). For web applications, it is recommended to use v2, while v1 should be used for mobile applications.
+</Note>
+
+* You will need to have the [Magic SDK installed](/embedded-wallet/api/overview) into your web app
+* You will need to have the [Magic SDK - OAuth Extension](/embedded-wallet/authentication/login/oauth/oauth-implementation) installed into your web app
+
+### Telegram Setup
+
+After installing the OAuth extension, you can now enable Telegram Login for your Magic app:
+
+1. Follow Telegram instructions to create a bot
+2. Provide Bot name and Bot Token in your Magic developer dashboard
+3. Optionally enable Seamless login with Mini App
+4. Copy the Redirect URI field from your Magic Dashboard and set it as your bot domain using command `/setdomain` in @BotFather
+
+<Note>
+If you have CSP enforcement, allow the following script-src:
+- https://telegram.org
+- https://web.telegram.org
+</Note>
+
+## Implementation
+
+```javascript JavaScript icon="square-js"
+await magic.oauth2.loginWithPopup({
+  provider: 'telegram'
+});
+```
+
+The result interface:
+
+```typescript
+interface OAuthRedirectResult {
+  magic: {
+    idToken: string;
+    userMetadata: MagicUserMetadata;
+  },
+  oauth: {
+    provider: string;
+    scope: string[];
+    accessToken: string;
+    userHandle: string;
+    userInfo: ...;
+  }
+};
+```
+
+<Warning>
+Keep your token secure and store it safely, it can be used by anyone to control your bot
+</Warning>
+
+## Resources
+
+* [Telegram Login Demo](https://github.com/magiclabs/telegram-oauth-demo)

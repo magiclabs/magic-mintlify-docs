@@ -1,0 +1,59 @@
+---
+title: Fantom
+---
+
+## Overview
+
+[Fantom](https://fantom.foundation/) is a smart-contract platform that aims to solve the scalability challenges of other blockchains with its Lachesis consensus mechanism. Fantom’s unique architecture allows developers to create highly scalable, fast, and inexpensive Web3 applications.
+
+**As Fantom is EVM compatible**, you can follow the [Ethereum](/embedded-wallet/blockchains/ethereum/javascript)documentation to send your first transaction and utilize all other wallet features.
+
+## Configure Fantom
+
+### Mainnet
+
+Mainnet Block Explorer URL: [https://ftmscan.com/](https://ftmscan.com/)
+
+```javascript JavaScript icon="square-js"
+const customNodeOptions = {
+  rpcUrl: 'https://rpc.ftm.tools/',
+  chainId: 250,
+}
+
+// Setting network to Fantom
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: customNodeOptions });
+```
+
+### Testnet
+
+Testnet Block Explorer URL: [https://testnet.ftmscan.com/](https://testnet.ftmscan.com/)
+
+```javascript JavaScript icon="square-js"
+const customNodeOptions = {
+  rpcUrl: 'https://rpc.testnet.fantom.network',
+  chainId: 4002,
+}
+
+// Setting network to Fantom - Testnet
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: customNodeOptions });
+```
+
+## Compatibility
+
+- All `Auth`, `User` and most `Wallet` module methods\*
+- All EVM Provider functionality to respond to supported [RPC methods](/embedded-wallet/api/client-side-sdks/javascript#evm-rpc-methods)
+- Widget UI for token balances and token transfers\*
+
+_\*Some features are not yet compatible such as NFT Viewer and Fiat On-ramps._
+
+_Need a feature or see a problem?_ File an issue on our [github repo](https://github.com/magiclabs/magic-js).
+
+## Resources & Tools
+
+- Documentation: [https://docs.fantom.foundation/](https://docs.fantom.foundation/)
+- Block Explorer:
+
+  - [https://ftmscan.com/](https://ftmscan.com/) (Mainnet)
+  - [https://testnet.ftmscan.com/](https://testnet.ftmscan.com/) (Testnet)
+
+- [Demo](https://codesandbox.io/s/elastic-ishizaka-4tifc)
