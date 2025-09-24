@@ -33,6 +33,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "home/security/product-security",
                   "home/security/security-compliance",
                   "home/security/cloud-security"
                 ]
