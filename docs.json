@@ -259,9 +259,9 @@
                 "group": "Ethereum",
                 "pages": [
                   "embedded-wallets/blockchains/ethereum/javascript",
-                  "embedded-wallets/blockchains/ethereum/flutter",
                   "embedded-wallets/blockchains/ethereum/ios",
-                  "embedded-wallets/blockchains/ethereum/android"
+                  "embedded-wallets/blockchains/ethereum/android",
+                  "embedded-wallets/blockchains/ethereum/flutter"
                 ]
               },
               {
