@@ -226,7 +226,7 @@
               {
                 "group": "Client-side",
                 "pages": [
-                  "docs/embedded-wallet/api/client-side-sdks/web",
+                  "docs/embedded-wallet/api/client-side-sdks/javascript",
                   "docs/embedded-wallet/api/client-side-sdks/react-native",
                   "docs/embedded-wallet/api/client-side-sdks/android",
                   "docs/embedded-wallet/api/client-side-sdks/ios",
