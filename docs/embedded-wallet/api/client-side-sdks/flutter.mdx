@@ -1,5 +1,5 @@
 ---
-title: Flutter API Reference
+title: Flutter SDK Reference
 sidebarTitle: Flutter
 description: "The Magic SDK for Flutter is your entry-point to secure, passwordless authentication for your mobile app. This guide will cover some important topics for getting started with Flutter APIs and to make the most of Magic's features."
 ---
@@ -13,7 +13,7 @@ The Magic class is the entry-point to the Magic SDK. It must be instantiated wit
 ### Installation
 
 Add `magic_sdk` to your `pubspec.yaml`:
-```dart Dart icon="flutter"
+```yaml YAML icon="file"
 dependencies:
   flutter:
     sdk: flutter
@@ -21,15 +21,15 @@ dependencies:
 ```
 
 Run the following command to install dependencies:
-```dart Dart icon="flutter"
-$ dart pub get
+```bash Bash icon="square-terminal" 
+dart pub get
 ```
 
 
 ### Performance improvement (optional)
 
 We use service workers for for better performance on web3 operations. They are enabled by default on Android, but if you'd like to take advantage of this performance boost on iOS as well, you'd have to enable app bound domains. To do that, add the following to your `Info.plist` and rebuild your app:
-```dart Dart icon="flutter"
+```xml plist icon="file-xml"
 <key>WKAppBoundDomains</key>
 <array>
   <string>https://auth.magic.link</string>
@@ -84,16 +84,6 @@ Magic.instance = Magic.custom("PUBLISHABLE_API_KEY", rpcUrl: "https://your.custo
 ## Auth Module
 
 The Auth Module and its members are accessible on the Magic SDK instance by the `auth` property.
-```dart Dart icon="flutter"
-import 'package:magic_sdk/magic_sdk.dart';
-
-Magic magic = Magic.instance;
-
-magic.auth;
-magic.auth.loginWithSMS;
-magic.auth.loginWithEmailOTP;
-```
-
 
 ### `loginWithSMS`
 
@@ -165,21 +155,6 @@ try {
 ## User Module
 
 The User Module and it's members are accessible on the Magic SDK instance by the user property.
-```dart Dart icon="flutter"
-import "package:magic_sdk/magic_sdk.dart";
-
-Magic.instance = Magic("PUBLISHABLE_API_KEY");
-
-var m = Magic.instance;
-
-m.user;
-m.user.getIdToken;
-m.user.generateIdToken;
-m.user.getInfo;
-m.user.isLoggedIn;
-m.user.updateEmail;
-m.user.logout;
-```
 
 ### `updateEmail`
 
@@ -389,16 +364,6 @@ try {
 ## OAuth Module
 
 The OAuth Module and it's members are accessible on the Magic SDK instance by the `oauth` property.
-```dart Dart icon="flutter"
-import 'package:magic_sdk/magic_sdk.dart';
-import 'package:magic_ext_oauth/magic_ext_oauth.dart';
-
-Magic magic = Magic.instance;
-
-magic.oauth;
-magic.oauth.loginWithPopup;
-```
-
 
 ### `loginWithPopup`
 
@@ -442,63 +407,6 @@ Magic magic = Magic.instance;
 
 var configuration = OAuthConfiguration(provider: OAuthProvider.GITHUB, redirectURI: 'YOUR_APP_SCHEME://');
 var result = await magic.oauth.loginWithPopup(configuration);
-```
-
-## OpenID Module
-
-<Note>
-This module requires an enterprise agreement. For more details, please contact our Customer Success team using the help widget in the bottom-right corner of this page.
-</Note>
-
-The OpenID Module and it's members are accessible on the Magic Flutter SDK instance by the `openid` property.
-
-To use the OpenID Module in your application, install `magic-ext/oidc` along with `magic-sdk`.
-```dart Dart icon="flutter"
-// pubspec.yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  magic_sdk: ^5.0.1
-  magic_ext_oidc: ^0.0.1
-
-magic.openid;
-magic.openid.loginWithOIDC;
-```
-
-
-### `loginWithOIDC`
-
-Authenticate users via your preferred OIDC client.
-
-**Arguments**
-
-- `jwt` (String): The OIDC token from your identity provider
-
-- `providerId` (String): An alphanumeric ID provided by Magic after successful configuration of your identity provider
-
-**Returns**
-
-- `String`: The resolved value is a Decentralized ID token with a default 15-minute lifespan
-
-**Example**
-```dart Dart icon="flutter"
-import "package:magic_sdk/magic_sdk.dart";
-import "package:magic_ext_oidc/magic_ext_oidc.dart";
-
-void main() {
-  Magic.instance = Magic("PUBLISHABLE_API_KEY");
-
-  // Use the OIDC extension to perform login
-  var configuration = OpenIdConfiguration(
-    jwt: 'JWT_FROM_YOUR_OPEN_ID_PROVIDER',
-    providerId: 'YOUR_MAGIC_PROVIDER_ID'
-  );
-
-  var didToken = await magic.openid.loginWithOIDC(configuration);
-
-  // Use the DID token for further authentication or requests
-  print('DID Token: $didToken');
-}
 ```
 
 ## Resources
