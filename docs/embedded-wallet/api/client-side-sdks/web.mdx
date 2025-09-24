@@ -109,17 +109,6 @@ magic.preload;
 
 The Auth Module and it's members are accessible on the Magic SDK instance by the `auth` property.
 
-```Javascript JavaScript icon="square-js"
-import { Magic } from 'magic-sdk';
-
-const magic = new Magic('PUBLISHABLE_API_KEY');
-
-magic.auth;
-magic.auth.loginWithEmailOTP;
-magic.auth.loginWithSMS;
-⁠magic.auth.updateEmailWithUI;
-```
-
 ### `loginWithEmailOTP`
 
 Authenticate a user passwordlessly using an email one-time code sent to the specified user's email address.
@@ -601,23 +590,11 @@ try {
 
 ## Wallet Module
 
-The Wallet Module and it's members are accessible on the Magic SDK instance by the `wallet` property. ⁠ **⁠Note:** The Wallet Module is currently only **compatible with Ethereum, Polygon, Base, Arbitrum, Optimism, and Flow (no NFTs).**
+The Wallet Module and it's members are accessible on the Magic SDK instance by the `wallet` property.
 
-```Javascript JavaScript icon="square-js"
-import { Magic } from "magic-sdk";
-
-const magic = new Magic('PUBLISHABLE_API_KEY');
-
-magic.wallet;
-magic.wallet.connectWithUI;
-magic.wallet.showUI;
-magic.wallet.showAddress;
-magic.wallet.showBalances;
-magic.wallet.showNFTs;
-magic.wallet.showSendTokensUI;
-magic.wallet.showOnRamp; // enterprise only
-```
-
+<Note>
+The Wallet Module is currently only **compatible with Ethereum, Polygon, Base, Arbitrum, Optimism, and Flow (no NFTs).**
+</Note>
 
 ### `connectWithUI`
 
@@ -784,23 +761,6 @@ await magic.wallet.showOnRamp()
 ## User Module
 
 The User Module and it's members are accessible on the Magic SDK instance by the `user` property.
-
-```Javascript JavaScript icon="square-js"
-import { Magic } from "magic-sdk";
-
-const magic = new Magic('PUBLISHABLE_API_KEY');
-
-magic.user;
-magic.user.getIdToken;
-magic.user.generateIdToken;
-magic.user.getInfo;
-magic.user.isLoggedIn;
-magic.user.logout;
-magic.user.showSettings;
-magic.user.enableMFA;
-magic.user.disableMFA;
-magic.user.revealPrivateKey;
-```
 
 ### `getIdToken`
 
@@ -1336,19 +1296,6 @@ The OAuth Module and it's members are accessible on the Magic SDK instance by th
 
 To use the OAuth Module in your application, install `@magic-ext/oauth2` along with `magic-sdk`.
 
-```Javascript JavaScript icon="square-js"
-import { Magic } from "magic-sdk";
-import { OAuthExtension } from "@magic-ext/oauth2";
-
-const magic = new Magic('PUBLISHABLE_API_KEY', {
-  extensions: [new OAuthExtension()],
-});
-
-magic.oauth2;
-magic.oauth2.loginWithRedirect;
-magic.oauth2.getRedirectResult;
-```
-
 ### `loginWithRedirect`
 
 Starts the OAuth 2.0 login flow.
@@ -1391,9 +1338,9 @@ const magic = new Magic('PUBLISHABLE_API_KEY', {
 });
 
 await magic.oauth2.loginWithRedirect({
-  provider: '...' /_ 'google', 'facebook', 'apple', etc. _/,
+  provider: '...' /* 'google', 'facebook', 'apple', etc. */,
   redirectURI: 'https://your-app.com/your/oauth/callback',
-  scope: ['user:email'] /_ optional _/,
+  scope: ['user:email'] /* optional */,
 });
 ```
 
@@ -1444,24 +1391,12 @@ interface OAuthRedirectResult {
 
 <Note>
   This module requires an enterprise agreement. For more details [click
-  here](docs/embedded-wallet/authentication/login/idp).
+  here](/docs/embedded-wallet/authentication/login/idp).
 </Note>
 
 The OpenID Module and it's members are accessible on the Magic SDK instance by the `openid` property.
 
 To use the OpenID Module in your application, install `@magic-ext/oidc` along with `magic-sdk`.
-
-```Javascript JavaScript icon="square-js"
-import { Magic } from "magic-sdk";
-import { OpenIdExtension } from "@magic-ext/oidc";
-
-const magic = new Magic('PUBLISHABLE_API_KEY', {
-extensions: [new OpenIdExtension()],
-});
-
-magic.openid;
-magic.openid.loginWithOIDC;
-```
 
 ### `loginWithOIDC`
 
