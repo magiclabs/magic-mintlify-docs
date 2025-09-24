@@ -65,18 +65,6 @@ class MagicDemoApp: Application() {
 
 The Auth Module and its members are accessible on the Magic SDK instance by the `auth` property.
 
-
-```kotlin Kotlin icon="android"
-import link.magic.android.Magic
-
-var magic: Magic
-
-magic.auth;
-magic.auth.loginWithSMS;
-magic.auth.loginWithEmailOTP;
-```
-
-
 ### loginWithSMS
 
 Authenticate a user passwordlessly using a one-time code sent to the specified phone
@@ -177,18 +165,6 @@ class MagicActivity: AppCompatActivity() {
 
 The Wallet Module and its members are accessible on the Magic SDK instance by the `wallet` property.
 
-```kotlin Kotlin icon="android"
-import link.magic.android.Magic
-
-var magic: Magic
-
-magic.wallet;
-magic.wallet.connectWithUI;
-magic.wallet.showUI;
-```
-
-
-
 ### `connectWithUI`
 
 Renders a simple login form UI to collect the user's email address and authenticate them passwordlessly using a one-time passcode (OTP) sent to their email address they input.
@@ -256,26 +232,6 @@ fun showUI(v: View) {
 ## User Module
 
 The User Module and its members are accessible on the Magic SDK instance by the `user` property.
-
-```kotlin Kotlin icon="android"
-import link.magic.android.Magic
-
-var magic: Magic
-
-magic.user
-magic.user.updateEmail
-magic.user.getIdToken
-magic.user.generateIdToken
-magic.user.getMetadata
-magic.user.isLoggedIn
-magic.user.logout
-magic.user.showSettings
-magic.user.updatePhoneNumber
-magic.user.recoverAccount
-magic.user.revealPrivateKey
-```
-
-
 
 ### `updateEmail`
 
@@ -675,73 +631,6 @@ fun revealPrivateKey(v: View) {
     }
 }
 ```
-
-## OpenID Module
-
-<Note>
-  This module requires an enterprise agreement. For more details, please contact our Customer Success team using the help widget in the bottom-right corner of this page.
-</Note>
-The OpenID Module and it's members are accessible on the Magic SDK instance by the `openid` property.
-
-To use the OpenID Module in your application, install `:magic:ext:oidc` along with `magic-android`.
-
-```kotlin Kotlin icon="android"
-// In build.gradle
-
-implementation project(':magic:core')
-implementation project(':magic:ext:oidc')
-
-magic.openid;
-magic.openid.loginWithOIDC;
-```
-
-
-
-### `loginWithOIDC`
-
-Authenticate users via your preferred OIDC client.
-
-**Arguments**
-
-* `jwt` (String): The OIDC token from your identity provider
-
-* `providerId` (String): An alphanumeric ID provided by Magic after successful configuration of your identity provider
-
-
-**Returns**
-
-* `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
-
-
-**Example**
-
-```kotlin Kotlin icon="android"
-package link.magic.android.extension.oidc.*
-⁠
-magic = Magic(this, '<your_magic_api_key>')
-⁠
-private fun loginWithOIDC(v: View) {
-⁠   val providerId = findViewById<EditText>(R.id.provider_id_text)
-   val jwt = findViewById<EditText>(R.id.jwt_text)
-⁠
-   val configuration = OpenIdConfiguration(jwt.text.toString(),providerId.text.toString())
-
-   val did = magic.openid.loginWithOIDC(this, configuration)
-
-   did.whenComplete { response: DIDToken?, error: Throwable? ->
-     if (error != null) {
-       Log.d("error", error.localizedMessage)
-     }
-
-     if (response != null && !response.hasError()) {
-       response.result?.let { Log.d("login", it) }
-     } else {
-       Log.d("login", "OpenID Not Logged in")
-     }
-   }
-}
-```
-
 
 ## Resources
 
