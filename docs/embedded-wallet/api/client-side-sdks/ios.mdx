@@ -1,5 +1,5 @@
 ---
-title: iOS API Reference
+title: iOS SDK Reference
 description: "The Magic SDK for iOS is your entry-point to secure, passwordless authentication for your mobile app. This guide will cover some important topics for getting started with iOS APIs and to make the most of Magic's features."
 sidebarTitle: iOS
 ---
@@ -13,7 +13,8 @@ The Magic class is the entry-point to the Magic SDK. It must be instantiated wit
 ### Performance improvement (optional)
 
 We use service workers for for better performance on web3 operations. If you'd like to take advantage of this performance boost, you'd have to enable app bound domains. To do that, add the following to your `Info.plist` and rebuild your app:
-```swift Swift icon="swift"
+
+```xml plist icon="file-xml"
 <key>WKAppBoundDomains</key>
 <array>
   <string>https://auth.magic.link</string>
@@ -58,16 +59,6 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 ## Auth Module
 
 The Auth Module and its members are accessible on the Magic SDK instance by the `auth` property.
-```swift Swift icon="swift"
-import MagicSDK
-
-let magic = Magic.shared
-
-magic.auth;
-magic.auth.loginWithSMS;
-magic.auth.loginWithEmailOTP;
-```
-
 
 ### `loginWithSMS`
 
@@ -200,16 +191,6 @@ class LoginViewController: UIViewController {
 
 The Wallet Module and its members are accessible on the Magic SDK instance by the `wallet` property.
 
-```swift Swift icon="swift"
-import MagicSDK
-
-let magic = Magic.shared
-
-magic.wallet
-magic.wallet.connectWithUI
-magic.wallet.showUI
-```
-
 ### `connectWithUI`
 
 Renders a simple login form UI to collect the user's email address and authenticate them passwordlessly using a one-time passcode (OTP) sent to their email address they input.
@@ -279,24 +260,6 @@ class MagicViewController: UIViewController {
 ## User Module
 
 The User Module and its members are accessible on the Magic SDK instance by the `user` property.
-
-```swift Swift icon="swift"
-import MagicSDK
-
-let magic = Magic.shared
-
-magic.user
-magic.user.updateEmail
-magic.user.getIdToken
-magic.user.generateIdToken
-magic.user.getInfo
-magic.user.isLoggedIn
-magic.user.logout
-magic.user.showSettings
-magic.user.updatePhoneNumber
-magic.user.recoverAccount
-```
-
 
 ### `updateEmail`
 
@@ -625,68 +588,6 @@ class MagicViewController: UIViewController {
     }
 }
 ```
-
-
-## OpenID Module
-
-<Note>
-  This module requires an enterprise agreement. For more details, please contact our Customer Success team using the help widget in the bottom-right corner of this page.
-</Note>
-
-The OpenID Module and it's members are accessible on the Magic SDK instance by the `openid` property.
-
-To use the OpenID Module in your application, install `MagicExt-OIDC` along with `magic-ios`.
-
-```swift Swift icon="swift"
-// Cocoapods, in Podfile
-
-pod 'MagicSDK'
-pod 'MagicExt-OIDC'
-
-// SPM
-
-Add magic-ios-ext 
-Add magic-ios
-
-magic.openid;
-magic.openid.loginWithOIDC;
-```
-
-
-### `loginWithOIDC`
-
-Authenticate users via your preferred OIDC client.
-
-**Arguments**
-
-- `jwt` (String): The OIDC token from your identity provider
-
-- `providerId` (String): An alphanumeric ID provided by Magic after successful configuration of your identity provider
-
-**Returns**
-
-- `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
-
-**Example**
-```swift Swift icon="swift"
-import MagicSDK
-import MagicExt_OIDC
-
-magic = Magic(apiKey: '<your_magic_api_key>')
-
-// MARK: - Openid Login
-func handleOpenIdLogin() {
-    guard let magic = magic else { return }
-
-    let config = OpenIdConfiguration(jwt: jwt, providerId: providerId)
-    magic.openid.loginWithOIDC(config, response: {res in
-        if (res.status.isSuccess) {
-            print(res.result ?? "nil")
-        }
-    })
-}
-```
-
 
 ## Error Handling
 

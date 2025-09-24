@@ -1,6 +1,6 @@
 ---
 title: JavaScript SDK Reference
-description: The Magic SDK for Javascript is your entry-point to secure, passwordless authentication for your application. This guide will cover some important topics for getting started with Javascript APIs and to make the most of Magic's features.
+description: The Magic SDK for JavaScript is your entry-point to secure, passwordless authentication for your application. This guide will cover some important topics for getting started with JavaScript APIs and to make the most of Magic's features.
 sidebarTitle: JavaScript
 ---
 
@@ -15,7 +15,7 @@ To use Magic in your application, install the `magic-sdk` dependency.
 <Info>
 **NOTE**
 
-⁠If you're integrating with [OAuth](/docs/embedded-wallet/api/client-side-sdks/javascript#o-auth-module) or [OpenID](#open-id-module), additional dependencies are needed. You'll find the installation instructions in their dedicated sections within this documentation.
+⁠If you're integrating with [OAuth](/docs/embedded-wallet/api/client-side-sdks/javascript#oauth-module), additional dependencies are needed. You'll find the installation instructions in its dedicated section within this documentation.
 
 </Info>
 
@@ -49,7 +49,7 @@ Configure and construct your Magic SDK instance.
 
 ### Initialization
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 let magic;
@@ -95,7 +95,7 @@ As of magic-sdk version [21.0.0](https://www.npmjs.com/package/magic-sdk/v/21.0.
 
 </Info>
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('PUBLISHABLE_API_KEY', { deferPreload: true });
@@ -130,7 +130,7 @@ Available from `magic-sdk@19.1.0`
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 
 import { Magic } from "magic-sdk";
 
@@ -156,7 +156,7 @@ await magic.auth.loginWithEmailOTP({ email: 'hello@example.com', showUI: false }
 
 A white-label OTP login flow is available when passing `showUI: false` to this login method. Here&apos;s a short example to illustrate listening for and emitting events during the login flow:
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import {
   Magic,
   LoginWithEmailOTPEventOnReceived,
@@ -279,7 +279,7 @@ try {
 
 To achieve a fully white-labeled experience, you will need to implement some custom error handling according to your UI needs. Here's a short example to illustrate how errors can be caught and identified by their code:
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic, RPCError, RPCErrorCode } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -319,7 +319,7 @@ Authenticate a user passwordlessly using a one-time code sent to the specified p
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -338,7 +338,7 @@ try {
 
 To achieve a fully white-labeled experience, you will need to implement some custom error handling according to your UI needs. Here's a short example to illustrate how errors can be caught and identified by their code:
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic, RPCError, RPCErrorCode } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -379,7 +379,7 @@ Initiates the update email flow that allows a user to change their email address
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('API_KEY');
@@ -409,7 +409,7 @@ try {
 
 A white-label update email flow is available when passing `showUI: false` to this method. **The white-label flow is only supported in Magic SDK v22.0.0 and above**. Here's a short example to illustrate listening for and emitting events during the flow:
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import {
   Magic,
   RecencyCheckEventOnReceived,
@@ -569,7 +569,7 @@ alert('Email Updated');
 
 To achieve a fully white-labeled experience, you will need to implement some custom error handling according to your UI needs. Here's a short example to illustrate how errors can be caught and identified by their code:
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic, RPCError, RPCErrorCode } from 'magic-sdk';
 
 const magic = new Magic('API_KEY');
@@ -610,7 +610,7 @@ Renders a simple login form UI to collect the user's email address and authentic
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from "magic-sdk"
 
 const accounts = await magic.wallet.connectWithUI();
@@ -633,7 +633,7 @@ Displays the fully [navigable wallet](/docs/embedded-wallet/wallets/customizatio
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -657,7 +657,7 @@ Displays an iframe with the current user’s wallet address in a QR Code.
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -680,7 +680,7 @@ Displays an iframe that displays the user’s token balances from the currently 
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -703,7 +703,7 @@ Displays an iframe that shows the user’s NFTs in both an aggregated and detail
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -726,7 +726,7 @@ Displays an iframe with UI to help the user transfer tokens from their account t
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -750,7 +750,7 @@ To use the fiat onramp, **you will need to contact us to KYB with the payment pr
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -776,7 +776,7 @@ Generates a [Decentralized Id Token](/docs/embedded-wallet/authentication/featur
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -804,7 +804,7 @@ Generates a [Decentralized ID token](/docs/embedded-wallet/authentication/featur
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -838,7 +838,7 @@ Retrieves information for the authenticated user.
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -865,7 +865,7 @@ Checks if a user is currently logged in to the Magic SDK.
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -893,7 +893,7 @@ Logs out the currently authenticated Magic user
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -925,7 +925,7 @@ Displays an iframe with the current user’s settings. Allows for users to updat
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -963,7 +963,7 @@ Access to [account recovery](docs/embedded-wallet/authentication/features/accoun
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -1054,7 +1054,7 @@ paid add-ons.
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -1086,7 +1086,7 @@ Access to [MFA](/docs/embedded-wallet/authentication/features/mfa) require paid 
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import {
   EnableMFAEventEmit,
@@ -1162,7 +1162,7 @@ as of `magic-sdk v28.11.0`
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import {
   DisableMFAEventEmit,
@@ -1247,7 +1247,7 @@ Displays an iframe revealing the current user’s private key. Allows for users 
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('PUBLISHABLE_API_KEY');
@@ -1276,7 +1276,7 @@ When the useStorageCache is enabled, there might be situations where the isLogge
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
 
 ⁠// Create Magic instance with useStorageCache set to true
@@ -1329,7 +1329,7 @@ Starts the OAuth 2.0 login flow.
 
 **Example**
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
 import { OAuthExtension } from "@magic-ext/oauth2";
 
@@ -1387,51 +1387,6 @@ interface OAuthRedirectResult {
 };
 ```
 
-## OpenID Module
-
-<Note>
-  This module requires an enterprise agreement. For more details, please contact our Customer Success team using the help widget in the bottom-right corner of this page.
-</Note>
-
-The OpenID Module and it's members are accessible on the Magic SDK instance by the `openid` property.
-
-To use the OpenID Module in your application, install `@magic-ext/oidc` along with `magic-sdk`.
-
-### `loginWithOIDC`
-
-Authenticate users via your preferred OIDC client.
-
-
-**Arguments**
-
-- `jwt` (String): The OIDC token from your identity provider.
-- `providerId` (String): An alphanumeric ID provided by Magic after successful configuration of your identity provider.
-- `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
-
-**Returns**
-
-- `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
-
-**Example**
-
-```Javascript JavaScript icon="square-js"
-import { Magic } from "magic-sdk";
-import { OpenIdExtension } from "@magic-ext/oidc";
-
-const magic = new Magic('PUBLISHABLE_API_KEY', {
-  extensions: [new OpenIdExtension()],
-});
-
-const DID = await magic.openid.loginWithOIDC({
-  // this oidcToken comes from the identity provider
-  jwt: oidcToken,
-  // this providerId is provided by Magic
-  providerId: myProviderId,
-  // this optional argument sets the resolved Decentralized ID token's lifespan
-  lifespan: number
-});
-```
-
 ## Response and Error Handling
 
 There are three types of error class to be aware of when working with Magic's client-side JavaScript SDK:
@@ -1444,7 +1399,7 @@ There are three types of error class to be aware of when working with Magic's cl
 
 The `SDKError` class is exposed for `instanceof` operations.
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { SDKError } from "magic-sdk";
 
 try {
@@ -1458,7 +1413,7 @@ try {
 
 `SDKError` instances expose the `code` field which may be used to deterministically identify the error. Additionally, an enumeration of error codes is exposed for convenience and readability:
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { SDKErrorCode } from "magic-sdk";
 
 SDKErrorCode.MissingApiKey;
@@ -1484,7 +1439,7 @@ SDKErrorCode.MalformedResponse;
 
 The `RPCError` class is exposed for `instanceof` operations:
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { RPCError } from "magic-sdk";
 
 try {
@@ -1498,7 +1453,7 @@ try {
 
 `RPCError` instances expose the `code` field which may be used to deterministically identify the error. Additionally, an enumeration of error codes is exposed for convenience and readability:
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { RPCErrorCode } from "magic-sdk";
 
 RPCErrorCode.UserAlreadyLoggedIn;
@@ -1536,7 +1491,7 @@ RPCErrorCode.InternalError;
 
 The `ExtensionError` class is exposed for `instanceof` operations:
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { ExtensionError } from "magic-sdk";
 
 try {
@@ -1562,7 +1517,7 @@ Magic SDK provides a flexible interface for handling methods which encompass mul
 
 Look for additional event types documented near the method they relate to. Events are strongly-typed by TypeScript to offer developer hints and conveniant IDE auto-complete.
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 const req = magic.auth.loginWithMagicLink({ email: 'hello@magic.link' });
 
 req
@@ -1598,7 +1553,7 @@ Note: the session length is customizable by the developer through the [Magic das
 
 Before re-authenticating a user, [install the Magic Client SDK​](#installation).
 
-```Javascript JavaScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
 const magic = new Magic("PUBLISHABLE_API_KEY");
 

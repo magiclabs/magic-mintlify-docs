@@ -1,6 +1,7 @@
 ---
-title: React Native
+title: React Native SDK Reference
 description: "The Magic SDK for React Native is your entry-point to secure, passwordless authentication for your mobile app. This guide will cover some important topics for getting started with React Native APIs and to make the most of Magic's features."
+sidebarTitle: React Native
 ---
 
 ## Getting Started
@@ -121,20 +122,6 @@ function App() {
 ## Auth Module
 
 The Auth Module and it's members are accessible on the Magic SDK instance by the `auth` property.
-
-```javascript JavaScript icon="react"
-// Bare React Native
-import { Magic } from '@magic-sdk/react-native-bare';
-// Expo React Native
-import { Magic } from '@magic-sdk/react-native-expo';
-
-const magic = new Magic('PUBLISHABLE_API_KEY');
-
-magic.auth;
-magic.auth.loginWithEmailOTP;
-magic.auth.loginWithSMS;
-magic.auth.updateEmailWithUI;
-```
 
 ### `loginWithEmailOTP`
 
@@ -460,25 +447,11 @@ try {
 
 ## Wallet Module
 
-The Wallet Module and it's members are accessible on the Magic SDK instance by the `wallet` property. ⁠ **⁠Note:** The Wallet Module is currently only **compatiable with Ethereum, Polygon, Flow (no NFTs), and Optimism.**
+The Wallet Module and it's members are accessible on the Magic SDK instance by the `wallet` property.
 
-```javascript JavaScript icon="react"
-// Bare React Native
-import { Magic } from '@magic-sdk/react-native-bare';
-// Expo React Native
-import { Magic } from '@magic-sdk/react-native-expo';
-
-const magic = new Magic('PUBLISHABLE_API_KEY');
-
-magic.wallet;
-magic.wallet.connectWithUI;
-magic.wallet.showUI;
-magic.wallet.showAddress;
-magic.wallet.showBalances;
-magic.wallet.showNFTs;
-magic.wallet.showSendTokensUI;
-magic.wallet.showOnRamp; // enterprise only
-```
+<Note>
+The Wallet Module is currently only **compatible with Ethereum, Polygon, Flow (no NFTs), and Optimism.**
+</Note>
 
 ### `connectWithUI`
 
@@ -675,24 +648,6 @@ await magic.wallet.showOnRamp()
 ## User Module
 
 The User Module and it's members are accessible on the Magic SDK instance by the `user` property.
-
-```javascript JavaScript icon="react"
-// Bare React Native
-import { Magic } from '@magic-sdk/react-native-bare';
-// Expo React Native
-import { Magic } from '@magic-sdk/react-native-expo';
-
-const magic = new Magic('PUBLISHABLE_API_KEY');
-
-magic.user;
-magic.user.getIdToken;
-magic.user.generateIdToken;
-magic.user.getInfo;
-magic.user.isLoggedIn;
-magic.user.logout;
-magic.user.showSettings;
-magic.user.revealPrivateKey;
-```
 
 ### `getIdToken`
 
@@ -960,24 +915,6 @@ magic.user.onUserLoggedOut((isLoggedOut: boolean) => {
 
 The OAuth Module and it's members are accessible on the Magic SDK instance by the `oauth` property.
 
-To use the OAuth Module in your application, install `@magic-ext/oauth` along with `magic-sdk`.
-
-```javascript JavaScript icon="react"
-// Bare React Native
-import { Magic } from '@magic-sdk/react-native-bare';
-import { OAuthExtension } from "@magic-ext/react-native-bare-oauth";
-// Expo React Native
-import { Magic } from '@magic-sdk/react-native-expo';
-import { OAuthExtension } from "@magic-ext/react-native-expo-oauth";
-
-const magic = new Magic('PUBLISHABLE_API_KEY', {
-extensions: [new OAuthExtension()],
-});
-
-magic.oauth;
-magic.oauth.loginWithPopup;
-```
-
 ### `loginWithPopup`
 
 Starts the OAuth 2.0 login flow.
@@ -1029,67 +966,6 @@ await magic.oauth.loginWithPopup({
 });
 ```
 
-## OpenID Module
-
-<Note>
-  This module requires an enterprise agreement. For more details, please contact our Customer Success team using the help widget in the bottom-right corner of this page.
-</Note>
-The OpenID Module and it's members are accessible on the Magic SDK instance by the
-`openid` property.
-
-To use the OpenID Module in your application, install `@magic-ext/oidc` along with `magic-sdk`.
-
-```javascript JavaScript icon="react"
-// Bare React Native
-import { Magic } from '@magic-sdk/react-native-bare';
-// Expo React Native
-import { Magic } from '@magic-sdk/react-native-expo';
-
-import { OpenIdExtension } from "@magic-ext/oidc";
-
-const magic = new Magic('PUBLISHABLE_API_KEY', {
-extensions: [new OpenIdExtension()],
-});
-
-magic.openid;
-magic.openid.loginWithOIDC;
-```
-
-### `loginWithOIDC`
-
-Authenticate users via your preferred OIDC client.
-
-
-**Arguments**
-
-* `jwt` (String): The OIDC token from your identity provider
-* `providerId` (String): An alphanumeric ID provided by Magic after successful configuration of your identity provider
-
-**Returns**
-
-* `PromiEvent<string | null>`: The promise resolves upon authentication request success and rejects with a specific error code if the request fails. The resolved value is a Decentralized ID token with a default 15-minute lifespan.
-
-**Example**
-
-```javascript JavaScript icon="react"
-// Bare React Native
-import { Magic } from '@magic-sdk/react-native-bare';
-// Expo React Native
-import { Magic } from '@magic-sdk/react-native-expo';
-
-import { OpenIdExtension } from '@magic-ext/oidc';
-
-const magic = new Magic('PUBLISHABLE_API_KEY', {
-  extensions: [new OpenIdExtension()],
-});
-
-const DID = await magic.openid.loginWithOIDC({
-  // this oidcToken comes from the identity provider
-  jwt: oidcToken,
-  // this providerId is provided by Magic
-  providerId: myProviderId,
-});
-```
 ## Response and Error Handling
 
 There are three types of error class to be aware of when working with Magic's client-side JavaScript SDK:

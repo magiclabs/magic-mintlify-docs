@@ -5,7 +5,7 @@ title: Aptos
 
 ## Installation
 
-Magic interacts with the [Aptos](https://aptoslabs.com/) blockchain via Magic's extension NPM package [`@magic-ext/aptos`](https://www.npmjs.com/package/@magic-ext/aptos) (beta version 0.5.0). Additionally, the Aptos extension lets you interact with the blockchain using methods from [Aptos' Typescript SDK](https://aptos.dev/sdks/ts-sdk/index) and/or [@aptos-labs/wallet-adapter-core](https://github.com/aptos-labs/aptos-wallet-adapter).
+Magic interacts with the [Aptos](https://aptoslabs.com/) blockchain via Magic's extension NPM package [`@magic-ext/aptos`](https://www.npmjs.com/package/@magic-ext/aptos) (beta version 0.5.0). Additionally, the Aptos extension lets you interact with the blockchain using methods from [Aptos' TypeScript SDK](https://aptos.dev/sdks/ts-sdk/index) and/or [@aptos-labs/wallet-adapter-core](https://github.com/aptos-labs/aptos-wallet-adapter).
 
 <Note>
 **NOTE**
@@ -98,7 +98,7 @@ const faucetClient = new FaucetClient(DEVNET_NODE_URL, DEVNET_FAUCET_URL);
 
 ### Sign and Send Transaction
 
-Note that the Magic Aptos extension follows the method names and conventions of [Aptos' Typescript SDK](https://aptos.dev/sdks/ts-sdk/index).
+Note that the Magic Aptos extension follows the method names and conventions of [Aptos' TypeScript SDK](https://aptos.dev/sdks/ts-sdk/index).
 
 If you are using MagicAptosWallet, you can skip the rest of this section and build your application using the [Aptos Wallet Standard](https://aptos.dev/standards/wallets/). You can also find example apps by Aptos [here](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-example) (MagicAptosWallet is not included in this useWallet, however, due to the flexibility Magic SDK provides - and the complexity of setting it up does not neatly fit into this example's React hook).
 
