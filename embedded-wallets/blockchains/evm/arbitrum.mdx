@@ -1,0 +1,51 @@
+---
+title: Arbitrum
+description: "Arbitrum is especially beneficial for those looking to boost performance while maintaining the decentralized principles of Ethereum."
+---
+
+## Overview
+
+[Arbitrum](https://arbitrum.io/rollup) is a Layer 2 solution enhancing Ethereum by providing developers with faster and more cost-efficient transactions. It upholds Ethereum's security through its innovative Arbitrum Rollup protocol, facilitating trustless operations. For developers, its seamless compatibility with Ethereum's ecosystem and tools simplifies dApp development.
+
+**As Arbitrum is EVM compatible**, you can follow the [Ethereum](/embedded-wallets/blockchains/ethereum/javascript) documentation to send your first transaction and utilize all other wallet features.
+
+## Configure Arbitrum
+
+Ensure you have installed the Magic SDK and have access to your API key, follow the [quickstart](/embedded-wallets/quickstart/overview) to get started. You can use Magic's network aliases to connect to either testnet or mainnet on Arbitrum.
+
+<CodeGroup>
+```js Testnet icon="square-js"
+// Setting network to point to testnet
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
+  network: {
+    rpcUrl: 'https://sepolia-rollup.arbitrum.io/rpc',
+    chainId: 421614,
+  }
+});
+```
+
+```js Mainnet icon="square-js"
+// Setting network to point to mainnet
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
+  network: {
+    rpcUrl: 'https://rpc.ankr.com/arbitrum',
+    chainId: 42161,
+  }
+});
+```
+</CodeGroup>
+
+## Compatibility
+
+- All `Auth`, `User` and `Wallet` module methods
+- All EVM Provider functionality to respond to supported [RPC methods](/embedded-wallets/sdk/client-side/javascript#evm-rpc-methods)
+
+_Need a feature or see a problem?_ File an issue on our [github repo](https://github.com/magiclabs/magic-js).
+
+## Resources & Tools
+
+- Documentation: [https://docs.arbitrum.io/](https://docs.arbitrum.io/)
+- Block Explorer:
+  - [https://arbiscan.io/](https://arbiscan.io/) (Mainnet)
+  - [https://sepolia.arbiscan.io/](https://sepolia.arbiscan.io/) (Testnet)
+- Faucet: [https://faucet.quicknode.com/arbitrum](https://faucet.quicknode.com/arbitrum)

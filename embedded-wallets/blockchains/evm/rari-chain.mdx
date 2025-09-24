@@ -1,0 +1,49 @@
+---
+title: RARI Chain
+---
+
+## Overview
+
+[RARI Chain](https://rarichain.org/) is a Layer 3 blockchain powered by Arbitrum, offering high throughput and low transaction costs. It also introduces a new royalty system embedding them at the node level, guaranteeing royalty payments to creators.
+
+**As RARI Chain is EVM equivalent**, you can follow the [Ethereum](/embedded-wallets/blockchains/ethereum/javascript) documentation to send your first transaction and utilize all other wallet features.
+
+## Configure RARI Chain
+
+Ensure you have installed the Magic SDK and have access to your API key, follow the [quickstart](/embedded-wallets/quickstart/overview) to get started.
+
+<CodeGroup>
+```js Testnet icon="square-js"
+// Setting network to point to RARI testnet
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
+  network: {
+    rpcUrl: 'https://testnet.rpc.rarichain.org/http',
+    chainId: 1918988905,
+  }
+});
+```
+```js Mainnet icon="square-js"
+// Setting network to point to RARI mainnet
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
+  network: {
+    rpcUrl: 'https://mainnet.rpc.rarichain.org/http',
+    chainId: 1380012617,
+  }
+});
+```
+</CodeGroup>
+
+## Compatibility
+
+- All `Auth`, `User` and `Wallet` module methods
+- All EVM Provider functionality to respond to supported [RPC methods](/embedded-wallets/sdk/client-side/javascript#evm-rpc-methods)
+
+_Need a feature or see a problem?_ File an issue on our [github repo](https://github.com/magiclabs/magic-js).
+
+## Resources & Tools
+
+- Documentation: [https://rari.docs.caldera.dev/](https://rari.docs.caldera.dev/)
+- Block Explorer:
+  - [https://mainnet.explorer.rarichain.org/](https://mainnet.explorer.rarichain.org/) (Mainnet)
+  - [https://testnet.explorer.rarichain.org/](https://testnet.explorer.rarichain.org/) (Testnet)
+- Faucets: [https://rari.docs.caldera.dev/faucet](https://rari.docs.caldera.dev/faucet)

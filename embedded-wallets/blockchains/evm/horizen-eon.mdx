@@ -1,0 +1,49 @@
+---
+title: Horizen EON
+---
+
+## Overview
+
+[Horizen EON](https://docs.horizen.io/horizen_eon/) is a highly scalable EVM-compatible sidechain network and smart contract platform. Users can effortlessly create wallets and interact with EON using the Magic SDK.
+
+**As EON is EVM compatible**, you can follow the [Ethereum](/embedded-wallets/blockchains/ethereum/javascript) documentation to send your first transaction and utilize all other features.
+
+## Configure EON
+
+<CodeGroup>
+```js Testnet icon="square-js"
+const EonOptions = {
+  rpcUrl: 'https://gobi-rpc.horizenlabs.io/ethv1',
+  chainId: 1663,
+};
+
+// Setting network to point to EON Testnet
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: EonOptions });
+```
+```js Mainnet icon="square-js"
+const EonOptions = {
+  rpcUrl: 'https://eon-rpc.horizenlabs.io/ethv1',
+  chainId: 7332,
+};
+
+// Setting network to point to EON Mainnet
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', { network: EonOptions });
+```
+</CodeGroup>
+
+## Compatibility
+
+- All `Auth`, `User` and most `Wallet` module methods\*
+- All EVM Provider functionality to respond to supported [RPC methods](/embedded-wallets/sdk/client-side/javascript#evm-rpc-methods)
+
+_\*Some features are not yet compatible such as NFT Viewer and Fiat On-ramps._
+
+_Need a feature or see a problem?_ File an issue on our [github repo](https://github.com/magiclabs/magic-js).
+
+## Resources & Tools
+
+- Documentation: [https://docs.horizen.io/](https://docs.horizen.io/)
+- Block Explorer:
+  - [https://eon-explorer.horizenlabs.io/](https://eon-explorer.horizenlabs.io/) (Mainnet)
+  - [https://gobi-explorer.horizenlabs.io/](https://gobi-explorer.horizenlabs.io/) (Testnet)
+- Testnet Faucet: [https://faucet.horizen.io/](https://faucet.horizen.io/)

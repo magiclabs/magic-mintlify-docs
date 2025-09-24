@@ -1,0 +1,424 @@
+---
+title: How to Integrate with the Ethereum Blockchain using Android
+sidebarTitle: Android
+---
+
+## Installation
+
+To interact with the Ethereum blockchain, Magic Android SDK integrates [`Web3j`](https://github.com/web3j/web3j) as sub dependency.
+
+Add the following dependencies in `build.gradle`
+
+```kotlin Kotlin icon="android"
+dependencies {
+  implementation 'link.magic:magic-android:4.0.0'
+  implementation 'org.web3j:core:4.8.8-android'
+  implementation 'org.web3j:geth:4.8.8-android'
+}
+```
+
+## Initialization
+
+The Magic class is the entry-point to the Magic SDK. It must be instantiated with a Magic **publishable** key.
+
+<Note>
+**Note**
+
+The following example uses **Kotlin 1.3 and Magic Android 4.x**. Android demo will be open-sourced soon. You may use Android Studio to convert Java to Kotlin or vice versa.
+</Note>
+
+```kotlin Kotlin icon="android"
+class MagicDemoApp: Application() {
+  lateinit var magic: Magic
+  override fun onCreate() {
+    magic = Magic(this, "YOUR_PUBLISHABLE_KEY")
+    super.onCreate()
+  }
+}
+
+// Initialize web3j
+class MagicActivity: AppCompatActivity() {
+  lateinit var web3j: Web3j
+  lateinit var gethWeb3j: Geth
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    web3j = Web3j.build(magic.rpcProvider)
+    gethWeb3j = Geth.build(magic.rpcProvider)
+  }
+}
+```
+
+## Use Different Networks
+
+### Testnet
+
+Goerli Block Explorer: [https://goerli.etherscan.io](https://etherscan.io/)
+
+⁠Goerli Testnet Faucet: [https://goerlifaucet.com](https://goerlifaucet.com/)
+
+```kotlin Kotlin icon="android"
+magic = Magic(this, "YOUR_PUBLISHABLE_API_KEY", Magic.Network.goerli)
+```
+
+### Custom Node
+
+You can allow specific URLs to interact with the Magic SDK, such as a custom RPC URL to send transactions to your node. The Content Security Policy (CSP) of a browser dictates what resources can be loaded. You can update the policy in the settings page of the [dashboard](https://dashboard.magic.link/) with your custom URL.
+
+<Info>
+**Important**
+The use of a custom node will require the RPC URL to the project's Content Security Policy from your [Magic dashboard](https://dashboard.magic.link/). Refer to the [CSP documentation](/embedded-wallets/wallets/security/content-security-policy).
+</Info>
+
+```kotlin Kotlin icon="android"
+magic = Magic(this, "YOUR_PUBLISHABLE_API_KEY", CustomNodeConfiguration("https://alchemy.io"))
+```
+
+<Info>
+**Important**
+Do **not** set the custom nodes to local IP address (E.x. [http://127.0.0.1](http://127.0.0.1)),
+because local IP will point to the network environment inside mobile device / simulator. Try accessible IP address in the same Wifi/Internet Environment (E.x. [http://10.0.0.93:3000](http://10.0.0.93:3000)).
+</Info>
+
+### Associated Class
+
+`CustomNodeConfiguration(rpcUrl: String, chainId: Int?)`
+
+- `rpcUrl`: Your own node URL
+- `chainId`: Your own node's chainId
+
+`Magic.EthNetwork`
+
+```kotlin Kotlin icon="android"
+enum class EthNetwork {
+  Mainnet, Goerli
+}
+```
+
+## Common Methods
+
+### Send Transaction
+
+```kotlin Kotlin icon="android"
+class MagicActivity: AppCompatActivity() {
+  lateinit var magic: Magic
+  lateinit var web3j: Web3j
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    magic = (applicationContext as MagicDemoApp).magic
+    web3j = Web3j.build(magic.rpcProvider)
+  }
+
+  // After user is successfully authenticated
+  fun sendTransaction(v: View) {
+    try {
+      val value: BigInteger =  Convert.toWei("0.5", Convert.Unit.ETHER).toBigInteger()
+      val transaction = createEtherTransaction(account, BigInteger("1"), BigInteger("21000"), BigInteger("21000"), account, value)
+      val receipt = web3j.ethSendTransaction(transaction).send()
+      Log.d("Transaction complete: " + receipt.transactionHash)
+    } catch (e: Exception) {
+      Log.e("Error", e.localizedMessage)
+    }
+  }
+}
+```
+
+### Sign Message
+
+Magic Android SDK extends the functionality from Web3j to allow developers to sign Typed Data. You may find it in `magic.web3jSigExt`.
+
+#### Personal Sign
+
+```kotlin Kotlin icon="android"
+class MagicActivity: AppCompatActivity() {
+  lateinit var magic: Magic
+  lateinit var web3j: Web3j
+  lateinit var gethWeb3j: Geth
+
+  // After user is successfully authenticated
+  private var account: String? = null
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    magic = (applicationContext as MagicDemoApp).magic
+    web3j = Web3j.build(magic.rpcProvider)
+    gethWeb3j = Geth.build(magic.rpcProvider)
+  }
+
+  fun personSign(view: View) {
+    val message = "Hello from Magic!!!"
+    val personalSign: PersonalSign = gethWeb3j.personalSign(
+      message, account, "password")
+      .send()
+    Log.d("Magic", "Signed Message: " + personalSign.signedMessage)
+
+    // Recover Message
+    val recovered = gethWeb3j.personalEcRecover(message, personalSign.signedMessage).send()
+    Log.d("Magic", "Recovered Address: " + recovered.recoverAccountId)
+  }
+}
+```
+
+
+#### Sign TypedData Legacy (V1)
+
+```kotlin Kotlin icon="android"
+class MagicActivity: AppCompatActivity() {
+  lateinit var magic: Magic
+
+  // After user is successfully authenticated
+  private var account: String? = null
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    magic = (applicationContext as MagicDemoApp).magic
+  }
+
+  // Sign with EIP712 Data Field
+  fun signTypedDataLegacy(v: View) {
+    val list = listOf(
+      EIP712TypedDataLegacyFields("string", "Hello from Magic", "This message will be signed by you"),
+      EIP712TypedDataLegacyFields("uint32", "Here is a number", "90210")
+    )
+    val signature = magic.web3jSigExt.signTypedDataLegacy(account, list).send()
+    Log.d("Magic", signature.result)
+  }
+
+  // Sign with JSON String
+  fun signTypedDataLegacyJson(v: View) {
+    val jsonString = "[{\"type\":\"string\",\"name\":\"Hello from Magic\",\"value\":\"This message will be signed by you\"},{\"type\":\"uint32\",\"name\":\"Here is a number\",\"value\":\"90210\"}]"
+    val signature = magic.web3jSigExt.signTypedDataLegacy(account, jsonString).send()
+    Log.d("Magic", signature.result)
+  }
+}
+```
+
+#### Sign Typed Data v3
+
+```kotlin Kotlin icon="android"
+class MagicActivity: AppCompatActivity() {
+  lateinit var magic: Magic
+  lateinit var web3j: Web3j
+  lateinit var gethWeb3j: Geth
+
+  // After user is successfully authenticated
+  private var account: String? = null
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    magic = (applicationContext as MagicDemoApp).magic
+  }
+
+  fun signTypedData(v: View) {
+    val jsonString = "{\"types\":{\"EIP712Domain\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"version\",\"type\":\"string\"},{\"name\":\"verifyingContract\",\"type\":\"address\"}],\"Order\":[{\"name\":\"makerAddress\",\"type\":\"address\"},{\"name\":\"takerAddress\",\"type\":\"address\"},{\"name\":\"feeRecipientAddress\",\"type\":\"address\"},{\"name\":\"senderAddress\",\"type\":\"address\"},{\"name\":\"makerAssetAmount\",\"type\":\"uint256\"},{\"name\":\"takerAssetAmount\",\"type\":\"uint256\"},{\"name\":\"makerFee\",\"type\":\"uint256\"},{\"name\":\"takerFee\",\"type\":\"uint256\"},{\"name\":\"expirationTimeSeconds\",\"type\":\"uint256\"},{\"name\":\"salt\",\"type\":\"uint256\"},{\"name\":\"makerAssetData\",\"type\":\"bytes\"},{\"name\":\"takerAssetData\",\"type\":\"bytes\"}]},\"domain\":{\"name\":\"0x Protocol\",\"version\":\"2\",\"verifyingContract\":\"0x35dd2932454449b14cee11a94d3674a936d5d7b2\"},\"message\":{\"exchangeAddress\":\"0x35dd2932454449b14cee11a94d3674a936d5d7b2\",\"senderAddress\":\"0x0000000000000000000000000000000000000000\",\"makerAddress\":\"0x338be8514c1397e8f3806054e088b2daf1071fcd\",\"takerAddress\":\"0x0000000000000000000000000000000000000000\",\"makerFee\":\"0\",\"takerFee\":\"0\",\"makerAssetAmount\":\"97500000000000\",\"takerAssetAmount\":\"15000000000000000\",\"makerAssetData\":\"0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c\",\"takerAssetData\":\"0xf47261b00000000000000000000000006ff6c0ff1d68b964901f986d4c9fa3ac68346570\",\"salt\":\"1553722433685\",\"feeRecipientAddress\":\"0xa258b39954cef5cb142fd567a46cddb31a670124\",\"expirationTimeSeconds\":\"1553808833\"},\"primaryType\":\"Order\"}"
+    val signature = magic.web3jSigExt.signTypedData(account, jsonString).send()
+    Log.d("Magic", "Signature: " + signature.result)
+  }
+}
+
+```
+
+#### Sign Typed Data v4
+
+```kotlin Kotlin icon="android"
+class MagicActivity: AppCompatActivity() {
+  lateinit var magic: Magic
+  lateinit var web3j: Web3j
+  lateinit var gethWeb3j: Geth
+
+  // After user is successfully authenticated
+  private var account: String? = null
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    magic = (applicationContext as MagicDemoApp).magic
+  }
+
+  fun signTypedDataV4(v: View) {
+    val jsonString = "{\"domain\":{\"chainId\":1,\"name\":\"Ether Mail\",\"verifyingContract\":\"0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC\",\"version\":\"1\"},\"message\":{\"contents\":\"Hello, Bob!\",\"from\":{\"name\":\"Cow\",\"wallets\":[\"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826\",\"0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF\"]},\"to\":[{\"name\":\"Bob\",\"wallets\":[\"0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB\",\"0xB0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57\",\"0xB0B0b0b0b0b0B000000000000000000000000000\"]}]},\"primaryType\":\"Mail\",\"types\":{\"EIP712Domain\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"version\",\"type\":\"string\"},{\"name\":\"chainId\",\"type\":\"uint256\"},{\"name\":\"verifyingContract\",\"type\":\"address\"}],\"Group\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"members\",\"type\":\"Person[]\"}],\"Mail\":[{\"name\":\"from\",\"type\":\"Person\"},{\"name\":\"to\",\"type\":\"Person[]\"},{\"name\":\"contents\",\"type\":\"string\"}],\"Person\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"wallets\",\"type\":\"address[]\"}]}}"
+    val signature = magic.web3jSigExt.signTypedDataV4(account, jsonString).send()
+    Log.d("Magic", "Signature: " + signature.result)
+  }
+}
+```
+
+### Get User Info
+
+```kotlin Kotlin icon="android"
+class MagicActivity: AppCompatActivity() {
+  lateinit var web3j: Web3j
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    magic = (applicationContext as MagicDemoApp).magic
+    web3j = Web3j.build(magic.rpcProvider)
+  }
+
+  // After user is successfully authenticated
+  fun getAccount(){
+    try {
+      val accounts = web3j.ethAccounts().sendAsync()
+
+      accounts.whenComplete { accRepsonse: EthAccounts?, error: Throwable? ->
+        if (error != null) {
+          Log.e("MagicError", error.localizedMessage)
+        }
+        if (accRepsonse != null && !accRepsonse.hasError()) {
+          account = accRepsonse.accounts[0]
+          Log.d("Magic", "Your address is $account")
+        }
+      }
+    } catch (e: Exception) {
+      Log.e("Error", e.localizedMessage)
+    }
+  }
+}
+```
+
+## Smart Contract
+
+In this example, we'll be demonstrating how to use Magic with Web3j to interact with Solidity smart contracts. The simple Hello World contract allows anyone to read and write a message to it.
+
+```solidity Solidity icon="ethereum"
+pragma solidity ^0.5.10;
+
+contract HelloWorld {
+  string public message;
+
+  constructor(string memory initMessage) public {
+    message = initMessage;
+  }
+
+  function update(string memory newMessage) public {
+    message = newMessage;
+  }
+}
+```
+
+
+### Create a Kotlin/Java Contract Class from ABI
+
+Web3j supports the auto-generation of smart contract function wrappers in Java from Solidity ABI files.
+
+To get started, you must have two files
+
+- ABI JSON file `<Contract>.json`
+- ByteCode file `<Contract>.bin`
+
+### Install web3j cli-tool
+
+```bash Bash icon="terminal"
+curl -L https://get.web3j.io | sh
+```
+
+You may need to install a JDK to support this library
+
+<Frame>
+  <img src="/images/ethereum-android-jdk.webp" alt="ethereum-android-jdk"/>
+</Frame>
+
+After it has been installed to your computer, you may run the following command to check
+
+```bash Bash icon="terminal"
+web3j version
+```
+
+### Create the contract class
+
+```bash Bash icon="terminal"
+web3j solidity generate -a=./path/to/<Contract>.json -b=./path/to/<Contract>.bin -o=/output/path/ -p={packageName}
+```
+
+You’ll find a `Contract.java` file created in your output directory above. Put this file in your project, and no more changes are needed.
+
+For more details about this section, please [click here](https://web3j.readthedocs.io/en/latest/smart_contracts.html#solidity-smart-contract-wrappers).
+
+### Deploy Contract
+
+When deploying contract, building or interacting with a contract using web3j library, Magic offers `MagicTxnManager` class as a default `TransactionManager` that helps you to avoid dealing with private keys or credentials that Contract class requires.
+
+```kotlin Kotlin icon="android"
+import link.magic.demo.contract.Contract // This is the contract class you created above
+
+class MagicActivity: AppCompatActivity() {
+  lateinit var magic: Magic
+  lateinit var web3j: Web3j
+
+  // After user is successfully authenticated
+  private var account: String? = null
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    magic = (applicationContext as MagicDemoApp).magic
+    web3j = Web3j.build(magic.rpcProvider)
+  }
+
+  fun deployContract(view: View) {
+    try {
+      val price = BigInteger.valueOf(22000000000L)
+      val limit = BigInteger.valueOf(4300000)
+      val gasProvider = StaticGasProvider(price, limit)
+      val contract = Contract.deploy(
+        web3j,
+        account?.let { MagicTxnManager(web3j, it) },
+        gasProvider,
+        "HELLO_WORLD_FROM_ANDROID"
+      ).send()
+      Log.d("Magic", "Deploy to" + contract.contractAddress)
+    } catch (e: Exception) {
+      Log.e("E", "error", e)
+    }
+  }
+}
+```
+
+### Read From Contract
+
+```kotlin Kotlin icon="android"
+fun contractRead(view: View) {
+  try {
+    val price = BigInteger.valueOf(22000000000L)
+    val limit = BigInteger.valueOf(4300000)
+    val gasProvider = StaticGasProvider(price, limit)
+
+    // Contract in testnet
+    val contract = ExampleContract.load("0x6a2d321a3679b1b3c8a19b84e41abd11763a8ab5", web3j, account?.let { MagicTxnManager(web3j, it) }, gasProvider)
+    if (contract.isValid) {
+      val ethCall = contract.message().send()
+      Log.d("Magic", ethCall.toString())
+    } else {
+      throw Error("contract not valid")
+    }
+  } catch (e: Exception) {
+    Log.e("E", "error", e)
+  }
+}
+```
+
+### Write to Contract
+
+```kotlin Kotlin icon="android"
+fun contractWrite(view: View) {
+  try {
+    val price = BigInteger.valueOf(22000000000L)
+    val limit = BigInteger.valueOf(4300000)
+    val gasProvider = StaticGasProvider(price, limit)
+
+    // Contract in testnet
+    val contract = ExampleContract.load("0x6a2d321a3679b1b3c8a19b84e41abd11763a8ab5", web3j, account?.let { MagicTxnManager(web3j, it) }, gasProvider)
+    if (contract.isValid) {
+      val ethCall = contract.update("NEW_MESSAGE_FROM_ANDROID").send()
+      Log.d("Magic", ethCall.toString())
+    } else {
+      throw Error("contract not valid")
+    }
+  } catch (e: Exception) {
+    Log.e("E", "error", e)
+  }
+}
+```
+
+## Resources
+
+- [Magic Android SDK](https://github.com/magiclabs/magic-android)

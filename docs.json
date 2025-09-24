@@ -90,13 +90,13 @@
           {
             "group": "Embedded Wallets",
             "pages": [
-              "embedded-wallet/introduction",
+              "embedded-wallets/introduction",
               {
                 "group": "Quickstart",
                 "pages": [
-                  "embedded-wallet/quickstart/overview",
-                  "embedded-wallet/quickstart/cli",
-                  "embedded-wallet/quickstart/integration"
+                  "embedded-wallets/quickstart/overview",
+                  "embedded-wallets/quickstart/cli",
+                  "embedded-wallets/quickstart/integration"
                 ]
               }
             ]
@@ -104,79 +104,79 @@
           {
             "group": "Authentication",
             "pages": [
-              "embedded-wallet/authentication/overview",
+              "embedded-wallets/authentication/overview",
               {
                 "group": "Login",
                 "pages": [
-                  "embedded-wallet/authentication/login/email-otp",
-                  "embedded-wallet/authentication/login/sms",
+                  "embedded-wallets/authentication/login/email-otp",
+                  "embedded-wallets/authentication/login/sms",
                   {
                     "group": "OAuth",
                     "pages": [
-                      "embedded-wallet/authentication/login/oauth/oauth-implementation",
+                      "embedded-wallets/authentication/login/oauth/oauth-implementation",
                       {
                         "group": "Social Providers",
                         "pages": [
-                          "embedded-wallet/authentication/login/oauth/social-providers/google",
-                          "embedded-wallet/authentication/login/oauth/social-providers/facebook",
-                          "embedded-wallet/authentication/login/oauth/social-providers/twitter",
-                          "embedded-wallet/authentication/login/oauth/social-providers/apple",
-                          "embedded-wallet/authentication/login/oauth/social-providers/discord",
-                          "embedded-wallet/authentication/login/oauth/social-providers/github",
-                          "embedded-wallet/authentication/login/oauth/social-providers/linkedin",
-                          "embedded-wallet/authentication/login/oauth/social-providers/bitbucket",
-                          "embedded-wallet/authentication/login/oauth/social-providers/twitch",
-                          "embedded-wallet/authentication/login/oauth/social-providers/microsoft",
-                          "embedded-wallet/authentication/login/oauth/social-providers/gitlab",
-                          "embedded-wallet/authentication/login/oauth/social-providers/telegram"
+                          "embedded-wallets/authentication/login/oauth/social-providers/google",
+                          "embedded-wallets/authentication/login/oauth/social-providers/facebook",
+                          "embedded-wallets/authentication/login/oauth/social-providers/twitter",
+                          "embedded-wallets/authentication/login/oauth/social-providers/apple",
+                          "embedded-wallets/authentication/login/oauth/social-providers/discord",
+                          "embedded-wallets/authentication/login/oauth/social-providers/github",
+                          "embedded-wallets/authentication/login/oauth/social-providers/linkedin",
+                          "embedded-wallets/authentication/login/oauth/social-providers/bitbucket",
+                          "embedded-wallets/authentication/login/oauth/social-providers/twitch",
+                          "embedded-wallets/authentication/login/oauth/social-providers/microsoft",
+                          "embedded-wallets/authentication/login/oauth/social-providers/gitlab",
+                          "embedded-wallets/authentication/login/oauth/social-providers/telegram"
                         ]
                       }
                     ]
                   },
-                  "embedded-wallet/authentication/login/farcaster"
+                  "embedded-wallets/authentication/login/farcaster"
                 ]
               },
               {
                 "group": "Features",
                 "pages": [
-                  "embedded-wallet/authentication/features/mfa",
-                  "embedded-wallet/authentication/features/advanced-mfa",
-                  "embedded-wallet/authentication/features/account-recovery",
-                  "embedded-wallet/authentication/features/decentralized-id"
+                  "embedded-wallets/authentication/features/mfa",
+                  "embedded-wallets/authentication/features/advanced-mfa",
+                  "embedded-wallets/authentication/features/account-recovery",
+                  "embedded-wallets/authentication/features/decentralized-id"
                 ]
               },
               {
                 "group": "Customization",
                 "pages": [
-                  "embedded-wallet/authentication/customization/login-ui",
-                  "embedded-wallet/authentication/customization/localization",
-                  "embedded-wallet/authentication/customization/custom-smtp",
-                  "embedded-wallet/authentication/customization/custom-email-template",
-                  "embedded-wallet/authentication/customization/custom-twilio-configuration"
+                  "embedded-wallets/authentication/customization/login-ui",
+                  "embedded-wallets/authentication/customization/localization",
+                  "embedded-wallets/authentication/customization/custom-smtp",
+                  "embedded-wallets/authentication/customization/custom-email-template",
+                  "embedded-wallets/authentication/customization/custom-twilio-configuration"
                 ]
               },
               {
                 "group": "Data",
                 "pages": [
-                  "embedded-wallet/authentication/data/data-export",
-                  "embedded-wallet/authentication/data/email-logs",
-                  "embedded-wallet/authentication/data/deletion-request"
+                  "embedded-wallets/authentication/data/data-export",
+                  "embedded-wallets/authentication/data/email-logs",
+                  "embedded-wallets/authentication/data/deletion-request"
                 ]
               },
               {
                 "group": "Security",
                 "pages": [
-                  "embedded-wallet/authentication/security/access-control",
+                  "embedded-wallets/authentication/security/access-control",
                   {
                     "group": "Allowlists",
                     "pages": [
-                      "embedded-wallet/authentication/security/allowlists/domain-allowlist",
-                      "embedded-wallet/authentication/security/allowlists/redirect-allowlist",
-                      "embedded-wallet/authentication/security/allowlists/mobile-access-allow-listing"
+                      "embedded-wallets/authentication/security/allowlists/domain-allowlist",
+                      "embedded-wallets/authentication/security/allowlists/redirect-allowlist",
+                      "embedded-wallets/authentication/security/allowlists/mobile-access-allow-listing"
                     ]
                   },
-                  "embedded-wallet/authentication/security/device-registration",
-                  "embedded-wallet/authentication/security/session-management"
+                  "embedded-wallets/authentication/security/device-registration",
+                  "embedded-wallets/authentication/security/session-management"
                 ]
               }
             ]
@@ -184,38 +184,38 @@
           {
             "group": "Wallets",
             "pages": [
-              "embedded-wallet/wallets/overview",
+              "embedded-wallets/wallets/overview",
               {
                 "group": "Features",
                 "pages": [
-                  "embedded-wallet/wallets/features/transaction-signing",
-                  "embedded-wallet/wallets/features/personal-signatures",
-                  "embedded-wallet/wallets/features/fiat-on-ramps",
-                  "embedded-wallet/wallets/features/key-export"
+                  "embedded-wallets/wallets/features/transaction-signing",
+                  "embedded-wallets/wallets/features/personal-signatures",
+                  "embedded-wallets/wallets/features/fiat-on-ramps",
+                  "embedded-wallets/wallets/features/key-export"
                 ]
               },
               {
                 "group": "Security",
                 "pages": [
-                  "embedded-wallet/wallets/security/content-security-policy",
-                  "embedded-wallet/wallets/security/sign-confirmation"
+                  "embedded-wallets/wallets/security/content-security-policy",
+                  "embedded-wallets/wallets/security/sign-confirmation"
                 ]
               },
               {
                 "group": "Customization",
                 "pages": [
-                  "embedded-wallet/wallets/customization/brand-and-theme",
-                  "embedded-wallet/wallets/customization/widget-ui"
+                  "embedded-wallets/wallets/customization/brand-and-theme",
+                  "embedded-wallets/wallets/customization/widget-ui"
                 ]
               },
               {
                 "group": "Integration",
                 "pages": [
-                  "embedded-wallet/wallets/integrations/zerodev-account-abstraction",
-                  "embedded-wallet/wallets/integrations/alchemy-account-abstraction",
-                  "embedded-wallet/wallets/integrations/zksync-zyfi-integration",
-                  "embedded-wallet/wallets/integrations/wagmi",
-                  "embedded-wallet/wallets/integrations/moonpay-integration"
+                  "embedded-wallets/wallets/integrations/zerodev-account-abstraction",
+                  "embedded-wallets/wallets/integrations/alchemy-account-abstraction",
+                  "embedded-wallets/wallets/integrations/zksync-zyfi-integration",
+                  "embedded-wallets/wallets/integrations/wagmi",
+                  "embedded-wallets/wallets/integrations/moonpay-integration"
                 ]
               }
             ]
@@ -223,30 +223,30 @@
           {
             "group": "SDKs",
             "pages": [
-              "embedded-wallet/api/overview",
+              "embedded-wallets/sdk/overview",
               {
                 "group": "Client-side",
                 "pages": [
-                  "embedded-wallet/api/client-side-sdks/javascript",
-                  "embedded-wallet/api/client-side-sdks/react-native",
-                  "embedded-wallet/api/client-side-sdks/android",
-                  "embedded-wallet/api/client-side-sdks/ios",
-                  "embedded-wallet/api/client-side-sdks/flutter"
+                  "embedded-wallets/sdk/client-side/javascript",
+                  "embedded-wallets/sdk/client-side/react-native",
+                  "embedded-wallets/sdk/client-side/android",
+                  "embedded-wallets/sdk/client-side/ios",
+                  "embedded-wallets/sdk/client-side/flutter"
                 ]
               },
               {
                 "group": "Server-side",
                 "pages": [
-                  "embedded-wallet/api/server-side-sdks/overview",
-                  "embedded-wallet/api/server-side-sdks/python",
-                  "embedded-wallet/api/server-side-sdks/node"
+                  "embedded-wallets/sdk/server-side/overview",
+                  "embedded-wallets/sdk/server-side/python",
+                  "embedded-wallets/sdk/server-side/node"
                 ]
               },
               {
                 "group": "Resources",
                 "pages": [
-                  "embedded-wallet/api/resources/rate-limit",
-                  "embedded-wallet/api/resources/types"
+                  "embedded-wallets/sdk/resources/rate-limit",
+                  "embedded-wallets/sdk/resources/types"
                 ]
               }
             ]
@@ -254,64 +254,64 @@
           {
             "group": "Blockchains",
             "pages": [
-              "embedded-wallet/blockchains/overview",
+              "embedded-wallets/blockchains/overview",
               {
                 "group": "Ethereum",
                 "pages": [
-                  "embedded-wallet/blockchains/ethereum/javascript",
-                  "embedded-wallet/blockchains/ethereum/flutter",
-                  "embedded-wallet/blockchains/ethereum/ios",
-                  "embedded-wallet/blockchains/ethereum/android"
+                  "embedded-wallets/blockchains/ethereum/javascript",
+                  "embedded-wallets/blockchains/ethereum/flutter",
+                  "embedded-wallets/blockchains/ethereum/ios",
+                  "embedded-wallets/blockchains/ethereum/android"
                 ]
               },
               {
                 "group": "EVM",
                 "pages": [
-                  "embedded-wallet/blockchains/evm/arbitrum",
-                  "embedded-wallet/blockchains/evm/astar-zkevm",
-                  "embedded-wallet/blockchains/evm/base",
-                  "embedded-wallet/blockchains/evm/berachain",
-                  "embedded-wallet/blockchains/evm/binance-smart-chain",
-                  "embedded-wallet/blockchains/evm/celo",
-                  "embedded-wallet/blockchains/evm/chiliz",
-                  "embedded-wallet/blockchains/evm/cronos",
-                  "embedded-wallet/blockchains/evm/etherlink",
-                  "embedded-wallet/blockchains/evm/fantom",
-                  "embedded-wallet/blockchains/evm/flare",
-                  "embedded-wallet/blockchains/evm/harmony",
-                  "embedded-wallet/blockchains/evm/hedera",
-                  "embedded-wallet/blockchains/evm/horizen-eon",
-                  "embedded-wallet/blockchains/evm/loopring",
-                  "embedded-wallet/blockchains/evm/moonbeam",
-                  "embedded-wallet/blockchains/evm/optimism",
-                  "embedded-wallet/blockchains/evm/polygon",
-                  "embedded-wallet/blockchains/evm/rari-chain",
-                  "embedded-wallet/blockchains/evm/sei",
-                  "embedded-wallet/blockchains/evm/soneium",
-                  "embedded-wallet/blockchains/evm/stability",
-                  "embedded-wallet/blockchains/evm/xdc-network",
-                  "embedded-wallet/blockchains/evm/zetachain",
-                  "embedded-wallet/blockchains/evm/zksync"
+                  "embedded-wallets/blockchains/evm/arbitrum",
+                  "embedded-wallets/blockchains/evm/astar-zkevm",
+                  "embedded-wallets/blockchains/evm/base",
+                  "embedded-wallets/blockchains/evm/berachain",
+                  "embedded-wallets/blockchains/evm/binance-smart-chain",
+                  "embedded-wallets/blockchains/evm/celo",
+                  "embedded-wallets/blockchains/evm/chiliz",
+                  "embedded-wallets/blockchains/evm/cronos",
+                  "embedded-wallets/blockchains/evm/etherlink",
+                  "embedded-wallets/blockchains/evm/fantom",
+                  "embedded-wallets/blockchains/evm/flare",
+                  "embedded-wallets/blockchains/evm/harmony",
+                  "embedded-wallets/blockchains/evm/hedera",
+                  "embedded-wallets/blockchains/evm/horizen-eon",
+                  "embedded-wallets/blockchains/evm/loopring",
+                  "embedded-wallets/blockchains/evm/moonbeam",
+                  "embedded-wallets/blockchains/evm/optimism",
+                  "embedded-wallets/blockchains/evm/polygon",
+                  "embedded-wallets/blockchains/evm/rari-chain",
+                  "embedded-wallets/blockchains/evm/sei",
+                  "embedded-wallets/blockchains/evm/soneium",
+                  "embedded-wallets/blockchains/evm/stability",
+                  "embedded-wallets/blockchains/evm/xdc-network",
+                  "embedded-wallets/blockchains/evm/zetachain",
+                  "embedded-wallets/blockchains/evm/zksync"
                 ]
               },
               {
                 "group": "Non-EVM",
                 "pages": [
-                  "embedded-wallet/blockchains/non-evm/algorand",
-                  "embedded-wallet/blockchains/non-evm/aptos",
-                  "embedded-wallet/blockchains/non-evm/avalanche",
-                  "embedded-wallet/blockchains/non-evm/bitcoin",
-                  "embedded-wallet/blockchains/non-evm/cosmos",
-                  "embedded-wallet/blockchains/non-evm/flow",
-                  "embedded-wallet/blockchains/non-evm/icon",
-                  "embedded-wallet/blockchains/non-evm/near",
-                  "embedded-wallet/blockchains/non-evm/polkadot",
-                  "embedded-wallet/blockchains/non-evm/solana",
-                  "embedded-wallet/blockchains/non-evm/tezos",
-                  "embedded-wallet/blockchains/non-evm/zilliqa"
+                  "embedded-wallets/blockchains/non-evm/algorand",
+                  "embedded-wallets/blockchains/non-evm/aptos",
+                  "embedded-wallets/blockchains/non-evm/avalanche",
+                  "embedded-wallets/blockchains/non-evm/bitcoin",
+                  "embedded-wallets/blockchains/non-evm/cosmos",
+                  "embedded-wallets/blockchains/non-evm/flow",
+                  "embedded-wallets/blockchains/non-evm/icon",
+                  "embedded-wallets/blockchains/non-evm/near",
+                  "embedded-wallets/blockchains/non-evm/polkadot",
+                  "embedded-wallets/blockchains/non-evm/solana",
+                  "embedded-wallets/blockchains/non-evm/tezos",
+                  "embedded-wallets/blockchains/non-evm/zilliqa"
                 ]
               },
-              "embedded-wallet/blockchains/multichain"
+              "embedded-wallets/blockchains/multichain"
             ]
           }
         ]
