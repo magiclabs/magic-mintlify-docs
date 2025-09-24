@@ -7,7 +7,7 @@ sidebarTitle: Decentralized ID
 
 Decentralized ID (DID) tokens are used as cryptographically-generated proofs that are used to manage user access to your application's resource server.
 
-By adapting W3C's [Decentralized Identifiers](https://w3c-ccg.github.io/did-primer/) (DID) protocol, the **DID token** created by the Magic client-side SDK (see [`getIdToken`](/docs/embedded-wallet/api/client-side-sdks/javascript#getidtoken)) leverages the [Ethereum](https://ethereum.org/) blockchain and [elliptic curve cryptography](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) to generate verifiable proofs of identity and authorization. These proofs are encoded in a lightweight, digital signature that can be shared between client and server to manage permissions, protect routes and resources, or authenticate users.
+By adapting W3C's [Decentralized Identifiers](https://w3c-ccg.github.io/did-primer/) (DID) protocol, the **DID token** created by the Magic client-side SDK (see [`getIdToken`](/embedded-wallet/api/client-side-sdks/javascript#getidtoken)) leverages the [Ethereum](https://ethereum.org/) blockchain and [elliptic curve cryptography](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) to generate verifiable proofs of identity and authorization. These proofs are encoded in a lightweight, digital signature that can be shared between client and server to manage permissions, protect routes and resources, or authenticate users.
 
 The DID token is encoded as a Base64 JSON string tuple representing `**[proof, claim]**`:
 

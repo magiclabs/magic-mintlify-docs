@@ -17,7 +17,7 @@ We don't support deleting users from your dashboard view. However if you are req
 
 </Accordion>
 <Accordion title="How can I service GDPR deletion requests from my users?">
-Magic offers a [Deletion Request API](/docs/embedded-wallet/authentication/data/deletion-request) that enables developers to delete users' information in compliance with GDPR.
+Magic offers a [Deletion Request API](/embedded-wallet/authentication/data/deletion-request) that enables developers to delete users' information in compliance with GDPR.
 
 </Accordion>
 <Accordion title="How do I restrict which Domains have access to my API key?">
@@ -80,9 +80,9 @@ _Currently blocked country codes:_
 
 <AccordionGroup>
   <Accordion title="How long does a user remain logged in?">
-By default, users remain authenticated with Magic for up to 7 days (or until they logout or browser data is cleared). Developers can enable and configure auto refresh sessions in our [developer dashboard](https://dashboard.magic.link), extending the session up to 90 days instead of 7. See [Session Management](/docs/embedded-wallet/authentication/security/session-management) for more.
+By default, users remain authenticated with Magic for up to 7 days (or until they logout or browser data is cleared). Developers can enable and configure auto refresh sessions in our [developer dashboard](https://dashboard.magic.link), extending the session up to 90 days instead of 7. See [Session Management](/embedded-wallet/authentication/security/session-management) for more.
 
-If you're building a custom backend, we recommend our [Decentralized ID token](/docs/embedded-wallet/authentication/features/decentralized-id) as a way to initiate server-side sessions. The DID Token is a cryptographically-generated proof of user authentication. Your resource server simply needs to validate the token and set an HTTPS session cookie. This option gives you the flexibility of maintaining your own sessions without storing user secrets.
+If you're building a custom backend, we recommend our [Decentralized ID token](/embedded-wallet/authentication/features/decentralized-id) as a way to initiate server-side sessions. The DID Token is a cryptographically-generated proof of user authentication. Your resource server simply needs to validate the token and set an HTTPS session cookie. This option gives you the flexibility of maintaining your own sessions without storing user secrets.
 
   </Accordion>
   <Accordion title="Session vs DID token?">
@@ -104,7 +104,7 @@ When a user logs out, the session will expire but a previously generated DID tok
 ### Refresh Token Security
 
   <Accordion title="Securing the Magic refresh token">
-  While the Auto Refresh sessions feature is enabled, Magic will use the browser's [_**IndexDB**_](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) to store refresh tokens under your domain. These refresh tokens can be exchanged for a [Magic session](/docs/home/faq#sessions-and-tokens). If your application is vulnerable to Cross-Site Scripting (XSS), it is not within Magic's control how an attacker will exfiltrate these refresh tokens. We strongly recommend that you review OWASP's documentation on [XSS vulnerabilities](https://owasp.org/www-community/attacks/xss/). OWASP also provides a great [starter sheet for XSS prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html).
+  While the Auto Refresh sessions feature is enabled, Magic will use the browser's [_**IndexDB**_](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) to store refresh tokens under your domain. These refresh tokens can be exchanged for a [Magic session](/home/faq#sessions-and-tokens). If your application is vulnerable to Cross-Site Scripting (XSS), it is not within Magic's control how an attacker will exfiltrate these refresh tokens. We strongly recommend that you review OWASP's documentation on [XSS vulnerabilities](https://owasp.org/www-community/attacks/xss/). OWASP also provides a great [starter sheet for XSS prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html).
 
 If you are a Web 3 developer, we strongly encourage you in particular to understand your application's exposure to XSS. A successful XSS attack targeting a Magic refresh token on your application could translate to the attacker owning your end user's Web 3 address/wallet.
 
@@ -114,7 +114,7 @@ If you are a Web 3 developer, we strongly encourage you in particular to underst
 
 <AccordionGroup>
   <Accordion title="How can I allow users to view and export their private key?">
-Developers can now call the [revealPrivateKey](/docs/embedded-wallet/api/client-side-sdks/javascript#revealprivatekey) method to initiate the private key reveal flow within their apps. Users no longer need to leave your app to get their private keys! This method is available on our [Web](/docs/embedded-wallet/api/client-side-sdks/javascript), [React Native](/docs/embedded-wallet/api/client-side-sdks/react-native), and [Android](/docs/embedded-wallet/api/client-side-sdks/android) SDKs. If your app is not able to use this method please continue reading about how you may request a private key reveal page.
+Developers can now call the [revealPrivateKey](/embedded-wallet/api/client-side-sdks/javascript#revealprivatekey) method to initiate the private key reveal flow within their apps. Users no longer need to leave your app to get their private keys! This method is available on our [Web](/embedded-wallet/api/client-side-sdks/javascript), [React Native](/embedded-wallet/api/client-side-sdks/react-native), and [Android](/embedded-wallet/api/client-side-sdks/android) SDKs. If your app is not able to use this method please continue reading about how you may request a private key reveal page.
 
 <Frame>
   <img src="/images/reveal-page-ui_v3.webp" alt="" />
@@ -130,7 +130,7 @@ For applications that aren't able to call the reveal private key method, ⁠Magi
 
 The login methods available on your reveal page will match the login methods that you have activated in your [Magic developer dashboard](https://dashboard.magic.link/) (found under "Passwordless Login" and "Social Login"). Please make sure to deactivate any login methods that you are not using. Login methods can be added and removed at any point and changes will be immediately visible on your reveal page.
 
-The look of the UI for your reveal page will also match the settings configured within the "branding" section of your developer dashboard. This includes the logo shown, the primary color, as well as choosing between light/dark mode. More details on branding and UI customization can be [found here](/docs/embedded-wallet/wallets/customization/brand-and-theme).
+The look of the UI for your reveal page will also match the settings configured within the "branding" section of your developer dashboard. This includes the logo shown, the primary color, as well as choosing between light/dark mode. More details on branding and UI customization can be [found here](/embedded-wallet/wallets/customization/brand-and-theme).
 
   </Accordion>
   <Accordion title="How can I make changes to my legacy private key reveal page?">

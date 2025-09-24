@@ -15,7 +15,7 @@ To use Magic in your application, install the `magic-sdk` dependency.
 <Info>
 **NOTE**
 
-⁠If you're integrating with [OAuth](/docs/embedded-wallet/api/client-side-sdks/javascript#oauth-module), additional dependencies are needed. You'll find the installation instructions in its dedicated section within this documentation.
+⁠If you're integrating with [OAuth](/embedded-wallet/api/client-side-sdks/javascript#oauth-module), additional dependencies are needed. You'll find the installation instructions in its dedicated section within this documentation.
 
 </Info>
 
@@ -40,8 +40,8 @@ Configure and construct your Magic SDK instance.
 | -------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Parameter                  | Type             | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `apiKey`                   | String           | Your **publishable** API key retrieved from the Magic Dashboard.                                                                                                                                                                                                                                                                                                                                                                             |
-| `options.locale?`          | String           | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/docs/embedded-wallet/authentication/customization/localization) for more.                                                                                                                                                                                                                                                                                        |
-| `options.testMode?`        | Boolean          | Enable [`testMode`](/docs/embedded-wallet/authentication/login/magic-links) to assert the desired behavior through the email address you provide to `loginWithMagicLink` without having to go through the auth flow.                                                                                                                                                                                                                                         |
+| `options.locale?`          | String           | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/embedded-wallet/authentication/customization/localization) for more.                                                                                                                                                                                                                                                                                        |
+| `options.testMode?`        | Boolean          | Enable [`testMode`](/embedded-wallet/authentication/login/magic-links) to assert the desired behavior through the email address you provide to `loginWithMagicLink` without having to go through the auth flow.                                                                                                                                                                                                                                         |
 | `options.network?`         | String \| Object | (String): A representation of the connected Ethereum network (mainnet or goerli).<br/><br/>⁠(Object): A custom Ethereum Node configuration with the following shape:<br/><br/>⁠`rpcUrl` (String): A URL pointing to your custom Ethereum Node.⁠⁠<br/><br/>⁠`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer. |
 | `options.endpoint?`        | String           | A URL pointing to the Magic `<iframe>` application.                                                                                                                                                                                                                                                                                                                                                                                          |
 | `options.deferPreload?`    | Boolean          | An optional flag to delay the loading of the Magic Iframe's static assets until an SDK function is explicitly invoked. ⁠⁠⁠Set this to true if latency bottlenecks are a concern.                                                                                                                                                                                                                                                             |
@@ -305,7 +305,7 @@ try {
 
 Authenticate a user passwordlessly using a one-time code sent to the specified phone number.
 
-[List of Currently Blocked Country Codes](/docs/home/faq#questions-around-sms)
+[List of Currently Blocked Country Codes](/home/faq#questions-around-sms)
 
 
 **Arguments**
@@ -565,7 +565,7 @@ alert('Email Updated');
 
 **Error Handling**
 
-﻿[Relevant Error Codes](/docs/embedded-wallet/api/client-side-sdks/javascript#error-codes)﻿
+﻿[Relevant Error Codes](/embedded-wallet/api/client-side-sdks/javascript#error-codes)﻿
 
 To achieve a fully white-labeled experience, you will need to implement some custom error handling according to your UI needs. Here's a short example to illustrate how errors can be caught and identified by their code:
 
@@ -619,7 +619,7 @@ const accounts = await magic.wallet.connectWithUI();
 
 ### `showUI`
 
-Displays the fully [navigable wallet](/docs/embedded-wallet/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google. User must be signed in for this method to return or else it will throw an error.
+Displays the fully [navigable wallet](/embedded-wallet/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google. User must be signed in for this method to return or else it will throw an error.
 
 **Arguments**
 
@@ -764,7 +764,7 @@ The User Module and it's members are accessible on the Magic SDK instance by the
 
 ### `getIdToken`
 
-Generates a [Decentralized Id Token](/docs/embedded-wallet/authentication/features/decentralized-id) which acts as a proof of authentication to resource servers.
+Generates a [Decentralized Id Token](/embedded-wallet/authentication/features/decentralized-id) which acts as a proof of authentication to resource servers.
 
 **Arguments**
 
@@ -791,7 +791,7 @@ try {
 
 ### `generateIdToken`
 
-Generates a [Decentralized ID token](/docs/embedded-wallet/authentication/features/decentralized-id) with optional serialized data.
+Generates a [Decentralized ID token](/embedded-wallet/authentication/features/decentralized-id) with optional serialized data.
 
 **Arguments**
 
@@ -911,8 +911,8 @@ try {
 Displays an iframe with the current user’s settings. Allows for users to update their email address, enable multi-factor authentication, and add a recovery factor.
 
 <Note>
-  Access to [MFA](/docs/embedded-wallet/authentication/features/mfa) and [account
-  recovery](docs/embedded-wallet/authentication/features/account-recovery) require paid add-ons.
+  Access to [MFA](/embedded-wallet/authentication/features/mfa) and [account
+  recovery](/embedded-wallet/authentication/features/account-recovery) require paid add-ons.
 </Note>
 
 **Arguments**
@@ -950,7 +950,7 @@ try {
 
 Whitelabel the flow starting from where the user needs to add a recovery factor phone number. This allows you to implement your own UI, but you will need to implement some custom event handling according to your needs.
 
-Access to [account recovery](docs/embedded-wallet/authentication/features/account-recovery) require paid add-ons.
+Access to [account recovery](/embedded-wallet/authentication/features/account-recovery) require paid add-ons.
 
 **Arguments**
 
@@ -1041,7 +1041,7 @@ try {
 
 A user can recover their email account if they've setup a phone number as a recovery factor. Calling this method will display a modal for the user to submit the sent SMS OTP.
 
-Access to [account recovery](docs/embedded-wallet/authentication/features/account-recovery) require
+Access to [account recovery](/embedded-wallet/authentication/features/account-recovery) require
 paid add-ons.
 
 **Arguments**
@@ -1074,7 +1074,7 @@ Displays an iframe deep linked to the beginning of the enable MFA flow. This is 
 
 
 <Note>
-Access to [MFA](/docs/embedded-wallet/authentication/features/mfa) require paid add-ons. Available as of `magic-sdk v28.11.0`
+Access to [MFA](/embedded-wallet/authentication/features/mfa) require paid add-ons. Available as of `magic-sdk v28.11.0`
 </Note>
 **Arguments**
 
@@ -1149,7 +1149,7 @@ try {
 
 Displays an iframe deep linked to the beginning of the disable MFA flow. This method assumes MFA has been enabled for the logged in user. This cannot be achieved by calling `showSettings()` .
 
-Access to [MFA](/docs/embedded-wallet/authentication/features/mfa) require paid add-ons. Available
+Access to [MFA](/embedded-wallet/authentication/features/mfa) require paid add-ons. Available
 as of `magic-sdk v28.11.0`
 
 **Arguments**
@@ -1575,7 +1575,7 @@ if (await magic.user.isLoggedIn()) {
 ## Resources
 
 - [GitHub](https://github.com/magiclabs/magic-js)
-- [Quickstart](/docs/embedded-wallet/quickstart/overview)
+- [Quickstart](/embedded-wallet/quickstart/overview)
 - [NPM](https://www.npmjs.com/package/magic-sdk)
 
 ## Versions

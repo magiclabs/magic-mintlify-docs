@@ -5,7 +5,7 @@ description: "With Magic, you can use Email one-time codes as an authentication 
 
 ### Compatibility
 
-Email OTP is available on all [client-side SDKs](/docs/embedded-wallet/api/overview#client-side-sdk).
+Email OTP is available on all [client-side SDKs](/embedded-wallet/api/overview#client-side-sdk).
 
 ## Use Cases
 
@@ -13,11 +13,11 @@ Email OTP is available on all [client-side SDKs](/docs/embedded-wallet/api/overv
 
 ## Usage
 
-You can use Email OTP login by creating a project with our [CLI tool](/docs/embedded-wallet/quickstart/overview) and picking 'Quickstart' when prompted. Alternatively, you can integrate Email OTP directly into your existing projects using the sample below. **Refer to the** [**API documentation**](/docs/embedded-wallet/api/overview) **for information on how to install and initialize Magic for your existing project.**
+You can use Email OTP login by creating a project with our [CLI tool](/embedded-wallet/quickstart/overview) and picking 'Quickstart' when prompted. Alternatively, you can integrate Email OTP directly into your existing projects using the sample below. **Refer to the** [**API documentation**](/embedded-wallet/api/overview) **for information on how to install and initialize Magic for your existing project.**
 
 Once you've created a Magic instance, log users in using `loginWithEmailOTP`. In addition to the user's email address, you can provide a boolean indicating whether or not to show a pre-built modal interface directing the user to enter their one-time passcode. When `false`, you can implement a custom UI to continue the email OTP flow.
 
-Once logged in, you will receive a DID token that can be used with our [Admin SDK](/docs/embedded-wallet/api/server-side-sdks/node#token-module) to verify the user's information and wallet address on the backend. You can also retrieve the user's wallet address and email using [`getInfo`](/docs/embedded-wallet/api/client-side-sdks/javascript#getinfo) for Web/React Native and `getMetadata` for iOS, Android, and Flutter.
+Once logged in, you will receive a DID token that can be used with our [Admin SDK](/embedded-wallet/api/server-side-sdks/node#token-module) to verify the user's information and wallet address on the backend. You can also retrieve the user's wallet address and email using [`getInfo`](/embedded-wallet/api/client-side-sdks/javascript#getinfo) for Web/React Native and `getMetadata` for iOS, Android, and Flutter.
 
 ```javascript JavaScript icon="square-js"
 const login = async (emailAddress, showUI) => {
@@ -37,10 +37,10 @@ const login = async (emailAddress, showUI) => {
 
 ## Resources
 
-- [Quickstart](/docs/embedded-wallet/quickstart/overview)
+- [Quickstart](/embedded-wallet/quickstart/overview)
 - [Email OTP Wallets on EVM chains](https://magic.link/posts/magic-evm-nextjs-guide)
-- [Web API documentation](/docs/embedded-wallet/api/client-side-sdks/javascript#loginwithemailotp)
-- [React Native API documentation](/docs/embedded-wallet/api/client-side-sdks/react-native#loginwithemailotp)
-- [iOS API documentation](/docs/embedded-wallet/api/client-side-sdks/ios#loginwithemailotp)
-- [Android API documentation](/docs/embedded-wallet/api/client-side-sdks/android#loginwithemailotp)
-- [Flutter API documentation](/docs/embedded-wallet/api/client-side-sdks/flutter#loginwithemailotp)
+- [Web API documentation](/embedded-wallet/api/client-side-sdks/javascript#loginwithemailotp)
+- [React Native API documentation](/embedded-wallet/api/client-side-sdks/react-native#loginwithemailotp)
+- [iOS API documentation](/embedded-wallet/api/client-side-sdks/ios#loginwithemailotp)
+- [Android API documentation](/embedded-wallet/api/client-side-sdks/android#loginwithemailotp)
+- [Flutter API documentation](/embedded-wallet/api/client-side-sdks/flutter#loginwithemailotp)

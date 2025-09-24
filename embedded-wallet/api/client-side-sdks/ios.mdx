@@ -30,7 +30,7 @@ We use service workers for for better performance on web3 operations. If you'd l
 | Parameter  | Type                                      | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `apiKey`   | String                                    | Your **publishable** API Key retrieved from the Magic Dashboard.                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `network?` | `EthNetwork` \| `CustomNodeConfiguration` | (`EthNetwork`): A representation of the connected Ethereum network (`.mainnet` or `.goerli`).<br/><br/>⁠(`CustomNodeConfiguration`): A custom Ethereum Node configuration with the following shape:<br/><br/>`rpcUrl` (String): A URL pointing to your custom Ethereum Node.<br/><br/>⁠`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer. |
-| `locale?`  | `Locale`                                  | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/docs/embedded-wallet/authentication/customization/localization) for more.                                                                                                                                                                                                                                                                                                                    |
+| `locale?`  | `Locale`                                  | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/embedded-wallet/authentication/customization/localization) for more.                                                                                                                                                                                                                                                                                                                    |
 
 ### Initialization
 
@@ -64,7 +64,7 @@ The Auth Module and its members are accessible on the Magic SDK instance by the 
 
 Authenticate a user passwordlessly using a one-time code sent to the specified phone number.
 
-[List of Currently Blocked Country Codes](/docs/home/faq#questions-around-sms)
+[List of Currently Blocked Country Codes](/home/faq#questions-around-sms)
 
 **Arguments**
 
@@ -226,7 +226,7 @@ class MagicViewController: UIViewController {
 
 ### `showUI`
 
-Displays the fully [navigable wallet](/docs/embedded-wallet/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google. User must be signed in for this method to return or else it will throw an error.
+Displays the fully [navigable wallet](/embedded-wallet/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google. User must be signed in for this method to return or else it will throw an error.
 
 **Arguments**
 
@@ -487,8 +487,8 @@ class MagicViewController: UIViewController {
 Displays an iframe with the current user’s settings. Allows for users to update their email address, enable multi-factor authentication, and add a recovery factor.
 
 <Note>
-  Access to [MFA](/docs/embedded-wallet/authentication/features/mfa) and [account
-  recovery](docs/embedded-wallet/authentication/features/account-recovery) require paid add-ons.
+  Access to [MFA](/embedded-wallet/authentication/features/mfa) and [account
+  recovery](/embedded-wallet/authentication/features/account-recovery) require paid add-ons.
 </Note>
 
 **Arguments**

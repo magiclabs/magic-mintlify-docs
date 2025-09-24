@@ -72,7 +72,7 @@ Configure and construct your Magic SDK instance.
 | -------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Parameter                  | Type             | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `apiKey`                   | String           | Your **publishable** API Key retrieved from the Magic Dashboard.                                                                                                                                                                                                                                                                                                                                                                             |
-| `options.locale?`          | String           | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/docs/embedded-wallet/authentication/customization/localization) for more.                                                                                                                                                                                                                                                                                        |
+| `options.locale?`          | String           | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/embedded-wallet/authentication/customization/localization) for more.                                                                                                                                                                                                                                                                                        |
 | `options.network?`         | String \| Object | (String): A representation of the connected Ethereum network (mainnet or goerli).<br/><br/>⁠(Object): A custom Ethereum Node configuration with the following shape:<br/><br/>⁠`rpcUrl` (String): A URL pointing to your custom Ethereum Node.⁠⁠<br/><br/>⁠`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer. |
 | `options.endpoint?`        | String           | A URL pointing to the Magic `<iframe>` application.                                                                                                                                                                                                                                                                                                                                                                                          |
 | `options.deferPreload?`    | Boolean          | An optional flag to delay the loading of the Magic Iframe's static assets until an SDK function is explicitly invoked. ⁠⁠⁠Set this to true if latency bottlenecks are a concern.                                                                                                                                                                                                                                                             |
@@ -104,7 +104,7 @@ To facilitate events between the Magic `<iframe>` context and your React Native 
 
 **Arguments**
 
-- `backgroundColor?` (String): Used to render a custom background color. By default, the background will be white. If you have changed the background color as part of your [custom branding setup](docs/embedded-wallet/authentication/customization/login-ui#configuration), make sure to pass that color to `magic.Relayer`.
+- `backgroundColor?` (String): Used to render a custom background color. By default, the background will be white. If you have changed the background color as part of your [custom branding setup](/embedded-wallet/authentication/customization/login-ui#configuration), make sure to pass that color to `magic.Relayer`.
 
 **Example**
 
@@ -306,7 +306,7 @@ try {
 
 Authenticate a user passwordlessly using a one-time code sent to the specified phone number.
 
-[List of Currently Blocked Country Codes](/docs/home/faq#questions-around-sms)
+[List of Currently Blocked Country Codes](/home/faq#questions-around-sms)
 
 **Arguments**
 
@@ -489,11 +489,11 @@ magic.wallet.connectWithUI().on('id-token-created', (params) => {
 |     |     |
 | --- | --- |
 | Event Name | Definition |
-| `id-token-created` | Returns an object containing a short lived, time bound ID token that can be used to verify the ownership of a user's wallet address on login.<br/><br/>[Read more](docs/embedded-wallet/authentication/customization/login-ui#usage-0) about this token and how to use it. |
+| `id-token-created` | Returns an object containing a short lived, time bound ID token that can be used to verify the ownership of a user's wallet address on login.<br/><br/>[Read more](/embedded-wallet/authentication/customization/login-ui#usage-0) about this token and how to use it. |
 
 ### `showUI`
 
-Displays the fully [navigable wallet](/docs/embedded-wallet/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google. User must be signed in for this method to return or else it will throw an error.
+Displays the fully [navigable wallet](/embedded-wallet/wallets/customization/widget-ui) to the user that adheres to the toggled configurations on your developer dashboard’s Widget UI tab. ⁠ ⁠This is only supported for users who login with email or Google. User must be signed in for this method to return or else it will throw an error.
 
 **Arguments**
 
@@ -651,7 +651,7 @@ The User Module and it's members are accessible on the Magic SDK instance by the
 
 ### `getIdToken`
 
-Generates a [Decentralized Id Token](/docs/embedded-wallet/authentication/features/decentralized-id) which acts as a proof of authentication to resource servers.
+Generates a [Decentralized Id Token](/embedded-wallet/authentication/features/decentralized-id) which acts as a proof of authentication to resource servers.
 
 **Arguments**
 
@@ -681,7 +681,7 @@ try {
 
 ### `generateIdToken`
 
-Generates a [Decentralized ID token](/docs/embedded-wallet/authentication/features/decentralized-id) with optional serialized data.
+Generates a [Decentralized ID token](/embedded-wallet/authentication/features/decentralized-id) with optional serialized data.
 
 **Arguments**
 
@@ -816,7 +816,7 @@ try {
 
 Displays an iframe with the current user’s settings. Allows for users to update their email address, enable multi-factor authentication, and add a recovery factor.
 
-Access to [MFA](/docs/embedded-wallet/authentication/features/mfa) and [account recovery](docs/embedded-wallet/authentication/features/account-recovery) require paid add-ons.
+Access to [MFA](/embedded-wallet/authentication/features/mfa) and [account recovery](/embedded-wallet/authentication/features/account-recovery) require paid add-ons.
 
 **Arguments**
 
@@ -1183,7 +1183,7 @@ Magic supports the following EVM RPC Methods that can be called through a web3 p
 
 As of **v14.0.0** our React Native package offerings wrap the `<magic.Relayer />` in [react-native-safe-area-context's](https://github.com/th3rdwave/react-native-safe-area-context) `<SafeAreaView />`. To prevent any adverse behavior in your app, please place the Magic iFrame React component at the root view of your application wrapped in a [SafeAreaProvider](https://github.com/th3rdwave/react-native-safe-area-context#safeareaprovider) as described in the documentation.
 
-We have also added an optional `backgroundColor` prop to the `Relayer` to fix issues with `SafeAreaView` showing the background. By default, the background will be white. If you have changed the background color as part of your [custom branding setup](docs/embedded-wallet/authentication/customization/login-ui#configuration), make sure to pass your custom background color to `magic.Relayer`:
+We have also added an optional `backgroundColor` prop to the `Relayer` to fix issues with `SafeAreaView` showing the background. By default, the background will be white. If you have changed the background color as part of your [custom branding setup](/embedded-wallet/authentication/customization/login-ui#configuration), make sure to pass your custom background color to `magic.Relayer`:
 
 ```jsx JavaScript
 <magic.Relayer backgroundColor="#0000FF" />
