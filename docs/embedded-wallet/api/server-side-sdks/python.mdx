@@ -13,21 +13,15 @@ The Magic class is the entry-point to the Magic SDK. It must be instantiated wit
 
 ### Installation
 
-Current SDK is built with Python3.6. Testing for Python3.6+ will be added soon.
-
-<Note>
-  If you are interested in using the SDK with the earlier versions of Python
-  (ex: 2.7+), please create a ticket in this
-  [repo](https://github.com/fortmatic/magic-admin-python) and let us know.
-</Note>
+The Magic Admin Python SDK requires Python 3.11 or higher.
 
 <CodeGroup>
-```bash PHP icon="square-terminal"
+```bash pip icon="square-terminal"
 pip install magic-admin
 ```
 
-```bash Conda icon="square-terminal"
-conda install magic-admin
+```bash uv icon="square-terminal"
+uv add magic-admin
 ```
 </CodeGroup>
 
@@ -40,22 +34,19 @@ conda install magic-admin
 | ----------------- | ---- | ------------------------------------------------------------- |
 | Parameter         | Type | Definition                                                    |
 | `api_secret_key`  | str  | Your **secret** API Key retrieved from the Magic Dashboard.   |
-| `retries?`        | num  | Total number of retries to allow.                             |
-| `timeout?`        | num  | A period of time the request is going to wait for a response. |
-| `backoff_factor?` | num  | A backoff factor to apply between retry attempts.             |
+| `client_id?`      | str  | Your Magic client ID. If not provided, will be fetched automatically. |
+| `retries?`        | num  | Total number of retries to allow. Default: 3.                 |
+| `timeout?`        | num  | A period of time the request is going to wait for a response. Default: 10. |
+| `backoff_factor?` | num  | A backoff factor to apply between retry attempts. Default: 0.02. |
 
 ### Initialization
 
 Initialize Magic instance.
+
 ```python Python icon="python"
 from magic_admin import Magic
 
-magic = Magic(
-    api_secret_key='<SECRET_API_KEY>',
-    retries=5,
-    timeout=5,
-    backoff_factor=0.01,
-)
+magic = Magic(api_secret_key='<SECRET_API_KEY>')
 ```
 
 ## Token Resource
@@ -65,17 +56,6 @@ The token resource and its methods are accessible on the Magic instance by the `
 <Note>
 The token resource does **not** make any API calls to the Magic server.
 </Note>
-```python Python icon="python"
-from magic_admin import Magic
-
-magic = Magic(api_secret_key='<SECRET_API_KEY>')
-
-magic.Token
-magic.Token.get_issuer
-magic.Token.get_public_address
-magic.Token.decode
-magic.Token.validate
-```
 
 
 ### `get_issuer`
@@ -162,19 +142,6 @@ magic.Token.validate(did_token)
 ## User Resource
 
 The user resource and its methods are accessible on the Magic instance by the `User` attribute. It provides methods to interact with the User.
-```python Python icon="python"
-from magic_admin import Magic
-
-magic = Magic(api_secret_key='<SECRET_API_KEY>')
-
-magic.User
-magic.User.get_metadata_by_issuer
-magic.User.get_metadata_by_public_address
-magic.User.get_metadata_by_token
-magic.User.logout_by_issuer
-magic.User.logout_by_public_address
-magic.User.logout_by_token
-```
 
 ### `get_metadata_by_issuer`
 
@@ -363,6 +330,172 @@ See [Error Handling](#response-and-error-handling) for more examples.
 
 * A [`MagicResponse`](/docs/embedded-wallet/api/server-side-sdks/python#magicresponse)
 
+## Utils Resource
+
+The utils resource provides utility methods for common operations like parsing authorization headers and validating token ownership for NFT gating.
+
+### `parse_authorization_header`
+
+Extracts a DID token from an HTTP Authorization header.
+
+```python Python icon="python"
+Utils.parse_authorization_header(header)
+```
+
+**Arguments**
+
+- `header` (str): The Authorization header string in `Bearer {token}` format
+
+**Raises**
+
+- `ExpectedBearerStringError`: If header is not in the expected format
+
+**Returns**
+
+- `str`: The DID token extracted from the header
+
+**Example**
+
+```python Python icon="python"
+from magic_admin import Magic
+
+magic = Magic(api_secret_key='<SECRET_API_KEY>')
+
+# Extract token from Authorization header
+auth_header = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ..."
+did_token = magic.Utils.parse_authorization_header(auth_header)
+```
+
+### `validate_token_ownership`
+
+Validates that a user owns a specific NFT token for token gating functionality.
+
+```python Python icon="python"
+Utils.validate_token_ownership(did_token, contract_address, contract_type, rpc_url, token_id=None)
+```
+
+**Arguments**
+
+- `did_token` (str): The DID token to validate
+- `contract_address` (str): The smart contract address of the NFT
+- `contract_type` (str): Either `'ERC721'` or `'ERC1155'`
+- `rpc_url` (str): The RPC endpoint URL for the blockchain
+- `token_id` (str, optional): Required for ERC1155 contracts
+
+**Raises**
+
+- `ValueError`: If ERC1155 is specified without token_id
+- `Exception`: If DID token validation fails
+
+**Returns**
+
+- `dict`: Response with validation result
+  - `valid` (bool): Whether the user owns the token
+  - `error_code` (str): Error code if validation fails
+  - `message` (str): Human-readable error message
+
+**Example**
+
+```python Python icon="python"
+from magic_admin import Magic
+
+magic = Magic(api_secret_key='<SECRET_API_KEY>')
+
+# Validate ERC721 token ownership
+result = magic.Utils.validate_token_ownership(
+    did_token="eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ...",
+    contract_address="0x1234567890123456789012345678901234567890",
+    contract_type="ERC721",
+    rpc_url="https://mainnet.infura.io/v3/YOUR_PROJECT_ID"
+)
+
+if result['valid']:
+    print("User owns the NFT!")
+else:
+    print(f"Validation failed: {result['message']}")
+```
+
+## WalletType Enum
+
+The `WalletType` enum provides support for multiple blockchain networks.
+
+**Supported Networks**
+
+- **EVM Compatible**: ETH, AVAX, CELO, HARMONY, ICON, ZILLIQA, HEDERA, CONFLUX, TERRA, TAQUITO, ED
+- **Non-EVM**: SOLANA, POLKADOT, NEAR, FLOW, TEZOS, COSMOS, ALGOD, BITCOIN, HELIUM
+
+## Multi-Chain User Metadata
+
+The User resource supports retrieving metadata for specific wallet types across different blockchains.
+
+### `get_metadata_by_issuer_and_wallet`
+
+Retrieves user metadata for a specific wallet type by issuer.
+
+```python Python icon="python"
+User.get_metadata_by_issuer_and_wallet(issuer, wallet_type)
+```
+
+**Arguments**
+
+- `issuer` (str): The user's Decentralized ID
+- `wallet_type` (WalletType): The specific wallet type to query
+
+**Returns**
+
+- A [`MagicResponse`](/docs/embedded-wallet/api/server-side-sdks/python#magicresponse): The `data` field contains user metadata for the specified wallet type
+
+### `get_metadata_by_public_address_and_wallet`
+
+Retrieves user metadata for a specific wallet type by public address.
+
+```python Python icon="python"
+User.get_metadata_by_public_address_and_wallet(public_address, wallet_type)
+```
+
+**Arguments**
+
+- `public_address` (str): The user's public address
+- `wallet_type` (WalletType): The specific wallet type to query
+
+**Returns**
+
+- A [`MagicResponse`](/docs/embedded-wallet/api/server-side-sdks/python#magicresponse): The `data` field contains user metadata for the specified wallet type
+
+### `get_metadata_by_token_and_wallet`
+
+Retrieves user metadata for a specific wallet type by DID token.
+
+```python Python icon="python"
+User.get_metadata_by_token_and_wallet(did_token, wallet_type)
+```
+
+**Arguments**
+
+- `did_token` (str): A DID Token generated by a Magic user
+- `wallet_type` (WalletType): The specific wallet type to query
+
+**Returns**
+
+- A [`MagicResponse`](/docs/embedded-wallet/api/server-side-sdks/python#magicresponse): The `data` field contains user metadata for the specified wallet type
+
+**Example**
+
+```python Python icon="python"
+from magic_admin import Magic
+from magic_admin.resources.wallet import WalletType
+
+magic = Magic(api_secret_key='<SECRET_API_KEY>')
+
+# Get user metadata for Solana wallet
+response = magic.User.get_metadata_by_token_and_wallet(
+    did_token="eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ...",
+    wallet_type=WalletType.SOLANA
+)
+
+print(f"Solana wallet address: {response.data['public_address']}")
+```
+
 ## Response and Error Handling
 
 ### Response
@@ -413,6 +546,8 @@ MagicError
    | ------- DIDTokenMalformed
    |
    | ------- DIDTokenExpired
+   |
+   | ------- ExpectedBearerStringError
 ```
 
 ### MagicError
@@ -456,37 +591,67 @@ This means the given token format is invalid.
 
 This means the given token has expired.
 
+### ExpectedBearerStringError
+
+This means the Authorization header is not in the expected `Bearer {token}` format.
+
 ### Error Handling
 
 It is recommended to implement error handling for API responses.
 ```python Python icon="python"
-try:  # Make requests to Magic server.
-    pass
+from magic_admin import Magic
+from magic_admin.error import (
+    RateLimitingError, BadRequestError, AuthenticationError, 
+    ForbiddenError, APIError, APIConnectionError,
+    DIDTokenInvalid, DIDTokenMalformed, DIDTokenExpired,
+    ExpectedBearerStringError
+)
+
+magic = Magic(api_secret_key='<SECRET_API_KEY>')
+
+try:
+    # Validate a DID token
+    magic.Token.validate(did_token)
+    print("Token is valid!")
+    
+    # Get user metadata
+    user_data = magic.User.get_metadata_by_token(did_token)
+    print(f"User email: {user_data.data['email']}")
+    
+except DIDTokenExpired:
+    print("Token has expired, please login again")
+except DIDTokenInvalid:
+    print("Invalid token")
+except DIDTokenMalformed:
+    print("Malformed token")
+except ExpectedBearerStringError:
+    print("Invalid Authorization header format")
 except RateLimitingError as e:
-    pass
-except BadRequestError as e:
-    pass
+    print(f"Rate limit exceeded: {e}")
 except AuthenticationError as e:
-    pass
-except ForbiddenError as e:
-    pass
+    print(f"Authentication failed: {e}")
 except APIError as e:
-    pass
-except APIConnectionError as e:
-    pass
-except DIDTokenInvalid as e:
-    pass
-except DIDTokenMalformed as e:
-    pass
-except DIDTokenExpired as e:
-    pass
+    print(f"API error: {e}")
+except Exception as e:
+    print(f"Unexpected error: {e}")
 ```
 
 ## Resources
 
-* [GitHub](https://github.com/magiclabs/magic-admin-python)
-* [Python package](https://pypi.org/project/magic-admin/)
+* [GitHub Repository](https://github.com/magiclabs/magic-admin-python)
+* [PyPI Package](https://pypi.org/project/magic-admin/)
+* [Magic Dashboard](https://dashboard.magic.link/)
+* [Magic Documentation](https://magic.link/docs)
 
-## Versions
+## Version Information
 
-All changes to the SDK are covered in our [latest release notes](https://github.com/magiclabs/magic-admin-python/releases).
+**Current Version**: 2.1.1
+
+**Python Requirements**: 3.11+
+
+**Key Features**:
+- Full JavaScript SDK parity with utility methods
+- Multi-chain wallet support (EVM and non-EVM)
+- Token gating functionality for NFT ownership validation
+- Enhanced error handling and type safety
+- Automatic client ID resolution
