@@ -13,28 +13,23 @@ https://tee.express.magiclabs.com
 
 ## Prerequisites
 
-Before using Express API, you'll need:
-
-1. **Magic Developer Account**: Sign up at [Magic Dashboard](https://dashboard.magic.link/)
-2. **Application Setup**: Create a new application in your dashboard
-3. **OIDC Provider**: Configure an [OIDC provider](/api-wallets/express-api/identity-provider) for user authentication
-4. **API Keys**: Obtain your Magic API key or secret key
+Before using Express API, you'll need to:
 
 <Steps>
-<Step title="Create Magic Account">
-Visit [https://dashboard.magic.link/](https://dashboard.magic.link/) and sign up for a Magic developer account.
+<Step title="Create a Magic Account">
+Visit the [Magic Dashboard](https://dashboard.magic.link/) and sign up for a Magic developer account.
 </Step>
 
-<Step title="Create Application">
-In your dashboard, create a new application and note your API keys.
+<Step title="Create an Application">
+In your dashboard, create a new application and obtain your API keys. Use the `Publishable API Key` for calls from the frontend and the `Secret Key` for calls from the backend.
 </Step>
 
-<Step title="Configure OIDC Provider">
-Set up an OIDC provider (like Auth0, Firebase Auth, or custom) for user authentication.
+<Step title="Configure an Identity Provider">
+Configure an [identity provider](/api-wallets/express-api/identity-provider) (like Auth0, Firebase Auth, or NextAuth) for user authentication and get your Magic provider ID.
 </Step>
 
-<Step title="Get Your API Keys">
-Obtain your Magic API key or secret key from your dashboard for service authentication.
+<Step title="Configure Allowlisting">
+In the Magic dashboard, go to **Settings → Allowed Origins & Redirects** to configure domain allowlisting for your application.
 </Step>
 </Steps>
 
