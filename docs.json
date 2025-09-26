@@ -2,6 +2,15 @@
   "$schema": "https://mintlify.com/docs.json",
   "name": "MagicLabs",
   "theme": "mint",
+  "seo": {
+    "metatags": {
+      "og:title": "Developer Docs | Magic",
+      "og:description": "Seamless Web3 onboarding with Magic's API Wallets and Embedded Wallets.",
+      "og:url": "https://docs.magic.link",
+      "og:type": "website",
+      "og:image": "/images/og-image.png"
+    }
+  },
   "colors": {
     "primary": "#18171a",
     "light": "#ffffff",
