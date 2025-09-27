@@ -3,6 +3,15 @@ html.dark div[data-component-part="code-block-root"] {
   background-color: #1f1f23 !important;
 }
 
+/* Override pre and span backgrounds in code blocks */
+html.dark pre[style*="background-color"],
+html.dark .shiki span,
+html.dark .shiki-themes span,
+html.dark .github-light-default span,
+html.dark .dark-plus span {
+  background-color: transparent !important;
+}
+
 /* Code block scrollbar containment */
 div[data-component-part="code-block-root"] {
   clip-path: inset(0 round 1rem) !important;
