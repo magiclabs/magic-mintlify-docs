@@ -64,7 +64,7 @@ To obtain the required information, follow the steps below:
 
 In the Headers section, pass the **Secret Key** for the `X-Magic-Secret-Key` value. This will return a list of emails in your allow list and block list.
 
-```bash
+```bash Bash icon="square-terminal"
 curl --request GET \
   --url https://api.magic.link/v1/api/magic_client/access_control \
   --header 'x-magic-secret-key: sk_live_06FC010DA25ED4F2'
@@ -74,7 +74,7 @@ curl --request GET \
 
 In the Headers section, pass the **Secret Key** for the `X-Magic-Secret-Key` value. In the body of the JSON, fill in your Client ID as the `target_client_id` and the list of emails to use as the allow list and block list. This will clear any pre-existing lists you have already created.
 
-```bash
+```bash Bash icon="square-terminal"
 curl --request PUT \
   --url https://api.magic.link/v1/api/magic_client/access_control \
   --header 'Content-Type: application/json' \
@@ -97,7 +97,7 @@ curl --request PUT \
 
 In the Headers section, pass through the Secret Key in the `X-Magic-Secret-Key` value. In the body of the JSON, fill in your Client ID as the `target_client_id` and the list of emails to append to the application’s allow list and block list.
 
-```bash
+```bash Bash icon="square-terminal"
 curl --request PATCH \
   --url https://api.magic.link/v1/api/magic_client/access_control \
   --header 'Content-Type: application/json' \
@@ -119,7 +119,7 @@ curl --request PATCH \
 
 In the Headers section, pass the Secret Key for the `X-Magic-Secret-Key` value. In the body of the JSON, fill in your Client ID as the `target_client_id` and the list of emails to remove from the application’s allow list and block list.
 
-```bash
+```bash Bash icon="square-terminal"
 curl --request DELETE \
   --url https://api.magic.link/v1/api/magic_client/access_control \
   --header 'Content-Type: application/json' \
