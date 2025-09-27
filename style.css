@@ -55,3 +55,28 @@ html.dark a.link:not(.nav-tabs-item):not(.nav-anchor):hover {
   text-decoration-color: #ffffff !important;
   border-bottom: 2px solid #ffffff !important;
 }
+
+/* Remove white background from Card icons */
+[data-component-part="card-icon"] {
+  background: transparent !important;
+}
+
+[data-component-part="card-icon"] img {
+  background: transparent !important;
+}
+
+/* Ensure SVG icons inherit proper colors for light mode */
+[data-component-part="card-icon"] svg path,
+[data-component-part="card-icon"] svg g,
+[data-component-part="card-icon"] svg circle,
+[data-component-part="card-icon"] svg rect {
+  fill: #18171a !important;
+}
+
+/* Ensure SVG icons inherit proper colors for dark mode */
+html.dark [data-component-part="card-icon"] svg path,
+html.dark [data-component-part="card-icon"] svg g,
+html.dark [data-component-part="card-icon"] svg circle,
+html.dark [data-component-part="card-icon"] svg rect {
+  fill: #ffffff !important;
+}
