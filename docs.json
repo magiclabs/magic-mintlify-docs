@@ -276,7 +276,6 @@
                 "group": "EVM",
                 "pages": [
                   "embedded-wallets/blockchains/evm/arbitrum",
-                  "embedded-wallets/blockchains/evm/astar-zkevm",
                   "embedded-wallets/blockchains/evm/base",
                   "embedded-wallets/blockchains/evm/berachain",
                   "embedded-wallets/blockchains/evm/binance-smart-chain",
@@ -312,6 +311,7 @@
                   "embedded-wallets/blockchains/non-evm/cosmos",
                   "embedded-wallets/blockchains/non-evm/flow",
                   "embedded-wallets/blockchains/non-evm/icon",
+                  "embedded-wallets/blockchains/non-evm/kadena",
                   "embedded-wallets/blockchains/non-evm/near",
                   "embedded-wallets/blockchains/non-evm/polkadot",
                   "embedded-wallets/blockchains/non-evm/solana",
