@@ -89,3 +89,8 @@ html.dark [data-component-part="card-icon"] svg circle,
 html.dark [data-component-part="card-icon"] svg rect {
   fill: #ffffff !important;
 }
+
+/* Feedback buttons transparency */
+html.dark .feedback-toolbar button .dark\:bg-codeblock\/50 {
+  background: transparent !important;
+}
