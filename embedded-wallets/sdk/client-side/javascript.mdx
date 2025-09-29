@@ -118,7 +118,7 @@ Authenticate a user passwordlessly using an email one-time code sent to the spec
 - `email` (String): The user email to log in with
 - `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
 - `showUI?` (Boolean): If `true`, show an out-of-the-box UI to accept the OTP from user. Defaults to `true`
-- `deviceCheckUI?` (Boolean): The default value is `true`. It shows Magic branded UI securing sign-ins from new devices. If set to `false`, the UI will remain hidden. However, this false value only takes effect when you have also set `showUI: false`. If you enable Device Verification in the Magic dashboard and are passing `showUI: false` you must also explicitly pass `deviceCheckUI: false`
+- `deviceCheckUI?` (Boolean): The default value is `true`. It shows Magic branded UI securing sign-ins from new devices. If set to `false`, the UI will remain hidden. However, this false value only takes effect when you have also set `showUI: false`. If you enable Device Verification in the Magic Dashboard and are passing `showUI: false` you must also explicitly pass `deviceCheckUI: false`
 
 ⁠
 
@@ -1315,17 +1315,17 @@ Starts the OAuth 2.0 login flow.
 |           |               |                                                          |
 | --------- | ------------- | -------------------------------------------------------- |
 | Name      | Argument      | Example                                                  |
-| Google    | `'google'`    | [Google demo](https://magic-oauth-v2-dun.vercel.app/)    |
-| Facebook  | `'facebook'`  | [Facebook demo](https://magic-oauth-v2-dun.vercel.app/)  |
-| Twitter   | `'twitter'`   | [Twitter demo](https://magic-oauth-v2-dun.vercel.app/)   |
-| Apple     | `'apple'`     | [Apple demo](https://5kkmud.csb.app/)                    |
-| Discord   | `'discord'`   | [Discord demo](https://magic-oauth-v2-dun.vercel.app/)   |
-| GitHub    | `'github'`    | [Github demo](https://magic-oauth-v2-dun.vercel.app/)    |
-| LinkedIn  | `'linkedin'`  | [LinkedIn demo](https://magic-oauth-v2-dun.vercel.app/)  |
-| Bitbucket | `'bitbucket'` | [Bitbucket demo](https://magic-oauth-v2-dun.vercel.app/) |
-| GitLab    | `'gitlab'`    | [GitLab demo](https://magic-oauth-v2-dun.vercel.app/)    |
-| Twitch    | `'twitch'`    | [Twitch demo](https://magic-oauth-v2-dun.vercel.app/)    |
-| Microsoft | `'microsoft'` | [Microsoft demo](https://magic-oauth-v2-dun.vercel.app/) |
+| Google    | `'google'`    | [Google demo](https://magic-oauth-v2-dun.vercel.app)    |
+| Facebook  | `'facebook'`  | [Facebook demo](https://magic-oauth-v2-dun.vercel.app)  |
+| Twitter   | `'twitter'`   | [Twitter demo](https://magic-oauth-v2-dun.vercel.app)   |
+| Apple     | `'apple'`     | [Apple demo](https://5kkmud.csb.app)                    |
+| Discord   | `'discord'`   | [Discord demo](https://magic-oauth-v2-dun.vercel.app)   |
+| GitHub    | `'github'`    | [Github demo](https://magic-oauth-v2-dun.vercel.app)    |
+| LinkedIn  | `'linkedin'`  | [LinkedIn demo](https://magic-oauth-v2-dun.vercel.app)  |
+| Bitbucket | `'bitbucket'` | [Bitbucket demo](https://magic-oauth-v2-dun.vercel.app) |
+| GitLab    | `'gitlab'`    | [GitLab demo](https://magic-oauth-v2-dun.vercel.app)    |
+| Twitch    | `'twitch'`    | [Twitch demo](https://magic-oauth-v2-dun.vercel.app)    |
+| Microsoft | `'microsoft'` | [Microsoft demo](https://magic-oauth-v2-dun.vercel.app) |
 
 **Example**
 
@@ -1549,7 +1549,7 @@ Magic supports the following EVM RPC Methods that can be called through a web3 p
 
 A user's Magic SDK session persists up to 7 days by default, so re-authentication is usually friction-less.
 
-Note: the session length is customizable by the developer through the [Magic dashboard](https://dashboard.magic.link).
+Note: the session length is customizable by the developer through the [Magic Dashboard](https://dashboard.magic.link).
 
 Before re-authenticating a user, [install the Magic Client SDK​](#installation).
 
