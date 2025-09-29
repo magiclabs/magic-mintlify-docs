@@ -4,10 +4,6 @@ title: Product Security
 
 # Background
 
-<Info>
-You can dive into the deep end by reading Magic's [Whitepaper](https://magic-whitepaper-key-based-authentication-system.s3.us-west-2.amazonaws.com/Magic+Whitepaper.pdf) or [Litepaper](https://landing.magic.link/hubfs/Marketing%20Collateral/Magic%20Whitepaper%20-%20DKMS%20Technical%20Overview%20Delegated%20Key%20Management%20System.pdf).
-</Info>
-
 Magic’s goal is to meet companies wherever they are on the path to Web3 adoption—from exploring authentication options to fully integrating with a blockchain, Magic provides solutions that developers and enterprises alike can trust. Our mission to onboard the next billion users to Web3 is not just a catchphrase, it’s a foundation that affects how we address security at every aspect of the user journey.
 
 ## Why use Magic?
@@ -37,34 +33,3 @@ Magic’s approach to authentication makes phishing much more difficult. Because
 Once an end-user uses their time-bound token to establish a session with Magic, Magic generates a key pair based on the [Ethereum](https://en.wikipedia.org/wiki/Ethereum) blockchain. The public key acts as an identifier for the user. Leveraging elliptic curve cryptography, the private key is used to generate a verifiable proof of identification and authorization from a claim. The proof is then sent to the developer application servers where data in the claim can be recovered, and the authenticity of the request can be ensured. 
 
 Authentication and authorization are achieved without requiring user passwords. The claim format is an adaptation of the W3C [Decentralized Identifiers](https://w3c-ccg.github.io/did-primer/) (DID) protocol. Learn More about Magic DID's [here](/embedded-wallets/authentication/features/decentralized-id).
-
-## Private keys can be lost or stolen. How do you protect my private key?
-
-
-### Patented key management
-
-With this public-private key-pair approach, it is critical to ensure that users' private keys are properly secured. This is what our patented (Patent US-11546321-B2) Delegated Key Management System (DKMS) was designed for. Our DKMS has secured millions of private keys for thousands of companies for years. By leveraging our DKMS, Magic provides secure private key management backed by best-in-class cryptography standards.
-
-## How does DKMS work?
-
-Magic provides infrastructure that manages the encrypted private keys. This encrypted key is shared with the user upon successful authentication. The user is then able to decrypt their encrypted private key with a user master key. Our Delegated Key Management architecture _delegates_ critical encryption and decryption operations to trusted AWS Key Management Service (KMS) and AWS Cognito.
-
-## Wait, another encryption key!? Can’t that one get stolen?
-
-
-### Hardware Security Modules (HSMs)
-
-Magic leverages Hardware Security Modules (HSMs) provided by AWS KMS. User master keys are stored on the HSMs, which are generated using AES-256 with 384 bits of entropy. The master keys never leave the hardware as they are meant to be locked inside and unable to be exported. Thus, all encryption and decryption operations happen inside the hardware itself. HSMs are similar to popular FIDO devices like YubiKeys or hardware-based crypto wallets such as Trezor or Ledger, except they are stored in the cloud, heavily secured by AWS’s data centers.
-
-Users' private keys are encrypted by these hardware-based user master keys, which means that attackers need to gain access to this AWS-secured hardware to retrieve the keys and are forced to stay _within_ Magic's infrastructure - which enables detecting, impeding and monitoring an attacker's progress.
-
-## Not my key, not my crypto!
-
-### Client to AWS Data Flow
-
-Users need to authenticate using Magic’s auth relayer to access their HSMs. Upon successful authentication, users receive a time-bound access token which is traded for scoped credentials that interact with AWS directly. The scoped credentials exclusively enable _users_ to call AWS to access their master keys stored on the HSM for encryption and decryption. This mechanism, by design, bypasses the Magic backend entirely, and Magic cannot intercept the scoped credentials. Both access tokens and scoped credentials are created dynamically by AWS with audit logs and with TTLs enabled.
-
-When a user signs up, a public-and-private key-pair is generated on the client-side for the user inside an iframe inaccessible by the integrated app. Keys are generated with cryptographically secure pseudo-random 256-bits of entropy. Once generated, the key is then encrypted by DKMS, where Magic never sees the raw private keys. After encryption of the keys with the HSM, the encrypted key is then uploaded to the Magic back-end to be retrieved, decrypted, and used on the client side in future wallet operations.
-
-When users authenticate again, the encrypted private key is downloaded to the client. Users can then decrypt the encrypted private key directly with AWS KMS via Cognito.
-
