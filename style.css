@@ -91,6 +91,6 @@ html.dark [data-component-part="card-icon"] svg rect {
 }
 
 /* Feedback buttons transparency */
-html.dark .feedback-toolbar button .dark\:bg-codeblock\/50 {
-  background: transparent !important;
+.dark\:bg-codeblock\/50:is(.dark *) {
+  background-color: transparent !important;
 }
