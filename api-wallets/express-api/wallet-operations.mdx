@@ -29,7 +29,7 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
 #### Request Parameters
 
 <ParamField header="X-Magic-Chain" type="string" required post={["Header"]}>
-The blockchain to create the wallet for. Available values: `ETH`, `SOL`
+The blockchain to create the wallet for. Available values: `ETH`, `SOL`, `BTC`
 </ParamField>
 
 #### Response Fields
@@ -75,7 +75,7 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
 #### Request Parameters
 
 <ParamField header="X-Magic-Chain" type="string" required post={["Header"]}>
-The blockchain to sign for. Available values: `ETH`, `SOL`
+The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
 </ParamField>
 
 <ParamField body="raw_data_hash" type="string" required post={["Body"]}>
@@ -134,7 +134,7 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
 #### Request Parameters
 
 <ParamField header="X-Magic-Chain" type="string" required post={["Header"]}>
-The blockchain to sign for. Available values: `ETH`, `SOL`
+The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
 </ParamField>
 
 <ParamField body="message_base64" type="string" required post={["Body"]}>
