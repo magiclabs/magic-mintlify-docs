@@ -113,7 +113,7 @@
                   {
                     "group": "OAuth",
                     "pages": [
-                      "embedded-wallets/authentication/login/oauth/oauth-implementation",
+                      "embedded-wallets/authentication/login/oauth/implementation",
                       {
                         "group": "Social Providers",
                         "pages": [
