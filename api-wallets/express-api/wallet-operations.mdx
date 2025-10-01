@@ -12,9 +12,9 @@ Get or create a wallet for the given chain and return its public address. If a w
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
   -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
-  -H 'X-Magic-API-Key: your-magic-api-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
+  -H 'X-OIDC-Provider-ID: YOUR_OIDC_PROVIDER_ID' \
   -H 'X-Magic-Chain: ETH' 
 ```
 
@@ -22,7 +22,7 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
 
 ```json
 {
-  "public_address": "0x6b422EefBFBc47a6900A1fc5454Ef4b940B7e36e"
+  "public_address": "0x1234567890abcdef1234567890abcdef12345678"
 }
 ```
 
@@ -51,12 +51,12 @@ Sign a hash of arbitrary data using the wallet's private key. This is useful for
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
   -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
-  -H 'X-Magic-API-Key: your-magic-api-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
+  -H 'X-OIDC-Provider-ID: YOUR_OIDC_PROVIDER_ID' \
   -H 'X-Magic-Chain: ETH' \
   -d '{
-    "raw_data_hash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890"
+    "raw_data_hash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
   }'
 ```
 
@@ -64,10 +64,10 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
 
 ```json
 {
-  "message_hash": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890",
-  "signature": "0x8e7d6c5b4a3928172635445566778899aabbccddeeff00112233445566778899",
-  "r": "0x3d4e5f678901234567890abcdef1234567890abcdef1234567890abcdef1234",
-  "s": "0x4e5f678901234567890abcdef1234567890abcdef1234567890abcdef123456",
+  "message_hash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "signature": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+  "r": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "s": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef12345678",
   "v": "27"
 }
 ```
@@ -111,12 +111,12 @@ Sign an arbitrary message using the wallet's private key. Useful for authenticat
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
   -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNhYVl5dGR3d2UwMzJzMXIzVElyOSJ9...' \
-  -H 'X-Magic-API-Key: your-magic-api-key' \
-  -H 'X-OIDC-Provider-ID: your-oidc-provider-id' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
+  -H 'X-OIDC-Provider-ID: YOUR_OIDC_PROVIDER_ID' \
   -H 'X-Magic-Chain: ETH' \
   -d '{
-    "message_base64": "bm9uZQ=="
+    "message_base64": "SGVsbG8gV29ybGQ="
   }'
 ```
 
@@ -124,9 +124,9 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
 
 ```json
 {
-  "signature": "0x0cebb670d8375ac74122b46c44def7e1ce593e80434a3e6557108ae124f8b44f3c5068fc104279fe7f51918cbe4c249d707bc1c0ce2fdee8d",
-  "r": "0x0cebb670d8375ac74122b46c44def7e1ce593e80434a3e6557108ae124f8b44f",
-  "s": "0x3c5068fc104279fe7f51918cbe4c249d707bc1c0ce2fdee8d",
+  "signature": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef12",
+  "r": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "s": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef12345678",
   "v": "27"
 }
 ```
