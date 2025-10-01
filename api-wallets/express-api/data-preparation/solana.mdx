@@ -1,0 +1,153 @@
+---
+title: "Solana"
+description: "Learn how to properly prepare data for Solana signing operations with Express API, including message signing and transaction data preparation."
+---
+
+When signing messages or transactions on Solana, you need to properly encode your data. Unlike EVM chains, Solana uses a unified signing approach where all data is base64-encoded before signing.
+
+## Message Signing
+
+For signing raw messages or strings, encode your data as base64:
+
+```typescript TypeScript icon="square-js"
+const personalSign = async (data: string | Uint8Array) => {
+  // Convert string to Uint8Array if needed
+  const messageUint8 = typeof data === 'string' ? new TextEncoder().encode(data) : data;
+  
+  // Encode as base64
+  const message = Buffer.from(messageUint8).toString('base64');
+  
+  const body = { message_base64: message };
+  return await fetch('/v1/wallet/sign/message', { 
+    method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${YOUR_JWT_TOKEN}`,
+      'X-Magic-API-Key': 'YOUR_MAGIC_API_KEY',
+      'X-OIDC-Provider-ID': 'YOUR_OIDC_PROVIDER_ID',
+      'X-Magic-Chain': 'SOL'
+    },
+    body: JSON.stringify(body) 
+  });
+};
+```
+
+## Transaction Signing
+
+Solana transaction signing involves serializing the transaction message and encoding it as base64. The process differs based on transaction type:
+
+<CodeGroup>
+```typescript Legacy Transaction
+import { Transaction, PublicKey } from '@solana/web3.js';
+
+const signLegacyTransaction = async (tx: Transaction) => {
+  // Serialize the transaction message
+  const messageBytes = tx.serializeMessage();
+  const rawDataBase64 = Buffer.from(messageBytes).toString('base64');
+  
+  const body = { message_base64: rawDataBase64 };
+  const res = await fetch('/v1/wallet/sign/message', { 
+    method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${YOUR_JWT_TOKEN}`,
+      'X-Magic-API-Key': 'YOUR_MAGIC_API_KEY',
+      'X-OIDC-Provider-ID': 'YOUR_OIDC_PROVIDER_ID',
+      'X-Magic-Chain': 'SOL'
+    },
+    body: JSON.stringify(body) 
+  });
+  
+  const { signature } = await res.json();
+  
+  // Convert signature back to bytes and attach to transaction
+  // Handle both hex (0x prefixed) and base64 signatures
+  const sigBytes = signature.startsWith('0x') 
+    ? Buffer.from(signature.slice(2), 'hex')
+    : Buffer.from(signature, 'base64');
+  const signerPk = new PublicKey('YOUR_WALLET_PUBLIC_KEY');
+  tx.addSignature(signerPk, sigBytes);
+  
+  return tx.serialize();
+};
+```
+
+```typescript Versioned Transaction
+import { VersionedTransaction, PublicKey } from '@solana/web3.js';
+
+const signVersionedTransaction = async (tx: VersionedTransaction) => {
+  // Serialize the versioned transaction message
+  const messageBytes = tx.message.serialize();
+  const rawDataBase64 = Buffer.from(messageBytes).toString('base64');
+  
+  const body = { message_base64: rawDataBase64 };
+  const res = await fetch('/v1/wallet/sign/message', { 
+    method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${YOUR_JWT_TOKEN}`,
+      'X-Magic-API-Key': 'YOUR_MAGIC_API_KEY',
+      'X-OIDC-Provider-ID': 'YOUR_OIDC_PROVIDER_ID',
+      'X-Magic-Chain': 'SOL'
+    },
+    body: JSON.stringify(body) 
+  });
+  
+  const { signature } = await res.json();
+  
+  // Convert signature back to bytes and attach to transaction
+  // Handle both hex (0x prefixed) and base64 signatures
+  const sigBytes = signature.startsWith('0x') 
+    ? Buffer.from(signature.slice(2), 'hex')
+    : Buffer.from(signature, 'base64');
+  const signerPk = new PublicKey('YOUR_WALLET_PUBLIC_KEY');
+  tx.addSignature(signerPk, sigBytes);
+  
+  return tx.serialize();
+};
+```
+
+```typescript Partial Transaction Signing
+import { Transaction, VersionedTransaction, PublicKey } from '@solana/web3.js';
+
+const partialSignTransaction = async (serializedTx: Uint8Array, type: string, serializeConfig?: any) => {
+  // type: 'legacy' for legacy transactions, anything else for versioned transactions
+  // Deserialize the transaction
+  const transaction = type === 'legacy' 
+    ? Transaction.from(serializedTx)
+    : VersionedTransaction.deserialize(serializedTx);
+  
+  // Serialize message for signing
+  const messageBytes = type === 'legacy'
+    ? (transaction as Transaction).serializeMessage()
+    : (transaction as VersionedTransaction).message.serialize();
+  
+  const rawDataBase64 = Buffer.from(messageBytes).toString('base64');
+  
+  const body = { message_base64: rawDataBase64 };
+  const res = await fetch('/v1/wallet/sign/message', { 
+    method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${YOUR_JWT_TOKEN}`,
+      'X-Magic-API-Key': 'YOUR_MAGIC_API_KEY',
+      'X-OIDC-Provider-ID': 'YOUR_OIDC_PROVIDER_ID',
+      'X-Magic-Chain': 'SOL'
+    },
+    body: JSON.stringify(body) 
+  });
+  
+  const { signature } = await res.json();
+  
+  // Attach signature and return serialized transaction
+  const sigBytes = Buffer.from(signature, 'base64');
+  const signerPk = new PublicKey('YOUR_WALLET_PUBLIC_KEY');
+  transaction.addSignature(signerPk, sigBytes);
+  
+  return type === 'legacy' 
+    ? transaction.serialize(serializeConfig)
+    : transaction.serialize();
+};
+```
+</CodeGroup>
+

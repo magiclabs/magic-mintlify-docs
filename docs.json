@@ -59,7 +59,13 @@
               "api-wallets/express-api/getting-started",
               "api-wallets/express-api/identity-provider",
               "api-wallets/express-api/wallet-operations",
-              "api-wallets/express-api/data-preparation",
+              {
+                "group": "Data Preparation",
+                "pages": [
+                  "api-wallets/express-api/data-preparation/evm",
+                  "api-wallets/express-api/data-preparation/solana"
+                ]
+              },
               "api-wallets/express-api/error-handling"
             ]
           },
