@@ -822,19 +822,97 @@ try {
 
 Retrieves information for the authenticated user.
 
+<Warning>
+**Breaking Change Notice**: Starting with SDK v30.0.0, the `publicAddress` field has been removed from the response and replaced with the structured `wallets` object. Please see the response structure below for more details.
+</Warning>
+
 **Arguments**
 
 * _None_
 
 **Returns**
 
-* `PromiEvent<string>`:
+The response structure depends on your SDK version:
+
+<Tabs>
+<Tab title="SDK v30.0.0+">
+**Response with Wallets Object**
+
+* `PromiEvent<object>`:
     * `issuer` (String): The Decentralized ID of the user. In server-side use-cases, we recommend this value to be used as the user ID in your own tables.
+    * `email` (String): Email address of the authenticated user
+    * `phoneNumber` (String): The phone number of the authenticated user
+    * `isMfaEnabled` (Boolean): Whether or not multi-factor authentication is enabled for the user
+    * `recoveryFactors` (Array): Any recovery methods that have been enabled (ex. `[{ type: 'phone_number', value: '+99999999' }]`)
+    * `wallets` (Object):  Organized wallet addresses by blockchain and network:
+        * `[chainName]` (Object): Each supported blockchain (e.g., `eth`, `solana`, `bitcoin`, `hedera`)
+            * `publicAddress` (String | null): The mainnet public address for this chain, or `null` if no mainnet wallet exists
+            * `subAccounts` (Array): Additional network addresses for this chain
+                * `name` (String): Network name (e.g., `testnet`)
+                * `publicAddress` (String): Public address for this network
+
+**Example Response:**
+
+```javascript
+{
+  "issuer": "did:ethr:0x...",
+  "email": "user@example.com",
+  "phoneNumber": null,
+  "isMfaEnabled": false,
+  "recoveryFactors": [],
+  "wallets": {
+    "eth": {
+      "publicAddress": "0x742d35Cc6634C0532925a3b8D4C9db96590b0b65",
+      "subAccounts": [
+        {
+          "name": "testnet",
+          "publicAddress": "0x8ba1f109551bD432803012645Hac136c22C501e"
+        }
+      ]
+    },
+    "solana": {
+      "publicAddress": "DRiP2Pn2K6fuMLKQmt5rZWxa91wRx1jRhTdY5L6kh5Kp",
+      "subAccounts": []
+    },
+    "bitcoin": {
+      "publicAddress": null,
+      "subAccounts": [
+        {
+          "name": "testnet", 
+          "publicAddress": "tb1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+        }
+      ]
+    }
+  }
+}
+```
+</Tab>
+
+<Tab title="SDK v29.x and below">
+**Legacy Response**
+
+* `PromiEvent<object>`:
+    * `issuer` (String): The Decentralized ID of the user
     * `email` (String): Email address of the authenticated user
     * `phoneNumber` (String): The phone number of the authenticated user
     * `publicAddress` (String): The authenticated user's public address (a.k.a.: public key)
     * `isMfaEnabled` (Boolean): Whether or not multi-factor authentication is enabled for the user
-    * `recoveryFactors` (Array): Any recovery methods that have been enabled (ex. `[{ type: 'phone_number', value: '+99999999' }]`)
+    * `recoveryFactors` (Array): Any recovery methods that have been enabled
+
+**Example Response:**
+
+```javascript
+{
+  "issuer": "did:ethr:0x...",
+  "email": "user@example.com", 
+  "phoneNumber": null,
+  "publicAddress": "0x742d35Cc6634C0532925a3b8D4C9db96590b0b65",
+  "isMfaEnabled": false,
+  "recoveryFactors": []
+}
+```
+</Tab>
+</Tabs>
 
 **Example**
 
