@@ -3,11 +3,9 @@ title: "EVM"
 description: "Learn how to properly prepare data for EVM signing operations with Express API, including message signing and transaction data preparation."
 ---
 
-## EVM Data Preparation
-
 When signing messages or data, you need to properly encode your data:
 
-### Message Signing
+## Message Signing
 
 For signing messages (personal signatures), encode your data as base64:
 
@@ -31,7 +29,7 @@ const personalSign = async (data: string) => {
 };
 ```
 
-### Data Signing
+## Data Signing
 
 For signing transaction data or other structured data, provide a keccak256 hash:
 

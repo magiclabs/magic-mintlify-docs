@@ -3,11 +3,9 @@ title: "Solana"
 description: "Learn how to properly prepare data for Solana signing operations with Express API, including message signing and transaction data preparation."
 ---
 
-## Solana Data Preparation
-
 When signing messages or transactions on Solana, you need to properly encode your data. Unlike EVM chains, Solana uses a unified signing approach where all data is base64-encoded before signing.
 
-### Message Signing
+## Message Signing
 
 For signing raw messages or strings, encode your data as base64:
 
@@ -34,7 +32,7 @@ const personalSign = async (data: string | Uint8Array) => {
 };
 ```
 
-### Transaction Signing
+## Transaction Signing
 
 Solana transaction signing involves serializing the transaction message and encoding it as base64. The process differs based on transaction type:
 
