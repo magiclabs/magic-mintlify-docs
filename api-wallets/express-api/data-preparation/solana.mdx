@@ -113,6 +113,7 @@ const signVersionedTransaction = async (tx: VersionedTransaction) => {
 import { Transaction, VersionedTransaction, PublicKey } from '@solana/web3.js';
 
 const partialSignTransaction = async (serializedTx: Uint8Array, type: string, serializeConfig?: any) => {
+  // type: 'legacy' for legacy transactions, anything else for versioned transactions
   // Deserialize the transaction
   const transaction = type === 'legacy' 
     ? Transaction.from(serializedTx)
