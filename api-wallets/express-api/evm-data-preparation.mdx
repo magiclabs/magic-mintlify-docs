@@ -1,9 +1,9 @@
 ---
-title: "Data Preparation"
-description: "Learn how to properly prepare data for signing operations with Express API, including message signing and transaction data preparation."
+title: "EVM Data Preparation"
+description: "Learn how to properly prepare data for EVM signing operations with Express API, including message signing and transaction data preparation."
 ---
 
-## Data Preparation
+## EVM Data Preparation
 
 When signing messages or data, you need to properly encode your data:
 
@@ -14,9 +14,16 @@ For signing messages (personal signatures), encode your data as base64:
 ```javascript JavaScript icon="square-js"
 const personalSign = async (data: string) => {
   const message = Buffer.from(data, 'utf-8').toString('base64');
-  const body = { message_base64: message, chain: 'ETH' };
+  const body = { message_base64: message };
   return await fetch('/v1/wallet/sign/message', { 
     method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${YOUR_JWT_TOKEN}`,
+      'X-Magic-API-Key': 'YOUR_MAGIC_API_KEY',
+      'X-OIDC-Provider-ID': 'YOUR_OIDC_PROVIDER_ID',
+      'X-Magic-Chain': 'ETH'
+    },
     body: JSON.stringify(body) 
   });
 };
@@ -32,9 +39,16 @@ import { typedSignatureHash } from '@metamask/eth-sig-util';
 
 const signTypedDataV1 = async (data: TypedDataV1) => {
   const rawDataHash = typedSignatureHash(data);
-  const body = { raw_data_hash: rawDataHash, chain: 'ETH' };
+  const body = { raw_data_hash: rawDataHash };
   return await fetch('/v1/wallet/sign/data', { 
     method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${YOUR_JWT_TOKEN}`,
+      'X-Magic-API-Key': 'YOUR_MAGIC_API_KEY',
+      'X-OIDC-Provider-ID': 'YOUR_OIDC_PROVIDER_ID',
+      'X-Magic-Chain': 'ETH'
+    },
     body: JSON.stringify(body) 
   });
 };
@@ -58,18 +72,32 @@ const computeEip712Hash = (
 
 const signTypedDataV3 = async (data: TypedMessage<MessageTypes>) => {
   const rawDataHash = computeEip712Hash(data, SignTypedDataVersion.V3);
-  const body = { raw_data_hash: rawDataHash, chain: 'ETH' };
+  const body = { raw_data_hash: rawDataHash };
   return await fetch('/v1/wallet/sign/data', { 
     method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${YOUR_JWT_TOKEN}`,
+      'X-Magic-API-Key': 'YOUR_MAGIC_API_KEY',
+      'X-OIDC-Provider-ID': 'YOUR_OIDC_PROVIDER_ID',
+      'X-Magic-Chain': 'ETH'
+    },
     body: JSON.stringify(body) 
   });
 };
 
 const signTypedDataV4 = async (data: TypedMessage<MessageTypes>) => {
   const rawDataHash = computeEip712Hash(data, SignTypedDataVersion.V4);
-  const body = { raw_data_hash: rawDataHash, chain: 'ETH' };
+  const body = { raw_data_hash: rawDataHash };
   return await fetch('/v1/wallet/sign/data', { 
     method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${YOUR_JWT_TOKEN}`,
+      'X-Magic-API-Key': 'YOUR_MAGIC_API_KEY',
+      'X-OIDC-Provider-ID': 'YOUR_OIDC_PROVIDER_ID',
+      'X-Magic-Chain': 'ETH'
+    },
     body: JSON.stringify(body) 
   });
 };
