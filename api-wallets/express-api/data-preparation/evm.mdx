@@ -11,7 +11,7 @@ When signing messages or data, you need to properly encode your data:
 
 For signing messages (personal signatures), encode your data as base64:
 
-```javascript JavaScript icon="square-js"
+```typescript TypeScript icon="square-js"
 const personalSign = async (data: string) => {
   // Encode message as base64
   const message = Buffer.from(data, 'utf-8').toString('base64');
@@ -36,7 +36,7 @@ const personalSign = async (data: string) => {
 For signing transaction data or other structured data, provide a keccak256 hash:
 
 <CodeGroup>
-```javascript Typed Data V1
+```typescript Typed Data V1
 import { typedSignatureHash } from '@metamask/eth-sig-util';
 
 const signTypedDataV1 = async (data: TypedDataV1) => {
@@ -58,7 +58,7 @@ const signTypedDataV1 = async (data: TypedDataV1) => {
 };
 ```
 
-```javascript Typed Data V3/V4
+```typescript Typed Data V3/V4
 import {
   MessageTypes,
   SignTypedDataVersion,
@@ -111,7 +111,7 @@ const signTypedDataV4 = async (data: TypedMessage<MessageTypes>) => {
 };
 ```
 
-```javascript Transaction Signing
+```typescript Transaction Signing
 import { resolveProperties, Signature, Transaction, TransactionLike, TransactionRequest } from 'ethers';
 
 const signTransaction = async (tx: TransactionRequest) => {

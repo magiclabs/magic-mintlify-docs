@@ -11,7 +11,7 @@ When signing messages or transactions on Solana, you need to properly encode you
 
 For signing raw messages or strings, encode your data as base64:
 
-```javascript JavaScript icon="square-js"
+```typescript TypeScript icon="square-js"
 const personalSign = async (data: string | Uint8Array) => {
   // Convert string to Uint8Array if needed
   const messageUint8 = typeof data === 'string' ? new TextEncoder().encode(data) : data;
@@ -39,7 +39,7 @@ const personalSign = async (data: string | Uint8Array) => {
 Solana transaction signing involves serializing the transaction message and encoding it as base64. The process differs based on transaction type:
 
 <CodeGroup>
-```javascript Legacy Transaction
+```typescript Legacy Transaction
 import { Transaction, PublicKey } from '@solana/web3.js';
 
 const signLegacyTransaction = async (tx: Transaction) => {
@@ -74,7 +74,7 @@ const signLegacyTransaction = async (tx: Transaction) => {
 };
 ```
 
-```javascript Versioned Transaction
+```typescript Versioned Transaction
 import { VersionedTransaction, PublicKey } from '@solana/web3.js';
 
 const signVersionedTransaction = async (tx: VersionedTransaction) => {
@@ -109,7 +109,7 @@ const signVersionedTransaction = async (tx: VersionedTransaction) => {
 };
 ```
 
-```javascript Partial Transaction Signing
+```typescript Partial Transaction Signing
 import { Transaction, VersionedTransaction, PublicKey } from '@solana/web3.js';
 
 const partialSignTransaction = async (serializedTx: Uint8Array, type: string, serializeConfig?: any) => {
