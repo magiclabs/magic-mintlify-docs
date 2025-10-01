@@ -11,7 +11,7 @@ When signing messages or transactions on Solana, you need to properly encode you
 
 For signing raw messages or strings, encode your data as base64:
 
-```javascript JavaScript
+```javascript JavaScript icon="square-js"
 const personalSign = async (data: string | Uint8Array) => {
   // Convert string to Uint8Array if needed
   const messageUint8 = typeof data === 'string' ? new TextEncoder().encode(data) : data;
