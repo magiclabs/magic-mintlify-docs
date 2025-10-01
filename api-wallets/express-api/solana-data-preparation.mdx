@@ -1,0 +1,230 @@
+---
+title: "Solana Data Preparation"
+description: "Learn how to properly prepare data for Solana signing operations with Express API, including message signing and transaction data preparation."
+---
+
+## Solana Data Preparation
+
+When signing messages or transactions on Solana, you need to properly encode your data. Unlike EVM chains, Solana uses a unified signing approach where all data is base64-encoded before signing.
+
+### Message Signing
+
+For signing raw messages or strings, encode your data as base64:
+
+```javascript JavaScript
+const personalSign = async (data: string | Uint8Array) => {
+  // Convert string to Uint8Array if needed
+  const messageUint8 = typeof data === 'string' ? new TextEncoder().encode(data) : data;
+  
+  // Encode as base64
+  const message = Buffer.from(messageUint8).toString('base64');
+  
+  const body = { message_base64: message, chain: 'SOL' };
+  return await fetch('/v1/wallet/sign/message', { 
+    method: 'POST', 
+    body: JSON.stringify(body) 
+  });
+};
+```
+
+### Transaction Signing
+
+Solana transaction signing involves serializing the transaction message and encoding it as base64. The process differs based on transaction type:
+
+<CodeGroup>
+```javascript Legacy Transaction
+import { Transaction, PublicKey } from '@solana/web3.js';
+
+const signLegacyTransaction = async (tx: Transaction) => {
+  // Serialize the transaction message
+  const messageBytes = tx.serializeMessage();
+  const rawDataBase64 = Buffer.from(messageBytes).toString('base64');
+  
+  const body = { message_base64: rawDataBase64, chain: 'SOL' };
+  const res = await fetch('/v1/wallet/sign/message', { 
+    method: 'POST', 
+    body: JSON.stringify(body) 
+  });
+  
+  const { signature } = await res.json();
+  
+  // Convert signature back to bytes and attach to transaction
+  const sigBytes = Buffer.from(signature, 'base64');
+  const signerPk = new PublicKey(walletAddress);
+  tx.addSignature(signerPk, sigBytes);
+  
+  return tx.serialize();
+};
+```
+
+```javascript Versioned Transaction
+import { VersionedTransaction, PublicKey } from '@solana/web3.js';
+
+const signVersionedTransaction = async (tx: VersionedTransaction) => {
+  // Serialize the versioned transaction message
+  const messageBytes = tx.message.serialize();
+  const rawDataBase64 = Buffer.from(messageBytes).toString('base64');
+  
+  const body = { message_base64: rawDataBase64, chain: 'SOL' };
+  const res = await fetch('/v1/wallet/sign/message', { 
+    method: 'POST', 
+    body: JSON.stringify(body) 
+  });
+  
+  const { signature } = await res.json();
+  
+  // Convert signature back to bytes and attach to transaction
+  const sigBytes = Buffer.from(signature, 'base64');
+  const signerPk = new PublicKey(walletAddress);
+  tx.addSignature(signerPk, sigBytes);
+  
+  return tx.serialize();
+};
+```
+
+```javascript Partial Transaction Signing
+import { Transaction, VersionedTransaction, PublicKey } from '@solana/web3.js';
+
+const partialSignTransaction = async (serializedTx: Uint8Array, type: 'legacy' | 0) => {
+  // Deserialize the transaction
+  const transaction = type === 'legacy' 
+    ? Transaction.from(serializedTx)
+    : VersionedTransaction.deserialize(serializedTx);
+  
+  // Serialize message for signing
+  const messageBytes = type === 'legacy'
+    ? (transaction as Transaction).serializeMessage()
+    : (transaction as VersionedTransaction).message.serialize();
+  
+  const rawDataBase64 = Buffer.from(messageBytes).toString('base64');
+  
+  const body = { message_base64: rawDataBase64, chain: 'SOL' };
+  const res = await fetch('/v1/wallet/sign/message', { 
+    method: 'POST', 
+    body: JSON.stringify(body) 
+  });
+  
+  const { signature } = await res.json();
+  
+  // Attach signature and return serialized transaction
+  const sigBytes = Buffer.from(signature, 'base64');
+  const signerPk = new PublicKey(walletAddress);
+  transaction.addSignature(signerPk, sigBytes);
+  
+  return type === 'legacy' 
+    ? transaction.serialize()
+    : transaction.serialize();
+};
+```
+</CodeGroup>
+
+### Building and Sending Transactions
+
+For complete transaction workflows, you can build, sign, and send transactions:
+
+```javascript Complete Transaction Flow
+import { Connection, Transaction, TransactionInstruction, PublicKey } from '@solana/web3.js';
+
+const buildAndSendTransaction = async (instructions: TransactionInstruction[]) => {
+  // Connect to Solana network
+  const connection = new Connection('https://api.mainnet-beta.solana.com');
+  
+  // Build transaction
+  const transaction = new Transaction();
+  instructions.forEach(instruction => transaction.add(instruction));
+  
+  // Set recent blockhash and fee payer
+  const { blockhash } = await connection.getLatestBlockhash();
+  transaction.recentBlockhash = blockhash;
+  transaction.feePayer = new PublicKey(walletAddress);
+  
+  // Serialize message for signing
+  const messageBytes = transaction.serializeMessage();
+  const rawDataBase64 = Buffer.from(messageBytes).toString('base64');
+  
+  // Sign with Express API
+  const body = { message_base64: rawDataBase64, chain: 'SOL' };
+  const res = await fetch('/v1/wallet/sign/message', { 
+    method: 'POST', 
+    body: JSON.stringify(body) 
+  });
+  
+  const { signature } = await res.json();
+  
+  // Attach signature
+  const sigBytes = Buffer.from(signature, 'base64');
+  const signerPk = new PublicKey(walletAddress);
+  transaction.addSignature(signerPk, sigBytes);
+  
+  // Send transaction
+  const rawTx = transaction.serialize();
+  const txid = await connection.sendRawTransaction(rawTx);
+  
+  return txid;
+};
+```
+
+## Key Differences from EVM
+
+<Note>
+Solana uses a simpler signing model compared to EVM chains. All signing operations use the same base64 encoding approach, whether for messages or transactions.
+</Note>
+
+### Data Encoding
+
+- **Messages**: Convert to Uint8Array → base64 encode
+- **Transactions**: Serialize transaction message → base64 encode
+- **No hash computation**: Unlike EVM, Solana doesn't require pre-hashing data
+
+### Signature Format
+
+- **Input**: Base64-encoded data
+- **Output**: Base64-encoded signature
+- **Conversion**: Use `Buffer.from(signature, 'base64')` to get signature bytes
+
+### Transaction Types
+
+Solana supports two transaction formats:
+
+1. **Legacy Transactions**: Traditional format using `Transaction.serializeMessage()`
+2. **Versioned Transactions**: New format using `VersionedTransaction.message.serialize()`
+
+<Tip>
+Always ensure you're using the correct serialization method based on your transaction type to avoid signing errors.
+</Tip>
+
+## Error Handling
+
+<Warning>
+Make sure to handle signature conversion properly. Solana signatures are returned as base64 strings and must be converted to Buffer/Uint8Array before attaching to transactions.
+</Warning>
+
+```javascript Error Handling Example
+const signWithErrorHandling = async (messageBytes: Uint8Array) => {
+  try {
+    const rawDataBase64 = Buffer.from(messageBytes).toString('base64');
+    
+    const body = { message_base64: rawDataBase64, chain: 'SOL' };
+    const res = await fetch('/v1/wallet/sign/message', { 
+      method: 'POST', 
+      body: JSON.stringify(body) 
+    });
+    
+    if (!res.ok) {
+      throw new Error(`Signing failed: ${res.status} ${res.statusText}`);
+    }
+    
+    const { signature } = await res.json();
+    
+    // Validate signature format
+    if (!signature || typeof signature !== 'string') {
+      throw new Error('Invalid signature format received');
+    }
+    
+    return Buffer.from(signature, 'base64');
+  } catch (error) {
+    console.error('Solana signing error:', error);
+    throw error;
+  }
+};
+```

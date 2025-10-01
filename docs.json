@@ -60,6 +60,7 @@
               "api-wallets/express-api/identity-provider",
               "api-wallets/express-api/wallet-operations",
               "api-wallets/express-api/data-preparation",
+              "api-wallets/express-api/solana-data-preparation",
               "api-wallets/express-api/error-handling"
             ]
           },
