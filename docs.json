@@ -177,7 +177,7 @@
                     "pages": [
                       "embedded-wallets/authentication/security/allowlists/domain-allowlist",
                       "embedded-wallets/authentication/security/allowlists/redirect-allowlist",
-                      "embedded-wallets/authentication/security/allowlists/mobile-access-allow-listing"
+                      "embedded-wallets/authentication/security/allowlists/mobile-allowlist"
                     ]
                   },
                   "embedded-wallets/authentication/security/device-registration",
