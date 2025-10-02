@@ -734,7 +734,6 @@ The response structure depends on your SDK version:
   - `issuer` (String): The Decentralized ID of the user. In server-side use-cases, we recommend this value to be used as the user ID in your own tables.
   - `email` (String): Email address of the authenticated user
   - `phoneNumber` (String): The phone number of the authenticated user
-  - `walletType` (String): Information about the wallet the user is currently signed in with (`'magic' | 'metamask' | 'coinbase_wallet'`)
   - `isMfaEnabled` (Boolean): Whether or not multi-factor authentication is enabled for the user
   - `recoveryFactors` (Array): Any recovery methods that have been enabled (ex. `[{ type: 'phone_number', value: '+99999999' }]`)
   - `wallets` (Object): Organized wallet addresses by blockchain and network:
@@ -750,7 +749,6 @@ The response structure depends on your SDK version:
   "issuer": "did:ethr:0x...",
   "email": "user@example.com",
   "phoneNumber": null,
-  "walletType": "magic",
   "isMfaEnabled": false,
   "recoveryFactors": [],
   "wallets": {
@@ -789,7 +787,6 @@ The response structure depends on your SDK version:
   - `email` (String): Email address of the authenticated user
   - `phoneNumber` (String): The phone number of the authenticated user
   - `publicAddress` (String): The authenticated user's public address (a.k.a.: public key)
-  - `walletType` (String): Information about the wallet the user is currently signed in with (`'magic' | 'metamask' | 'coinbase_wallet'`)
   - `isMfaEnabled` (Boolean): Whether or not multi-factor authentication is enabled for the user
   - `recoveryFactors` (Array): Any recovery methods that have been enabled
 
@@ -800,7 +797,6 @@ The response structure depends on your SDK version:
   "email": "user@example.com", 
   "phoneNumber": null,
   "publicAddress": "0x742d35Cc6634C0532925a3b8D4C9db96590b0b65",
-  "walletType": "magic",
   "isMfaEnabled": false,
   "recoveryFactors": []
 }
