@@ -31,12 +31,7 @@ Magic offers fiat on-ramp functionality in our wallet widget UI, allowing US and
 Once you have verified the correct setup of the Magic SDK and successfully authenticated the user, the wallet widget can then be displayed in an iframe by calling the `showUI` function: ⁠ ⁠
 
 ```javascript JavaScript icon="square-js"
-const walletInfo = await magic.user.getInfo();
-const walletType = walletInfo.walletType;
-
-if (walletType === "magic") {
-  await magic.wallet.showUI();
-};
+await magic.wallet.showUI();
 ```
 
 **How do I allow users to purchase crypto within the context of a transaction flow?**
