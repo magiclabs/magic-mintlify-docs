@@ -51,12 +51,12 @@ Sync the project with new dependencies settings.
 
 ```kotlin Kotlin icon="android"
 class MagicDemoApp: Application() {
-    lateinit var magic: Magic
+  lateinit var magic: Magic
 
-    override fun onCreate() {
-        magic = Magic(this, "PUBLISHABLE_API_KEY")
-        super.onCreate()
-    }
+  override fun onCreate() {
+    magic = Magic(this, "PUBLISHABLE_API_KEY")
+    super.onCreate()
+  }
 }
 ```
 
@@ -86,30 +86,30 @@ number.
 
 ```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
-    lateinit var magic: Magic
+  lateinit var magic: Magic
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        magic = Magic(this, "PUBLISHABLE_API_KEY")
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    magic = Magic(this, "PUBLISHABLE_API_KEY")
+  }
+
+  fun login(v: View) {
+    val phoneNumber = findViewById<EditText>(R.id.phone_number_input)
+    val configuration = LoginWithSMSConfiguration(phoneNumber.text.toString())
+    val completable = magic.auth.loginWithSMS(configuration)
+
+    // Logging in
+    completable.whenComplete { response: DIDToken?, error: Throwable? ->
+      if (error != null) {
+        // Handle error
+      }
+      if (response != null && !response.hasError()) {
+        Log.d("Magic", "You're logged in!" + response.result)
+      } else {
+        Log.d("Magic", "Not Logged in")
+      }
     }
-
-    fun login(v: View) {
-        val phoneNumber = findViewById<EditText>(R.id.phone_number_input)
-        val configuration = LoginWithSMSConfiguration(phoneNumber.text.toString())
-        val completable = magic.auth.loginWithSMS(configuration)
-
-        // Logging in
-        completable.whenComplete { response: DIDToken?, error: Throwable? ->
-            if (error != null) {
-                // Handle error
-            }
-            if (response != null && !response.hasError()) {
-                Log.d("Magic", "You're logged in!" + response.result)
-            } else {
-                Log.d("Magic", "Not Logged in")
-            }
-        }
-    }
+  }
 }
 ```
 
@@ -133,30 +133,30 @@ Authenticate a user passwordlessly using an email one-time code sent to the spec
 
 ```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
-    lateinit var magic: Magic
+  lateinit var magic: Magic
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        magic = Magic(this, "PUBLISHABLE_API_KEY")
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    magic = Magic(this, "PUBLISHABLE_API_KEY")
+  }
+
+  fun login(v: View) {
+    val email = findViewById<EditText>(R.id.email_input)
+    val configuration = LoginWithEmailOTPConfiguration(email.text.toString())
+    val completable = magic.auth.loginWithEmailOTP(configuration)
+
+    // Logging in
+    completable.whenComplete { response: DIDToken?, error: Throwable? ->
+      if (error != null) {
+        // Handle error
+      }
+      if (response != null && !response.hasError()) {
+        Log.d("Magic", "You're logged in!" + response.result)
+      } else {
+        Log.d("Magic", "Not Logged in")
+      }
     }
-
-    fun login(v: View) {
-        val email = findViewById<EditText>(R.id.email_input)
-        val configuration = LoginWithEmailOTPConfiguration(email.text.toString())
-        val completable = magic.auth.loginWithEmailOTP(configuration)
-
-        // Logging in
-        completable.whenComplete { response: DIDToken?, error: Throwable? ->
-            if (error != null) {
-                // Handle error
-            }
-            if (response != null && !response.hasError()) {
-                Log.d("Magic", "You're logged in!" + response.result)
-            } else {
-                Log.d("Magic", "Not Logged in")
-            }
-        }
-    }
+  }
 }
 ```
 
@@ -181,20 +181,20 @@ Renders a simple login form UI to collect the user's email address and authentic
 
 ```kotlin Kotlin icon="android"
 private fun mcLogin(v: View) {
-    val accounts = (magic as Magic).wallet.connectWithUI(this)
-    accounts.whenComplete { response: ConnectWithUIResponse?, error: Throwable? ->
-        if (error != null) {
-            Log.d("error", error.localizedMessage)
-        }
-        if (response != null && !response.hasError()) {
-           response.result?.let { Log.d("Your Public Address is:", it.first()) }
-           startTabActivity()
-       } else {
-            response?.result?.let { Log.d("Your Public Address is:", it.first()) }
-            Log.i("mcLogin RESPONSE", "Response is: ${response.toString()}")
-            Log.d("MC Login", "Magic Connect Not logged in")
-        }
+  val accounts = (magic as Magic).wallet.connectWithUI(this)
+  accounts.whenComplete { response: ConnectWithUIResponse?, error: Throwable? ->
+    if (error != null) {
+      Log.d("error", error.localizedMessage)
     }
+    if (response != null && !response.hasError()) {
+      response.result?.let { Log.d("Your Public Address is:", it.first()) }
+      startTabActivity()
+    } else {
+      response?.result?.let { Log.d("Your Public Address is:", it.first()) }
+      Log.i("mcLogin RESPONSE", "Response is: ${response.toString()}")
+      Log.d("MC Login", "Magic Connect Not logged in")
+    }
+  }
 }
 ```
 
@@ -217,15 +217,15 @@ Optionally, add a `.on()` handler to catch the `disconnect` event emitted when t
 
 ```kotlin Kotlin icon="android"
 fun showUI(v: View) {
-    val completable = magic.wallet.showUI(this.requireContext())
-    completable.whenComplete { response: ShowWalletResponse?, error: Throwable? ->
-        if (error != null) {
-            Log.d("error", error.localizedMessage)
-        }
-        if (response != null) {
-            tabActivity.toastAsync("show Wallet:" + response.result)
-        }
+  val completable = magic.wallet.showUI(this.requireContext())
+  completable.whenComplete { response: ShowWalletResponse?, error: Throwable? ->
+    if (error != null) {
+      Log.d("error", error.localizedMessage)
     }
+    if (response != null) {
+      tabActivity.toastAsync("show Wallet:" + response.result)
+    }
+  }
 }
 ```
 
@@ -253,27 +253,26 @@ Initiates the update email flow that allows a user to change to a new email.
 
 ```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
-    lateinit var magic: Magic
+  lateinit var magic: Magic
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    magic = Magic(this, "PUBLISHABLE_API_KEY")
+  }
+
+  // Assuming user is logged in
+  fun updateEmail(v: View) {
+    val configuration = UpdateEmailConfiguration("new_user_email@example.com")
+    val completable = magic.user.updateEmail(this, configuration)
+    completable.whenComplete { response: UpdateEmailResponse?, error: Throwable? ->
+      if (response != null) {
+        Log.d("Magic", response.result.toString()) // "True"
+      } else {
+        // handle error
+      }
     }
-
-    // Assuming user is logged in
-    fun updateEmail(v: View) {
-
-        val configuration = UpdateEmailConfiguration("new_user_email@example.com")
-        val completable = magic.user.updateEmail(this, configuration)
-        completable.whenComplete { response: UpdateEmailResponse?, error: Throwable? ->
-            if (response != null) {
-                Log.d("Magic", response.result.toString()) // "True"
-            } else {
-                // handle error
-            }
-        }
-    }
+  }
 }
 ```
 
@@ -295,26 +294,26 @@ servers.
 
 ```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
-    lateinit var magic: Magic
+  lateinit var magic: Magic
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    magic = Magic(this, "PUBLISHABLE_API_KEY")
+  }
+
+  // Assuming user is logged in
+  fun getIdToken(v: View) {
+    val configuration = GetIdTokenConfiguration(lifespan = 900)
+    val completable = magic.user.getIdToken(configuration)
+    completable.whenComplete { response: GetIdTokenResponse?, error: Throwable? ->
+      if (response != null) {
+        Log.d("Magic", response.result)
+      } else {
+        // handle Error
+      }
     }
-
-    // Assuming user is logged in
-    fun getIdToken(v: View) {
-        val configuration = GetIdTokenConfiguration(lifespan = 900)
-        val completable = magic.user.getIdToken(configuration)
-        completable.whenComplete { response: GetIdTokenResponse?, error: Throwable? ->
-            if (response != null) {
-                Log.d("Magic", response.result)
-            } else {
-                // handle Error
-            }
-        }
-    }
+  }
 }
 ```
 
@@ -338,27 +337,27 @@ Generates a Decentralized Id Token with optional serialized data.
 
 ```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
-    lateinit var magic: Magic
+  lateinit var magic: Magic
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    magic = Magic(this, "PUBLISHABLE_API_KEY")
+  }
+
+  // Assuming user is logged in
+  fun generateIdToken(v: View) {
+    val configuration = GenerateIdTokenConfiguration(lifespan = 900, attachment = "none")
+    val completable = magic.user.generateIdToken(configuration)
+
+    completable.whenComplete { response: GenerateIdTokenResponse?, error: Throwable? ->
+      if (response != null) {
+        Log.d("Magic", response.result)
+      } else {
+        // handle Error
+      }
     }
-
-    // Assuming user is logged in
-    fun generateIdToken(v: View) {
-        val configuration = GenerateIdTokenConfiguration(lifespan = 900, attachment = "none")
-        val completable = magic.user.generateIdToken(configuration)
-
-        completable.whenComplete { response: GenerateIdTokenResponse?, error: Throwable? ->
-            if (response != null) {
-                Log.d("Magic", response.result)
-            } else {
-                // handle Error
-            }
-        }
-    }
+  }
 }
 ```
 
@@ -383,28 +382,26 @@ Retrieves information for the authenticated user.
 
 ```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
+  lateinit var magic: Magic
 
-    lateinit var magic: Magic
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    magic = Magic(this, "PUBLISHABLE_API_KEY")
+  }
 
-        magic = Magic(this, "PUBLISHABLE_API_KEY")
+  // Assuming user is logged in
+  fun getMetadata(v: View) {
+    val completable = magic.user.getMetadata()
+    completable.whenComplete { response: GetMetadataResponse?, error: Throwable? ->
+      if (response != null) {
+        Log.d("Magic", "Email: " + response.result.email)
+        Log.d("Magic", "Issuer: " + response.result.issuer)
+      } else {
+        // handle Error
+      }
     }
-
-    // Assuming user is logged in
-    fun getMetadata(v: View) {
-        val completable = magic.user.getMetadata()
-        completable.whenComplete { response: GetMetadataResponse?, error: Throwable? ->
-            if (response != null) {
-                Log.d("Magic", "Email: " + response.result.email)
-                Log.d("Magic", "Issuer: " + response.result.issuer)
-            } else {
-                // handle Error
-            }
-        }
-    }
-
+  }
 }
 
 ```
@@ -427,27 +424,26 @@ Checks if a user is currently logged in to the Magic SDK.
 
 ```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
+  lateinit var magic: Magic
 
-    lateinit var magic: Magic
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    magic = Magic(this, "PUBLISHABLE_API_KEY")
+  }
 
-        magic = Magic(this, "PUBLISHABLE_API_KEY")
+  // Assuming user is logged in
+  fun isLoggedIn(v: View) {
+    val completable = magic.user.isLoggedIn()
+    completable.whenComplete { response: IsLoggedInResponse?, error: Throwable? ->
+      if (response != null && response.result) {
+        Log.d("Magic", "You're Logged In")
+      }
+      if (error != null) {
+        // handle Error
+      }
     }
-
-    // Assuming user is logged in
-    fun isLoggedIn(v: View) {
-        val completable = magic.user.isLoggedIn()
-        completable.whenComplete { response: IsLoggedInResponse?, error: Throwable? ->
-            if (response != null && response.result) {
-                Log.d("Magic", "You're Logged In")
-            }
-            if (error != null) {
-                // handle Error
-            }
-        }
-    }
+  }
 }
 ```
 
@@ -468,26 +464,26 @@ Logs out the currently authenticated Magic user.
 
 ```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
-    lateinit var magic: Magic
+  lateinit var magic: Magic
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    magic = Magic(this, "PUBLISHABLE_API_KEY")
+  }
+
+  // Assuming user is logged in
+  fun logout(v: View) {
+    val completable = magic.user.logout()
+    completable.whenComplete { response: LogoutResponse?, error: Throwable? ->
+      if (response != null && response.result) {
+        Log.d("Magic", "You're logged out!")
+      }
+      if (error != null) {
+        // handle Error
+      }
     }
-
-    // Assuming user is logged in
-    fun logout(v: View) {
-        val completable = magic.user.logout()
-        completable.whenComplete { response: LogoutResponse?, error: Throwable? ->
-            if (response != null && response.result) {
-                Log.d("Magic", "You're logged out!")
-            }
-            if (error != null) {
-                // handle Error
-            }
-        }
-    }
+  }
 }
 ```
 
@@ -512,26 +508,26 @@ Access to [MFA](/embedded-wallets/authentication/features/mfa) and [account reco
 
 ```kotlin Kotlin icon="android"
 class MagicActivity: AppCompatActivity() {
-    lateinit var magic: Magic
+  lateinit var magic: Magic
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        magic = Magic(this, "PUBLISHABLE_API_KEY")
+    magic = Magic(this, "PUBLISHABLE_API_KEY")
+  }
+
+  // Assuming user is logged in
+  fun showSettings(v: View) {
+    val result = magic.user.showSettings()
+    result.whenComplete { response: GetMetadataResponse?, error: Throwable? ->
+      if (error != null) {
+        Log.d("error", error.localizedMessage)
+      }
+      if (response != null) {
+        tabActivity.toastAsync("Email: " + response.result.email + "\n" + "issuer: " + response.result.issuer + "\n")
+      }
     }
-
-    // Assuming user is logged in
-    fun showSettings(v: View) {
-        val result = magic.user.showSettings()
-        result.whenComplete { response: GetMetadataResponse?, error: Throwable? ->
-            if (error != null) {
-                Log.d("error", error.localizedMessage)
-            }
-            if (response != null) {
-                tabActivity.toastAsync("Email: " + response.result.email + "\n" + "issuer: " + response.result.issuer + "\n")
-            }
-        }
-    }
+  }
 }
 ```
 
@@ -556,15 +552,15 @@ Initiates the update phone number flow that allows a user to change their phone 
 
 ```kotlin Kotlin icon="android"
 fun updateSMS(v: View) {
-    val completable = magic.user.updatePhoneNumber(this.requireActivity())
-    completable.whenComplete { updatePhoneNumberResponse: UpdatePhoneNumberResponse?, error: Throwable? ->
-        if (error != null) {
-           Log.d("error", error.localizedMessage)
-        }
-        if (updatePhoneNumberResponse != null) {
-           Log.d("Update phone number result", updatePhoneNumberResponse.result.toString())
-        }
+  val completable = magic.user.updatePhoneNumber(this.requireActivity())
+  completable.whenComplete { updatePhoneNumberResponse: UpdatePhoneNumberResponse?, error: Throwable? ->
+    if (error != null) {
+      Log.d("error", error.localizedMessage)
     }
+    if (updatePhoneNumberResponse != null) {
+      Log.d("Update phone number result", updatePhoneNumberResponse.result.toString())
+    }
+  }
 }
 ```
 
@@ -584,23 +580,23 @@ Initiates the account recovery flow that allows a user to recover their account 
 
 ```kotlin Kotlin icon="android"
 private fun recoverAccount(v: View) {
-    val email = findViewById<EditText>(R.id.recovery_email_input)
-    val configuration = RecoverAccountConfiguration(email = email.text.toString())
-    val result = (magic as Magic).user.recoverAccount(this, configuration)
-    result.whenComplete { response: RecoverAccountResponse?, error: Throwable? ->
-        if (error != null) {
-            Log.d("error", error.localizedMessage)
-        }
-        if (response != null) {
-            var result = response.result
-            Log.d("recover account resp result", result.toString())
-            if (result != null) {
-                startTabActivity()
-           } else {
-                toastAsync("RecoverAccount error, consider using a different email")
-            }
-        }
+  val email = findViewById<EditText>(R.id.recovery_email_input)
+  val configuration = RecoverAccountConfiguration(email = email.text.toString())
+  val result = (magic as Magic).user.recoverAccount(this, configuration)
+  result.whenComplete { response: RecoverAccountResponse?, error: Throwable? ->
+    if (error != null) {
+      Log.d("error", error.localizedMessage)
     }
+    if (response != null) {
+      var result = response.result
+      Log.d("recover account resp result", result.toString())
+      if (result != null) {
+        startTabActivity()
+      } else {
+        toastAsync("RecoverAccount error, consider using a different email")
+      }
+    }
+  }
 }
 ```
 
@@ -620,15 +616,15 @@ Displays an iframe revealing the current user’s private key. Allows for users 
 
 ```kotlin Kotlin icon="android"
 fun revealPrivateKey(v: View) {
-    val result = magic.user.revealPrivateKey(this.requireContext())
-    result.whenComplete { response: RevealPrivateKeyResponse?, error: Throwable? ->
-        if (error != null) {
-            Log.d("error", error.localizedMessage)
-        }
-        if (response != null) {
-            tabActivity.toastAsync("Key revealed")
-        }
+  val result = magic.user.revealPrivateKey(this.requireContext())
+  result.whenComplete { response: RevealPrivateKeyResponse?, error: Throwable? ->
+    if (error != null) {
+      Log.d("error", error.localizedMessage)
     }
+    if (response != null) {
+      tabActivity.toastAsync("Key revealed")
+    }
+  }
 }
 ```
 
