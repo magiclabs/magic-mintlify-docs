@@ -1,36 +1,119 @@
 ---
 title: Domain Allowlist
-description: "Domain Allowlist allows your application to be secure-by-default, meaning that it establishes a strong security posture right from the start, and only permits communication with specific domains and redirect URIs that have been explicitly approved."
+description: "Domain Allowlist allows your application to be secure-by-default, meaning that it establishes a strong security posture right from the start, and only permits communication with specific domains that have been explicitly approved."
 ---
 
 ## Overview
 
-Magic will reject all requests from domains and redirect URIs that are not part of the allowlist. This protects your public API keys from unauthorized usage.
+The Domain Allowlist is a security feature that restricts which domains can make requests to your Magic application. When enabled, Magic will reject all requests from domains that are not explicitly included in your allowlist.
+
+### Security Benefits
+
+<CardGroup cols={2}>
+<Card title="API Key Protection" icon="shield">
+  Prevents unauthorized usage of your public API keys by restricting access to approved domains only.
+</Card>
+
+<Card title="Attack Prevention" icon="lock">
+  Blocks potential attacks from malicious domains attempting to use your Magic integration.
+</Card>
+</CardGroup>
+
+### How It Works
+
+When a request is made to your Magic application:
+
+1. **Domain Check**: Magic verifies the requesting domain against your allowlist
+2. **Allow/Block**: Requests from allowed domains proceed normally; blocked domains receive an error
+3. **User Notification**: Blocked requests show a user-friendly error message explaining the restriction
+
+<Warning>
+**Important**: Once enabled, the Domain Allowlist applies to ALL requests to your Magic application. Make sure to add all legitimate domains before enabling this feature.
+</Warning>
 
 ## Usage
 
+### Dashboard Configuration
 
-Navigate to the [Magic Dashboard](https://dashboard.magic.link) and select the application in which you need to add domains to the allowlist. Inside the dashboard, go to the "Settings" tab of your selected application and scroll "Allowed Origins & Redirects". In this section, you'll find a toggle button that allows you to manage the allowlist.
+<Steps>
+<Step title="Access Your Application">
+  Navigate to the [Magic Dashboard](https://dashboard.magic.link) and select the application you want to configure.
+</Step>
 
-Once the feature is on, a text input field will be displayed. Here, you can input the domains that you want to add to the allowlist.
+<Step title="Open Settings">
+  Go to the **Settings** tab of your selected application.
+</Step>
+
+<Step title="Find Allowlist Section">
+  Scroll down to the **"Allowed Origins & Redirects"** section.
+</Step>
+
+<Step title="Enable Domain Allowlist">
+  Toggle the **Domain** switch to enable it.
+</Step>
+
+<Step title="Add Domains">
+  In the text input field that appears, add the domains you want to allow. You can add multiple domains by separating them with commas or line breaks.
+</Step>
+
+<Step title="Save Changes">
+  Click **Save** to apply your domain allowlist configuration.
+</Step>
+</Steps>
+
+<Frame>
+  <img src="/images/Configuration-view.webp" alt="Domain allowlist configuration interface in Magic Dashboard"/>
+</Frame>
+
+### Domain Formatting
+
+When adding domains to your allowlist, follow these formatting rules:
+
+<AccordionGroup>
+<Accordion title="Supported Domain Formats">
+  - **Full domains**: `example.com`, `app.example.com`
+  - **Subdomains**: `*.example.com` (wildcard for all subdomains)
+  - **Localhost**: `localhost`, `localhost:3000`
+  - **IP addresses**: `192.168.1.1`, `192.168.1.1:8080`
+  - **Protocols**: Include `https://` or `http://` if needed
+</Accordion>
+
+<Accordion title="Examples">
+  ```
+  example.com
+  app.example.com
+  *.example.com
+  localhost:3000
+  https://staging.myapp.com
+  ```
+</Accordion>
+
+<Accordion title="Best Practices">
+  - Use specific domains when possible instead of wildcards
+  - Include both `www` and non-`www` versions if needed
+  - Add staging and production domains separately
+  - Test with `localhost` during development
+</Accordion>
+</AccordionGroup>
 
 ### New Projects
 
-For new applications, the Domain Allowlist feature **is mandatory**. By default, the `localhost` domain is included for convenience. However, any additional domains that will make requests to Magic **must be explicitly added to the allowlist.**
+For new applications created after December 15, 2023, the Domain Allowlist feature **is mandatory**. By default, the `localhost` domain is included for convenience during development.
 
-<Frame>
-  <img src="/images/Configuration-view.webp" alt=""/>
-</Frame>
-
+<Info>
+**Development Tip**: The `localhost` domain is automatically included to help with local development. Make sure to add your production domains before deploying to production.
+</Info>
 
 ### Existing Projects
 
-For any existing applications created prior to December, 15 2023, the Domain Allowlist feature will not be enforced, however warning messages will appear if the domain allowlist feature is not toggled on.
+For applications created before December 15, 2023, the Domain Allowlist feature is **optional but highly recommended**. While not enforced, warning messages will appear in your dashboard if the feature is not enabled.
 
-While it's not mandatory to turn on this feature and add domains for existing apps, it is highly recommended. **Without enabling the Domain Allowlist, your API keys remain vulnerable to unauthorized usage.**
+<Warning>
+**Security Risk**: Without enabling the Domain Allowlist, your API keys remain vulnerable to unauthorized usage from any domain. We strongly recommend enabling this feature for all applications.
+</Warning>
 
 <Frame>
-  <img src="/images/Allowlist-entry-point.webp" alt=""/>
+  <img src="/images/Allowlist-entry-point.webp" alt="Domain allowlist entry point in Magic Dashboard"/>
 </Frame>
 
 <Note>
@@ -38,52 +121,67 @@ If a project attempts to utilize a public key on a domain not included in the ap
 </Note>
 
 <Frame>
-  <img src="/images/Blocked-domain.webp" alt=""/>
+  <img src="/images/Blocked-domain.webp" alt="Error message shown to users when accessing from unauthorized domains"/>
 </Frame>
 
 
 ### Programmatic Configuration
 
-Alternatively, domains can be added to your applications allowlist using Curl. In order to interact with the email access control list for your application using Curl, you will need a Secret Key and Client ID.
+You can manage your domain allowlist programmatically using the Magic API. This is useful for:
 
-To obtain the required information, follow the steps below:
+- **Automated deployments**: Add domains as part of your CI/CD pipeline
+- **Bulk management**: Add or remove multiple domains at once
+- **Integration**: Manage domains from your own admin interface
 
-1.  On the Dashboard landing page, right-click anywhere and select **Inspect**
-2.  Navigate to the **Network** tab and look for `info?magic_client_id=<CLIENT_ID>`
-3.  Navigate to the **Response** tab and extract `live_secret_key` as your **Secret Key** and `magic_client_id` as your **Client ID**
+#### Prerequisites
 
-Provide the Secret Key and/or Client ID in your Curl commands, along with the chosen domains for the interaction:
+To use the programmatic API, you'll need your **Secret Key**:
+
+<Steps>
+<Step title="Access Your Application">
+  Navigate to a Magic app from the main dashboard landing page
+</Step>
+
+<Step title="Get Your Secret Key">
+  Go to the **Settings** tab and scroll to the **API Keys** section
+</Step>
+
+<Step title="Copy Secret Key">
+  Copy your **Secret Key** from the API Keys section
+</Step>
+</Steps>
+
+<Warning>
+**Security**: Keep your Secret Key secure and never expose it in client-side code or public repositories.
+</Warning>
+
+#### API Operations
 
 <CodeGroup>
-```bash Add icon="square-terminal"
-curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allowlist/add' \
---header 'X-Magic-Secret-Key: sk_live_06FC010DA25ED4F2' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "access_type": "domain",
-    "target_client_id": "etjubJsY5Cvn6ukDzJYpd3MEAtgw45oetxxoX1PxvP4=",
-    "value": "https://magic.link"
-}'
+```bash List Domains icon="list"
+curl -X GET 'https://api.dashboard.magic.link/v1/admin/access_whitelist' \
+-H 'X-Magic-Secret-Key: sk_live_XXXXXXXX'
 ```
 
-```bash Remove icon="square-terminal"
-curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allowlist/remove' \
---header 'X-Magic-Secret-Key: sk_live_06FC010DA25ED4F2' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "access_type": "domain",
-    "target_client_id": "etjubJsY5Cvn6ukDzJYpd3MEAtgw45oetxxoX1PxvP4=",
-    "value": "https://magic.link"
-}'
+```bash Add Domains icon="plus"
+curl -X POST 'https://api.dashboard.magic.link/v1/admin/access_whitelist' \
+-H 'X-Magic-Secret-Key: sk_live_XXXXXXXX' \
+-H 'Content-Type: application/json' \
+-d '[
+    {
+        "access_type": "domain",
+        "value": "example.com"
+    }
+]'
 ```
 
-```bash Retrieve icon="square-terminal"
-curl --location --request GET 'https://api.magic.link/v2/api/magic_client/allowlist' \
---header 'X-Magic-Secret-Key: sk_live_3DACC9A06D5CDC09' \
---header 'Content-Type: application/json' \
---header 'Cookie: __cf_bm=w34mWVZYeODU83q0alw17X408w8BxmxR8i3YTTQYVls-1669063237-0-AYuG2UZfC1uZavFSBmkMR092XzNTyfIDwEjYgxh0F3lFI5onOggETiTGpKZ3mPadfzv9MhA2e0Ie7YirysS73TA=; __cfruid=5727be2dcf833d7240c9a02a6f3c9d8b6853c6e3-1669063237' \
---data-raw '{
-    "target_client_id": "cdoE6PoD1Kp5I4Jr_gZGAZ2-qDnYaI9Zroj6DqTV1gI="
+```bash Remove Domains icon="minus"
+curl -X DELETE 'https://api.dashboard.magic.link/v1/admin/access_whitelist' \
+-H 'X-Magic-Secret-Key: sk_live_XXXXXXXX' \
+-H 'Content-Type: application/json' \
+-d '{
+    "access_type": "domain",
+    "value": "example.com"
 }'
 ```
 </CodeGroup>

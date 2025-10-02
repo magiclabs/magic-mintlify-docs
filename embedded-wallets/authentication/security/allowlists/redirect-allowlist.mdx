@@ -1,97 +1,168 @@
 ---
 title: Redirect Allowlist
+description: "Redirect Allowlist ensures secure OAuth authentication by restricting which URLs users can be redirected to after completing authentication, preventing phishing attacks and unauthorized redirects."
 ---
 
 ## Overview
 
-In the process of authenticating a user, the `redirectURI` parameter is utilized as a callback URL and will redirect users once the authentication is complete. For Magic, this is only relevant when using an OAuth provider (such as Google) as your user’s authentication method. For OAuth, when using the [`loginWithCredential`](/embedded-wallets/sdk/client-side/javascript) feature, you have the option to include a `redirectURI` value. If you do not include a `redirectURI`, the user will be asked to go back to the original tab to complete the login process. It's recommended to use a redirectURI for a smoother user experience.
+The Redirect Allowlist is a security feature that restricts which URLs users can be redirected to after completing OAuth authentication. When enabled, Magic will only allow redirects to URLs that are explicitly included in your allowlist.
 
-## Configuration
+### Security Benefits
 
+<CardGroup cols={2}>
+<Card title="Phishing Prevention" icon="shield">
+  Prevents attackers from redirecting users to malicious websites or phishing pages during OAuth flows.
+</Card>
 
-1.  Go to the [settings page](https://dashboard.magic.link/app/settings?) of your app in the developer dashboard
-2.  Toggle on your ‘redirect allowlist’
-3.  Add your redirects and save your changes
+<Card title="Data Protection" icon="lock">
+  Protects sensitive authentication data by ensuring users are only redirected to trusted destinations.
+</Card>
+</CardGroup>
 
-#### Format
+### How It Works
 
-Several redirect formats are supported, generically it may look similar to the following:
+When a user completes OAuth authentication:
 
-* `<scheme> "://" <host> [ ":" <port> ] <path>`
+1. **URL Validation**: Magic checks the redirect URL against your allowlist
+2. **Security Check**: Only pre-approved URLs are allowed for redirection
+3. **User Safety**: Users are protected from being redirected to malicious sites
 
-For a detailed view of the URI syntax format, refer to [this diagram](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#/media/File:URI_syntax_diagram.svg).
+<Info>
+**OAuth Only**: The Redirect Allowlist is only relevant when using OAuth providers (like Google, GitHub, etc.) as your authentication method. It doesn't apply to non-OAuth authentication methods.
+</Info>
 
-### Mobile Linking
+## Usage
 
-Linking in mobile applications refers to the ability to navigate users to a specific location within an application by clicking on a link. There are two main methods of linking in mobile apps: **Deep linking** and **Universal Links** (App Links on Android). We recommend using **Universal Links/App Links** for increased security in lieu of **Deep Links**.
+### Dashboard Configuration
 
-View our [guide](https://docs.google.com/document/d/1UaByrOIJyi10mvuV5BlO-7UYKWmyGAtM1U3I5R55_vY/edit) on mobile links in your Magic Application
+<Steps>
+<Step title="Access Your Application">
+  Navigate to the [Magic Dashboard](https://dashboard.magic.link) and select the application you want to configure.
+</Step>
 
-**Some examples:**
+<Step title="Open Settings">
+  Go to the **Settings** tab of your selected application.
+</Step>
 
-* Web:
-    * `https://example.link`
-    * `https://example.link/path1`
-* [iOS deep links:](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app)
-    * `myphotoapp:albumname`
-    * `expo://`
-* [Android app links:](https://developer.android.com/training/app-links/deep-linking)
-    * `app://www.example.com`
-    * `app://open.my.app`
+<Step title="Find Allowlist Section">
+  Scroll down to the **"Allowed Origins & Redirects"** section.
+</Step>
 
-**Format** **Notes:**
+<Step title="Enable Redirect Allowlist">
+  Toggle the **Redirect** switch to enable it.
+</Step>
 
-* All paths have to be explicit, ie. `https://example.link` does not also whitelist `https://example.link/path1`
-* Query strings and hash information are not taken into account when validating these URLs
-* You can use wildcards at the subdomain level (e.g.: https://*.contoso.com)
+<Step title="Add Redirect URLs">
+  In the text input field that appears, add the redirect URLs you want to allow. You can add multiple URLs by separating them with commas or line breaks.
+</Step>
+
+<Step title="Save Changes">
+  Click **Save** to apply your redirect allowlist configuration.
+</Step>
+</Steps>
+
+### URL Formatting
+
+When adding redirect URLs to your allowlist, follow these formatting rules:
+
+<AccordionGroup>
+<Accordion title="Supported URL Formats">
+  - **Web URLs**: `https://example.com`, `https://app.example.com/path`
+  - **Custom schemes**: `myapp://`, `myapp://callback`
+  - **Mobile deep links**: `myapp://open`, `myapp://auth/callback`
+  - **Universal Links**: `https://example.com/app-link`
+  - **Localhost**: `http://localhost:3000`, `http://localhost:3000/callback`
+</Accordion>
+
+<Accordion title="Examples">
+  ```
+  https://example.com
+  https://app.example.com/callback
+  https://staging.myapp.com/auth/success
+  myapp://auth/callback
+  expo://
+  http://localhost:3000
+  ```
+</Accordion>
+
+<Accordion title="Important Rules">
+  - **Explicit paths**: `https://example.com` does not include `https://example.com/path`
+  - **No query strings**: Query parameters and hash fragments are ignored during validation
+  - **Wildcards**: Use `https://*.example.com` for subdomain wildcards
+  - **Protocols**: Include the full protocol (`https://` or `http://`) for web URLs
+</Accordion>
+</AccordionGroup>
+
+### Mobile Applications
+
+For mobile applications, you can use both **Deep Links** and **Universal Links** (App Links on Android). We recommend **Universal Links/App Links** for increased security.
+
+<Info>
+**Mobile Deep Links**: Use custom URL schemes like `myapp://` for deep linking within your mobile app.
+</Info>
+
+<Info>
+**Universal Links**: Use HTTPS URLs that can open your mobile app when available, falling back to web if the app isn't installed.
+</Info>
 
 ### Programmatic Configuration
 
-Alternatively, redirectURIs can be added to your applications allowlist using Curl. In order to interact with the email access control list for your application using Curl, you will need a Secret Key and Client ID.
+You can manage your redirect allowlist programmatically using the Magic API. This is useful for:
 
-To obtain the required information, follow the steps below:
+- **Automated deployments**: Add redirect URLs as part of your CI/CD pipeline
+- **Bulk management**: Add or remove multiple redirect URLs at once
+- **Integration**: Manage redirect URLs from your own admin interface
 
-1.  On the Dashboard landing page, right-click anywhere and select **Inspect**
-2.  Navigate to the **Network** tab and look for `info?magic_client_id=<CLIENT_ID>`
-3.  Navigate to the **Response** tab and extract `live_secret_key` as your **Secret Key** and `magic_client_id` as your **Client ID**
+#### Prerequisites
 
-Provide the Secret Key and/or Client ID in your Curl commands, along with the chosen domains for the interaction:
+To use the programmatic API, you'll need your **Secret Key**:
 
+<Steps>
+<Step title="Access Your Application">
+  Navigate to a Magic app from the main dashboard landing page
+</Step>
+
+<Step title="Get Your Secret Key">
+  Go to the **Settings** tab and scroll to the **API Keys** section
+</Step>
+
+<Step title="Copy Secret Key">
+  Copy your **Secret Key** from the API Keys section
+</Step>
+</Steps>
+
+<Warning>
+**Security**: Keep your Secret Key secure and never expose it in client-side code or public repositories.
+</Warning>
+
+#### API Operations
 
 <CodeGroup>
-```bash Add icon="square-terminal"
-curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allowlist/add' \
---header 'X-Magic-Secret-Key: sk_live_06FC010DA25ED4F2' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "access_type": "redirect_url",
-    "target_client_id": "etjubJsY5Cvn6ukDzJYpd3MEAtgw45oetxxoX1PxvP4=",
-    "value": "https://magic.link"
-}'
+```bash List Redirects icon="list"
+curl -X GET 'https://api.dashboard.magic.link/v1/admin/access_whitelist' \
+-H 'X-Magic-Secret-Key: sk_live_XXXXXXXX'
 ```
 
-```bash Remove icon="square-terminal"
-curl --location --request POST 'https://api.magic.link/v2/api/magic_client/allowlist/remove' \
---header 'X-Magic-Secret-Key: sk_live_06FC010DA25ED4F2' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "access_type": "redirect_url",
-    "target_client_id": "etjubJsY5Cvn6ukDzJYpd3MEAtgw45oetxxoX1PxvP4=",
-    "value": "https://magic.link"
-}'
+```bash Add Redirects icon="plus"
+curl -X POST 'https://api.dashboard.magic.link/v1/admin/access_whitelist' \
+-H 'X-Magic-Secret-Key: sk_live_XXXXXXXX' \
+-H 'Content-Type: application/json' \
+-d '[
+    {
+        "access_type": "redirect_url",
+        "value": "https://example.com/callback"
+    }
+]'
 ```
 
-```bash Retrieve icon="square-terminal"
-curl --location --request GET 'https://api.magic.link/v2/api/magic_client/allowlist' \
---header 'X-Magic-Secret-Key: sk_live_3DACC9A06D5CDC09' \
---header 'Content-Type: application/json' \
---header 'Cookie: __cf_bm=w34mWVZYeODU83q0alw17X408w8BxmxR8i3YTTQYVls-1669063237-0-AYuG2UZfC1uZavFSBmkMR092XzNTyfIDwEjYgxh0F3lFI5onOggETiTGpKZ3mPadfzv9MhA2e0Ie7YirysS73TA=; __cfruid=5727be2dcf833d7240c9a02a6f3c9d8b6853c6e3-1669063237' \
---data-raw '{
-    "target_client_id": "cdoE6PoD1Kp5I4Jr_gZGAZ2-qDnYaI9Zroj6DqTV1gI="
+```bash Remove Redirects icon="minus"
+curl -X DELETE 'https://api.dashboard.magic.link/v1/admin/access_whitelist' \
+-H 'X-Magic-Secret-Key: sk_live_XXXXXXXX' \
+-H 'Content-Type: application/json' \
+-d '{
+    "access_type": "redirect_url",
+    "value": "https://example.com/callback"
 }'
 ```
 </CodeGroup>
 
-### What happens if I don’t configure them?
-
-If the redirects are not verified and whitelisted, there is a potential for attackers to drive users to malicious websites or phishing pages, and/or steal sensitive information such as login credentials. Due to this, the redirect allowlist is required and must be configured for your app. By whitelisting redirect URLs, application owners can ensure that users are only redirected to trusted and secure destinations.
