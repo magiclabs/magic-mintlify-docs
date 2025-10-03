@@ -48,7 +48,7 @@ const magic = new Magic('YOUR_API_KEY', {
 });
 
 // Switch to Optimism network
-await magic.evm.switchEVMChain(10);
+await magic.evm.switchChain(10);
 
 // Get current EVM address (works for any EVM chain)
 const provider = new ethers.BrowserProvider(magic.rpcProvider);
@@ -132,7 +132,7 @@ export const NetworkProvider = ({ children }: {children: React.ReactNode}) => {
     
     if (network.type === NetworkType.EVM && network.chainId) {
       // Switch EVM chain
-      await magicInstance.evm.switchEVMChain(network.chainId);
+      await magicInstance.evm.switchChain(network.chainId);
     }
     
     setCurrentNetwork(network);

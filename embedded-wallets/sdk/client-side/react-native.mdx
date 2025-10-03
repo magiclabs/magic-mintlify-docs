@@ -1046,7 +1046,7 @@ The EVM Module and it's members are accessible on the Magic SDK instance by the 
 
 To use the EVM Module in your application, install `@magic-ext/evm` along with `magic-sdk`.
 
-### `switchEVMChain`
+### `switchChain`
 
 Switches the active EVM chain to the specified chain ID.
 
@@ -1082,7 +1082,7 @@ const magic = new Magic('YOUR_API_KEY', {
 });
 
 // Switch to Optimism network
-await magic.evm.switchEVMChain(10);
+await magic.evm.switchChain(10);
 ```
 
 ## Blockchain Modules
