@@ -1,157 +1,174 @@
 ---
 title: "Multichain"
-description: "Build multichain dApps with Magic by supporting multiple networks and blockchain ecosystems in a single application."
+description: "Build multichain dApps with Magic using EVM chain switching and blockchain extensions to support multiple networks and ecosystems in a single application."
 ---
 
 ## Overview
 
-Modern blockchain applications increasingly need to support multiple networks, including both mainnet and testnet environments across different blockchain ecosystems. Magic's SDK makes this possible by allowing you to create separate instances for each blockchain you want to support.
+Modern blockchain applications need to support multiple networks and blockchain ecosystems. Magic's SDK provides a unified approach for multichain support by configuring a single Magic instance with multiple extensions:
 
-## Setting Up Network Constants
+- **EVM Extensions**: Support multiple EVM-compatible chains with seamless switching
+- **Blockchain Extensions**: Support non-EVM chains like Solana, Bitcoin, Hedera, and more
 
-First, define an enum for all supported networks and helper functions to retrieve network-specific information:
+This allows you to interact with Polygon, Optimism, Solana, Hedera, and other networks all from one Magic SDK instance.
 
-```typescript TypeScript icon="square-js"
-export enum Network {
-  POLYGON_AMOY = 'polygon-amoy',
-  POLYGON = 'polygon',
-  ETHEREUM_SEPOLIA = 'ethereum-sepolia',
-  ETHEREUM = 'ethereum',
-  ETHERLINK = 'etherlink',
-  ETHERLINK_TESTNET = 'etherlink-testnet',
-  ZKSYNC = 'zksync',
-  ZKSYNC_SEPOLIA = 'zksync-sepolia',
-}
+## Complete Multichain Setup
 
-// Get RPC URL for the current network
-export const getNetworkUrl = (network: Network): string => {
-  switch (network) {
-    case Network.POLYGON:
-      return 'https://polygon-rpc.com/';
-    case Network.POLYGON_AMOY:
-      return 'https://rpc-amoy.polygon.technology/';
-    case Network.ETHEREUM_SEPOLIA:
-      return 'https://eth-sepolia.g.alchemy.com/v2/YOUR_API_KEY';
-    case Network.ETHEREUM:
-      return 'https://eth-mainnet.g.alchemy.com/v2/YOUR_API_KEY';
-    case Network.ETHERLINK:
-      return 'https://node.mainnet.etherlink.com';
-    case Network.ETHERLINK_TESTNET:
-      return 'https://node.ghostnet.etherlink.com';
-    case Network.ZKSYNC:
-      return 'https://mainnet.era.zksync.io';
-    case Network.ZKSYNC_SEPOLIA:
-      return 'https://zksync-era-sepolia.blockpi.network/v1/rpc/public';
-    default:
-      throw new Error('Network not supported');
-  }
-};
+Configure a single Magic instance to support multiple blockchain networks:
 
-// Get chain ID for the current network
-export const getChainId = (network: Network): number => {
-  switch (network) {
-    case Network.POLYGON:
-      return 137;
-    case Network.POLYGON_AMOY:
-      return 80002;
-    case Network.ETHEREUM_SEPOLIA:
-      return 11155111;
-    case Network.ETHEREUM:
-      return 1;
-    case Network.ETHERLINK:
-      return 42793;
-    case Network.ETHERLINK_TESTNET:
-      return 128123;
-    case Network.ZKSYNC:
-      return 324;
-    case Network.ZKSYNC_SEPOLIA:
-      return 300;
-    default:
-      throw new Error('Network not supported');
-  }
-};
-```
-
-## Creating Magic Instances for Multiple Networks
-
-With the network utilities in place, you can create Magic instances for each supported network:
-
-```typescript TypeScript icon="square-js"
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
-import { Network, getNetworkUrl, getChainId } from './networkUtils';
+import { EVMExtension } from '@magic-ext/evm';
+import { SolanaExtension } from '@magic-ext/solana';
+import { HederaExtension } from '@magic-ext/hedera';
+import { ethers } from 'ethers';
 
-// Function to create a Magic instance for a specific network
-export const createMagicInstance = (network: Network) => {
-  const rpcUrl = getNetworkUrl(network);
-  const chainId = getChainId(network);
-  
-  return new Magic('YOUR_MAGIC_API_KEY', {
-    network: {
-      rpcUrl,
-      chainId,
-    }
-  });
-};
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    // EVM chain switching for Polygon and Optimism
+    new EVMExtension([
+      {
+        rpcUrl: 'https://polygon-rpc.com/',
+        chainId: 137,
+        default: true,
+      },
+      {
+        rpcUrl: 'https://mainnet.optimism.io',
+        chainId: 10,
+      },
+    ]),
+    // Blockchain extensions for Solana and Hedera
+    new SolanaExtension({
+      rpcUrl: 'https://api.mainnet-beta.solana.com',
+    }),
+    new HederaExtension({
+      rpcUrl: 'https://mainnet-public.mirrornode.hedera.com',
+    }),
+  ],
+});
 
-// Example: Create Magic instances for multiple networks
-const ethereumMagic = createMagicInstance(Network.ETHEREUM);
-const polygonMagic = createMagicInstance(Network.POLYGON);
-const zkSyncMagic = createMagicInstance(Network.ZKSYNC);
+// Switch to Optimism network
+await magic.evm.switchEVMChain(10);
+
+// Get current EVM address (works for any EVM chain)
+const provider = new ethers.BrowserProvider(magic.rpcProvider);
+const accounts = await provider.listAccounts();
+const evmAddress = accounts[0].address;
+
+// Get Solana address
+const solanaAddress = await magic.solana.getPublicAddress();
+
+// Get Hedera address
+const hederaAddress = await magic.hedera.getPublicAddress();
 ```
 
-## Managing Network State in Your Application
+## Network Management in Your Application
 
-To effectively switch between networks, implement a context or state management solution:
+Implement a comprehensive network management system for your unified multichain Magic instance:
 
-```typescript TypeScript icon="square-js"
+```tsx TypeScript icon="square-js"
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { Magic } from 'magic-sdk';
-import { Network, getNetworkName } from './networkUtils';
+import { EVMExtension } from '@magic-ext/evm';
+import { SolanaExtension } from '@magic-ext/solana';
+import { HederaExtension } from '@magic-ext/hedera';
+import { ethers } from 'ethers';
+
+// Define supported networks
+export enum NetworkType {
+  EVM = 'evm',
+  SOLANA = 'solana',
+  HEDERA = 'hedera',
+}
+
+export interface Network {
+  type: NetworkType;
+  chainId?: number; // For EVM chains
+  name: string;
+  rpcUrl?: string;
+}
+
+const SUPPORTED_NETWORKS: Network[] = [
+  { type: NetworkType.EVM, chainId: 137, name: 'Polygon' },
+  { type: NetworkType.EVM, chainId: 10, name: 'Optimism' },
+  { type: NetworkType.SOLANA, name: 'Solana' },
+  { type: NetworkType.HEDERA, name: 'Hedera' },
+];
 
 interface NetworkContextType {
   currentNetwork: Network;
   magicInstance: Magic | null;
-  switchNetwork: (network: Network) => void;
-  networkName: string;
+  switchNetwork: (network: Network) => Promise<void>;
+  getPublicAddress: () => Promise<string>;
 }
 
 const NetworkContext = createContext<NetworkContextType | undefined>(undefined);
 
-export const NetworkProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
-  // Default to Ethereum
-  const [currentNetwork, setCurrentNetwork] = useState<Network>(Network.ETHEREUM);
+export const NetworkProvider = ({ children }: {children: React.ReactNode}) => {
+  const [currentNetwork, setCurrentNetwork] = useState<Network>(SUPPORTED_NETWORKS[0]);
   const [magicInstance, setMagicInstance] = useState<Magic | null>(null);
   
-  // Initialize or update Magic instance when network changes
+  // Initialize Magic instance
   useEffect(() => {
-    const newMagicInstance = createMagicInstance(currentNetwork);
-    setMagicInstance(newMagicInstance);
-    
-    // Clean up previous instance when switching networks
-    return () => {
-      // Any cleanup needed for previous Magic instance
-    };
-  }, [currentNetwork]);
+    const magic = new Magic('YOUR_API_KEY', {
+      extensions: [
+        new EVMExtension([
+          { rpcUrl: 'https://polygon-rpc.com/', chainId: 137, default: true },
+          { rpcUrl: 'https://mainnet.optimism.io', chainId: 10 },
+        ]),
+        new SolanaExtension({
+          rpcUrl: 'https://api.mainnet-beta.solana.com',
+        }),
+        new HederaExtension({
+          rpcUrl: 'https://mainnet-public.mirrornode.hedera.com',
+        }),
+      ],
+    });
+    setMagicInstance(magic);
+  }, []);
   
-  const switchNetwork = (network: Network) => {
+  const switchNetwork = async (network: Network) => {
+    if (!magicInstance) return;
+    
+    if (network.type === NetworkType.EVM && network.chainId) {
+      // Switch EVM chain
+      await magicInstance.evm.switchEVMChain(network.chainId);
+    }
+    
     setCurrentNetwork(network);
   };
   
-  const networkName = getNetworkName(currentNetwork);
+  const getPublicAddress = async (): Promise<string> => {
+    if (!magicInstance) throw new Error('Magic instance not initialized');
+    
+    if (currentNetwork.type === NetworkType.EVM) {
+      // Use ethers for EVM chains
+      const provider = new ethers.BrowserProvider(magicInstance.rpcProvider);
+      const accounts = await provider.listAccounts();
+      return accounts[0].address;
+    } else if (currentNetwork.type === NetworkType.SOLANA) {
+      // Use Solana extension
+      return await magicInstance.solana.getPublicAddress();
+    } else if (currentNetwork.type === NetworkType.HEDERA) {
+      // Use Hedera extension
+      return await magicInstance.hedera.getPublicAddress();
+    }
+    
+    throw new Error('Unsupported network type');
+  };
   
   return (
     <NetworkContext.Provider value={{ 
       currentNetwork, 
       magicInstance, 
       switchNetwork,
-      networkName
+      getPublicAddress
     }}>
       {children}
     </NetworkContext.Provider>
   );
 };
 
-// Custom hook to use the network context
 export const useNetwork = () => {
   const context = useContext(NetworkContext);
   if (context === undefined) {
@@ -161,40 +178,39 @@ export const useNetwork = () => {
 };
 ```
 
-## Creating a Network Selector Component
+## Network Selector Component
 
-Provide users with a clear UI to switch between networks:
+Create a comprehensive network selector that handles both EVM chains and blockchain extensions:
 
-```typescript TypeScript icon="square-js"
+```tsx TypeScript icon="square-js"
 import React from 'react';
 import { useNetwork } from './NetworkContext';
-import { Network, getNetworkName, getNetworkToken } from './networkUtils';
+import { SUPPORTED_NETWORKS } from './NetworkContext';
 
-export const NetworkSelector: React.FC = () => {
+export const NetworkSelector = () => {
   const { currentNetwork, switchNetwork } = useNetwork();
-  
-  const networks = [
-    Network.ETHEREUM,
-    Network.ETHEREUM_SEPOLIA,
-    Network.POLYGON,
-    Network.POLYGON_AMOY,
-    Network.ZKSYNC,
-    Network.ZKSYNC_SEPOLIA,
-    Network.ETHERLINK,
-    Network.ETHERLINK_TESTNET,
-  ];
   
   return (
     <div className="network-selector">
       <label htmlFor="network-select">Current Network:</label>
       <select 
         id="network-select"
-        value={currentNetwork}
-        onChange={(e) => switchNetwork(e.target.value as Network)}
+        value={`${currentNetwork.type}-${currentNetwork.chainId || 'default'}`}
+        onChange={(e) => {
+          const [type, chainId] = e.target.value.split('-');
+          const network = SUPPORTED_NETWORKS.find(n => 
+            n.type === type && 
+            (chainId === 'default' ? !n.chainId : n.chainId === parseInt(chainId))
+          );
+          if (network) switchNetwork(network);
+        }}
       >
-        {networks.map((network) => (
-          <option key={network} value={network}>
-            {getNetworkName(network)} ({getNetworkToken(network)})
+        {SUPPORTED_NETWORKS.map((network) => (
+          <option 
+            key={`${network.type}-${network.chainId || 'default'}`} 
+            value={`${network.type}-${network.chainId || 'default'}`}
+          >
+            {network.name}
           </option>
         ))}
       </select>
@@ -205,109 +221,86 @@ export const NetworkSelector: React.FC = () => {
 
 ## Performing Network-Specific Operations
 
-When interacting with the blockchain, use the active Magic instance:
+Handle operations across different network types:
 
-```typescript TypeScript icon="square-js"
+```tsx TypeScript icon="square-js"
 import { useNetwork } from './NetworkContext';
 import { ethers } from 'ethers';
 
-export const TokenTransfer: React.FC = () => {
-  const { magicInstance, networkName } = useNetwork();
+export const WalletOperations = () => {
+  const { currentNetwork, magicInstance, getPublicAddress } = useNetwork();
   
-  const sendTransaction = async (recipient: string, amount: string) => {
+  const handleGetAddress = async () => {
+    try {
+      const address = await getPublicAddress();
+      console.log(`${currentNetwork.name} Address:`, address);
+    } catch (error) {
+      console.error('Failed to get address:', error);
+    }
+  };
+  
+  const handleRevealPrivateKey = async () => {
     if (!magicInstance) return;
     
     try {
-      // Get provider from the active Magic instance
-      const provider = new ethers.providers.Web3Provider(magicInstance.rpcProvider);
-      const signer = provider.getSigner();
-      
-      // Create and send transaction
-      const tx = await signer.sendTransaction({
-        to: recipient,
-        value: ethers.utils.parseEther(amount)
-      });
-      
-      console.log(`Transaction sent on ${networkName}:`, tx.hash);
-      return tx;
+      if (currentNetwork.type === NetworkType.EVM) {
+        // For EVM chains, use the user module
+        await magicInstance.user.revealEVMPrivateKey();
+      } else if (currentNetwork.type === NetworkType.SOLANA) {
+        // For Solana, use the extension
+        await magicInstance.solana.revealPrivateKey();
+      } else if (currentNetwork.type === NetworkType.HEDERA) {
+        // For Hedera, use the extension
+        await magicInstance.hedera.revealPrivateKey();
+      }
+    } catch (error) {
+      console.error('Failed to reveal private key:', error);
+    }
+  };
+  
+  const handleSendTransaction = async (recipient: string, amount: string) => {
+    if (!magicInstance) return;
+    
+    try {
+      if (currentNetwork.type === NetworkType.EVM) {
+        // EVM transaction using ethers
+        const provider = new ethers.BrowserProvider(magicInstance.rpcProvider);
+        const signer = provider.getSigner();
+        
+        const tx = await signer.sendTransaction({
+          to: recipient,
+          value: ethers.parseEther(amount)
+        });
+        
+        console.log(`EVM Transaction sent:`, tx.hash);
+        return tx;
+      } else {
+        // Non-EVM chains would require chain-specific transaction logic
+        console.log('Non-EVM transaction logic would go here');
+      }
     } catch (error) {
       console.error('Transaction failed:', error);
       throw error;
     }
   };
   
-  // Component JSX...
+  return (
+    <div className="wallet-operations">
+      <button onClick={handleGetAddress}>
+        Get {currentNetwork.name} Address
+      </button>
+      <button onClick={handleRevealPrivateKey}>
+        Reveal Private Key
+      </button>
+      {/* Additional UI components */}
+    </div>
+  );
 };
 ```
 
-<Tip>
-By implementing this architecture, your application can seamlessly support multiple blockchains while maintaining a cohesive user experience through Magic's consistent authentication layer.
-</Tip>
+## Resources
 
-## Supporting Non-EVM Chains
-
-While this guide focuses on EVM-compatible chains, you can extend your multichain application to support non-EVM chains (like Solana or Bitcoin) using the same architectural pattern. The main differences will be in the chain-specific extensions, transaction signing, and sending logic.
-
-### Solana Integration
-
-#### Creating a Solana Magic Instance
-
-```typescript TypeScript icon="square-js"
-import { Magic } from "magic-sdk";
-import { SolanaExtension } from "@magic-ext/solana";
-
-const createSolanaMagicInstance = (rpcUrl: string) => {
-  return new Magic("YOUR_API_KEY", {
-    extensions: [
-      new SolanaExtension({
-        rpcUrl,
-      }),
-    ],
-  });
-};
-```
-
-#### Sending Transactions
-
-```typescript TypeScript icon="square-js"
-import * as web3 from "@solana/web3.js";
-
-const sendSolanaTransaction = async (magic: Magic, amount: number) => {
-  const connection = new web3.Connection(web3.clusterApiUrl("devnet"));
-  // Transaction logic here
-};
-```
-
-#### Signing Messages
-
-```typescript TypeScript icon="square-js"
-const signSolanaMessage = async (magic: Magic, message: string) => {
-  const signedMessage = await magic.solana.signMessage(message);
-  return signedMessage;
-};
-```
-
-<Info>
-The core architecture of network selection, Magic instance management, and UI components remains the same across chains - only the blockchain-specific interactions need to be adapted for each chain type. While EVM chains use `ethers.js` for transaction handling, Solana uses the `@solana/web3.js` library with its own transaction patterns and signing methods.
-</Info>
-
-## Admin SDK: Managing User Wallets Server-Side
-
-Your application may need to retrieve user wallets on the server side. The Magic Admin SDK provides several methods to fetch user metadata including their multichain wallets.
-
-```typescript TypeScript icon="square-js"
-import { Magic, WalletType } from "@magic-sdk/admin";
-
-const magic = new Magic("YOUR_ADMIN_SECRET_KEY");
-```
-
-The `WalletType` enum supports multiple chains including:
-
-- **ETH** (Ethereum and other EVM chains)
-- **SOLANA**
-- **BITCOIN**
-- **FLOW**
-- **COSMOS**
-- And many others
-
-This allows you to manage user wallet information across different blockchains from your backend services.
+- [EVM Chain Switching](/embedded-wallets/wallets/features/evm-chain-switching)
+- [JavaScript SDK Reference](/embedded-wallets/sdk/client-side/javascript#evm-module)
+- [React Native SDK Reference](/embedded-wallets/sdk/client-side/react-native#evm-module)
+- [Blockchain Overview](/embedded-wallets/blockchains/overview)
