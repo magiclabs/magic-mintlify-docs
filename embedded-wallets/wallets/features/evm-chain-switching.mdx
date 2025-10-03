@@ -15,8 +15,12 @@ EVM chain switching is available on web SDK version 31.0.0+ and React Native SDK
 
 To enable EVM chain switching, you need to configure multiple networks when initializing the Magic SDK:
 
+<Warning>
+**Legacy Network Parameter**: When using the EVM Extension, you no longer need to pass the `network` parameter to the Magic constructor. The old approach `new Magic('API_KEY', { network: 'sepolia' })` is not required with the EVM Extension.
+</Warning>
+
 <Note>
-**Built-in Networks**: Ethereum mainnet (chainId: 1) and Sepolia testnet (chainId: 11155111) are included out of the box and don't need to be configured. You can switch to them using `magic.evm.switchChain(1)` or `magic.evm.switchChain(11155111)` regardless of your extension configuration.
+**Built-in Networks**: Ethereum mainnet (chainId: 1) and Sepolia testnet (chainId: 11155111) are included out of the box and don't need to be configured. You can switch to them using `magic.evm.switchEVMChain(1)` or `magic.evm.switchEVMChain(11155111)` regardless of your extension configuration.
 </Note>
 
 ```javascript JavaScript icon="square-js"
