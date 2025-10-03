@@ -1,19 +1,19 @@
 ---
-title: EVM Network Switching
-description: Switch between different EVM-compatible blockchain networks seamlessly with Magic's EVM network switching feature.
+title: EVM Chain Switching
+description: Switch between different EVM-compatible blockchain networks seamlessly with Magic's EVM chain switching feature.
 ---
 
 ## Overview
 
-Magic's EVM network switching feature allows users to seamlessly switch between different EVM-compatible blockchain networks without requiring separate wallet instances. This feature supports Ethereum, Polygon, Base, Arbitrum, Optimism, and custom EVM networks.
+Magic's EVM chain switching feature allows users to seamlessly switch between different EVM-compatible blockchain networks without requiring separate wallet instances. This feature supports Ethereum, Polygon, Base, Arbitrum, Optimism, and custom EVM networks.
 
 <Note>
-EVM network switching is available on web SDK version 31.0.0+ and React Native SDKs version 32.0.0+.
+EVM chain switching is available on web SDK version 31.0.0+ and React Native SDKs version 32.0.0+.
 </Note>
 
 ## Setup
 
-To enable EVM network switching, you need to configure multiple networks when initializing the Magic SDK:
+To enable EVM chain switching, you need to configure multiple networks when initializing the Magic SDK:
 
 ```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
@@ -37,7 +37,7 @@ const magic = new Magic('YOUR_API_KEY', {
 });
 ```
 
-## Switching Networks
+## Switching Chains
 
 Use the `switchEVMChain` method to switch between configured EVM networks:
 
@@ -63,7 +63,7 @@ When configuring EVM networks, you can specify the following options:
 
 ## Complete Example
 
-Here's a complete example showing how to set up and use EVM network switching:
+Here's a complete example showing how to set up and use EVM chain switching:
 
 ```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
