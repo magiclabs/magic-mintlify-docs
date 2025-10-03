@@ -193,6 +193,7 @@
               {
                 "group": "Features",
                 "pages": [
+                  "embedded-wallets/wallets/features/evm-chain-switching",
                   "embedded-wallets/wallets/features/transaction-signing",
                   "embedded-wallets/wallets/features/personal-signatures",
                   "embedded-wallets/wallets/features/fiat-on-ramps",

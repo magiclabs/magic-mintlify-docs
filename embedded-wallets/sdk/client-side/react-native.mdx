@@ -73,7 +73,7 @@ Configure and construct your Magic SDK instance.
 | Parameter                  | Type             | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `apiKey`                   | String           | Your **publishable** API Key retrieved from the Magic Dashboard.                                                                                                                                                                                                                                                                                                                                                                             |
 | `options.locale?`          | String           | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/embedded-wallets/authentication/customization/localization) for more.                                                                                                                                                                                                                                                                                        |
-| `options.network?`         | String \| Object | (String): A representation of the connected Ethereum network (mainnet or goerli).<br/><br/>⁠(Object): A custom Ethereum Node configuration with the following shape:<br/><br/>⁠`rpcUrl` (String): A URL pointing to your custom Ethereum Node.⁠⁠<br/><br/>⁠`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer. |
+| `options.network?`         | String \| Object | (String): A representation of the connected Ethereum network (mainnet or goerli).<br/><br/>⁠(Object): A custom Ethereum Node configuration with the following shape:<br/><br/>⁠`rpcUrl` (String): A URL pointing to your custom Ethereum Node.⁠⁠<br/><br/>⁠`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer.<br/><br/><Note>**EVM Extension**: When using the EVM Extension, the `network` parameter is not required. Network configuration is handled through the EVM Extension instead.</Note> |
 | `options.endpoint?`        | String           | A URL pointing to the Magic `<iframe>` application.                                                                                                                                                                                                                                                                                                                                                                                          |
 | `options.deferPreload?`    | Boolean          | An optional flag to delay the loading of the Magic Iframe's static assets until an SDK function is explicitly invoked. ⁠⁠⁠Set this to true if latency bottlenecks are a concern.                                                                                                                                                                                                                                                             |
 | `options.useStorageCache?` | Boolean          | An optional flag to allow the usage of the local storage as cache. Currently it is only used for faster calls to `isLoggedIn`. When set to `true`, the `magic.user.onUserLoggedOut` event listener needs to be used.                                                                                                                                                                                                                         |
@@ -920,9 +920,13 @@ try {
 }
 ```
 
-### `revealPrivateKey`
+### `revealEVMPrivateKey`
 
-Displays an iframe revealing the current user’s private key. Allows for users to take their private key to another wallet. Neither Magic nor the developer can see this key; only the end user can.
+Displays an iframe revealing the current user's EVM private key. Allows for users to take their private key to another wallet. Neither Magic nor the developer can see this key; only the end user can.
+
+<Warning>
+**Breaking Change**: As of SDK version 32.0.0, `revealPrivateKey()` has been renamed to `revealEVMPrivateKey()` for EVM chains. For non-EVM chains, use the specific extension's `revealPrivateKey()` method instead.
+</Warning>
 
 **Arguments**
 
@@ -943,7 +947,7 @@ import { Magic } from '@magic-sdk/react-native-expo';
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-  await magic.user.revealPrivateKey();
+  await magic.user.revealEVMPrivateKey();
 } catch {
   // Handle errors if required!
 }
@@ -1034,6 +1038,141 @@ await magic.oauth.loginWithPopup({
   redirectURI: 'https://your-app.com/your/oauth/callback',
   scope: ['user:email'] /* optional */,
 });
+```
+
+## EVM Module
+
+The EVM Module and it's members are accessible on the Magic SDK instance by the `evm` property.
+
+To use the EVM Module in your application, install `@magic-ext/evm` along with `magic-sdk`.
+
+### `switchChain`
+
+Switches the active EVM chain to the specified chain ID.
+
+<Note>
+For more detailed information, see the [EVM Chain Switching](/embedded-wallets/wallets/features/evm-chain-switching) documentation.
+</Note>
+
+**Arguments**
+
+- `chainId` (Number): The chain ID of the target EVM network
+
+**Returns**
+
+- `Promise<{ network: string | { rpcUrl: string; chainId?: number; chainType?: string; } | undefined; }>`: Resolves with network configuration when the network switch is complete
+
+**Example**
+
+```javascript JavaScript icon="react"
+// Bare React Native
+import { Magic } from '@magic-sdk/react-native-bare';
+import { EVMExtension } from '@magic-ext/evm';
+// Expo React Native
+import { Magic } from '@magic-sdk/react-native-expo';
+import { EVMExtension } from '@magic-ext/evm';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new EVMExtension([
+      { rpcUrl: 'https://polygon-rpc.com/', chainId: 137, default: true },
+      { rpcUrl: 'https://mainnet.optimism.io', chainId: 10 },
+    ]),
+  ],
+});
+
+// Switch to Optimism network
+await magic.evm.switchChain(10);
+```
+
+## Blockchain Modules
+
+Magic SDK provides blockchain-specific modules for various networks through extensions.
+
+### Available Blockchain Extensions
+
+- **[Algorand](/embedded-wallets/blockchains/non-evm/algorand)**: `@magic-ext/algorand`
+- **[Aptos](/embedded-wallets/blockchains/non-evm/aptos)**: `@magic-ext/aptos`
+- **[Avalanche](/embedded-wallets/blockchains/non-evm/avalanche)**: `@magic-ext/avalanche`
+- **[Bitcoin](/embedded-wallets/blockchains/non-evm/bitcoin)**: `@magic-ext/bitcoin`
+- **[Cosmos](/embedded-wallets/blockchains/non-evm/cosmos)**: `@magic-ext/cosmos`
+- **[Flow](/embedded-wallets/blockchains/non-evm/flow)**: `@magic-ext/flow`
+- **[Hedera](/embedded-wallets/blockchains/evm/hedera)**: `@magic-ext/hedera`
+- **[Icon](/embedded-wallets/blockchains/non-evm/icon)**: `@magic-ext/icon`
+- **[Kadena](/embedded-wallets/blockchains/non-evm/kadena)**: `@magic-ext/kadena`
+- **[Near](/embedded-wallets/blockchains/non-evm/near)**: `@magic-ext/near`
+- **[Polkadot](/embedded-wallets/blockchains/non-evm/polkadot)**: `@magic-ext/polkadot`
+- **[Solana](/embedded-wallets/blockchains/non-evm/solana)**: `@magic-ext/solana`
+- **[Tezos](/embedded-wallets/blockchains/non-evm/tezos)**: `@magic-ext/tezos`
+- **[Zilliqa](/embedded-wallets/blockchains/non-evm/zilliqa)**: `@magic-ext/zilliqa`
+
+### Common Methods
+
+All blockchain extensions provide these common methods:
+
+#### `getPublicAddress`
+
+Retrieves the public address for the specific blockchain network.
+
+**Arguments**
+
+- _None_
+
+**Returns**
+
+- `Promise<string>`: The public address for the blockchain network
+
+**Example**
+
+```javascript JavaScript icon="react"
+// Bare React Native
+import { Magic } from '@magic-sdk/react-native-bare';
+import { SolanaExtension } from '@magic-ext/solana';
+import { BitcoinExtension } from '@magic-ext/bitcoin';
+// Expo React Native
+import { Magic } from '@magic-sdk/react-native-expo';
+import { SolanaExtension } from '@magic-ext/solana';
+import { BitcoinExtension } from '@magic-ext/bitcoin';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new SolanaExtension({ rpcUrl: 'SOLANA_RPC_NODE_URL' }),
+    new BitcoinExtension({ rpcUrl: 'BITCOIN_RPC_NODE_URL', network: 'testnet' }),
+  ],
+});
+
+// Get Solana public address
+const solanaAddress = await magic.solana.getPublicAddress();
+console.log(solanaAddress); // => "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+
+// Get Bitcoin public address
+const bitcoinAddress = await magic.bitcoin.getPublicAddress();
+console.log(bitcoinAddress); // => "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+```
+
+#### `revealPrivateKey`
+
+Displays an iframe revealing the private key for the specific blockchain network. This method shows a secure interface where users can view and copy their private key.
+
+**Arguments**
+
+- _None_
+
+**Returns**
+
+- `Promise<void>`: Resolves when the user closes the private key display window
+
+**Example**
+
+```javascript JavaScript icon="react"
+// Reveal Solana private key
+await magic.solana.revealPrivateKey();
+
+// Reveal Bitcoin private key
+await magic.bitcoin.revealPrivateKey();
+
+// Reveal Hedera private key
+await magic.hedera.revealPrivateKey();
 ```
 
 ## Response and Error Handling
