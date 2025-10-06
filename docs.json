@@ -343,6 +343,16 @@
       ]
     }
   },
+  "redirects": [
+    {
+      "source": "/embedded-wallets/authentication/login/oauth/oauth-implementation",
+      "destination": "/embedded-wallets/authentication/login/oauth/implementation"
+    },
+    {
+      "source": "/embedded-wallets/authentication/security/allowlists/mobile-access-allow-listing",
+      "destination": "/embedded-wallets/authentication/security/allowlists/mobile-allowlist"
+    }
+  ],
   "logo": {
     "light": "/logo/magic-logo-dark.svg",
     "dark": "/logo/magic-logo-light.svg",
