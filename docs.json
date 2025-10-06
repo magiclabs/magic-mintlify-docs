@@ -119,7 +119,7 @@
                   {
                     "group": "OAuth",
                     "pages": [
-                      "embedded-wallets/authentication/login/oauth/oauth-implementation",
+                      "embedded-wallets/authentication/login/oauth/implementation",
                       {
                         "group": "Social Providers",
                         "pages": [
@@ -177,7 +177,7 @@
                     "pages": [
                       "embedded-wallets/authentication/security/allowlists/domain-allowlist",
                       "embedded-wallets/authentication/security/allowlists/redirect-allowlist",
-                      "embedded-wallets/authentication/security/allowlists/mobile-access-allow-listing"
+                      "embedded-wallets/authentication/security/allowlists/mobile-allowlist"
                     ]
                   },
                   "embedded-wallets/authentication/security/device-registration",
@@ -343,6 +343,16 @@
       ]
     }
   },
+  "redirects": [
+    {
+      "source": "/embedded-wallets/authentication/login/oauth/oauth-implementation",
+      "destination": "/embedded-wallets/authentication/login/oauth/implementation"
+    },
+    {
+      "source": "/embedded-wallets/authentication/security/allowlists/mobile-access-allow-listing",
+      "destination": "/embedded-wallets/authentication/security/allowlists/mobile-allowlist"
+    }
+  ],
   "logo": {
     "light": "/logo/magic-logo-dark.svg",
     "dark": "/logo/magic-logo-light.svg",
