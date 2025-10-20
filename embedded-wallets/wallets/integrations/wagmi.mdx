@@ -26,7 +26,7 @@ yarn add wagmi @magiclabs/wagmi-connector
 
 ## Initialization
 
-To initialize, import the necessary dependencies from Magic and WAGMI in your root file (i.e.  `App.tsx`). ⁠ ⁠Next, add the Magic `DedicatedWalletConnector` and its configuration as the `connectors` value of the config.
+To initialize, import the necessary dependencies from Magic and WAGMI in your root file (i.e. `App.tsx`). ⁠⁠Next, add the Magic `DedicatedWalletConnector` and its configuration as the `connectors` value of the config.
 
 Finally, pass the configuration to the `WagmiConfig` component to make WAGMI hooks available across the whole application.
 
@@ -52,7 +52,7 @@ const config = createConfig({
       options: {
         apiKey: "PUBLISHABLE_API_KEY",
         isDarkMode: true,
-        /* If using OAuth, make sure to enable OAuth options from magic dashboard */
+        /* If using OAuth, make sure to enable OAuth options from Magic Dashboard */
         oauthOptions: {
           providers: [""],
         },

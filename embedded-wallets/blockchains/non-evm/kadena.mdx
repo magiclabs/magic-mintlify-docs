@@ -1,0 +1,235 @@
+---
+title: Kadena
+description: Integrate with Kadena blockchain using Magic's Kadena extension
+---
+
+## Overview
+
+Kadena is a secure and scalable proof-of-work network designed to power global financial systems. It is unique in its braided multi-chain architecture, currently consisting of 20 different chains per network.
+
+Magic interacts with the [Kadena](https://www.kadena.io/) blockchain via Magic's extension NPM package [`@magic-ext/kadena`](https://www.npmjs.com/package/@magic-ext/kadena). The Kadena extension also lets you interact with the blockchain using methods from [Kadena's Javascript SDK](https://github.com/kadena-community/kadena.js).
+
+<Note>
+  You can skip straight to our kitchen sink example directly: [Kadena
+  Example](https://example-kadena.vercel.app/)
+</Note>
+
+## Installation
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install --save @magic-ext/kadena
+```
+
+```bash Yarn icon="yarn"
+yarn add @magic-ext/kadena
+```
+
+</CodeGroup>
+
+## Initialization
+
+Developers can initialize the Kadena extension by providing the following config:
+
+- `rpcUrl` - endpoint for the Kadena node
+- `chainId` - chain ID for the Kadena network (0 - 19)
+- `networkId` - network ID for the Kadena network
+- `createAccountsOnChain` - this field specifies whether or not Magic will submit a `create-account` transaction as part of the new user sign up flow. Note that due to the on-chain transaction, enabling this will result in signups that take up to 30 seconds.
+
+<CodeGroup>
+```js Testnet icon="square-js"
+import { Magic } from "magic-sdk";
+import { KadenaExtension } from "@magic-ext/kadena";
+
+export const chainId = "0";
+export const networkId = "testnet04";
+export const rpcUrl = `https://api.testnet.chainweb.com/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new KadenaExtension({
+      rpcUrl,
+      chainId,
+      networkId,
+      createAccountsOnChain: true,
+    }),
+  ],
+});
+```
+
+```js Mainnet icon="square-js"
+import { Magic } from "magic-sdk";
+import { KadenaExtension } from "@magic-ext/kadena";
+
+export const chainId = "0";
+export const networkId = "mainnet01";
+export const rpcUrl = `https://api.chainweb.com/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new KadenaExtension({
+      rpcUrl,
+      chainId,
+      networkId,
+      createAccountsOnChain: true,
+    }),
+  ],
+});
+```
+</CodeGroup>
+
+## Common Methods
+
+### SpireKey Login
+
+Magic supports Kadena's SpireKey library, allowing users to login with just a passkey. Visit the [Kadena docs](https://www.kadena.io/spirekey) to learn more about SpireKey.
+
+```js JavaScript icon="square-js"
+const account = magic.kadena.loginWithSpireKey();
+```
+
+### Get User Info
+
+Returns information about the authenticated user, such as `accountName`, `publicKey`, `loginType` ('email_otp', 'sms', 'spirekey', etc), `isMfaEnabled`, `email`, `phoneNumber`, and `spireKeyInfo`.
+
+```js JavaScript icon="square-js"
+const userInfo = magic.kadena.getUserInfo();
+```
+
+### Get Test KDA Tokens
+
+Before you can send a transaction on the Kadena blockchain, you'll need to acquire some test KDA.
+
+1. Go to our [Kadena Example](https://codesandbox.io/p/sandbox/github/magiclabs/example-kadena) application
+2. Login with your email address
+3. Copy your Kadena account
+4. Go to the [Kadena Faucet](https://tools.kadena.io/faucet/existing)
+5. Paste your copied Kadena public address in the text input
+6. Now you can use your test KDA in our [example app](https://example-kadena.vercel.app/)
+
+
+### Sign Transaction (with SpireKey user)
+
+To sign a Kadena transaction for a SpireKey user, you can call the `magic.kadena.signTransactionWithSpireKey()` method.
+
+```js JavaScript icon="square-js"
+import { addSignatures, createClient, Pact } from "@kadena/client";
+import { PactNumber } from "@kadena/pactjs";
+
+export const chainId = "0";
+export const networkId = "testnet04";
+export const rpcUrl = `https://api.testnet.chainweb.com/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
+
+const handleSendTransaction = async () => {
+  const userInfo = await magic.kadena.getInfo();
+  const kadenaClient = createClient(rpcUrl);
+
+  const fromAccount = userInfo.accountName;
+  const senderPublicKey = userInfo.publicKey;
+
+  const toAccount = "k:...";
+  const receiverPublicKey = toAccount.substring(2);
+
+  const amount = new PactNumber(sendAmount).toPactDecimal();
+
+  const transaction = Pact.builder
+    .execution(
+      (Pact.modules as any).coin.transfer(fromAccount, toAccount, amount)
+    )
+    .addSigner(
+      {
+        pubKey: senderPublicKey,
+        scheme: "WebAuthn",
+      },
+      (withCapability: any) => [
+        withCapability("coin.GAS"),
+        withCapability("coin.TRANSFER", fromAccount, toAccount, amount),
+      ]
+    )
+    .addData("receiverKeyset", {
+      keys: [receiverPubKey],
+      pred: "keys-all",
+    })
+    .setMeta({ chainId, senderAccount: fromAccount })
+    .setNetworkId(networkId)
+    .createTransaction();
+
+  try {
+    const { transactions } = await magic.kadena.signTransactionWithSpireKey(
+      transaction
+    );
+    const signedTx = transactions[0];
+    const transactionDescriptor = await kadenaClient.submit(signedTx);
+    const response = await kadenaClient.listen(transactionDescriptor);
+    if (response.result.status === "failure") {
+      console.error(response.result.error);
+    } else {
+      console.log(response.result);
+    }
+  } catch (error) {
+    console.error("Failed to send transaction", error);
+  }
+};
+```
+
+### Sign Transaction (with non-SpireKey user)
+
+To sign a standard Kadena transaction, you can call the `magic.kadena.signTransaction()` method.
+
+```js JavaScript icon="square-js"
+import { addSignatures, createClient, Pact } from "@kadena/client";
+import { PactNumber } from "@kadena/pactjs";
+
+export const chainId = "0";
+export const networkId = "testnet04";
+export const rpcUrl = `https://api.testnet.chainweb.com/chainweb/0.0/${networkId}/chain/${chainId}/pact`;
+
+const handleSendTransaction = async () => {
+  const userInfo = await magic.kadena.getInfo();
+  const kadenaClient = createClient(rpcUrl);
+
+  const fromAccount = userInfo.accountName;
+  const senderPublicKey = userInfo.publicKey;
+
+  const toAccount = "k:...";
+  const receiverPublicKey = toAccount.substring(2);
+
+  const amount = new PactNumber(sendAmount).toPactDecimal();
+
+  const transaction = Pact.builder
+    .execution(
+      (Pact.modules as any).coin.transfer(fromAccount, toAccount, amount)
+    )
+    .addSigner(senderPubKey, (withCapability: any) => [
+      withCapability("coin.GAS"),
+      withCapability("coin.TRANSFER", fromAccount, toAccount, amount),
+    ])
+    .addData("receiverKeyset", {
+      keys: [receiverPubKey],
+      pred: "keys-all",
+    })
+    .setMeta({ chainId, senderAccount: fromAccount })
+    .setNetworkId(networkId)
+    .createTransaction();
+
+  try {
+    const signature = await magic.kadena.signTransaction(transaction.hash);
+    const signedTx = addSignatures(transaction, signature);
+    const transactionDescriptor = await kadenaClient.submit(signedTx);
+    const response = await kadenaClient.listen(transactionDescriptor);
+    if (response.result.status === "failure") {
+      console.error(response.result.error);
+    } else {
+      console.log(response.result);
+    }
+  } catch (error) {
+    console.error("Failed to send transaction", error);
+  }
+};
+```
+
+## Resources
+
+- [Kadena Docs](https://docs.kadena.io/)
+- [Kadena Block Explorer](https://explorer.chainweb.com/testnet)
+- [Kadena Testnet Faucet](https://tools.kadena.io/faucet/new)

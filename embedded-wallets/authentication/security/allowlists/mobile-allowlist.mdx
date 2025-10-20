@@ -1,0 +1,227 @@
+---
+title: Mobile Allowlist
+description: "Mobile Allowlist ensures secure mobile app access by restricting which mobile applications can use your Magic integration, preventing unauthorized usage and protecting your API keys."
+---
+
+## Overview
+
+The Mobile Allowlist is a security feature that restricts which mobile applications can access your Magic integration. When enabled, Magic will only allow requests from mobile apps whose App IDs are explicitly included in your allowlist.
+
+### Security Benefits
+
+<CardGroup cols={2}>
+<Card title="App Protection" icon="shield">
+  Prevents unauthorized mobile apps from using your Magic integration and API keys.
+</Card>
+
+<Card title="Traffic Control" icon="lock">
+  Blocks all traffic from unknown mobile sources, ensuring only approved apps can authenticate.
+</Card>
+</CardGroup>
+
+### How It Works
+
+When a mobile app makes a request to your Magic application:
+
+1. **App ID Check**: Magic verifies the app's Bundle ID (iOS) or Application ID (Android) against your allowlist
+2. **Allow/Block**: Requests from allowed apps proceed normally; blocked apps receive an error
+3. **User Notification**: Blocked apps show a user-friendly error message explaining the restriction
+
+<Info>
+**Mobile Only**: The Mobile Allowlist only applies to mobile applications using the Magic SDK. It doesn't affect web applications or server-side integrations.
+</Info>
+
+## Usage
+
+### Prerequisites
+
+Ensure your mobile SDK has been updated to the required version to enable this feature:
+
+<Tabs>
+<Tab title="iOS">
+  **Version**: 3.2.0 or later
+</Tab>
+
+<Tab title="Android">
+  **Version**: 2.2.0 or later
+</Tab>
+
+<Tab title="Flutter">
+  **Version**: 1.1.0 or later
+</Tab>
+
+<Tab title="Unity">
+  **Version**: 0.2.0 or later
+</Tab>
+
+<Tab title="React Native">
+  **Version**: 13.0.0 or later (Bare / Expo)
+</Tab>
+</Tabs>
+
+### Dashboard Configuration
+
+<Steps>
+<Step title="Access Your Application">
+  Navigate to the [Magic Dashboard](https://dashboard.magic.link) and select the application you want to configure.
+</Step>
+
+<Step title="Open Settings">
+  Go to the **Settings** tab of your selected application.
+</Step>
+
+<Step title="Find Allowlist Section">
+  Scroll down to the **"Allowed Origins & Redirects"** section.
+</Step>
+
+<Step title="Enable Mobile Allowlist">
+  Toggle the **Mobile App** switch to enable it.
+</Step>
+
+<Step title="Add App IDs">
+  In the text input field that appears, add the App IDs you want to allow. You can add multiple App IDs by separating them with commas or line breaks.
+</Step>
+
+<Step title="Save Changes">
+  Click **Save** to apply your mobile allowlist configuration.
+</Step>
+</Steps>
+
+<Frame>
+  <img src="/images/image-mobile-access.webp" alt="Mobile allowlist configuration interface in Magic Dashboard"/>
+</Frame>
+
+<Note>
+After adding App IDs, traffic from unauthorized mobile sources is blocked. Users from unauthorized apps will see an error message when they try to log in. If this happens unexpectedly, add the App ID from the error message to unblock these users.
+</Note>
+
+<Frame>
+  <img src="/images/verified-bundle-id-error_v2.webp" alt="Error message shown to users from unauthorized mobile apps"/>
+</Frame>
+
+### App ID Formatting
+
+When adding App IDs to your allowlist, follow these formatting rules:
+
+<AccordionGroup>
+<Accordion title="Supported App ID Formats">
+  - **iOS Bundle ID**: `com.example.app`, `link.magic.ios`
+  - **Android Application ID**: `com.example.app`, `link.magic.android`
+  - **Reverse DNS notation**: Usually written as `domain.company.app`
+  - **Minimum segments**: Must have at least two segments (one or more dots)
+  - **Valid characters**: Alphanumeric [a-zA-Z0-9] or `-` or `_`
+</Accordion>
+
+<Accordion title="Examples">
+  ```
+  com.example.myapp
+  link.magic.ios
+  link.magic.android
+  com.company.staging.app
+  io.github.username.project
+  ```
+</Accordion>
+
+<Accordion title="Important Rules">
+  - **Case sensitive**: App IDs are case-sensitive
+  - **Exact match**: Must match exactly as defined in your app
+  - **No wildcards**: Specific App IDs only, no wildcard patterns
+  - **Platform specific**: iOS and Android App IDs are separate entries
+</Accordion>
+</AccordionGroup>
+
+### Finding Your App ID
+
+The App ID is represented by the bundle identifier on iOS and the applicationId on Android:
+
+<Tabs>
+<Tab title="iOS">
+  Apple uses bundle identifiers (bundle IDs) to uniquely identify an application in Apple's ecosystem. These IDs are usually written in reverse DNS notation.
+
+  **Location**: **Target → Signing & Capabilities → Bundle Identifier**
+
+  <Frame>
+    <img src="/images/image-mobile-access-2.webp" alt="iOS Bundle Identifier in Xcode"/>
+  </Frame>
+</Tab>
+
+<Tab title="Android">
+  Your Android App ID is defined by the `applicationId` property in your module's `build.gradle` file:
+
+  ```kotlin Android icon="android"
+  android {
+      defaultConfig {
+          applicationId = "link.magic.android"
+          minSdk = 24
+          targetSdk = 31
+          versionCode = 1
+          versionName = "1.0"
+      }
+      ...
+  }
+  ```
+
+  For more details, refer to the [Official Android documentation](https://developer.android.com/studio/build/configure-app-module#set_the_application_id).
+</Tab>
+</Tabs>
+
+### Programmatic Configuration
+
+You can manage your mobile allowlist programmatically using the Magic API. This is useful for:
+
+- **Automated deployments**: Add App IDs as part of your CI/CD pipeline
+- **Bulk management**: Add or remove multiple App IDs at once
+- **Integration**: Manage App IDs from your own admin interface
+
+#### Prerequisites
+
+To use the programmatic API, you'll need your **Secret Key**:
+
+<Steps>
+<Step title="Access Your Application">
+  Navigate to a Magic app from the main dashboard landing page
+</Step>
+
+<Step title="Get Your Secret Key">
+  On the app home page, scroll to the **API Keys** section
+</Step>
+
+<Step title="Copy Secret Key">
+  Copy your **Secret Key** from the API Keys section
+</Step>
+</Steps>
+
+<Warning>
+**Security**: Keep your Secret Key secure and never expose it in client-side code or public repositories.
+</Warning>
+
+#### API Operations
+
+<CodeGroup>
+```bash List App IDs icon="list"
+curl -X GET 'https://api.dashboard.magic.link/v1/admin/access_whitelist' \
+-H 'X-Magic-Secret-Key: sk_live_XXXXXXXX'
+```
+
+```bash Add App IDs icon="plus"
+curl -X POST 'https://api.dashboard.magic.link/v1/admin/access_whitelist' \
+-H 'X-Magic-Secret-Key: sk_live_XXXXXXXX' \
+-H 'Content-Type: application/json' \
+-d '[
+    {
+        "access_type": "bundle",
+        "value": "com.example.myapp"
+    }
+]'
+```
+
+```bash Remove App IDs icon="minus"
+curl -X DELETE 'https://api.dashboard.magic.link/v1/admin/access_whitelist' \
+-H 'X-Magic-Secret-Key: sk_live_XXXXXXXX' \
+-H 'Content-Type: application/json' \
+-d '{
+    "access_type": "bundle",
+    "value": "com.example.myapp"
+}'
+```
+</CodeGroup>

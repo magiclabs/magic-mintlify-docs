@@ -4,6 +4,8 @@ description: "Tailor your authentication experience to perfection by selecting f
 sidebarTitle: Overview
 ---
 
+import { IconFarcaster } from "/snippets/icons/icon-farcaster.jsx";
+
 ## Login
 
 <CardGroup cols={3}>
@@ -21,7 +23,7 @@ sidebarTitle: Overview
   />
   <Card
     title="Farcaster"
-    icon="tower-observation"
+    icon={<IconFarcaster />}
     href="/embedded-wallets/authentication/login/farcaster"
     horizontal
   />
@@ -32,7 +34,7 @@ sidebarTitle: Overview
 <CardGroup cols={3}>
   <Card
     title="Getting Started With OAuth"
-    icon="key"
+    icon="users"
     href="/embedded-wallets/authentication/login/oauth/oauth-implementation"
     horizontal
   />
@@ -117,12 +119,6 @@ sidebarTitle: Overview
     title="MFA"
     icon="shield-halved"
     href="/embedded-wallets/authentication/features/mfa"
-    horizontal
-  />
-  <Card
-    title="Advanced MFA"
-    icon="shield-check"
-    href="/embedded-wallets/authentication/features/advanced-mfa"
     horizontal
   />
   <Card

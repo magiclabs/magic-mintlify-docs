@@ -1,5 +1,5 @@
 ---
-title: OAuth Implementation
+title: Implementation
 description: "With Magic, you can use OAuth as an authentication mechanism, giving users a simple way to log in with supported social providers."
 ---
 
@@ -8,14 +8,6 @@ description: "With Magic, you can use OAuth as an authentication mechanism, givi
 Applications can be integrated with the following social providers: [Google](/embedded-wallets/authentication/login/oauth/social-providers/google), [Facebook](/embedded-wallets/authentication/login/oauth/social-providers/facebook), [Twitter](/embedded-wallets/authentication/login/oauth/social-providers/twitter), [Apple](/embedded-wallets/authentication/login/oauth/social-providers/apple), [Discord](/embedded-wallets/authentication/login/oauth/social-providers/discord), [GitHub](/embedded-wallets/authentication/login/oauth/social-providers/github), [LinkedIn](/embedded-wallets/authentication/login/oauth/social-providers/linkedin), [Twitch](/embedded-wallets/authentication/login/oauth/social-providers/twitch), [Bitbucket](/embedded-wallets/authentication/login/oauth/social-providers/bitbucket) and [Microsoft](/embedded-wallets/authentication/login/oauth/social-providers/microsoft).
 
 ### Compatibility
-
-<Note>
-  Magic SDK offers two OAuth
-  extensions: [v1](https://www.npmjs.com/package/@magic-ext/oauth)
-  and [v2](https://www.npmjs.com/package/@magic-ext/oauth2). For web
-  applications, it is recommended to use v2, while v1 should be used for mobile
-  applications.
-</Note>
 
 OAuth SDK methods are available via the following client-side SDKs:
 
@@ -39,13 +31,9 @@ Social Logins work as an extension to Magic SDK. To add Social Login to your Mag
 <CodeGroup>
 ```bash NPM icon="npm"
 npm install magic-sdk @magic-ext/oauth2
-# or
-npm install magic-sdk @magic-ext/oauth
 ```
 ```bash Yarn icon="yarn"
 yarn add magic-sdk @magic-ext/oauth2
-# or
-yarn add magic-sdk @magic-ext/oauth
 ```
 
 </CodeGroup>
@@ -58,8 +46,6 @@ When creating your Magic instance, you'll need to add an instance of `OAuthExten
 import { Magic } from 'magic-sdk';
 
 import { OAuthExtension } from '@magic-ext/oauth2';
-// or
-import { OAuthExtension } from '@magic-ext/oauth';
 
 const magic = new Magic('YOUR_API_KEY', {
   extensions: [new OAuthExtension()],
@@ -75,7 +61,6 @@ Once logged in, you will have access to a DID token that can be used with our [A
 
 ```javascript JavaScript icon="square-js"
 const beginOAuthFlow = () => {
-  // if v1, use oauth module
   await magic.oauth2.loginWithRedirect({ //
     provider: '...' /* 'google', 'facebook', 'apple', or 'github'   */,
     redirectURI: 'https://your-app.com/your/oauth/callback',
@@ -85,7 +70,6 @@ const beginOAuthFlow = () => {
 
 // Call this upon redirect back to application
 const handleOAuthResult = () => {
-  // if v1, use oauth module
   const result = await magic.oauth2.getRedirectResult();
   console.log(`OAuth result: ${result}`);
 
@@ -114,5 +98,6 @@ interface OAuthRedirectResult {
 
 ## Resources
 
+- [OAuth Demo](https://magic-oauth-v2-dun.vercel.app)
 - [Web API documentation](/embedded-wallets/sdk/client-side/javascript#loginwithredirect)
 - [React Native API documentation](/embedded-wallets/sdk/client-side/react-native#loginwithpopup)

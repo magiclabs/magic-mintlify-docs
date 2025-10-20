@@ -59,7 +59,13 @@
               "api-wallets/express-api/getting-started",
               "api-wallets/express-api/identity-provider",
               "api-wallets/express-api/wallet-operations",
-              "api-wallets/express-api/data-preparation",
+              {
+                "group": "Data Preparation",
+                "pages": [
+                  "api-wallets/express-api/data-preparation/evm",
+                  "api-wallets/express-api/data-preparation/solana"
+                ]
+              },
               "api-wallets/express-api/error-handling"
             ]
           },
@@ -113,7 +119,7 @@
                   {
                     "group": "OAuth",
                     "pages": [
-                      "embedded-wallets/authentication/login/oauth/oauth-implementation",
+                      "embedded-wallets/authentication/login/oauth/implementation",
                       {
                         "group": "Social Providers",
                         "pages": [
@@ -140,7 +146,6 @@
                 "group": "Features",
                 "pages": [
                   "embedded-wallets/authentication/features/mfa",
-                  "embedded-wallets/authentication/features/advanced-mfa",
                   "embedded-wallets/authentication/features/account-recovery",
                   "embedded-wallets/authentication/features/decentralized-id"
                 ]
@@ -172,7 +177,7 @@
                     "pages": [
                       "embedded-wallets/authentication/security/allowlists/domain-allowlist",
                       "embedded-wallets/authentication/security/allowlists/redirect-allowlist",
-                      "embedded-wallets/authentication/security/allowlists/mobile-access-allow-listing"
+                      "embedded-wallets/authentication/security/allowlists/mobile-allowlist"
                     ]
                   },
                   "embedded-wallets/authentication/security/device-registration",
@@ -188,6 +193,7 @@
               {
                 "group": "Features",
                 "pages": [
+                  "embedded-wallets/wallets/features/evm-chain-switching",
                   "embedded-wallets/wallets/features/transaction-signing",
                   "embedded-wallets/wallets/features/personal-signatures",
                   "embedded-wallets/wallets/features/fiat-on-ramps",
@@ -268,7 +274,6 @@
                 "group": "EVM",
                 "pages": [
                   "embedded-wallets/blockchains/evm/arbitrum",
-                  "embedded-wallets/blockchains/evm/astar-zkevm",
                   "embedded-wallets/blockchains/evm/base",
                   "embedded-wallets/blockchains/evm/berachain",
                   "embedded-wallets/blockchains/evm/binance-smart-chain",
@@ -304,6 +309,7 @@
                   "embedded-wallets/blockchains/non-evm/cosmos",
                   "embedded-wallets/blockchains/non-evm/flow",
                   "embedded-wallets/blockchains/non-evm/icon",
+                  "embedded-wallets/blockchains/non-evm/kadena",
                   "embedded-wallets/blockchains/non-evm/near",
                   "embedded-wallets/blockchains/non-evm/polkadot",
                   "embedded-wallets/blockchains/non-evm/solana",
@@ -337,6 +343,16 @@
       ]
     }
   },
+  "redirects": [
+    {
+      "source": "/embedded-wallets/authentication/login/oauth/oauth-implementation",
+      "destination": "/embedded-wallets/authentication/login/oauth/implementation"
+    },
+    {
+      "source": "/embedded-wallets/authentication/security/allowlists/mobile-access-allow-listing",
+      "destination": "/embedded-wallets/authentication/security/allowlists/mobile-allowlist"
+    }
+  ],
   "logo": {
     "light": "/logo/magic-logo-dark.svg",
     "dark": "/logo/magic-logo-light.svg",
@@ -345,6 +361,13 @@
   "integrations": {
     "intercom": {
       "appId": "boaw5c39"
+    },
+    "gtm": {
+      "tagId": "GTM-M5KT69S"
+    },
+    "hightouch": {
+      "writeKey": "afefb07bc9025fa9b393a3835ca907d9747631d256935948e83d6e0e35e24803",
+      "apiHost": "us-east-1.hightouch-events.com"
     }
   },
   "navbar": {
@@ -358,6 +381,15 @@
       "type": "button",
       "label": "Start now",
       "href": "https://dashboard.magic.link/signup"
+    }
+  },
+  "seo": {
+    "metatags": {
+      "og:title": "Developer Docs | Magic",
+      "og:description": "Get started in minutes with Magic's API Wallets and Embedded Wallets. High-performance Web3 infrastructure with multi-chain support and enterprise-grade security.",
+      "og:url": "https://docs.magic.link",
+      "og:type": "website",
+      "og:image": "https://assets.magiclabs.com/assets/og-img.png"
     }
   },
   "footer": {

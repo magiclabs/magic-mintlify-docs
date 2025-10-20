@@ -41,8 +41,7 @@ Configure and construct your Magic SDK instance.
 | Parameter                  | Type             | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `apiKey`                   | String           | Your **publishable** API key retrieved from the Magic Dashboard.                                                                                                                                                                                                                                                                                                                                                                             |
 | `options.locale?`          | String           | Customize the language of Magic's modal, email and confirmation screen. See [Localization](/embedded-wallets/authentication/customization/localization) for more.                                                                                                                                                                                                                                                                                        |
-| `options.testMode?`        | Boolean          | Enable [`testMode`](/embedded-wallets/authentication/login/magic-links) to assert the desired behavior through the email address you provide to `loginWithMagicLink` without having to go through the auth flow.                                                                                                                                                                                                                                         |
-| `options.network?`         | String \| Object | (String): A representation of the connected Ethereum network (mainnet or goerli).<br/><br/>⁠(Object): A custom Ethereum Node configuration with the following shape:<br/><br/>⁠`rpcUrl` (String): A URL pointing to your custom Ethereum Node.⁠⁠<br/><br/>⁠`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer. |
+| `options.network?`         | String \| Object | (String): A representation of the connected Ethereum network (mainnet or goerli).<br/><br/>⁠(Object): A custom Ethereum Node configuration with the following shape:<br/><br/>⁠`rpcUrl` (String): A URL pointing to your custom Ethereum Node.⁠⁠<br/><br/>⁠`chainId?` (Number): Some Node infrastructures require you to pass an explicit chain ID. If you are aware that your Node requires this configuration, pass it here as an integer.<br/><br/><Note>**EVM Extension**: When using the EVM Extension, the `network` parameter is not required. Network configuration is handled through the EVM Extension instead.</Note> |
 | `options.endpoint?`        | String           | A URL pointing to the Magic `<iframe>` application.                                                                                                                                                                                                                                                                                                                                                                                          |
 | `options.deferPreload?`    | Boolean          | An optional flag to delay the loading of the Magic Iframe's static assets until an SDK function is explicitly invoked. ⁠⁠⁠Set this to true if latency bottlenecks are a concern.                                                                                                                                                                                                                                                             |
 | `options.useStorageCache?` | Boolean          | An optional flag to allow the usage of the local storage as cache. Currently it is only used for faster calls to `isLoggedIn`. When set to `true`, the `magic.user.onUserLoggedOut` event listener needs to be used.                                                                                                                                                                                                                         |
@@ -59,9 +58,6 @@ magic = new Magic('PUBLISHABLE_API_KEY');
 
 // Construct with an API key and locale:
 magic = new Magic('PUBLISHABLE_API_KEY', { locale: 'es' });
-
-// Construct with an API key and testMode enabled:
-magic = new Magic('PUBLISHABLE_API_KEY', { testMode: true });
 
 // Construct with an API key and defer the loading of the Magic Iframe's assets
 magic = new Magic('PUBLISHABLE_API_KEY', { deferPreload: true });
@@ -118,7 +114,7 @@ Authenticate a user passwordlessly using an email one-time code sent to the spec
 - `email` (String): The user email to log in with
 - `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
 - `showUI?` (Boolean): If `true`, show an out-of-the-box UI to accept the OTP from user. Defaults to `true`
-- `deviceCheckUI?` (Boolean): The default value is `true`. It shows Magic branded UI securing sign-ins from new devices. If set to `false`, the UI will remain hidden. However, this false value only takes effect when you have also set `showUI: false`. If you enable Device Verification in the Magic dashboard and are passing `showUI: false` you must also explicitly pass `deviceCheckUI: false`
+- `deviceCheckUI?` (Boolean): The default value is `true`. It shows Magic branded UI securing sign-ins from new devices. If set to `false`, the UI will remain hidden. However, this false value only takes effect when you have also set `showUI: false`. If you enable Device Verification in the Magic Dashboard and are passing `showUI: false` you must also explicitly pass `deviceCheckUI: false`
 
 ⁠
 
@@ -822,19 +818,97 @@ try {
 
 Retrieves information for the authenticated user.
 
+<Warning>
+**Breaking Change Notice**: Starting with SDK v30.0.0, the `publicAddress` field has been removed from the response and replaced with the structured `wallets` object. Please see the response structure below for more details.
+</Warning>
+
 **Arguments**
 
 * _None_
 
 **Returns**
 
-* `PromiEvent<string>`:
+The response structure depends on your SDK version:
+
+<Tabs>
+<Tab title="SDK v30.0.0+">
+**Response with Wallets Object**
+
+* `PromiEvent<object>`:
     * `issuer` (String): The Decentralized ID of the user. In server-side use-cases, we recommend this value to be used as the user ID in your own tables.
+    * `email` (String): Email address of the authenticated user
+    * `phoneNumber` (String): The phone number of the authenticated user
+    * `isMfaEnabled` (Boolean): Whether or not multi-factor authentication is enabled for the user
+    * `recoveryFactors` (Array): Any recovery methods that have been enabled (ex. `[{ type: 'phone_number', value: '+99999999' }]`)
+    * `wallets` (Object):  Organized wallet addresses by blockchain and network:
+        * `[chainName]` (Object): Each supported blockchain (e.g., `eth`, `solana`, `bitcoin`, `hedera`)
+            * `publicAddress` (String | null): The mainnet public address for this chain, or `null` if no mainnet wallet exists
+            * `subAccounts` (Array): Additional network addresses for this chain
+                * `name` (String): Network name (e.g., `testnet`)
+                * `publicAddress` (String): Public address for this network
+
+**Example Response:**
+
+```json
+{
+  "issuer": "did:ethr:0x...",
+  "email": "user@example.com",
+  "phoneNumber": null,
+  "isMfaEnabled": false,
+  "recoveryFactors": [],
+  "wallets": {
+    "ethereum": {
+      "publicAddress": "0x742d35Cc6634C0532925a3b8D4C9db96590b0b65",
+      "subAccounts": [
+        {
+          "name": "testnet",
+          "publicAddress": "0x8ba1f109551bD432803012645Hac136c22C501e"
+        }
+      ]
+    },
+    "solana": {
+      "publicAddress": "DRiP2Pn2K6fuMLKQmt5rZWxa91wRx1jRhTdY5L6kh5Kp",
+      "subAccounts": []
+    },
+    "bitcoin": {
+      "publicAddress": null,
+      "subAccounts": [
+        {
+          "name": "testnet", 
+          "publicAddress": "tb1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+        }
+      ]
+    }
+  }
+}
+```
+</Tab>
+
+<Tab title="SDK v29.x and below">
+**Legacy Response**
+
+* `PromiEvent<object>`:
+    * `issuer` (String): The Decentralized ID of the user
     * `email` (String): Email address of the authenticated user
     * `phoneNumber` (String): The phone number of the authenticated user
     * `publicAddress` (String): The authenticated user's public address (a.k.a.: public key)
     * `isMfaEnabled` (Boolean): Whether or not multi-factor authentication is enabled for the user
-    * `recoveryFactors` (Array): Any recovery methods that have been enabled (ex. `[{ type: 'phone_number', value: '+99999999' }]`)
+    * `recoveryFactors` (Array): Any recovery methods that have been enabled
+
+**Example Response:**
+
+```json
+{
+  "issuer": "did:ethr:0x...",
+  "email": "user@example.com", 
+  "phoneNumber": null,
+  "publicAddress": "0x742d35Cc6634C0532925a3b8D4C9db96590b0b65",
+  "isMfaEnabled": false,
+  "recoveryFactors": []
+}
+```
+</Tab>
+</Tabs>
 
 **Example**
 
@@ -1233,9 +1307,13 @@ try {
 | `lost-device` | Emit to submit Recovery Code submitted by user. |
 | `cancel-mfa-disable` | Emit to cancel the MFA disable flow. |
 
-### `revealPrivateKey`
+### `revealEVMPrivateKey`
 
-Displays an iframe revealing the current user’s private key. Allows for users to take their private key to another wallet. Neither Magic nor the developer can see this key; only the end user can.
+Displays an iframe revealing the current user's EVM private key. Allows for users to take their private key to another wallet. Neither Magic nor the developer can see this key; only the end user can.
+
+<Warning>
+**Breaking Change**: As of SDK version 31.0.0, `revealPrivateKey()` has been renamed to `revealEVMPrivateKey()` for EVM chains. For non-EVM chains, use the specific extension's `revealPrivateKey()` method instead.
+</Warning>
 
 **Arguments**
 
@@ -1253,7 +1331,7 @@ import { Magic } from 'magic-sdk';
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-  await magic.user.revealPrivateKey();
+  await magic.user.revealEVMPrivateKey();
 } catch {
   // Handle errors if required!
 }
@@ -1312,20 +1390,20 @@ Starts the OAuth 2.0 login flow.
 
 **Valid Providers**
 
-|           |               |                                                          |
-| --------- | ------------- | -------------------------------------------------------- |
-| Name      | Argument      | Example                                                  |
-| Google    | `'google'`    | [Google demo](https://magic-oauth-v2-dun.vercel.app/)    |
-| Facebook  | `'facebook'`  | [Facebook demo](https://magic-oauth-v2-dun.vercel.app/)  |
-| Twitter   | `'twitter'`   | [Twitter demo](https://magic-oauth-v2-dun.vercel.app/)   |
-| Apple     | `'apple'`     | [Apple demo](https://5kkmud.csb.app/)                    |
-| Discord   | `'discord'`   | [Discord demo](https://magic-oauth-v2-dun.vercel.app/)   |
-| GitHub    | `'github'`    | [Github demo](https://magic-oauth-v2-dun.vercel.app/)    |
-| LinkedIn  | `'linkedin'`  | [LinkedIn demo](https://magic-oauth-v2-dun.vercel.app/)  |
-| Bitbucket | `'bitbucket'` | [Bitbucket demo](https://magic-oauth-v2-dun.vercel.app/) |
-| GitLab    | `'gitlab'`    | [GitLab demo](https://magic-oauth-v2-dun.vercel.app/)    |
-| Twitch    | `'twitch'`    | [Twitch demo](https://magic-oauth-v2-dun.vercel.app/)    |
-| Microsoft | `'microsoft'` | [Microsoft demo](https://magic-oauth-v2-dun.vercel.app/) |
+|           |               |
+| --------- | ------------- |
+| Name      | Argument      |
+| Google    | `'google'`    |
+| Facebook  | `'facebook'`  |
+| Twitter   | `'twitter'`   |
+| Apple     | `'apple'`     |
+| Discord   | `'discord'`   |
+| GitHub    | `'github'`    |
+| LinkedIn  | `'linkedin'`  |
+| Bitbucket | `'bitbucket'` |
+| GitLab    | `'gitlab'`    |
+| Twitch    | `'twitch'`    |
+| Microsoft | `'microsoft'` |
 
 **Example**
 
@@ -1385,6 +1463,138 @@ interface OAuthRedirectResult {
   userInfo: ...;
   }
 };
+```
+
+## EVM Module
+
+The EVM Module and it's members are accessible on the Magic SDK instance by the `evm` property.
+
+To use the EVM Module in your application, install `@magic-ext/evm` along with `magic-sdk`.
+
+### `switchChain`
+
+Switches the active EVM chain to the specified chain ID.
+
+<Note>
+For more detailed information, see the [EVM Chain Switching](/embedded-wallets/wallets/features/evm-chain-switching) documentation.
+</Note>
+
+**Arguments**
+
+- `chainId` (Number): The chain ID of the target EVM network
+
+**Returns**
+
+- `Promise<{ network: string | { rpcUrl: string; chainId?: number; chainType?: string; } | undefined; }>`: Resolves with network configuration when the network switch is complete
+
+**Example**
+
+```javascript JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { EVMExtension } from '@magic-ext/evm';
+import { ethers } from 'ethers';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new EVMExtension([
+      { rpcUrl: 'https://polygon-rpc.com/', chainId: 137, default: true },
+      { rpcUrl: 'https://mainnet.optimism.io', chainId: 10 },
+    ]),
+  ],
+});
+
+// Switch to Optimism network
+await magic.evm.switchChain(10);
+
+// Verify the network switch
+const provider = new ethers.BrowserProvider(magic.rpcProvider);
+const network = await provider.getNetwork();
+console.log(network.chainId); // => 10
+```
+
+## Blockchain Modules
+
+Magic SDK provides blockchain-specific modules for various networks through extensions.
+
+### Available Blockchain Extensions
+
+- **[Algorand](/embedded-wallets/blockchains/non-evm/algorand)**: `@magic-ext/algorand`
+- **[Aptos](/embedded-wallets/blockchains/non-evm/aptos)**: `@magic-ext/aptos`
+- **[Avalanche](/embedded-wallets/blockchains/non-evm/avalanche)**: `@magic-ext/avalanche`
+- **[Bitcoin](/embedded-wallets/blockchains/non-evm/bitcoin)**: `@magic-ext/bitcoin`
+- **[Cosmos](/embedded-wallets/blockchains/non-evm/cosmos)**: `@magic-ext/cosmos`
+- **[Flow](/embedded-wallets/blockchains/non-evm/flow)**: `@magic-ext/flow`
+- **[Hedera](/embedded-wallets/blockchains/evm/hedera)**: `@magic-ext/hedera`
+- **[Icon](/embedded-wallets/blockchains/non-evm/icon)**: `@magic-ext/icon`
+- **[Kadena](/embedded-wallets/blockchains/non-evm/kadena)**: `@magic-ext/kadena`
+- **[Near](/embedded-wallets/blockchains/non-evm/near)**: `@magic-ext/near`
+- **[Polkadot](/embedded-wallets/blockchains/non-evm/polkadot)**: `@magic-ext/polkadot`
+- **[Solana](/embedded-wallets/blockchains/non-evm/solana)**: `@magic-ext/solana`
+- **[Tezos](/embedded-wallets/blockchains/non-evm/tezos)**: `@magic-ext/tezos`
+- **[Zilliqa](/embedded-wallets/blockchains/non-evm/zilliqa)**: `@magic-ext/zilliqa`
+
+### Common Methods
+
+All blockchain extensions provide these common methods:
+
+#### `getPublicAddress`
+
+Retrieves the public address for the specific blockchain network.
+
+**Arguments**
+
+- _None_
+
+**Returns**
+
+- `Promise<string>`: The public address for the blockchain network
+
+**Example**
+
+```javascript JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { SolanaExtension } from '@magic-ext/solana';
+import { BitcoinExtension } from '@magic-ext/bitcoin';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new SolanaExtension({ rpcUrl: 'SOLANA_RPC_NODE_URL' }),
+    new BitcoinExtension({ rpcUrl: 'BITCOIN_RPC_NODE_URL', network: 'testnet' }),
+  ],
+});
+
+// Get Solana public address
+const solanaAddress = await magic.solana.getPublicAddress();
+console.log(solanaAddress); // => "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+
+// Get Bitcoin public address
+const bitcoinAddress = await magic.bitcoin.getPublicAddress();
+console.log(bitcoinAddress); // => "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+```
+
+#### `revealPrivateKey`
+
+Displays an iframe revealing the private key for the specific blockchain network. This method shows a secure interface where users can view and copy their private key.
+
+**Arguments**
+
+- _None_
+
+**Returns**
+
+- `Promise<void>`: Resolves when the user closes the private key display window
+
+**Example**
+
+```javascript JavaScript icon="square-js"
+// Reveal Solana private key
+await magic.solana.revealPrivateKey();
+
+// Reveal Bitcoin private key
+await magic.bitcoin.revealPrivateKey();
+
+// Reveal Hedera private key
+await magic.hedera.revealPrivateKey();
 ```
 
 ## Response and Error Handling
@@ -1549,7 +1759,7 @@ Magic supports the following EVM RPC Methods that can be called through a web3 p
 
 A user's Magic SDK session persists up to 7 days by default, so re-authentication is usually friction-less.
 
-Note: the session length is customizable by the developer through the [Magic dashboard](https://dashboard.magic.link).
+Note: the session length is customizable by the developer through the [Magic Dashboard](https://dashboard.magic.link).
 
 Before re-authenticating a user, [install the Magic Client SDK​](#installation).
 
