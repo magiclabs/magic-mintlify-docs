@@ -38,32 +38,20 @@ Authentication and authorization are achieved without requiring user passwords. 
 
 ### Next-generation key management
 
-With this public–private key-pair approach, it is critical to ensure that users’ private keys are properly secured. That’s what our TEE Key Management System (TKMS) is designed for. Building on the success of our earlier DKMS, which has safeguarded millions of private keys for thousands of companies, TKMS takes key security to the next level. By leveraging distributed key shards, Trusted Execution Environments (TEEs), and AWS KMS, Magic delivers private key management that is secure, scalable, and resilient, all backed by best-in-class cryptography standards.
+With this public–private key-pair approach, it is critical to ensure that users’ private keys are properly secured. That’s what our patent-pending TEE Key Management System (TKMS) is designed for. Building on the success of our earlier DKMS, which has safeguarded millions of private keys for thousands of companies, TKMS takes key security to the next level. By leveraging distributed key shards, Trusted Execution Environments (TEEs), and AWS KMS, Magic delivers private key management that is secure, scalable, and resilient, all backed by best-in-class cryptography standards.
 
 ## How does TKMS work?
 
-Magic provides infrastructure that manages sharded private keys instead of a single encrypted key. The key is split using Shamir’s Secret Sharing (SSS) across Magic, or optionally the Dapp/Developer depending on thesecurity requirements. Each shard is additionally encrypted and secured in Trusted Execution Environments (TEEs) with AWS KMS.
+Magic provides infrastructure that manages sharded private keys instead of a single encrypted key. The key is split using Shamir’s Secret Sharing (SSS) across Magic, or optionally the Dapp/Developer depending on the security requirements. Each shard is additionally encrypted and secured in Trusted Execution Environments (TEEs) with AWS KMS.
 
 When an operation like signing is requested, shards are retrieved and securely recombined inside the TEE, never leaving hardware isolation. The private key only exists ephemerally in memory for the operation, and only the signed result is returned.
 
-## Wait, another encryption key!? Can't that one get stolen?
+### Additional authentication layer provides enhanced security
 
-### User passwords provide additional security layer
+The TEE Key Management System requires an additional authentication layer beyond hardware-level protection. This layer provides both user authentication and authorization, working in combination with TEE attestation and external shards to ensure maximum security.
 
-The TEE Key Management System requires user passwords as an additional security layer beyond hardware-level protection. These passwords work in combination with the TEE attestation and external shards to ensure maximum security.
+**How the authentication layer works:**
 
-**Password origin and flow:**
+The system generates and manages secure secrets stored in cloud infrastructure, with each user's identity cryptographically bound to their wallet through secure hashing. Every API request to the TEE service must include proper authentication credentials, which the backend service validates before processing requests. The secure enclave uses these credentials for both authentication and key decryption, ensuring that only authenticated users can access their specific private keys.
 
-1. **Client Application** - Users enter their password in frontend or mobile applications
-2. **API Requests** - Passwords are sent as the `encryption_context` field in all API calls to the TEE service
-3. **Server Processing** - The backend service passes the password to the enclave as a parameter
-4. **TEE Enclave** - The password is used to decrypt shard C1 for private key reconstruction
-
-**Security properties:**
-
-- **Never stored** - Passwords are never stored anywhere in the TEE system
-- **Required for operations** - Every private key operation requires the correct password
-- **Immediate failure** - Wrong passwords result in immediate failure with clear error messages
-- **Multi-layer protection** - Works in combination with KMS attestation and external shards
-
-This design ensures that even if the TEE system is compromised, private keys cannot be accessed without the user's password, providing an additional layer of security beyond hardware-level protection. The password requirement means that user consent and knowledge are always required for any private key operations.
+This authentication layer provides identity-based access control where each user can only access their own wallets and private keys. This multi-layer protection works in combination with KMS attestation and external shards to create a comprehensive security framework that prevents unauthorized access even if the TEE system is compromised.
