@@ -42,7 +42,7 @@ With this public–private key-pair approach, it is critical to ensure that user
 
 ## How does TKMS work?
 
-Magic provides infrastructure that manages sharded private keys instead of a single encrypted key. The key is split using Shamir’s Secret Sharing (SSS) across Magic, or optionally the Dapp/Developer depending on the security requirements. Each shard is additionally encrypted and secured in Trusted Execution Environments (TEEs) with AWS KMS.
+Magic provides infrastructure that manages sharded private keys instead of a single encrypted key. The key is split using Shamir’s Secret Sharing (SSS) across Magic, or optionally the Dapp/Developer depending on the security requirements. Each shard is additionally encrypted and secured in Trusted Execution Environments (TEEs) with AWS KMS, preventing human access to key material.
 
 When an operation like signing is requested, shards are retrieved and securely recombined inside the TEE, never leaving hardware isolation. The private key only exists ephemerally in memory for the operation, and only the signed result is returned.
 
