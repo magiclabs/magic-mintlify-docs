@@ -26,28 +26,28 @@ After installing the OAuth extension, you can now enable Google Login for your M
 4.  Select the Magic app for which you'd like to enable Google Login, or create a new app
 5.  Navigate to **Social Login** from the sidebar
 6.  Click the toggle for **Google / Gmail**
-7.  Input the **Client ID** and **Client Secret** for your OAuth app    
-8.  In Magic Dashboard, click **"Save"**
-9.  Click "**Test Connection**" to give your new Google OAuth flow a try!
+7.  Input the **Client ID** and **Client Secret** for your OAuth app
+8.  Add your **Redirect URI** to your Google Dashboard's OAuth app configuration:
+    
+    If you're using `loginWithRedirect`, add the **Redirect URI** you are passing as the **redirectURI** argument:
+    
+    ```javascript JavaScript icon="square-js"
+    await magic.oauth2.loginWithRedirect({
+      provider: 'google',
+      redirectURI: 'https://your-app.com/your/oauth/callback', // whitelist this with Google
+    });
+    ```
+    
+    <Accordion title="If using the connectWithUI SDK method">
+      Choose "Magic Login Widget" in your Magic Dashboard's Google OAuth settings and copy the **Redirect URI** field from your Magic Dashboard. Add this Redirect URI to your Google Dashboard's OAuth app configuration:
+    </Accordion>
+      <Frame>
+        <img src="/images/redirect-uri.webp" alt="Google OAuth Redirect URI configuration in Magic Dashboard"/>
+      </Frame>
+    
 
-### Custom Redirect URIs
-
-If you're using `loginWithRedirect`, add the **Redirect URI** you are passing as the **redirectURI** argument to your Google Dashboard's OAuth app configuration:
-
-```javascript JavaScript icon="square-js"
-await magic.oauth2.loginWithRedirect({
-  provider: 'google',
-  redirectURI: 'https://your-app.com/your/oauth/callback', // whitelist this with Google
-});
-```
-  <Accordion title="If using the connectWithUI SDK method">
-    Choose "Magic Login Widget" in your Magic Dashboard's Google OAuth settings and copy the **Redirect URI** field from your Magic Dashboard. Add this Redirect URI to your Google Dashboard's OAuth app configuration:
-  </Accordion>
-
-<Frame>
-  <img src="/images/redirect-uri.webp" alt="Google OAuth Redirect URI configuration in Magic Dashboard"/>
-</Frame>
-
+9.  In Magic Dashboard, click **"Save"**
+10. Click "**Test Connection**" to give your new Google OAuth flow a try!
 
 ### Verification Process
 
