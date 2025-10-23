@@ -21,6 +21,10 @@ If your users are encountering an "Access blocked: magic.link has not completed 
 
 ### Google Setup (v1 extension)
 
+<Warning>
+OAuth v1 extension is deprecated. Only use for legacy implementations requiring backwards compatibility.
+</Warning>
+
 After installing the OAuth extension, you can now enable Google Login for your Magic app:
 
 1.  Follow Google’s instructions to [set up an OAuth 2.0 app](https://support.google.com/cloud/answer/6158849?hl=en)
@@ -30,18 +34,25 @@ After installing the OAuth extension, you can now enable Google Login for your M
 5.  Navigate to **Social Login** from the sidebar
 6.  Click the toggle for **Google / Gmail**
 7.  Input the **Client ID** and **Client Secret** for your OAuth app
-8.  Copy the **Redirect URI** field from your Magic Dashboard and add it to your Google Dashboard’s OAuth app configuration: ⁠
+    
+    a. **If using the connectWithUI SDK method:** Choose "Magic Login Widget" in your Magic Dashboard's Google Oauth settings and copy the **Redirect URI** field from your Magic Dashboard. Add this Redirect URI to your Google Dashboard's OAuth app configuration:
+    
+    <Accordion title="View connectWithUI SDK method Redirect URI field">
+      <Frame>
+        <img src="/images/redirect-uri.webp" alt="Google OAuth Redirect URI configuration in Magic Dashboard"/>
+      </Frame>
+    </Accordion>
 
-<Frame>
-  <img src="/images/redirect-uri.webp" alt=""/>
-</Frame>
-
-9.  In Magic Dashboard, click **“Save”**
-10. Click "**Test Connection**" to give your new Google OAuth flow a try!
+8.  In Magic Dashboard, click **“Save”**
+9. Click "**Test Connection**" to give your new Google OAuth flow a try!
 
 ### Google Setup (v2 extension)
 
-* Follow above steps, but disregard Magic's **Redirect URI** in step 8
+<Tip>
+Use OAuth v2 extension for all new projects.
+</Tip>
+
+* Follow above steps, but disregard Magic's **Redirect URI** in step 7.a
 * Instead, add the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
 
 
