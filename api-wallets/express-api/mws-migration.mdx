@@ -1,0 +1,13 @@
+---
+title: Migrating from MWS
+description: Instructions for migrating from Magic Wallet Services (MWS) to Express API for wallet operations.
+---
+
+## Overview
+
+We're deprecating MWS and moving all of our customers to Express API, which enables developers to perform wallet operations without the need of using an iframe or going through Magic for authentication. All the documentation is available [here](/api-wallets/express-api/overview).
+
+## Migration Details
+
+- All of your end users' wallets have already been migrated to Express API and any new wallets are already being created via the new system. There will be no downtime for you or your end users.
+- Your existing `providerId` that is passed in for the `loginWithOIDC` call will work as the `X-OIDC-Provider-ID` header for Express API; however, it is highly recommended (as the old identifier will be deprecated soon) to retrieve your new identifiers from Express API by following the instructions [here](/api-wallets/express-api/identity-provider#get-identity-providers). Your configuration has been migrated from MWS to Express API, so the only difference will be the new identifier that's passed into the new system.
