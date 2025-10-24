@@ -11,7 +11,7 @@ We're deprecating MWS (`loginWithOIDC`) and moving all of our customers to Expre
 ## Migration Details
 
 - All of your end users' wallets have already been migrated to Express API and any new wallets are already being created via the new system. There will be no downtime for you or your end users.
-- You must obtain a new provider ID for Express API. One has already been created for all existing developers and can be retrieved by following the instructions [here](/api-wallets/express-api/identity-provider#get-identity-providers). While your existing `providerId` from the `loginWithOIDC` call will work temporarily as the `X-OIDC-Provider-ID` header, the old identifier will be deprecated soon.
+- **You must obtain a new provider ID for Express API.** One has already been created for all existing developers and can be retrieved by following the instructions [here](/api-wallets/express-api/identity-provider#get-identity-providers). While your existing `providerId` from the `loginWithOIDC` call will work temporarily as the `X-OIDC-Provider-ID` header, **the old identifier will be deprecated soon.**
 
 ## Migration Steps
 
