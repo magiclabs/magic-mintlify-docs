@@ -8,11 +8,6 @@ keywords: ['loginWithOIDC', 'OIDC',]
 
 We're deprecating MWS (`loginWithOIDC`) and moving all of our customers to Express API, which enables developers to perform wallet operations without the need of using an iframe or going through Magic for authentication. All the documentation is available [here](/api-wallets/express-api/overview).
 
-## Migration Details
-
-- All of your end users' wallets have already been migrated to Express API and any new wallets are already being created via the new system. There will be no downtime for you or your end users.
-- **You must obtain a new provider ID for Express API.** One has already been created for all existing developers and can be retrieved by following the instructions [here](/api-wallets/express-api/identity-provider#get-identity-providers). While your existing `providerId` from the `loginWithOIDC` call will work temporarily as the `X-OIDC-Provider-ID` header, **the old identifier will be deprecated soon.**
-
 ## Migration Steps
 
 <Steps>
@@ -63,3 +58,8 @@ Replace Magic SDK signing operations with TEE signing. See the [signing operatio
 - [Solana Data Preparation](/api-wallets/express-api/data-preparation/solana)
 </Step>
 </Steps>
+
+## Migration Details
+
+- All of your end users' wallets have already been migrated to Express API and any new wallets are already being created via the new system. There will be no downtime for you or your end users.
+- **You must obtain a new provider ID for Express API.** One has already been created for all existing developers and can be retrieved by following the instructions [here](/api-wallets/express-api/identity-provider#get-identity-providers). While your existing `providerId` from the `loginWithOIDC` call will work temporarily as the `X-OIDC-Provider-ID` header, **the old identifier will be deprecated soon.**
