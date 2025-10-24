@@ -37,6 +37,13 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
 Replace `YOUR_JWT_TOKEN`, `YOUR_MAGIC_API_KEY`, and `YOUR_OIDC_PROVIDER_ID` with your actual values.
 </Step>
 
+<Step title="Update Signing Operations">
+Replace Magic SDK signing operations with TEE signing. See the [signing operations](/api-wallets/express-api/wallet-operations#signing-operations) page for detailed implementation, and the data preparation pages for specific blockchain implementations:
+
+- [EVM Data Preparation](/api-wallets/express-api/data-preparation/evm)
+- [Solana Data Preparation](/api-wallets/express-api/data-preparation/solana)
+</Step>
+
 <Step title="Uninstall Magic SDK">
 Remove the `magic-sdk` package and any related extensions from your project:
 
@@ -49,13 +56,6 @@ npm uninstall magic-sdk @magic-ext/oidc
 yarn remove magic-sdk @magic-ext/oidc
 ```
 </CodeGroup>
-</Step>
-
-<Step title="Update Signing Operations">
-Replace Magic SDK signing operations with TEE signing. See the [signing operations](/api-wallets/express-api/wallet-operations#signing-operations) page for detailed implementation, and the data preparation pages for specific blockchain implementations:
-
-- [EVM Data Preparation](/api-wallets/express-api/data-preparation/evm)
-- [Solana Data Preparation](/api-wallets/express-api/data-preparation/solana)
 </Step>
 </Steps>
 
