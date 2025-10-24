@@ -1,0 +1,65 @@
+---
+title: Migrating from MWS
+description: Instructions for migrating from Magic Wallet Services (MWS) to Express API for wallet operations.
+keywords: ['loginWithOIDC', 'OIDC',]
+---
+
+## Overview
+
+We're deprecating MWS (`loginWithOIDC`) and moving all of our customers to Express API, which enables developers to perform wallet operations without the need of using an iframe or going through Magic for authentication. All the documentation is available [here](/api-wallets/express-api/overview).
+
+## Migration Steps
+
+<Steps>
+<Step title="Fetch New Provider ID">
+Retrieve your new provider ID using the following request:
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://tee.express.magiclabs.com/v1/identity/provider' \
+  -H 'X-Magic-Secret-Key: YOUR_MAGIC_SECRET_KEY' 
+```
+
+Replace `YOUR_MAGIC_SECRET_KEY` with your Magic secret key.
+</Step>
+
+<Step title="Configure Login">
+Update your authentication flow to use the following POST request instead of `loginWithOIDC` to get or create a wallet:
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
+  -H 'X-OIDC-Provider-ID: YOUR_OIDC_PROVIDER_ID' \
+  -H 'X-Magic-Chain: ETH'
+```
+
+Replace `YOUR_JWT_TOKEN`, `YOUR_MAGIC_API_KEY`, and `YOUR_OIDC_PROVIDER_ID` with your actual values.
+</Step>
+
+<Step title="Update Signing Operations">
+Replace Magic SDK signing operations with TEE signing. See the [signing operations](/api-wallets/express-api/wallet-operations#signing-operations) page for detailed implementation, and the data preparation pages for specific blockchain implementations:
+
+- [EVM Data Preparation](/api-wallets/express-api/data-preparation/evm)
+- [Solana Data Preparation](/api-wallets/express-api/data-preparation/solana)
+</Step>
+
+<Step title="Uninstall Magic SDK">
+Remove the `magic-sdk` package and any related extensions from your project:
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm uninstall magic-sdk @magic-ext/oidc
+```
+
+```bash Yarn icon="yarn"
+yarn remove magic-sdk @magic-ext/oidc
+```
+</CodeGroup>
+</Step>
+</Steps>
+
+## Migration Details
+
+- All of your end users' wallets have already been migrated to Express API and any new wallets are already being created via the new system. There will be no downtime for you or your end users.
+- **You must obtain a new provider ID for Express API.** One has already been created for all existing developers. While your existing `providerId` from the `loginWithOIDC` call will work temporarily as the `X-OIDC-Provider-ID` header, **the old identifier will be deprecated soon.**
