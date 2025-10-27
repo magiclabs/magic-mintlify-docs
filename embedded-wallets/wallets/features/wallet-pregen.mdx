@@ -1,5 +1,5 @@
 ---
-title: Wallet Pregeneration
+title: Wallet PreGen
 description: Create non-custodial wallets programmatically before user authentication
 ---
 
@@ -9,12 +9,12 @@ description: Create non-custodial wallets programmatically before user authentic
 This feature is currently only available to customers who request access. Please reach out for access [here](mailto:support@magic.link).
 </Info>
 
-Magic offers Wallet Pregeneration, a feature that allows you to create non-custodial EVM wallets programmatically without requiring end users to start or complete an authentication flow. After the wallet is generated, a user can claim their pregenerated wallet by authenticating through your application.
+Magic offers Wallet PreGen, a feature that allows you to create non-custodial EVM wallets programmatically without requiring end users to start or complete an authentication flow. After the wallet is generated, a user can claim their PreGen wallet by authenticating through your application.
 
 **Neither Magic nor the developer can access the wallet's private key; it can only be accessed by the end user after claiming the wallet.**
 
 <Warning>
-Wallet pregeneration is currently only available for EVM-compatible blockchains.
+Wallet PreGen is currently only available for EVM-compatible blockchains.
 </Warning>
 
 ## Use Cases
@@ -36,7 +36,7 @@ The secret API key obtained from your Magic Dashboard. Keep this secure and neve
 </ParamField>
 
 <ParamField body="email" type="string" required>
-The email address associated with the pregenerated wallet. The user must authenticate with this email to claim the wallet.
+The email address associated with the PreGen wallet. The user must authenticate with this email to claim the wallet.
 </ParamField>
 
 <CodeGroup>
@@ -114,15 +114,15 @@ The Ethereum-compatible public wallet address generated for the specified email.
 }
 ```
 
-## Claiming a Pregenerated Wallet
+## Claiming a PreGen Wallet
 
-Once a wallet has been pregenerated, the user can claim it by authenticating through your application using the same email address.
+Once a wallet has been pregenereated, the user can claim it by authenticating through your application using the same email address.
 
 <Steps>
 <Step title="User authenticates">
 The user logs in to your application using the same email address that was used to pregenerate the wallet.
 
-```javascript JavaScript square-js
+```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 
 const magic = new Magic('YOUR_PUBLISHABLE_API_KEY');
@@ -134,7 +134,7 @@ await magic.auth.loginWithEmailOTP({
 </Step>
 
 <Step title="Wallet is automatically claimed">
-Magic automatically links the pregenerated wallet to the authenticated user. No additional steps required.
+Magic automatically links the PreGen wallet to the authenticated user. No additional steps required.
 
 <Check>
 The user now has full access to their wallet and any assets that were sent to it.
@@ -142,7 +142,7 @@ The user now has full access to their wallet and any assets that were sent to it
 </Step>
 
 <Step title="Verify wallet ownership">
-You can verify the user's wallet address matches the pregenerated one.
+You can verify the user's wallet address matches the PreGen one.
 
 ```javascript JavaScript icon="square-js"
 const metadata = await magic.user.getInfo();
@@ -189,7 +189,7 @@ console.log(`Wallet created: ${walletAddress}`);
 ```javascript Node.js icon="node-js"
 import { ethers } from 'ethers';
 
-async function fundPregeneratedWallet(toAddress, amount) {
+async function fundPregenWallet(toAddress, amount) {
   const provider = new ethers.JsonRpcProvider(RPC_URL);
   const wallet = new ethers.Wallet(FUNDING_PRIVATE_KEY, provider);
   
@@ -202,7 +202,7 @@ async function fundPregeneratedWallet(toAddress, amount) {
   console.log(`Funded ${toAddress} with ${amount} ETH`);
 }
 
-await fundPregeneratedWallet(walletAddress, '0.1');
+await fundPregenWallet(walletAddress, '0.1');
 ```
 </Tab>
 
@@ -216,9 +216,9 @@ async function claimWallet(email) {
   await magic.auth.loginWithEmailOTP({ email });
   
   const metadata = await magic.user.getInfo();
-  console.log('Claimed wallet:', metadata.publicAddress);
+  console.log('Claimed wallet:', metadata.wallets.ethereum.publicAddress);
   
-  const balance = await getBalance(metadata.publicAddress);
+  const balance = await getBalance(metadata.wallets.ethereum.publicAddress);
   console.log('Wallet balance:', balance);
 }
 
