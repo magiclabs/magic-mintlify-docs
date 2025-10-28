@@ -198,7 +198,8 @@
                   "embedded-wallets/wallets/features/transaction-signing",
                   "embedded-wallets/wallets/features/personal-signatures",
                   "embedded-wallets/wallets/features/fiat-on-ramps",
-                  "embedded-wallets/wallets/features/key-export"
+                  "embedded-wallets/wallets/features/key-export",
+                  "embedded-wallets/wallets/features/wallet-pregen"
                 ]
               },
               {
