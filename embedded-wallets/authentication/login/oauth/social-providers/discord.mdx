@@ -13,42 +13,40 @@ description: "You can allow your users to sign up & log in to your web app with 
 * You will need to have the [Magic SDK installed](/embedded-wallets/sdk/overview) into your web app
 * You will need to have the [Magic SDK - OAuth Extension](/embedded-wallets/authentication/login/oauth/oauth-implementation) installed into your web app
 
-### Discord Setup (v1 extension)
+### Discord Setup
 
-After installing the OAuth extension, you can now enable GitHub Login for your Magic app:
+After installing the OAuth extension, you can now enable Discord Login for your Magic app:
 
 1.  Create a Discord [API application](https://discord.com/developers/applications)
 2.  Go to your [Magic Dashboard](https://dashboard.magic.link/login)
 3.  Select the Magic app for which you’d like to enable Discord Login, or create a new app
 4.  Navigate to **Social Login** from the sidebar
 5.  Click the toggle for **Discord**
-6.  Copy the **Redirect URI** field from your Magic Dashboard
-7.  Return to your Discord developer Dashboard, navigate to **OAuth2** from the sidebar, and paste the **Redirect URI** you obtained from your Magic Dashboard into the **"Redirect URI"** field. Don't forget to save your changes!
+6.  Return to your Discord developer Dashboard, navigate to **OAuth2** from the sidebar, and add your **Redirect URI**:
+    
+    Add the **Redirect URI** you are passing as the **redirectURI** argument to the **loginWithRedirect** method:
+    
+    ```javascript JavaScript icon="square-js"
+    await magic.oauth2.loginWithRedirect({
+      provider: 'discord',
+      redirectURI: 'https://your-app.com/your/oauth/callback', // whitelist this with Discord
+    });
+    ```
 
 <Frame>
-  <img src="/images/paste-redirect-uri.webp" alt=""/>
+  <img src="/images/paste-redirect-uri.webp" alt="Discord OAuth2 settings page with Redirect URI input field"/>
 </Frame>
 
-8.  Next, obtain the **"Client ID"** and **"Client Secret"** from the current page
+7.  Save your changes in the Discord OAuth2 settings
+
+8.  Next, obtain the **Client ID** and **Client Secret** from the current page
 
 <Frame>
-  <img src="/images/obtain-client-credentials.webp" alt=""/>
+  <img src="/images/obtain-client-credentials.webp" alt="Discord application settings showing Client ID and Client Secret"/>
 </Frame>
 
 9.  Return to your Magic Dashboard and input the **Client ID** and **Client Secret** for your Discord OAuth app
-10. In Magic Dashboard, click **“Save”** – Done!
-
-### Discord Setup (v2 extension)
-
-* Follow above steps, but disregard Magic's **Redirect URI** in step 6
-* In step 7, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
-
-```javascript JavaScript icon="square-js"
-await magic.oauth2.loginWithRedirect({
-  provider:  'discord',
-  redirectURI: 'https://your-app.com/your/oauth/callback',  // <== whitelist this with Discord
-});
-```
+10. In Magic Dashboard, click **Save**
 
 ## Resources
 
