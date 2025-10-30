@@ -1,5 +1,5 @@
 ---
-title: "Using Magic's API Wallet with Universal Accounts"
+title: "Particle Network Universal Accounts"
 description: "Enable user wallets via Magic's API Wallet and cross-chain interactions with Universal Accounts"
 keywords: ['universal accounts sdk', 'chain abstraction', 'cross-chain deposits', 'multi-chain balances', 'gas abstraction', 'particle network', 'sdk setup', 'unified balance', 'one balance', 'auto bridge']
 ---
@@ -14,6 +14,7 @@ When paired with Universal Accounts, those wallets automatically gain a unified 
 
 <Note>
   This guide is based on a demo app where users log in using **Google OAuth** (via Magic's API Wallet) and instantly interact with **Universal Accounts** to mint NFTs across chains — without bridges or network switching.  
+
   Explore the full code in the repository below.
 </Note>
 
@@ -44,12 +45,14 @@ The integration connects **Magic’s API Wallet** (for secure wallet creation) w
 Here’s how the flow works from login to cross-chain interaction:
 
 <Steps>
-  <Step title="1. User Logs In with OAuth">
-    When the user signs in with Google, the app retrieves their **ID token** through `NextAuth` and sends it to the backend.  
-    The backend calls **Magic's Express API** to either create or fetch an existing **EOA wallet** derived from that token.  
+  <Step title="User Logs In with OAuth">
+    When the user signs in with Google, the app retrieves their **ID token** through `NextAuth` and sends it to the backend.
+
+    The backend calls **Magic's Express API** to either create or fetch an existing **EOA wallet** derived from that token.
+
     The private key is generated and stored inside Magic’s TEE — it never leaves Magic’s secure infrastructure.
 
-    ```ts
+```ts JavaScript icon="square-js"
 const getOrCreateWallet = async () => {
   const res = await fetch("https://tee.express.magiclabs.com/v1/wallet", {
     method: "POST",
@@ -65,8 +68,7 @@ const getOrCreateWallet = async () => {
   const data = await res.json();
   return data.public_address;
 };
-
-    ```
+```
 
     **Key files:**  
     - `contexts/AuthProvider.tsx` – handles login and wallet retrieval  
@@ -74,7 +76,7 @@ const getOrCreateWallet = async () => {
     - `lib/express.ts` – configures Magic API credentials
   </Step>
 
-  <Step title="2. Initialize the Universal Account">
+  <Step title="Initialize the Universal Account">
     Once the Magic wallet is available, initialize the **Universal Account SDK** using the Magic EOA as the owner.
 
     ```ts /app/wallet/page.tsx
@@ -92,7 +94,7 @@ const getOrCreateWallet = async () => {
     - Automatic routing and gas abstraction  
   </Step>
 
-  <Step title="3. Interact Across Chains">
+  <Step title="Interact Across Chains">
     Users can now interact on any supported chain — e.g., mint an NFT on Avalanche using funds from Solana.  
 
     ```ts /app/wallet/page.tsx
@@ -155,7 +157,7 @@ You can explore the full integration locally with the provided demo repository.
 
 <Steps>
   <Step title="Clone the Repository">
-    ```bash
+    ```bash icon="square-terminal"
     git clone https://github.com/Particle-Network/universal-accounts-magic-wallet-api
     cd universal-accounts-magic-wallet-api
     ```
@@ -164,7 +166,7 @@ You can explore the full integration locally with the provided demo repository.
   <Step title="Set Up Environment Variables">
     Create a `.env.local` file and add your Magic and Particle credentials:
 
-    ```env
+    ```bash
     MAGIC_API_KEY=your_magic_api_key
     OIDC_PROVIDER_ID=your_oidc_provider_id
     NEXT_PUBLIC_PROJECT_ID=your_particle_project_id
@@ -172,16 +174,13 @@ You can explore the full integration locally with the provided demo repository.
     NEXT_PUBLIC_APP_ID=your_particle_app_id
     ```
 
-    Get your Magic key from the [Magic Dashboard](https://dashboard.magic.link/)  
-    and your Particle credentials from the [Particle Dashboard](https://dashboard.particle.network/).
-
-    <Note>
-      You must configure your [identity provider](https://docs.magic.link/api-wallets/express-api/identity-provider#overview) for OAuth login to work properly.
-    </Note>
+    Get your Magic Secret Key from the [Magic Dashboard](https://dashboard.magic.link/) and your Particle credentials from the [Particle Dashboard](https://dashboard.particle.network/).
+    
+    Follow the instructions [here](/api-wallets/express-api/identity-provider) to configure your identity provider.
   </Step>
 
   <Step title="Run the App">
-    ```bash
+    ```bash NPM icon="npm"
     npm install
     npm run dev
     ```
@@ -212,7 +211,7 @@ It’s a foundation for truly chain-agnostic applications that feel natural to b
     Explore the Magic Wallet + Universal Accounts Demo on GitHub.
   </Card>
 
-  <Card title="Magic's API Wallet Docs" icon="link" href="https://docs.magic.link/api-wallets/introduction">
+  <Card title="API Wallet Docs" icon="brackets-curly" href="/api-wallets/introduction">
     Learn how to create and manage wallets securely with Magic’s TEE-based API.
   </Card>
 
