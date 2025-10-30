@@ -38,6 +38,27 @@
                   "home/security/cloud-security"
                 ]
               },
+              {
+                "group": "Integrations",
+                "pages": [
+                  {
+                    "group": "API Wallet",
+                    "pages": [
+                      "home/integrations/api-wallet/particle-network-universal-accounts"
+                    ]
+                  },
+                  {
+                    "group": "Embedded Wallet",
+                    "pages": [
+                      "home/integrations/embedded-wallet/alchemy-account-abstraction",
+                      "home/integrations/embedded-wallet/zksync-zyfi-integration",
+                      "home/integrations/embedded-wallet/wagmi",
+                      "home/integrations/embedded-wallet/moonpay-integration",
+                      "home/integrations/embedded-wallet/zerodev-account-abstraction"
+                    ]
+                  }
+                ]
+              },
               "home/teams",
               "home/faq"
             ]
@@ -214,16 +235,6 @@
                 "pages": [
                   "embedded-wallets/wallets/customization/brand-and-theme",
                   "embedded-wallets/wallets/customization/widget-ui"
-                ]
-              },
-              {
-                "group": "Integration",
-                "pages": [
-                  "embedded-wallets/wallets/integrations/zerodev-account-abstraction",
-                  "embedded-wallets/wallets/integrations/alchemy-account-abstraction",
-                  "embedded-wallets/wallets/integrations/zksync-zyfi-integration",
-                  "embedded-wallets/wallets/integrations/wagmi",
-                  "embedded-wallets/wallets/integrations/moonpay-integration"
                 ]
               }
             ]
