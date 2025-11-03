@@ -1,0 +1,620 @@
+---
+title: "Policy Evaluation"
+description: "Manage policies for Express API transaction signing, including creating, updating, retrieving, and deleting policy configurations with rules and conditions."
+---
+
+## Overview
+
+Policies define transaction signing rules that enable fine-grained control over which transactions can be signed by evaluating conditions against transaction data. When Policy Evaluation is enabled for your application, policies are applied during transaction signing:
+
+## Enable Policy Evaluation
+
+Before using policies, you need to enable Policy Evaluation for your application in the Magic Dashboard.
+
+1. Navigate to your app settings in the [Magic Dashboard](https://dashboard.magic.link)
+2. Go to the **Settings** page
+3. Find the **Policy Evaluation** card
+4. Toggle **Enable Policy Evaluation** to turn on the feature
+5. Set the **Recency Window** (in minutes) to specify how long a user's MFA validation remains valid for policy checks. This determines the time window for which step-up policies won't require re-authentication if the user was recently validated.
+6. Click **Save** to apply your changes
+
+<Note>
+The recency window allows you to control how frequently users need to complete MFA verification for step-up policies. For example, if you set a recency window of 15 minutes, users who completed MFA within the last 15 minutes won't be prompted again for step-up policy checks.
+</Note>
+
+- **Global scope**: Always enforced and blocks transactions immediately if conditions fail
+- **Step-Up scope**: Requires additional MFA verification when conditions are met
+
+<Warning>
+**Step-Up scope limitation**: Step-Up policies require Embedded Wallet integration, as MFA verification is tied to the Embedded Wallet system. For users who are not Embedded Wallet users (i.e., Express API users without Embedded Wallet integration), only Global scope policies can be used. Step-Up policies will not work for non-Embedded Wallet users.
+</Warning>
+
+## Policy Object
+
+All policy endpoints return a policy object with the following structure:
+
+<ResponseField name="id" type="string">
+Unique identifier for the policy.
+</ResponseField>
+
+<ResponseField name="is_active" type="boolean">
+Whether the policy is currently active. Defaults to `true` when created.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+The policy name.
+</ResponseField>
+
+<ResponseField name="chain" type="string">
+The blockchain this policy applies to (`BTC`, `ETH`, or `SOL`).
+</ResponseField>
+
+<ResponseField name="rules" type="array">
+Array of rule objects defining transaction conditions and actions.
+
+<Expandable title="Rule object">
+<ResponseField name="name" type="string">
+Rule name.
+</ResponseField>
+
+<ResponseField name="method" type="string">
+Transaction signing method this rule applies to (e.g., `eth_signTransaction`, `personal_sign`, `eth_signTypedData_v4`).
+</ResponseField>
+
+<ResponseField name="conditions" type="array">
+Array of condition objects that are evaluated.
+
+<Expandable title="Condition object">
+<ResponseField name="field_source" type="string">
+Source of the field being evaluated (e.g., `ethereum_transaction`, `typed_data`, `system`).
+</ResponseField>
+
+<ResponseField name="field" type="string">
+Field name being evaluated (e.g., `value`, `to`, `chain_id`).
+</ResponseField>
+
+<ResponseField name="operator" type="string">
+Comparison operator used. Valid values: `eq` (equals), `neq` (not equals), `lt` (less than), `lte` (less than or equal), `gt` (greater than), `gte` (greater than or equal), `in` (in list).
+</ResponseField>
+
+<ResponseField name="value" type="any">
+Value compared against. Can be a string, number, boolean, or object depending on the operator.
+</ResponseField>
+
+<ResponseField name="abi" type="object | null">
+Optional ABI definition for contract call data parsing.
+</ResponseField>
+</Expandable>
+</ResponseField>
+
+<ResponseField name="action" type="string">
+Action to take when conditions are met (e.g., `require_mfa`, `block`, `DENY`, `ALLOW`).
+</ResponseField>
+</Expandable>
+</ResponseField>
+
+<ResponseField name="scope" type="string">
+Policy scope. Valid values: `GLOBAL` (Global) or `STEP_UP` (Step-Up).
+</ResponseField>
+
+<ResponseField name="description" type="string | null">
+Optional policy description.
+</ResponseField>
+
+## Create Policy
+
+Create a new policy configuration for your application.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.express.magiclabs.com/v1/policy/' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Magic-Secret-Key: your-magic-secret-key' \
+  -d '{
+    "name": "High Value Transaction Policy",
+    "chain": "ETH",
+    "rules": [
+      {
+        "name": "Require MFA for high value",
+        "method": "eth_signTransaction",
+        "conditions": [
+          {
+            "field_source": "ethereum_transaction",
+            "field": "value",
+            "operator": "gt",
+            "value": "1000000000000000000"
+          }
+        ],
+        "action": "require_mfa"
+      }
+    ],
+    "scope": "STEP_UP",
+    "description": "Requires MFA for transactions over 1 ETH"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "is_active": true,
+  "name": "High Value Transaction Policy",
+  "chain": "ETH",
+  "rules": [
+    {
+      "name": "Require MFA for high value",
+      "method": "eth_signTransaction",
+      "conditions": [
+        {
+            "field_source": "ethereum_transaction",
+          "field": "value",
+          "operator": "gt",
+          "value": "1000000000000000000"
+        }
+      ],
+      "action": "require_mfa"
+    }
+  ],
+  "scope": "STEP_UP",
+  "description": "Require MFA for transactions over 1 ETH"
+}
+```
+
+### Request Parameters
+
+<ParamField body="name" type="string" required post={["Body"]}>
+Policy name. Must be between 1 and 255 characters.
+</ParamField>
+
+<ParamField body="chain" type="string" required post={["Body"]}>
+Blockchain for this policy. Valid values: `BTC`, `ETH`, `SOL`.
+</ParamField>
+
+<ParamField body="rules" type="array" required post={["Body"]}>
+Array of rule objects that define transaction conditions. Must contain between 1 and 100 rules.
+
+<Expandable title="Rule object properties">
+<ParamField body="rules[].name" type="string" required post={["Body"]}>
+Rule name. Must be between 1 and 255 characters.
+</ParamField>
+
+<ParamField body="rules[].method" type="string" required post={["Body"]}>
+Transaction signing method this rule applies to (e.g., `eth_signTransaction`, `personal_sign`, `eth_signTypedData_v4`). Must be between 1 and 100 characters.
+</ParamField>
+
+<ParamField body="rules[].conditions" type="array" required post={["Body"]}>
+Array of condition objects that must be evaluated. Must contain between 1 and 50 conditions.
+
+<Expandable title="Condition object properties">
+<ParamField body="rules[].conditions[].field_source" type="string" required post={["Body"]}>
+Source of the field to evaluate (e.g., `ethereum_transaction`, `typed_data`, `system`). Must be between 1 and 100 characters.
+</ParamField>
+
+<ParamField body="rules[].conditions[].field" type="string" required post={["Body"]}>
+Field name to evaluate (e.g., `value`, `to`, `chain_id`). Must be between 1 and 100 characters.
+</ParamField>
+
+<ParamField body="rules[].conditions[].operator" type="string" required post={["Body"]}>
+Comparison operator. Valid values: `eq` (equals), `neq` (not equals), `lt` (less than), `lte` (less than or equal), `gt` (greater than), `gte` (greater than or equal), `in` (in list). Must be between 1 and 50 characters.
+</ParamField>
+
+<ParamField body="rules[].conditions[].value" type="any" required post={["Body"]}>
+Value to compare against. Can be a string, number, boolean, or object depending on the operator.
+</ParamField>
+
+<ParamField body="rules[].conditions[].abi" type="object" required={false} post={["Body"]}>
+Optional ABI definition for parsing contract call data when evaluating transaction data fields.
+</ParamField>
+</Expandable>
+</ParamField>
+
+<ParamField body="rules[].action" type="string" required post={["Body"]}>
+Action to take when conditions are met (e.g., `require_mfa`, `block`). Must be between 1 and 50 characters.
+</ParamField>
+</Expandable>
+</ParamField>
+
+<ParamField body="scope" type="string" required post={["Body"]}>
+Policy scope. Valid values: `GLOBAL` (always enforced, blocks transactions immediately) or `STEP_UP` (requires MFA verification when conditions are met).
+</ParamField>
+
+<ParamField body="description" type="string" required={false} post={["Body"]}>
+Optional description of the policy. Maximum 1000 characters.
+</ParamField>
+
+### Response Fields
+
+Returns a [Policy object](#policy-object).
+
+## Get Policy
+
+Retrieve a specific policy by its ID.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://tee.express.magiclabs.com/v1/policy/{policy_id}' \
+  -H 'X-Magic-Secret-Key: your-magic-secret-key' 
+```
+
+**Response:**
+
+```json
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "is_active": true,
+  "name": "High Value Transaction Policy",
+  "chain": "ETH",
+  "rules": [
+    {
+      "name": "Require MFA for high value",
+      "method": "eth_signTransaction",
+      "conditions": [
+        {
+            "field_source": "ethereum_transaction",
+          "field": "value",
+          "operator": "gt",
+          "value": "1000000000000000000"
+        }
+      ],
+      "action": "require_mfa"
+    }
+  ],
+  "scope": "STEP_UP",
+  "description": "Require MFA for transactions over 1 ETH"
+}
+```
+
+### Request Parameters
+
+<ParamField path="policy_id" type="string" required post={["Path"]}>
+The unique identifier of the policy to retrieve.
+</ParamField>
+
+### Response Fields
+
+Returns a [Policy object](#policy-object).
+
+## Get Policies
+
+Retrieve all policies for your application, optionally filtered by active status, chain, or scope.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://tee.express.magiclabs.com/v1/policy?is_active=true&chain=ETH&scope=STEP_UP' \
+  -H 'X-Magic-Secret-Key: your-magic-secret-key' 
+```
+
+**Response:**
+
+```json
+[
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "is_active": true,
+    "name": "High Value Transaction Policy",
+    "chain": "ETH",
+    "rules": [
+      {
+        "name": "Require MFA for high value",
+        "method": "eth_signTransaction",
+        "conditions": [
+          {
+            "field_source": "ethereum_transaction",
+            "field": "value",
+            "operator": "gt",
+            "value": "1000000000000000000"
+          }
+        ],
+        "action": "require_mfa"
+      }
+    ],
+    "scope": "STEP_UP",
+    "description": "Require MFA for transactions over 1 ETH"
+  }
+]
+```
+
+### Query Parameters
+
+<ParamField query="is_active" type="boolean" required={false} post={["Query"]}>
+Filter policies by active status. If not provided, returns all policies regardless of status.
+</ParamField>
+
+<ParamField query="chain" type="string" required={false} post={["Query"]}>
+Filter policies by blockchain. Valid values: `BTC`, `ETH`, `SOL`.
+</ParamField>
+
+<ParamField query="scope" type="string" required={false} post={["Query"]}>
+Filter policies by scope. Valid values: `GLOBAL` or `STEP_UP`.
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="policies" type="array">
+Array of [Policy objects](#policy-object) matching the query filters.
+</ResponseField>
+
+## Update Policy
+
+Update an existing policy configuration. All fields are optional - only provided fields will be updated.
+
+```bash cURL icon="square-terminal"
+curl -X PATCH 'https://tee.express.magiclabs.com/v1/policy/{policy_id}' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Magic-Secret-Key: your-magic-secret-key' \
+  -d '{
+    "is_active": false,
+    "name": "Updated Policy Name",
+    "description": "Updated description"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "is_active": false,
+  "name": "Updated Policy Name",
+  "chain": "ETH",
+  "rules": [
+    {
+      "name": "Require MFA for high value",
+      "method": "eth_signTransaction",
+      "conditions": [
+        {
+            "field_source": "ethereum_transaction",
+          "field": "value",
+          "operator": "gt",
+          "value": "1000000000000000000"
+        }
+      ],
+      "action": "require_mfa"
+    }
+  ],
+  "scope": "STEP_UP",
+  "description": "Updated description"
+}
+```
+
+### Request Parameters
+
+<ParamField path="policy_id" type="string" required post={["Path"]}>
+The unique identifier of the policy to update.
+</ParamField>
+
+<ParamField body="is_active" type="boolean" required={false} post={["Body"]}>
+Whether the policy should be active. Set to `false` to temporarily disable a policy without deleting it.
+</ParamField>
+
+<ParamField body="name" type="string" required={false} post={["Body"]}>
+Updated policy name. Must be between 1 and 255 characters if provided.
+</ParamField>
+
+<ParamField body="rules" type="array" required={false} post={["Body"]}>
+Updated array of rule objects. Must contain between 1 and 100 rules if provided.
+</ParamField>
+
+<ParamField body="scope" type="string" required={false} post={["Body"]}>
+Updated policy scope. Valid values: `GLOBAL` or `STEP_UP`.
+</ParamField>
+
+<ParamField body="description" type="string" required={false} post={["Body"]}>
+Updated policy description. Maximum 1000 characters.
+</ParamField>
+
+<Tip>
+You can update individual fields without affecting others. For example, you can update just the `is_active` status to enable or disable a policy, or update only the `description` field.
+</Tip>
+
+### Response Fields
+
+Returns a [Policy object](#policy-object) with the updated fields. Note that `chain` cannot be updated and will remain unchanged.
+
+## Delete Policy
+
+Remove a policy configuration from your application.
+
+```bash cURL icon="square-terminal"
+curl -X DELETE 'https://tee.express.magiclabs.com/v1/policy/{policy_id}' \
+  -H 'X-Magic-Secret-Key: your-magic-secret-key' 
+```
+
+**Response:**
+
+```json
+No content (204 status code)
+```
+
+### Request Parameters
+
+<ParamField path="policy_id" type="string" required post={["Path"]}>
+The unique identifier of the policy to delete.
+</ParamField>
+
+<Warning>
+Deleting a policy will immediately stop it from being evaluated for transaction signing. Ensure you understand the security implications before deleting policies that enforce important transaction rules.
+</Warning>
+
+## Common Use Cases
+
+### Typed Data Signing Policies
+
+Policies can also be applied to EIP-712 typed data signing (`eth_signTypedData_v4`, `eth_signTypedData_v3`, etc.). When creating policies for typed data, use the `typed_data` field source and access domain and message fields using the `typed_data_domain_{fieldName}` and `typed_data_message_{fieldName}` pattern.
+
+#### Block Specific Contract Addresses
+
+Block typed data signatures for specific verifying contracts:
+
+```json
+{
+  "name": "Block High-Risk Contracts",
+  "chain": "ETH",
+  "rules": [
+    {
+      "name": "Block specific contract address",
+      "method": "eth_signTypedData_v4",
+      "conditions": [
+        {
+          "field_source": "typed_data",
+          "field": "typed_data_domain_verifyingContract",
+          "operator": "eq",
+          "value": "0x1234567890123456789012345678901234567890"
+        }
+      ],
+      "action": "DENY"
+    }
+  ],
+  "scope": "GLOBAL",
+  "description": "Block signatures for specific contract addresses"
+}
+```
+
+This policy will block all typed data signatures where the `verifyingContract` in the EIP-712 domain matches the specified contract address.
+
+#### Require MFA for Specific Domain Names
+
+Require step-up authentication for typed data from specific applications:
+
+```json
+{
+  "name": "High Risk Domain MFA",
+  "chain": "ETH",
+  "rules": [
+    {
+      "name": "Require MFA for high-risk applications",
+      "method": "eth_signTypedData_v4",
+      "conditions": [
+        {
+          "field_source": "typed_data",
+          "field": "typed_data_domain_name",
+          "operator": "eq",
+          "value": "High Risk Exchange"
+        }
+      ],
+      "action": "require_mfa"
+    }
+  ],
+  "scope": "STEP_UP",
+  "description": "Require MFA for typed data signatures from specific applications"
+}
+```
+
+#### Block High Value Orders
+
+Block typed data orders that exceed certain value thresholds by checking message fields:
+
+```json
+{
+  "name": "Block High Value Orders",
+  "chain": "ETH",
+  "rules": [
+    {
+      "name": "Block orders over 10M",
+      "method": "eth_signTypedData_v4",
+      "conditions": [
+        {
+          "field_source": "typed_data",
+          "field": "typed_data_message_makerAmount",
+          "operator": "gt",
+          "value": "10000000"
+        }
+      ],
+      "action": "DENY"
+    }
+  ],
+  "scope": "GLOBAL",
+  "description": "Block typed data orders with makerAmount over 10,000,000"
+}
+```
+
+This policy evaluates the `makerAmount` field from the typed data message and blocks any orders exceeding the threshold.
+
+### High Value Transaction Policy
+
+Require MFA for transactions over a certain value threshold:
+
+```json
+{
+  "name": "High Value Transaction Policy",
+  "chain": "ETH",
+  "rules": [
+    {
+      "name": "Require MFA for high value",
+      "method": "eth_signTransaction",
+      "conditions": [
+        {
+            "field_source": "ethereum_transaction",
+          "field": "value",
+          "operator": "gt",
+          "value": "1000000000000000000"
+        }
+      ],
+      "action": "require_mfa"
+    }
+  ],
+  "scope": "STEP_UP",
+  "description": "Require MFA for transactions over 1 ETH"
+}
+```
+
+### Contract Interaction Policy
+
+Block transactions to specific contract addresses:
+
+```json
+{
+  "name": "Blocklisted Contracts",
+  "chain": "ETH",
+  "rules": [
+    {
+      "name": "Block known malicious contracts",
+      "method": "eth_signTransaction",
+      "conditions": [
+        {
+            "field_source": "ethereum_transaction",
+          "field": "to",
+            "operator": "eq",
+          "value": "0x1234567890123456789012345678901234567890"
+        }
+      ],
+      "action": "DENY"
+    }
+  ],
+  "scope": "GLOBAL",
+  "description": "Block transactions to known malicious contract addresses"
+}
+```
+
+### Multi-Condition Policy
+
+Combine multiple conditions for complex rule evaluation:
+
+```json
+{
+  "name": "Complex Transaction Policy",
+  "chain": "ETH",
+  "rules": [
+    {
+      "name": "High value after timestamp",
+      "method": "eth_signTransaction",
+      "conditions": [
+        {
+          "field_source": "ethereum_transaction",
+          "field": "value",
+          "operator": "gt",
+          "value": "500000000000000000"
+        },
+        {
+          "field_source": "system",
+          "field": "current_unix_timestamp",
+          "operator": "gt",
+          "value": 1640995200
+        }
+      ],
+      "action": "require_mfa"
+    }
+  ],
+  "scope": "STEP_UP",
+  "description": "Require MFA for high-value transactions after a specific timestamp"
+}
+```
+
