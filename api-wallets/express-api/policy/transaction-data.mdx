@@ -1,0 +1,504 @@
+---
+title: "Transaction Data"
+description: "Learn how to structure and pass transaction data for policy evaluation, including field mappings and examples for different signing methods."
+---
+
+## Overview
+
+When using policies with Express API, you need to provide transaction data so that policy conditions can be evaluated. This data is used to check whether transactions meet your policy rules before signing occurs.
+
+<Info>
+Transaction data is required when policy evaluation is enabled for your application. It must match the raw transaction data being signed to ensure policy conditions evaluate correctly.
+</Info>
+
+## Transaction Data Structure
+
+The `TransactionData` object contains information about the transaction or message being signed. Different fields are relevant depending on the signing method and blockchain network.
+
+```json
+{
+  "method": "eth_signTransaction",
+  "to": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+  "value": "0x2386f26fc10000",
+  "data": "0x...",
+  "chainId": 1,
+  "nonce": 42,
+  "gasLimit": "0x5208",
+  "maxFeePerGas": "0x59682f00",
+  "maxPriorityFeePerGas": "0x59682f00",
+  "gasPrice": "0x59682f00",
+  "typedData": {
+    "domain": { ... },
+    "message": { ... }
+  }
+}
+```
+
+### Transaction Data Fields
+
+<ResponseField name="method" type="string" required>
+The signing method being used. Valid values:
+- `eth_signTransaction` - Sign an Ethereum transaction
+- `personal_sign` - Sign a message using personal_sign
+- `eth_signTypedData` - Sign EIP-712 typed data (legacy)
+- `eth_signTypedData_v3` - Sign EIP-712 typed data v3
+- `eth_signTypedData_v4` - Sign EIP-712 typed data v4
+- `eth_signMessage` - Sign fringe message format
+</ResponseField>
+
+<ResponseField name="to" type="string" required={false}>
+Recipient address for transactions. Must be a valid address format (e.g., `0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb`). Relevant for transaction signing methods.
+</ResponseField>
+
+<ResponseField name="value" type="string" required={false}>
+Transaction value in wei. Can be provided as a decimal string or hex string (e.g., `"1000000000000000000"` or `"0x0de0b6b3a7640000"`). Automatically converted to integer for policy evaluation.
+</ResponseField>
+
+<ResponseField name="data" type="string" required={false}>
+Transaction data (contract call data) as a hex string. Must start with `0x` prefix.
+</ResponseField>
+
+<ResponseField name="chainId" type="integer" required={false}>
+The chain ID for the transaction (e.g., `1` for Ethereum mainnet, `137` for Polygon).
+</ResponseField>
+
+<ResponseField name="nonce" type="integer" required={false}>
+Transaction nonce. Used to ensure transaction ordering.
+</ResponseField>
+
+<ResponseField name="gasLimit" type="string" required={false}>
+Gas limit for the transaction. Can be provided as decimal string or hex string (e.g., `"21000"` or `"0x5208"`).
+</ResponseField>
+
+<ResponseField name="maxFeePerGas" type="string" required={false}>
+Maximum fee per gas unit (EIP-1559 transactions). Can be provided as decimal string or hex string.
+</ResponseField>
+
+<ResponseField name="maxPriorityFeePerGas" type="string" required={false}>
+Maximum priority fee per gas unit (EIP-1559 transactions). Can be provided as decimal string or hex string.
+</ResponseField>
+
+<ResponseField name="gasPrice" type="string" required={false}>
+Gas price for legacy transactions. Can be provided as decimal string or hex string.
+</ResponseField>
+
+<ResponseField name="typedData" type="object" required={false}>
+EIP-712 typed data structure. Required for `eth_signTypedData_v3` and `eth_signTypedData_v4` methods.
+
+<Expandable title="Typed Data Structure">
+Follows the following structure:
+
+```json
+{
+  "domain": {
+    "name": "Example App",
+    "version": "1",
+    "chainId": 1,
+    "verifyingContract": "0x..."
+  },
+  "message": {
+    "from": { ... },
+    "to": { ... },
+    "value": { ... }
+  }
+}
+```
+
+Domain and message fields are automatically extracted and available for policy evaluation with the `typed_data` field source.
+</Expandable>
+</ResponseField>
+
+## Using Transaction Data
+
+### With Sign Data Endpoint
+
+When signing transactions or messages, include `transaction_data` in your request to enable policy evaluation:
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'X-Magic-API-Key: YOUR_API_KEY' \
+  -H 'X-Magic-Chain: ETH' \
+  -d '{
+    "raw_data_hash": "0x...",
+    "transaction_data": {
+      "method": "eth_signTransaction",
+      "to": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+      "value": "1000000000000000000",
+      "chainId": 1,
+      "nonce": 42,
+      "gasLimit": "21000"
+    }
+  }'
+```
+
+<Tip>
+The `raw_data_hash` must be computed from the same transaction data you provide in `transaction_data`. The hash is validated against the transaction data to ensure integrity.
+</Tip>
+
+### With Policy Evaluation Status Endpoint
+
+Check whether a transaction will be allowed by your policies and whether step-up authentication is required:
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.express.magiclabs.com/v1/policy/evaluation/status' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'X-Magic-API-Key: YOUR_API_KEY' \
+  -H 'X-Magic-Chain: ETH' \
+  -d '{
+    "transaction_data": {
+      "method": "eth_signTransaction",
+      "to": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+      "value": "2000000000000000000",
+      "chainId": 1,
+      "nonce": 42,
+      "gasLimit": "21000"
+    }
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "is_allowed_by_global_policies": true,
+  "is_step_up_required": true
+}
+```
+
+<ResponseField name="is_allowed_by_global_policies" type="boolean">
+Whether the transaction passes all active global policies. If `false`, the transaction will be blocked.
+</ResponseField>
+
+<ResponseField name="is_step_up_required" type="boolean">
+Whether step-up authentication (MFA) is required based on step-up policies. If `true`, the user must provide a one-time code.
+</ResponseField>
+
+## Examples by Signing Method
+
+### Ethereum Transaction Signing
+
+For standard Ethereum transactions, include transaction fields:
+
+```json
+{
+  "method": "eth_signTransaction",
+  "to": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+  "value": "1000000000000000000",
+  "data": "0xa9059cbb000000000000000000000000...",
+  "chainId": 1,
+  "nonce": 42,
+  "gasLimit": "21000",
+  "maxFeePerGas": "150000000000",
+  "maxPriorityFeePerGas": "2000000000"
+}
+```
+
+<CodeGroup>
+```javascript JavaScript
+const transactionData = {
+  method: "eth_signTransaction",
+  to: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+  value: "0x0de0b6b3a7640000", // 1 ETH in hex
+  chainId: 1,
+  nonce: 42,
+  gasLimit: "0x5208", // 21000 in hex
+  maxFeePerGas: "0x22ecb25c00", // EIP-1559
+  maxPriorityFeePerGas: "0x77359400"
+};
+
+const response = await fetch('/v1/wallet/sign/data', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${jwtToken}`,
+    'X-Magic-API-Key': apiKey,
+    'X-Magic-Chain': 'ETH'
+  },
+  body: JSON.stringify({
+    raw_data_hash: txHash,
+    transaction_data: transactionData
+  })
+});
+```
+
+```python Python
+import requests
+
+transaction_data = {
+    "method": "eth_signTransaction",
+    "to": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+    "value": "1000000000000000000",  # 1 ETH in wei
+    "chainId": 1,
+    "nonce": 42,
+    "gasLimit": "21000",
+    "maxFeePerGas": "150000000000",
+    "maxPriorityFeePerGas": "2000000000"
+}
+
+response = requests.post(
+    'https://tee.express.magiclabs.com/v1/wallet/sign/data',
+    headers={
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {jwt_token}',
+        'X-Magic-API-Key': api_key,
+        'X-Magic-Chain': 'ETH'
+    },
+    json={
+        'raw_data_hash': tx_hash,
+        'transaction_data': transaction_data
+    }
+)
+```
+</CodeGroup>
+
+### Personal Sign
+
+For personal message signing, only the method is required:
+
+```json
+{
+  "method": "personal_sign"
+}
+```
+
+Personal sign doesn't have transaction-specific fields, so minimal data is needed.
+
+### EIP-712 Typed Data Signing
+
+For typed data signing, include the full typed data structure:
+
+```json
+{
+  "method": "eth_signTypedData_v4",
+  "typedData": {
+    "types": {
+      "EIP712Domain": [
+        { "name": "name", "type": "string" },
+        { "name": "version", "type": "string" },
+        { "name": "chainId", "type": "uint256" },
+        { "name": "verifyingContract", "type": "address" }
+      ],
+      "Mail": [
+        { "name": "from", "type": "Person" },
+        { "name": "to", "type": "Person" },
+        { "name": "contents", "type": "string" }
+      ],
+      "Person": [
+        { "name": "name", "type": "string" },
+        { "name": "wallet", "type": "address" }
+      ]
+    },
+    "primaryType": "Mail",
+    "domain": {
+      "name": "Ether Mail",
+      "version": "1",
+      "chainId": 1,
+      "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+    },
+    "message": {
+      "from": {
+        "name": "Cow",
+        "wallet": "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+      },
+      "to": {
+        "name": "Bob",
+        "wallet": "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
+      },
+      "contents": "Hello, Bob!"
+    }
+  }
+}
+```
+
+Typed data fields are automatically extracted and available for policy conditions. Domain fields are accessible as `typed_data_domain_{fieldName}` and message fields as `typed_data_message_{fieldName}`.
+
+## Field Mapping for Policy Conditions
+
+When creating policy conditions, you need to specify the correct `field_source` and `field` names. Here's how transaction data maps to policy condition fields:
+
+### Ethereum Transaction Fields
+
+For `field_source: "ethereum_transaction"`, use these field names:
+
+<AccordionGroup>
+<Accordion title="Available Transaction Fields">
+<ResponseField name="to" type="string">
+Recipient address. Addresses are normalized to lowercase for comparison.
+</ResponseField>
+
+<ResponseField name="value" type="integer">
+Transaction value in wei. Automatically converted from hex string to integer.
+</ResponseField>
+
+<ResponseField name="data" type="string">
+Transaction data (contract call data) as hex string.
+</ResponseField>
+
+<ResponseField name="chain_id" type="integer">
+Chain ID for the transaction.
+</ResponseField>
+
+<ResponseField name="nonce" type="integer">
+Transaction nonce.
+</ResponseField>
+
+<ResponseField name="gas_limit" type="integer">
+Gas limit for the transaction. Automatically converted from hex string to integer.
+</ResponseField>
+
+<ResponseField name="max_fee_per_gas" type="integer">
+Maximum fee per gas (EIP-1559). Automatically converted from hex string to integer.
+</ResponseField>
+
+<ResponseField name="max_priority_fee_per_gas" type="integer">
+Maximum priority fee per gas (EIP-1559). Automatically converted from hex string to integer.
+</ResponseField>
+
+<ResponseField name="gas_price" type="integer">
+Gas price for legacy transactions. Automatically converted from hex string to integer.
+</ResponseField>
+</Accordion>
+</AccordionGroup>
+
+### Typed Data Fields
+
+For `field_source: "typed_data"`, use field names that match the typed data structure. Domain fields are prefixed with `typed_data_domain_` and message fields with `typed_data_message_`.
+
+**Example:** If your typed data has `domain.name` and `message.to.address`, you would use:
+- Field name: `typed_data_domain_name` for domain.name
+- Field name: `typed_data_message_to_address` for message.to.address
+
+### System Fields
+
+For `field_source: "system"`, available fields:
+
+<ResponseField name="current_unix_timestamp" type="integer">
+Current Unix timestamp in seconds. Useful for time-based policy conditions.
+</ResponseField>
+
+## Example Policy Conditions
+
+### Check Transaction Value
+
+```json
+{
+  "field_source": "ethereum_transaction",
+  "field": "value",
+  "operator": "gt",
+  "value": "1000000000000000000"
+}
+```
+
+This condition checks if the transaction value is greater than 1 ETH (1,000,000,000,000,000,000 wei).
+
+### Check Recipient Address
+
+```json
+{
+  "field_source": "ethereum_transaction",
+  "field": "to",
+  "operator": "eq",
+  "value": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+}
+```
+
+<Tip>
+Addresses are normalized to lowercase, so you can use either uppercase or lowercase in your condition value.
+</Tip>
+
+### Check Typed Data Domain
+
+```json
+{
+  "field_source": "typed_data",
+  "field": "typed_data_domain_name",
+  "operator": "eq",
+  "value": "My DApp"
+}
+```
+
+### Check Typed Data Message Fields
+
+For typed data message fields, use the `typed_data_message_{fieldName}` pattern:
+
+```json
+{
+  "field_source": "typed_data",
+  "field": "typed_data_message_makerAmount",
+  "operator": "gt",
+  "value": "10000000"
+}
+```
+
+This example checks if the `makerAmount` field in the typed data message is greater than 10,000,000.
+
+### Check Typed Data Verifying Contract
+
+Block signatures for specific smart contract addresses:
+
+```json
+{
+  "field_source": "typed_data",
+  "field": "typed_data_domain_verifyingContract",
+  "operator": "eq",
+  "value": "0x1234567890123456789012345678901234567890"
+}
+```
+
+### Check Gas Price
+
+```json
+{
+  "field_source": "ethereum_transaction",
+  "field": "max_fee_per_gas",
+  "operator": "lt",
+  "value": "500000000000"
+}
+```
+
+## Data Format Guidelines
+
+### Value Formatting
+
+- **Wei values**: Can be provided as decimal strings (`"1000000000000000000"`) or hex strings (`"0x0de0b6b3a7640000"`)
+- **Policy evaluation**: Values are automatically converted to integers for comparison
+- **Large numbers**: Use string format to avoid precision loss
+
+### Address Formatting
+
+- Addresses should include the `0x` prefix
+- Addresses are case-insensitive and normalized to lowercase
+- Example: `"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"`
+
+### Hex String Formatting
+
+- All hex strings must start with `0x` prefix
+- Gas values, transaction data, and hex-encoded values follow this format
+- Example: `"0x5208"` for decimal 21000
+
+### Chain ID
+
+- Provided as an integer, not a hex string
+- Common values: `1` (Ethereum mainnet), `137` (Polygon), `42161` (Arbitrum)
+
+<Warning>
+Ensure that the `raw_data_hash` you provide matches the transaction data exactly. The hash is validated against the transaction data, and mismatches will result in validation errors.
+</Warning>
+
+## Best Practices
+
+1. **Always include transaction data** when policy evaluation is enabled to ensure policies can evaluate correctly.
+
+2. **Match the raw_data_hash** - The hash must be computed from the exact transaction data you provide.
+
+3. **Include all relevant fields** - Provide complete transaction information so policies have all necessary data for evaluation.
+
+4. **Use consistent formats** - Stick to either decimal strings or hex strings consistently (though both are supported).
+
+5. **Check policy status first** - Use the policy evaluation status endpoint to check if a transaction will be allowed before attempting to sign.
+
+6. **Handle step-up requirements** - If `is_step_up_required` is `true`, prompt users for MFA before signing.
+

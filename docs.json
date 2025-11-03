@@ -80,6 +80,13 @@
               "api-wallets/express-api/getting-started",
               "api-wallets/express-api/mws-migration",
               "api-wallets/express-api/identity-provider",
+              {
+                "group": "Policy",
+                "pages": [
+                  "api-wallets/express-api/policy/evaluation",
+                  "api-wallets/express-api/policy/transaction-data"
+                ]
+              },
               "api-wallets/express-api/wallet-operations",
               {
                 "group": "Data Preparation",
