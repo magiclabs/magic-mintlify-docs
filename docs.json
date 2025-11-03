@@ -42,19 +42,19 @@
                 "group": "Integrations",
                 "pages": [
                   {
-                    "group": "API Wallet",
+                    "group": "API Wallets",
                     "pages": [
-                      "home/integrations/api-wallet/particle-network-universal-accounts"
+                      "home/integrations/api-wallets/particle-network-universal-accounts"
                     ]
                   },
                   {
-                    "group": "Embedded Wallet",
+                    "group": "Embedded Wallets",
                     "pages": [
-                      "home/integrations/embedded-wallet/alchemy-account-abstraction",
-                      "home/integrations/embedded-wallet/zksync-zyfi-integration",
-                      "home/integrations/embedded-wallet/wagmi",
-                      "home/integrations/embedded-wallet/moonpay-integration",
-                      "home/integrations/embedded-wallet/zerodev-account-abstraction"
+                      "home/integrations/embedded-wallets/alchemy-account-abstraction",
+                      "home/integrations/embedded-wallets/zksync-zyfi-integration",
+                      "home/integrations/embedded-wallets/wagmi",
+                      "home/integrations/embedded-wallets/moonpay-integration",
+                      "home/integrations/embedded-wallets/zerodev-account-abstraction"
                     ]
                   }
                 ]
@@ -364,6 +364,10 @@
     {
       "source": "/embedded-wallets/authentication/security/allowlists/mobile-access-allow-listing",
       "destination": "/embedded-wallets/authentication/security/allowlists/mobile-allowlist"
+    },
+    {
+      "source": "/embedded-wallets/wallets/integrations/:path*",
+      "destination": "/home/integrations/embedded-wallets/:path*"
     }
   ],
   "logo": {
