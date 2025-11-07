@@ -309,6 +309,7 @@
                   "embedded-wallets/blockchains/evm/loopring",
                   "embedded-wallets/blockchains/evm/moonbeam",
                   "embedded-wallets/blockchains/evm/optimism",
+                  "embedded-wallets/blockchains/evm/plume",
                   "embedded-wallets/blockchains/evm/polygon",
                   "embedded-wallets/blockchains/evm/rari-chain",
                   "embedded-wallets/blockchains/evm/sei",

@@ -1,0 +1,59 @@
+---
+title: Plume
+description: "Build on Plume, the EVM compatible blockchain purpose-built for Real World Asset (RWA) tokenization and DeFi integration."
+---
+
+## Overview
+
+[Plume](https://www.plume.org) is a public, EVM compatible blockchain designed to facilitate the tokenization and management of Real World Assets (RWAs). Built specifically for RWA integration into DeFi, Plume enables developers to create applications where users can tokenize, stake, swap, lend, and borrow real-world assets alongside crypto-native assets.
+
+<Info>
+**What are Real World Assets (RWAs)?**
+
+RWAs are tangible or intangible assets from the traditional financial world that are tokenized on-chain. Examples include real estate, commodities, private credit, ETFs, and even esoteric assets like GPUs and mineral rights.
+</Info>
+
+### Key Features
+
+Plume's architecture consists of three core components:
+
+- **Arc (Tokenization Engine)**: Simplifies the creation, onboarding, and management of tokenized RWAs
+- **Passport (Smart Wallets)**: Embeds custody and compliance directly within wallets, enhancing user experience
+- **Nexus (Data Highway)**: Integrates real-world data on-chain, enabling new use cases for prediction markets and DeFi applications
+
+As Plume is EVM compatible, you can follow the [Ethereum](/embedded-wallets/blockchains/ethereum/javascript) documentation to send your first transaction and utilize all other wallet features.
+
+## Configure Plume
+
+Ensure you have installed the Magic SDK and have access to your API key. Follow the [quickstart](/embedded-wallets/quickstart/overview) to get started.
+
+Configure your Magic instance to connect to Plume's mainnet or testnet:
+
+<CodeGroup>
+```js Mainnet icon="square-js"
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
+  network: {
+    rpcUrl: 'https://rpc.plume.org',
+    chainId: 98866,
+  }
+});
+```
+
+```js Testnet icon="square-js"
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
+  network: {
+    rpcUrl: 'https://testnet-rpc.plume.org',
+    chainId: 98867,
+  }
+});
+```
+</CodeGroup>
+
+## Resources & Tools
+
+- **Documentation**: [https://docs.plume.org](https://docs.plume.org)
+- **Block Explorer**:
+  - [https://explorer.plume.org](https://explorer.plume.org) (Mainnet)
+  - [https://testnet-explorer.plume.org](https://testnet-explorer.plume.org) (Testnet)
+- **Website**: [https://www.plume.org](https://www.plume.org)
+
