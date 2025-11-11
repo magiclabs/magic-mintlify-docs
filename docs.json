@@ -376,6 +376,10 @@
     {
       "source": "/embedded-wallets/wallets/integrations/:path*",
       "destination": "/home/integrations/embedded-wallets/:path*"
+    },
+    {
+      "source": "/embedded-wallets/blockchains/multichain",
+      "destination": "/embedded-wallets/wallets/features/multichain"
     }
   ],
   "logo": {
