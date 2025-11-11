@@ -223,6 +223,7 @@
                 "group": "Features",
                 "pages": [
                   "embedded-wallets/wallets/features/evm-chain-switching",
+                  "embedded-wallets/wallets/features/multichain",
                   "embedded-wallets/wallets/features/transaction-signing",
                   "embedded-wallets/wallets/features/personal-signatures",
                   "embedded-wallets/wallets/features/fiat-on-ramps",
@@ -337,8 +338,7 @@
                   "embedded-wallets/blockchains/non-evm/tezos",
                   "embedded-wallets/blockchains/non-evm/zilliqa"
                 ]
-              },
-              "embedded-wallets/blockchains/multichain"
+              }
             ]
           }
         ]
