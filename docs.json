@@ -168,7 +168,16 @@
                       }
                     ]
                   },
-                  "embedded-wallets/authentication/login/farcaster"
+                  "embedded-wallets/authentication/login/farcaster",
+                  "embedded-wallets/authentication/login/siwe"
+                ]
+              },
+              {
+                "group": "Features",
+                "pages": [
+                  "embedded-wallets/authentication/features/mfa",
+                  "embedded-wallets/authentication/features/account-recovery",
+                  "embedded-wallets/authentication/features/decentralized-id"
                 ]
               },
               {
