@@ -4,7 +4,7 @@ title: Sign-In with Ethereum
 
 ## Overview
 
-Sign-In with Ethereum (SIWE) is a standard for passwordless authentication using Ethereum accounts. It allows users to sign in to your application using their Ethereum address and public key.
+Sign-In with Ethereum (SIWE) is a standard for passwordless authentication using Ethereum accounts. It allows users to authenticate to your application using their Ethereum address and public key.
 
 ### Compatibility
 
@@ -17,7 +17,7 @@ SIWE SDK methods are available via the `siwe` module of the [Web](/embedded-wall
 - `user.getInfo()`
 - `user.logout()`
 
-SIWE authentication is designed for authentication purposes, so wallet operations are handled through the user's external wallet provider.
+SIWE authentication is designed for authentication purposes, so wallet operations are handled through the user's third-party wallet provider.
 </Info>
 
 ## Usage
@@ -35,11 +35,11 @@ yarn add magic-sdk @magic-ext/siwe
 
 ### Sign in with a Third-Party Wallet
 
-To authenticate users with a third-party wallet (e.g., MetaMask, Coinbase Wallet), you need to:
+To authenticate users with a third-party wallet (e.g., MetaMask, Coinbase Wallet), follow these steps:
 
 1. Generate a SIWE message using the wallet's address
 2. Sign the message with the third-party wallet
-3. Complete login with Magic using the message and signature
+3. Complete authentication with Magic using the message and signature
 
 ```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
@@ -63,13 +63,13 @@ const signInWithWallet = async (walletProvider, walletAddress) => {
       params: [message, walletAddress],
     });
 
-    // 3. Complete login with Magic
+    // 3. Complete authentication with Magic
     const publicAddress = await magic.siwe.login({ message, signature });
     
-    console.log('SIWE login complete! Public Address:', publicAddress);
+    console.log('SIWE authentication complete! Public Address:', publicAddress);
     return publicAddress;
   } catch (error) {
-    console.error('SIWE login error:', error);
+    console.error('SIWE authentication error:', error);
     throw error;
   }
 };
@@ -77,7 +77,12 @@ const signInWithWallet = async (walletProvider, walletAddress) => {
 
 ### Sign in with Worldcoin Mini App
 
-To authenticate users with Worldcoin Mini Apps, you can use World App's native wallet integration. The flow is similar to third-party wallets, but Worldcoin handles the message generation and signing internally.
+To authenticate users with Worldcoin Mini Apps, you can use World App's native wallet integration. Follow these steps:
+
+1. Generate a nonce from Magic
+2. Request wallet authentication from World App
+3. Extract the signed message and signature
+4. Complete authentication with Magic
 
 <Note>
 This example requires the `@worldcoin/minikit-js` package. See the [Worldcoin Mini Apps documentation](https://docs.world.org/mini-apps) for setup instructions.
@@ -103,19 +108,19 @@ const signInWithWorldcoin = async () => {
     });
 
     if (!finalPayload || finalPayload.status !== 'success') {
-      throw new Error('Worldcoin wallet authentication failed');
+      throw new Error('World App wallet authentication failed');
     }
 
     // 3. Extract the signed message and signature
     const { message, signature } = finalPayload;
 
-    // 4. Complete login with Magic
+    // 4. Complete authentication with Magic
     const publicAddress = await magic.siwe.login({ message, signature });
     
-    console.log('SIWE login complete! Public Address:', publicAddress);
+    console.log('SIWE authentication complete! Public Address:', publicAddress);
     return publicAddress;
   } catch (error) {
-    console.error('SIWE login error:', error);
+    console.error('SIWE authentication error:', error);
     throw error;
   }
 };
