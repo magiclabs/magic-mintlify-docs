@@ -168,8 +168,7 @@
                       }
                     ]
                   },
-                  "embedded-wallets/authentication/login/farcaster",
-                  "embedded-wallets/authentication/login/siwe"
+                  "embedded-wallets/authentication/login/farcaster"
                 ]
               },
               {
