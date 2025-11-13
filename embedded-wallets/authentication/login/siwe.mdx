@@ -1,0 +1,129 @@
+---
+title: Sign-In with Ethereum
+---
+
+## Overview
+
+Sign-In with Ethereum (SIWE) is a standard for passwordless authentication using Ethereum accounts. It allows users to authenticate to your application by signing a message with their Ethereum address, providing a self-custodied alternative to centralized identity providers.
+
+Learn more about the [SIWE standard (EIP-4361)](https://eips.ethereum.org/EIPS/eip-4361).
+
+### Compatibility
+
+SIWE SDK methods are available via the `siwe` module of the [Web](/embedded-wallets/sdk/client-side/javascript) and [React Native](/embedded-wallets/sdk/client-side/react-native) client-side SDKs.
+
+<Info>
+**Available Methods**: Users authenticated through the SIWE extension can use the following `user` methods:
+
+- `user.isLoggedIn()`
+- `user.getInfo()`
+- `user.logout()`
+
+SIWE authentication is designed for authentication purposes, so wallet operations are handled through the user's third-party wallet provider.
+</Info>
+
+## Usage
+
+### Installation
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install magic-sdk @magic-ext/siwe
+```
+```bash Yarn icon="yarn"
+yarn add magic-sdk @magic-ext/siwe
+```
+</CodeGroup>
+
+### Sign in with a Third-Party Wallet
+
+To authenticate users with a third-party wallet (e.g., MetaMask, Coinbase Wallet), follow these steps:
+
+1. Generate a SIWE message using the wallet's address
+2. Sign the message with the third-party wallet
+3. Complete authentication with Magic using the message and signature
+
+```javascript JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { SiweExtension } from '@magic-ext/siwe';
+
+const magic = new Magic('PUBLISHABLE_API_KEY', {
+  extensions: [new SiweExtension()],
+});
+
+const signInWithWallet = async (walletProvider, walletAddress) => {
+  try {
+    // 1. Generate the SIWE message
+    const message = await magic.siwe.generateMessage({
+      address: walletAddress,
+      chainId: 1, // Optional: defaults to Ethereum mainnet
+    });
+
+    // 2. Sign the message with the third-party wallet
+    const signature = await walletProvider.request({
+      method: 'personal_sign',
+      params: [message, walletAddress],
+    });
+
+    // 3. Complete authentication with Magic
+    const publicAddress = await magic.siwe.login({ message, signature });
+    
+    console.log('SIWE authentication complete! Public Address:', publicAddress);
+    return publicAddress;
+  } catch (error) {
+    console.error('SIWE authentication error:', error);
+    throw error;
+  }
+};
+```
+
+### Sign in with Worldcoin Mini App
+
+To authenticate users with Worldcoin Mini Apps, you can use World App's native wallet integration. Follow these steps:
+
+1. Generate a nonce from Magic
+2. Request wallet authentication from World App
+3. Extract the signed message and signature
+4. Complete authentication with Magic
+
+<Note>
+This example requires the `@worldcoin/minikit-js` package. See the [Worldcoin Mini Apps documentation](https://docs.world.org/mini-apps) for setup instructions.
+</Note>
+
+```javascript JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { SiweExtension } from '@magic-ext/siwe';
+import { MiniKit } from '@worldcoin/minikit-js';
+
+const magic = new Magic('PUBLISHABLE_API_KEY', {
+  extensions: [new SiweExtension()],
+});
+
+const signInWithWorldcoin = async () => {
+  try {
+    // 1. Generate a nonce from Magic
+    const nonce = await magic.siwe.generateNonce();
+
+    // 2. Request wallet authentication from World App
+    const { finalPayload } = await MiniKit.commandsAsync.walletAuth({
+      nonce,
+    });
+
+    if (!finalPayload || finalPayload.status !== 'success') {
+      throw new Error('World App wallet authentication failed');
+    }
+
+    // 3. Extract the signed message and signature
+    const { message, signature } = finalPayload;
+
+    // 4. Complete authentication with Magic
+    const publicAddress = await magic.siwe.login({ message, signature });
+    
+    console.log('SIWE authentication complete! Public Address:', publicAddress);
+    return publicAddress;
+  } catch (error) {
+    console.error('SIWE authentication error:', error);
+    throw error;
+  }
+};
+```
