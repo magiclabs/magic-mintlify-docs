@@ -180,14 +180,6 @@
                 ]
               },
               {
-                "group": "Features",
-                "pages": [
-                  "embedded-wallets/authentication/features/mfa",
-                  "embedded-wallets/authentication/features/account-recovery",
-                  "embedded-wallets/authentication/features/decentralized-id"
-                ]
-              },
-              {
                 "group": "Customization",
                 "pages": [
                   "embedded-wallets/authentication/customization/login-ui",
