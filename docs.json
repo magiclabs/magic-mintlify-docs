@@ -50,6 +50,7 @@
                   {
                     "group": "Embedded Wallets",
                     "pages": [
+                      "home/integrations/embedded-wallets/polymarket",
                       "home/integrations/embedded-wallets/alchemy-account-abstraction",
                       "home/integrations/embedded-wallets/zksync-zyfi-integration",
                       "home/integrations/embedded-wallets/wagmi",
