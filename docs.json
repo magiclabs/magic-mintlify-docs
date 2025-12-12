@@ -367,6 +367,10 @@
   },
   "redirects": [
     {
+      "source": "/",
+      "destination": "/home/welcome"
+    },
+    {
       "source": "/embedded-wallets/authentication/login/oauth/oauth-implementation",
       "destination": "/embedded-wallets/authentication/login/oauth/implementation"
     },
