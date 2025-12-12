@@ -72,42 +72,42 @@
         "groups": [
           {
             "group": "Server Wallets",
-            "pages": ["api-wallets/introduction"]
+            "pages": ["server-wallets/introduction"]
           },
           {
             "group": "Express API",
             "pages": [
-              "api-wallets/express-api/overview",
-              "api-wallets/express-api/getting-started",
-              "api-wallets/express-api/mws-migration",
-              "api-wallets/express-api/identity-provider",
-              "api-wallets/express-api/wallet-operations",
+              "server-wallets/express-api/overview",
+              "server-wallets/express-api/getting-started",
+              "server-wallets/express-api/mws-migration",
+              "server-wallets/express-api/identity-provider",
+              "server-wallets/express-api/wallet-operations",
               {
                 "group": "Data Preparation",
                 "pages": [
-                  "api-wallets/express-api/data-preparation/evm",
-                  "api-wallets/express-api/data-preparation/solana"
+                  "server-wallets/express-api/data-preparation/evm",
+                  "server-wallets/express-api/data-preparation/solana"
                 ]
               },
-              "api-wallets/express-api/error-handling"
+              "server-wallets/express-api/error-handling"
             ]
           },
           {
             "group": "Core API",
             "pages": [
-              "api-wallets/core-api/overview",
-              "api-wallets/core-api/getting-started",
-              "api-wallets/core-api/wallet-operations",
-              "api-wallets/core-api/signing-operations",
+              "server-wallets/core-api/overview",
+              "server-wallets/core-api/getting-started",
+              "server-wallets/core-api/wallet-operations",
+              "server-wallets/core-api/signing-operations",
               {
                 "group": "Wallet Management",
                 "pages": [
-                  "api-wallets/core-api/wallet-management/private-key-operations",
-                  "api-wallets/core-api/wallet-management/wallet-recovery"
+                  "server-wallets/core-api/wallet-management/private-key-operations",
+                  "server-wallets/core-api/wallet-management/wallet-recovery"
                 ]
               },
-              "api-wallets/core-api/architecture",
-              "api-wallets/core-api/error-handling"
+              "server-wallets/core-api/architecture",
+              "server-wallets/core-api/error-handling"
             ]
           }
         ]
