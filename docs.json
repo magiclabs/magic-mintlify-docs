@@ -1,7 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "MagicLabs",
-  "homepage": "/home/welcome",
   "theme": "mint",
   "colors": {
     "primary": "#18171a",
