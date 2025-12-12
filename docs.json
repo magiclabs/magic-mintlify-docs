@@ -110,7 +110,6 @@
               {
                 "group": "Wallet Management",
                 "pages": [
-                  "api-wallets/core-api/wallet-management/private-key-operations",
                   "api-wallets/core-api/wallet-management/wallet-recovery"
                 ]
               },
