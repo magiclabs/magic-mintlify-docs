@@ -82,6 +82,7 @@
               "api-wallets/express-api/mws-migration",
               "api-wallets/express-api/identity-provider",
               "api-wallets/express-api/wallet-operations",
+              "api-wallets/express-api/export-private-key",
               {
                 "group": "Data Preparation",
                 "pages": [
@@ -102,7 +103,6 @@
               {
                 "group": "Wallet Management",
                 "pages": [
-                  "api-wallets/core-api/wallet-management/private-key-operations",
                   "api-wallets/core-api/wallet-management/wallet-recovery"
                 ]
               },
