@@ -42,9 +42,9 @@
                 "group": "Integrations",
                 "pages": [
                   {
-                    "group": "API Wallets",
+                    "group": "Server Wallets",
                     "pages": [
-                      "home/integrations/api-wallets/particle-network-universal-accounts"
+                      "home/integrations/server-wallets/particle-network-universal-accounts"
                     ]
                   },
                   {
@@ -67,11 +67,11 @@
         ]
       },
       {
-        "tab": "API Wallets",
+        "tab": "Server Wallets",
         "icon": "brackets-curly",
         "groups": [
           {
-            "group": "API Wallets",
+            "group": "Server Wallets",
             "pages": ["api-wallets/introduction"]
           },
           {
@@ -360,6 +360,10 @@
   },
   "redirects": [
     {
+      "source": "/api-wallets/:path*",
+      "destination": "/server-wallets/:path*"
+    },
+    {
       "source": "/embedded-wallets/authentication/login/oauth/oauth-implementation",
       "destination": "/embedded-wallets/authentication/login/oauth/implementation"
     },
@@ -409,7 +413,7 @@
   "seo": {
     "metatags": {
       "og:title": "Developer Docs | Magic",
-      "og:description": "Get started in minutes with Magic's API Wallets and Embedded Wallets. High-performance Web3 infrastructure with multi-chain support and enterprise-grade security.",
+      "og:description": "Get started in minutes with Magic's Server Wallets and Embedded Wallets. High-performance Web3 infrastructure with multi-chain support and enterprise-grade security.",
       "og:url": "https://docs.magic.link",
       "og:type": "website",
       "og:image": "https://assets.magiclabs.com/assets/og-img.png"
