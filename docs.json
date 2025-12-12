@@ -89,6 +89,7 @@
                 ]
               },
               "api-wallets/express-api/wallet-operations",
+              "api-wallets/express-api/export-private-key",
               {
                 "group": "Data Preparation",
                 "pages": [
