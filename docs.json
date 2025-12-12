@@ -42,9 +42,9 @@
                 "group": "Integrations",
                 "pages": [
                   {
-                    "group": "API Wallets",
+                    "group": "Server Wallets",
                     "pages": [
-                      "home/integrations/api-wallets/particle-network-universal-accounts"
+                      "home/integrations/server-wallets/particle-network-universal-accounts"
                     ]
                   },
                   {
@@ -67,47 +67,47 @@
         ]
       },
       {
-        "tab": "API Wallets",
+        "tab": "Server Wallets",
         "icon": "brackets-curly",
         "groups": [
           {
-            "group": "API Wallets",
-            "pages": ["api-wallets/introduction"]
+            "group": "Server Wallets",
+            "pages": ["server-wallets/introduction"]
           },
           {
             "group": "Express API",
             "pages": [
-              "api-wallets/express-api/overview",
-              "api-wallets/express-api/getting-started",
-              "api-wallets/express-api/mws-migration",
-              "api-wallets/express-api/identity-provider",
-              "api-wallets/express-api/wallet-operations",
+              "server-wallets/express-api/overview",
+              "server-wallets/express-api/getting-started",
+              "server-wallets/express-api/mws-migration",
+              "server-wallets/express-api/identity-provider",
+              "server-wallets/express-api/wallet-operations",
               {
                 "group": "Data Preparation",
                 "pages": [
-                  "api-wallets/express-api/data-preparation/evm",
-                  "api-wallets/express-api/data-preparation/solana"
+                  "server-wallets/express-api/data-preparation/evm",
+                  "server-wallets/express-api/data-preparation/solana"
                 ]
               },
-              "api-wallets/express-api/error-handling"
+              "server-wallets/express-api/error-handling"
             ]
           },
           {
             "group": "Core API",
             "pages": [
-              "api-wallets/core-api/overview",
-              "api-wallets/core-api/getting-started",
-              "api-wallets/core-api/wallet-operations",
-              "api-wallets/core-api/signing-operations",
+              "server-wallets/core-api/overview",
+              "server-wallets/core-api/getting-started",
+              "server-wallets/core-api/wallet-operations",
+              "server-wallets/core-api/signing-operations",
               {
                 "group": "Wallet Management",
                 "pages": [
-                  "api-wallets/core-api/wallet-management/private-key-operations",
-                  "api-wallets/core-api/wallet-management/wallet-recovery"
+                  "server-wallets/core-api/wallet-management/private-key-operations",
+                  "server-wallets/core-api/wallet-management/wallet-recovery"
                 ]
               },
-              "api-wallets/core-api/architecture",
-              "api-wallets/core-api/error-handling"
+              "server-wallets/core-api/architecture",
+              "server-wallets/core-api/error-handling"
             ]
           }
         ]
@@ -360,6 +360,10 @@
   },
   "redirects": [
     {
+      "source": "/api-wallets/:path*",
+      "destination": "/server-wallets/:path*"
+    },
+    {
       "source": "/embedded-wallets/authentication/login/oauth/oauth-implementation",
       "destination": "/embedded-wallets/authentication/login/oauth/implementation"
     },
@@ -409,7 +413,7 @@
   "seo": {
     "metatags": {
       "og:title": "Developer Docs | Magic",
-      "og:description": "Get started in minutes with Magic's API Wallets and Embedded Wallets. High-performance Web3 infrastructure with multi-chain support and enterprise-grade security.",
+      "og:description": "Get started in minutes with Magic's Server Wallets and Embedded Wallets. High-performance Web3 infrastructure with multi-chain support and enterprise-grade security.",
       "og:url": "https://docs.magic.link",
       "og:type": "website",
       "og:image": "https://assets.magiclabs.com/assets/og-img.png"
