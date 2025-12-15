@@ -1,0 +1,30 @@
+---
+title: "Export Private Key"
+description: "Express API lets you display an iframe revealing the private key for the specific blockchain network. The Iframe shows a secure interface where users can view and copy their private key."
+---
+
+### Security Considerations
+
+<Warning>
+Private key revelation should only be used for legitimate purposes such as wallet export, backup, or migration. Once revealed, the private key provides full access to the wallet and should be handled with extreme care.
+</Warning>
+
+<Info>
+The private key is encrypted using RSA-OAEP encryption before transmission, ensuring that only the holder of the RSA private key can decrypt it.
+</Info>
+
+```javascript JavaScript icon="square-js"
+import MagicApiWalletSDK, { WalletType } from "@magic-sdk/server-wallets";
+
+const magic = new MagicApiWalletSDK('PUBLISHABLE_API_KEY')
+
+try {
+  await magic.wallet.exportPrivateKey({
+    walletType: 'ETH',
+    bearerToken: 'YOUR_JWT_TOKEN',
+    oidcProviderId: 'YOUR_OIDC_PROVIDER_ID',
+  });
+} catch {
+  // Handle errors if required!
+}
+```
