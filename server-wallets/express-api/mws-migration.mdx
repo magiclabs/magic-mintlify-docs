@@ -6,7 +6,7 @@ keywords: ['loginWithOIDC', 'OIDC',]
 
 ## Overview
 
-We're deprecating MWS (`loginWithOIDC`) and moving all of our customers to Express API, which enables developers to perform wallet operations without the need of using an iframe or going through Magic for authentication. All the documentation is available [here](/api-wallets/express-api/overview).
+We're deprecating MWS (`loginWithOIDC`) and moving all of our customers to Express API, which enables developers to perform wallet operations without the need of using an iframe or going through Magic for authentication. All the documentation is available [here](/server-wallets/express-api/overview).
 
 ## Migration Steps
 
@@ -38,10 +38,10 @@ Replace `YOUR_JWT_TOKEN`, `YOUR_MAGIC_API_KEY`, and `YOUR_OIDC_PROVIDER_ID` with
 </Step>
 
 <Step title="Update Signing Operations">
-Replace Magic SDK signing operations with TEE signing. See the [signing operations](/api-wallets/express-api/wallet-operations#signing-operations) page for detailed implementation, and the data preparation pages for specific blockchain implementations:
+Replace Magic SDK signing operations with TEE signing. See the [signing operations](/server-wallets/express-api/wallet-operations#signing-operations) page for detailed implementation, and the data preparation pages for specific blockchain implementations:
 
-- [EVM Data Preparation](/api-wallets/express-api/data-preparation/evm)
-- [Solana Data Preparation](/api-wallets/express-api/data-preparation/solana)
+- [EVM Data Preparation](/server-wallets/express-api/data-preparation/evm)
+- [Solana Data Preparation](/server-wallets/express-api/data-preparation/solana)
 </Step>
 
 <Step title="Uninstall Magic SDK">
