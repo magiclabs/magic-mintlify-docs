@@ -38,7 +38,7 @@ Custom email templates support Jinja-like conditional syntax for creating locali
 
 The template parser supports the following conditional structures:
 
-```html
+```Jinja
 {% if condition %} content {% endif %}
 
 {% if condition %} content {% else %} fallback content {% endif %}
@@ -61,17 +61,17 @@ The template parser supports the following conditional structures:
 
 **Basic locale switching:**
 
-```html
-{% if template.locale == 'ja' %}
-  ログインコード
+```Jinja
+{% if template.locale == 'es' %}
+  Código de inicio de sesión
 {% else %}
   Login Code
-{% endif %}
+{% endif %} 
 ```
 
 **Matching locale variants with `startswith()`:**
 
-```html
+```Jinja
 {% if template.locale == 'zh-CN' or template.locale.startswith('zh-') %}
   登录验证码
 {% elif template.locale == 'ja' %}
@@ -83,7 +83,7 @@ The template parser supports the following conditional structures:
 
 **Multiple language support:**
 
-```html
+```Jinja
 {% if template.locale == 'es' %}
   Tu código de inicio de sesión es: {{otp}}
 {% elif template.locale == 'fr' %}
