@@ -841,7 +841,7 @@ The response structure depends on your SDK version:
     * `isMfaEnabled` (Boolean): Whether or not multi-factor authentication is enabled for the user
     * `recoveryFactors` (Array): Any recovery methods that have been enabled (ex. `[{ type: 'phone_number', value: '+99999999' }]`)
     * `wallets` (Object):  Organized wallet addresses by blockchain and network:
-        * `[chainName]` (Object): Each supported blockchain (e.g., `eth`, `solana`, `bitcoin`, `hedera`)
+        * `[chainName]` (Object): Each supported blockchain (e.g., `ethereum`, `solana`, `bitcoin`, `hedera`)
             * `publicAddress` (String | null): The mainnet public address for this chain, or `null` if no mainnet wallet exists
             * `subAccounts` (Array): Additional network addresses for this chain
                 * `name` (String): Network name (e.g., `testnet`)
