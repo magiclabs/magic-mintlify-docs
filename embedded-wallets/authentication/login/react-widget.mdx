@@ -13,7 +13,9 @@ The React Widget requires React 18+ and is available for web applications using 
 - Support multiple authentication methods (email OTP, OAuth, third-party wallets) from a single widget
 - Automatically apply your Magic dashboard theme and branding
 
-## Installation
+## Getting Started
+
+### Installation
 
 <CodeGroup>
 ```bash NPM icon="npm"
@@ -24,7 +26,7 @@ yarn add magic-sdk @magic-ext/magic-widget @tanstack/react-query viem
 ```
 </CodeGroup>
 
-## Usage
+### Usage
 
 Initialize Magic with the `MagicWidgetExtension`, then render the `MagicWidget` component in your app.
 
@@ -64,7 +66,9 @@ export default function LoginPage() {
 }
 ```
 
-## Props
+## API Reference
+
+### Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
@@ -78,7 +82,7 @@ export default function LoginPage() {
 | `onError` | `(error: Error) => void` | — | Called when login fails. |
 | `onReady` | `() => void` | — | Called when the widget has initialized and applied theme settings. |
 
-## Login Results
+### Login Results
 
 The `onSuccess` callback receives a result object with a `method` property indicating the authentication type:
 
@@ -95,7 +99,9 @@ The `onSuccess` callback receives a result object with a `method` property indic
 
 For email logins, use `result.didToken` for backend verification. For OAuth logins, use `result.magic.idToken`.
 
-## Modal Mode
+## Examples
+
+### Modal Mode
 
 Use modal mode to display the widget as an overlay:
 
@@ -121,6 +127,46 @@ function App() {
   );
 }
 ```
+
+### Loading State
+
+The widget fetches configuration from your Magic dashboard before rendering. During this time, it returns `null`. To show a loading indicator, render the widget with `isOpen={false}` and wait for `onReady`:
+
+```jsx JavaScript icon="square-js"
+import { useState } from 'react';
+import { Magic } from 'magic-sdk';
+import { MagicWidget, MagicWidgetExtension } from '@magic-ext/magic-widget';
+
+// Create Magic instance once, outside the component
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [new MagicWidgetExtension()],
+});
+
+function LoginPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleReady = () => {
+    setIsLoading(false);
+    setIsOpen(true);
+  };
+
+  return (
+    <>
+      {isLoading && <div>Loading...</div>}
+      <MagicWidget
+        isOpen={isOpen}
+        onReady={handleReady}
+        onSuccess={(result) => console.log(result)}
+      />
+    </>
+  );
+}
+```
+
+<Note>
+Create the Magic instance outside your component or use `useMemo` to prevent recreating it on every render.
+</Note>
 
 ## Theming
 
