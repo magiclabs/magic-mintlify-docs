@@ -1,6 +1,6 @@
 ---
 title: React Widget
-description: "With Magic, you can use a pre-built React component that provides a complete authentication UI with support for email, OAuth, and third-party wallet login."
+description: "With Magic, you can use a pre-built React component that provides a complete authentication UI with support for email, OAuth, and external wallet login."
 ---
 
 ### Compatibility
@@ -10,7 +10,7 @@ The React Widget requires React 18+ and is available for web applications using 
 ## Use Cases
 
 - Add a complete login UI to your React app without building custom components
-- Support multiple authentication methods (email OTP, OAuth, third-party wallets) from a single widget
+- Support multiple authentication methods (email OTP, OAuth, external wallets) from a single widget
 
 ## Getting Started
 
@@ -71,7 +71,7 @@ The widget displays login options based on two sources:
 
 **Dashboard-configured options** — Email OTP and OAuth providers (Google, Apple, GitHub, etc.) are configured in your [Magic Dashboard](https://dashboard.magic.link). Enable the authentication methods you want, and they will automatically appear in the widget.
 
-**Code-configured options** — Third-party wallets (MetaMask, Coinbase, etc.) are configured via the `wallets` prop. Only the wallets you specify will be displayed.
+**Code-configured options** — External wallets (MetaMask, Coinbase, etc.) are configured via the `wallets` prop. Only the wallets you specify will be displayed.
 
 For example, if you enable Email and Google OAuth in your dashboard and pass `wallets={['metamask']}`, the widget will show all three options: email input, Google sign-in button, and MetaMask.
 
@@ -86,7 +86,7 @@ For example, if you enable Email and Google OAuth in your dashboard and pass `wa
 | `onClose` | `() => void` | — | Called when the user closes the widget. |
 | `closeOnSuccess` | `boolean` | `false` | Automatically close after successful login (shows success screen for 2 seconds first). |
 | `closeOnClickOutside` | `boolean` | `false` | Close when clicking the backdrop. Only applies in modal mode. |
-| `wallets` | `Array` | `[]` | Third-party wallets to display: `'metamask'`, `'coinbase'`, `'phantom'`, `'rabby'`, `'walletconnect'`. |
+| `wallets` | `Array` | `[]` | External wallets to display: `'metamask'`, `'coinbase'`, `'phantom'`, `'rabby'`, `'walletconnect'`. |
 | `onSuccess` | `(result: LoginResult) => void` | — | Called on successful login. See [Login Results](#login-results) for result structure. |
 | `onError` | `(error: Error) => void` | — | Called when login fails. |
 | `onReady` | `() => void` | — | Called when the widget has initialized and applied theme settings. |
@@ -102,7 +102,7 @@ The `onSuccess` callback receives a result object with a `method` property indic
 // OAuth login (Google, Apple, etc.)
 { method: 'oauth', oauth: { provider, scope, userHandle, userInfo }, magic: { idToken, userMetadata } }
 
-// Third-party wallet login
+// External wallet login
 { method: 'wallet', walletAddress: string }
 ```
 
