@@ -1,0 +1,133 @@
+---
+title: React Widget
+description: "With Magic, you can use a pre-built React component that provides a complete authentication UI with support for email, OAuth, and third-party wallet login."
+---
+
+### Compatibility
+
+The React Widget requires React 18+ and is available for web applications using the [JavaScript SDK](/embedded-wallets/sdk/client-side/javascript).
+
+## Use Cases
+
+- Add a complete login UI to your React app without building custom components
+- Support multiple authentication methods (email OTP, OAuth, third-party wallets) from a single widget
+- Automatically apply your Magic dashboard theme and branding
+
+## Installation
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install magic-sdk @magic-ext/magic-widget @tanstack/react-query viem
+```
+```bash Yarn icon="yarn"
+yarn add magic-sdk @magic-ext/magic-widget @tanstack/react-query viem
+```
+</CodeGroup>
+
+## Usage
+
+Initialize Magic with the `MagicWidgetExtension`, then render the `MagicWidget` component in your app.
+
+```jsx JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { MagicWidget, MagicWidgetExtension } from '@magic-ext/magic-widget';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [new MagicWidgetExtension()],
+});
+
+export default function LoginPage() {
+  const handleSuccess = (result) => {
+    switch (result.method) {
+      case 'email':
+        // result.didToken for backend verification
+        console.log('Email login:', result.didToken);
+        break;
+      case 'oauth':
+        // result.magic.idToken for backend verification
+        console.log('OAuth login:', result.magic.idToken);
+        break;
+      case 'wallet':
+        // result.walletAddress for wallet connections
+        console.log('Wallet connected:', result.walletAddress);
+        break;
+    }
+  };
+
+  return (
+    <MagicWidget
+      wallets={['metamask', 'coinbase', 'walletconnect']}
+      onSuccess={handleSuccess}
+      onError={(error) => console.error(error)}
+    />
+  );
+}
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `displayMode` | `'inline' \| 'modal'` | `'inline'` | How the widget is displayed. `'inline'` renders in document flow, `'modal'` shows as an overlay. |
+| `isOpen` | `boolean` | `true` | Whether the widget is visible. |
+| `onClose` | `() => void` | — | Called when the user closes the widget. |
+| `closeOnSuccess` | `boolean` | `false` | Automatically close after successful login (shows success screen for 2 seconds first). |
+| `closeOnClickOutside` | `boolean` | `false` | Close when clicking the backdrop. Only applies in modal mode. |
+| `wallets` | `Array` | `[]` | Third-party wallets to display: `'metamask'`, `'coinbase'`, `'phantom'`, `'rabby'`, `'walletconnect'`. |
+| `onSuccess` | `(result: LoginResult) => void` | — | Called on successful login. See [Login Results](#login-results) for result structure. |
+| `onError` | `(error: Error) => void` | — | Called when login fails. |
+| `onReady` | `() => void` | — | Called when the widget has initialized and applied theme settings. |
+
+## Login Results
+
+The `onSuccess` callback receives a result object with a `method` property indicating the authentication type:
+
+```typescript
+// Email OTP login
+{ method: 'email', didToken: string }
+
+// OAuth login (Google, Apple, etc.)
+{ method: 'oauth', oauth: { provider, scope, userHandle, userInfo }, magic: { idToken, userMetadata } }
+
+// Third-party wallet login
+{ method: 'wallet', walletAddress: string }
+```
+
+For email logins, use `result.didToken` for backend verification. For OAuth logins, use `result.magic.idToken`.
+
+## Modal Mode
+
+Use modal mode to display the widget as an overlay:
+
+```jsx JavaScript icon="square-js"
+import { useState } from 'react';
+import { MagicWidget } from '@magic-ext/magic-widget';
+
+function App() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      <button onClick={() => setIsOpen(true)}>Log in</button>
+      <MagicWidget
+        displayMode="modal"
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        closeOnClickOutside
+        closeOnSuccess
+        onSuccess={(result) => console.log(result)}
+      />
+    </>
+  );
+}
+```
+
+## Theming
+
+The widget automatically applies your Magic dashboard theme settings including colors and light/dark mode. Configure these in your [Magic Dashboard](https://dashboard.magic.link).
+
+## Resources
+
+- [JavaScript SDK](/embedded-wallets/sdk/client-side/javascript)
+- [Email OTP Login](/embedded-wallets/authentication/login/email-otp)
+- [OAuth Implementation](/embedded-wallets/authentication/login/oauth/implementation)

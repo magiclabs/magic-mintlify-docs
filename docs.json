@@ -137,6 +137,7 @@
               {
                 "group": "Login",
                 "pages": [
+                  "embedded-wallets/authentication/login/react-widget",
                   "embedded-wallets/authentication/login/email-otp",
                   "embedded-wallets/authentication/login/sms",
                   {
