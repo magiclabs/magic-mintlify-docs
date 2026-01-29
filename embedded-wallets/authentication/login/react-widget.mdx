@@ -75,6 +75,18 @@ The widget displays login options based on two sources:
 
 For example, if you enable Email and Google OAuth in your dashboard and pass `wallets={['metamask']}`, the widget will show all three options: email input, Google sign-in button, and MetaMask.
 
+### WalletConnect
+
+If you include `'walletconnect'` in the `wallets` prop, the widget uses [Reown](https://reown.com/) (formerly WalletConnect) under the hood. A default project ID is included for development, but for production apps you should provide your own to avoid rate limiting:
+
+```jsx JavaScript icon="square-js"
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [new MagicWidgetExtension({ projectId: 'YOUR_REOWN_PROJECT_ID' })],
+});
+```
+
+You can get a project ID by creating a free account at [dashboard.walletconnect.com](https://dashboard.walletconnect.com).
+
 ## API Reference
 
 ### Props
