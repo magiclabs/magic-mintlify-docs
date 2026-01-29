@@ -66,6 +66,16 @@ export default function LoginPage() {
 }
 ```
 
+### Configuration
+
+The widget displays login options based on two sources:
+
+**Dashboard-configured options** — Email OTP and OAuth providers (Google, Apple, GitHub, etc.) are configured in your [Magic Dashboard](https://dashboard.magic.link). Enable the authentication methods you want, and they will automatically appear in the widget.
+
+**Code-configured options** — Third-party wallets (MetaMask, Coinbase, etc.) are configured via the `wallets` prop. Only the wallets you specify will be displayed.
+
+For example, if you enable Email and Google OAuth in your dashboard and pass `wallets={['metamask']}`, the widget will show all three options: email input, Google sign-in button, and MetaMask.
+
 ## API Reference
 
 ### Props
