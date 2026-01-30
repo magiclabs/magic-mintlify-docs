@@ -6,11 +6,11 @@ title: Hedera
 
 [Hedera](https://hedera.com/) is an EVM-compatible decentralized, open-source and proof-of-stake Layer1 blockchain. It utilizes the leaderless, asynchronous Byzantine Fault Tolerance (aBFT) hashgraph, offering fast transactions and low fees.
 
-**As Hedera is EVM compatible**, you can follow the [Ethereum](/embedded-wallets/blockchains/ethereum/javascript)documentation to send your first transaction and utilize all other wallet features.
+**As Hedera is EVM compatible**, you can follow the [Ethereum](/embedded-wallets/blockchains/ethereum/javascript) documentation to send your first transaction and utilize all other wallet features.
 
 ## Installation
 
-Magic interacts with the [Hedera](https://hedera.com/) blockchain via Magic's extension NPM package [`@magic-ext/hedera`](https://www.npmjs.com/package/@magic-ext/hedera). The Hedera extension also lets you interact with the blockchain using methods from [Hedera SDK](https://www.npmjs.com/package/hedera-sdk-js).
+Magic interacts with the [Hedera](https://hedera.com/) blockchain via Magic's extension NPM package [`@magic-ext/hedera`](https://www.npmjs.com/package/@magic-ext/hedera). The Hedera extension also lets you interact with the blockchain using methods from the [Hiero SDK](https://www.npmjs.com/package/@hiero-ledger/sdk) ([Hiero](https://hiero.org) is the Linux Decentralized Trust Foundation's project that host's the Hedera source code).
 
 <CodeGroup>
 ```bash NPM icon="npm"
@@ -38,7 +38,7 @@ const magic = new Magic("YOUR_API_KEY", {
 
 #### Call Extension Method
 
-Note that the Magic Hedera extension follows the method names and conventions by [hedera-sdk-js](https://www.npmjs.com/package/hedera-sdk-js). To send a standard Hedera blockchain transaction, you can call the inject the MagicWallet to hedera-sdk-js. More details please reference to [example-hedera](https://github.com/magiclabs/example-hedera) github repo.
+Note that the Magic Hedera extension follows the method names and conventions by the [Hiero SDK](https://www.npmjs.com/package/@hiero-ledger/sdk). To send a standard Hedera blockchain transaction, you can call the inject the MagicWallet to hedera-sdk-js. More details please reference to [example-hedera](https://github.com/magiclabs/example-hedera) github repo.
 
 ```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
@@ -82,3 +82,4 @@ _Need a feature or see a problem?_ File an issue on our [github repo](https://gi
 - Documentation: [https://docs.hedera.com/hedera/](https://docs.hedera.com/hedera/)
 - Block Explorers: [https://hedera.com/ecosystem/network-explorers/](https://hedera.com/ecosystem/network-explorers)
 - [Example](https://github.com/magiclabs/example-hedera)
+
