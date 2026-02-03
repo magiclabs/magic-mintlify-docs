@@ -18,23 +18,23 @@ The Wallet Kit widget requires React 18+ and is available for web applications u
 
 <CodeGroup>
 ```bash NPM icon="npm"
-npm install magic-sdk @magic-ext/magic-widget
+npm install magic-sdk @magic-ext/wallet-kit
 ```
 ```bash Yarn icon="yarn"
-yarn add magic-sdk @magic-ext/magic-widget
+yarn add magic-sdk @magic-ext/wallet-kit
 ```
 </CodeGroup>
 
 ### Usage
 
-Initialize Magic with the `MagicWidgetExtension`, then render the `MagicWidget` component in your app.
+Initialize Magic with the `WalletKitExtension`, then render the `MagicWidget` component in your app.
 
 ```jsx JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
-import { MagicWidget, MagicWidgetExtension } from '@magic-ext/magic-widget';
+import { MagicWidget, WalletKitExtension } from '@magic-ext/wallet-kit';
 
 const magic = new Magic('YOUR_API_KEY', {
-  extensions: [new MagicWidgetExtension()],
+  extensions: [new WalletKitExtension()],
 });
 
 export default function LoginPage() {
@@ -81,7 +81,7 @@ If you include `'walletconnect'` in the `wallets` prop, the widget uses [Reown](
 
 ```jsx JavaScript icon="square-js"
 const magic = new Magic('YOUR_API_KEY', {
-  extensions: [new MagicWidgetExtension({ projectId: 'YOUR_REOWN_PROJECT_ID' })],
+  extensions: [new WalletKitExtension({ projectId: 'YOUR_REOWN_PROJECT_ID' })],
 });
 ```
 
@@ -128,7 +128,7 @@ Use modal mode to display the widget as an overlay:
 
 ```jsx JavaScript icon="square-js"
 import { useState } from 'react';
-import { MagicWidget } from '@magic-ext/magic-widget';
+import { MagicWidget } from '@magic-ext/wallet-kit';
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -156,11 +156,11 @@ The widget fetches configuration from your Magic dashboard before rendering. Dur
 ```jsx JavaScript icon="square-js"
 import { useState } from 'react';
 import { Magic } from 'magic-sdk';
-import { MagicWidget, MagicWidgetExtension } from '@magic-ext/magic-widget';
+import { MagicWidget, WalletKitExtension } from '@magic-ext/wallet-kit';
 
 // Create Magic instance once, outside the component
 const magic = new Magic('YOUR_API_KEY', {
-  extensions: [new MagicWidgetExtension()],
+  extensions: [new WalletKitExtension()],
 });
 
 function LoginPage() {
