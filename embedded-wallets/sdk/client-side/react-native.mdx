@@ -622,7 +622,7 @@ await magic.wallet.showSendTokensUI()
 
 Displays an iframe modal with various on ramp providers for the user to purchase crypto from directly to their wallet.
 
-To use the fiat on ramp, **you will need to contact us to KYB with the payment provider prior to use.** Once approved, ensure this toggle is enabled in your developer dashboard via the ‘Widget UI’ tab.
+To use the fiat on ramp, **you will need to contact us to KYB with the payment provider prior to use.** Once approved, ensure this toggle is enabled in your developer dashboard via the 'Widget UI' tab.
 
 **Arguments**
 
@@ -643,6 +643,105 @@ import { Magic } from '@magic-sdk/react-native-expo';
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 await magic.wallet.showOnRamp()
+```
+
+### `sign7702Authorization`
+
+Signs an [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) authorization that delegates your EOA to a smart contract implementation. This authorization can then be included in a Type-4 transaction via [`send7702Transaction`](#send7702transaction).
+
+<Note>Available as of `@magic-sdk/react-native-expo@34.2.0` / `@magic-sdk/react-native-bare@34.2.0`. See the [EIP-7702 feature guide](/embedded-wallets/wallets/features/eip-7702) for a complete walkthrough.</Note>
+
+**Arguments**
+
+- `contractAddress` (String): The smart contract implementation address to delegate to
+- `chainId` (Number): The chain ID for the authorization
+- `nonce?` (Number): The account nonce. If omitted, fetched from the network automatically
+
+**Returns**
+
+- `Promise<object>`:
+  - `contractAddress` (String): The contract address that was authorized
+  - `chainId` (Number): The chain ID for the authorization
+  - `nonce` (Number): The nonce used in the authorization
+  - `v` (Number): The `v` component of the signature (27 or 28)
+  - `r` (String): The `r` component of the signature
+  - `s` (String): The `s` component of the signature
+
+**Example**
+
+```javascript JavaScript icon="react"
+// Bare React Native
+import { Magic } from '@magic-sdk/react-native-bare';
+// Expo React Native
+import { Magic } from '@magic-sdk/react-native-expo';
+
+const magic = new Magic('PUBLISHABLE_API_KEY', {
+  network: {
+    rpcUrl: 'https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_KEY',
+    chainId: 11155111,
+  },
+});
+
+const authorization = await magic.wallet.sign7702Authorization({
+  contractAddress: '0x000000004F43C49e93C970E84001853a70923B03',
+  chainId: 11155111,
+});
+
+console.log('Authorization:', authorization);
+```
+
+### `send7702Transaction`
+
+Sends a Type-4 (EIP-7702) transaction that includes signed authorizations. This executes the delegation on-chain.
+
+<Note>Available as of `@magic-sdk/react-native-expo@34.2.0` / `@magic-sdk/react-native-bare@34.2.0`. See the [EIP-7702 feature guide](/embedded-wallets/wallets/features/eip-7702) for a complete walkthrough.</Note>
+
+**Arguments**
+
+- `to` (String): The recipient address
+- `authorizationList` (Array): Array of signed authorizations returned by `sign7702Authorization`
+- `value?` (String): Value to send in wei (hex string). Defaults to `'0x0'`
+- `data?` (String): Transaction calldata. Defaults to `'0x'`
+- `gas?` (String): Gas limit (hex string). If omitted, estimated automatically
+- `gasLimit?` (String): Alias for `gas`
+- `maxFeePerGas?` (String): Max fee per gas (hex string). If omitted, fetched from the network
+- `maxPriorityFeePerGas?` (String): Max priority fee per gas (hex string). If omitted, fetched from the network
+- `nonce?` (Number): Transaction nonce. If omitted, fetched from the network
+
+**Returns**
+
+- `Promise<object>`:
+  - `transactionHash` (String): The hash of the submitted transaction
+
+**Example**
+
+```javascript JavaScript icon="react"
+// Bare React Native
+import { Magic } from '@magic-sdk/react-native-bare';
+// Expo React Native
+import { Magic } from '@magic-sdk/react-native-expo';
+
+const magic = new Magic('PUBLISHABLE_API_KEY', {
+  network: {
+    rpcUrl: 'https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_KEY',
+    chainId: 11155111,
+  },
+});
+
+// Step 1: Sign the authorization
+const authorization = await magic.wallet.sign7702Authorization({
+  contractAddress: '0x000000004F43C49e93C970E84001853a70923B03',
+  chainId: 11155111,
+});
+
+// Step 2: Send the Type-4 transaction
+const { transactionHash } = await magic.wallet.send7702Transaction({
+  to: '0x1234567890123456789012345678901234567890',
+  data: '0x',
+  authorizationList: [authorization],
+});
+
+console.log('Transaction hash:', transactionHash);
 ```
 
 ## User Module
