@@ -10,7 +10,7 @@ The Wallet Kit widget requires React 18+ and is available for web applications u
 ## Use Cases
 
 - Add a complete login UI to your React app without building custom components
-- Support multiple authentication methods (email OTP, OAuth, external wallets) from a single widget
+- Support multiple authentication methods (email OTP, OAuth, Farcaster, external wallets) from a single widget
 
 ## Getting Started
 
@@ -48,6 +48,10 @@ export default function LoginPage() {
         // result.magic.idToken for backend verification
         console.log('OAuth login:', result.magic.idToken);
         break;
+      case 'farcaster':
+        // result.didToken for backend verification
+        console.log('Farcaster login:', result.didToken, result.farcaster);
+        break;
       case 'wallet':
         // result.walletAddress for wallet connections
         console.log('Wallet connected:', result.walletAddress);
@@ -58,6 +62,7 @@ export default function LoginPage() {
   return (
     <MagicWidget
       wallets={['metamask', 'coinbase', 'walletconnect']}
+      enableFarcaster
       onSuccess={handleSuccess}
       onError={(error) => console.error(error)}
     />
@@ -71,9 +76,25 @@ The widget displays login options based on two sources:
 
 **Dashboard-configured options** — Email OTP and OAuth providers (Google, Apple, GitHub, etc.) are configured in your [Magic Dashboard](https://dashboard.magic.link). Enable the authentication methods you want, and they will automatically appear in the widget.
 
-**Code-configured options** — External wallets (MetaMask, Coinbase, etc.) are configured via the `wallets` prop. Only the wallets you specify will be displayed.
+**Code-configured options** — External wallets and Farcaster are configured via props. Pass `wallets` to specify which external wallets to display, and `enableFarcaster` to show a Farcaster login button.
 
-For example, if you enable Email and Google OAuth in your dashboard and pass `wallets={['metamask']}`, the widget will show all three options: email input, Google sign-in button, and MetaMask.
+For example, if you enable Email and Google OAuth in your dashboard and pass `wallets={['metamask']}` and `enableFarcaster`, the widget will show all four options: email input, Google sign-in button, Farcaster, and MetaMask.
+
+### Farcaster
+
+To enable Farcaster login, pass the `enableFarcaster` prop. This adds a Farcaster button alongside your OAuth social providers. When clicked, users see a QR code they can scan with the Warpcast app on their phone. On mobile devices, the widget automatically redirects to the Farcaster app.
+
+```jsx JavaScript icon="square-js"
+<MagicWidget
+  enableFarcaster
+  onSuccess={(result) => {
+    if (result.method === 'farcaster') {
+      console.log('DID token:', result.didToken);
+      console.log('Farcaster user:', result.farcaster.username);
+    }
+  }}
+/>
+```
 
 ### WalletConnect
 
@@ -99,6 +120,7 @@ You can get a project ID by creating a free account at [dashboard.walletconnect.
 | `closeOnSuccess` | `boolean` | `false` | Automatically close after successful login (shows success screen for 2 seconds first). |
 | `closeOnClickOutside` | `boolean` | `false` | Close when clicking the backdrop. Only applies in modal mode. |
 | `wallets` | `Array` | `[]` | External wallets to display: `'metamask'`, `'coinbase'`, `'phantom'`, `'rabby'`, `'walletconnect'`. |
+| `enableFarcaster` | `boolean` | `false` | Show a Farcaster login button alongside social providers. |
 | `onSuccess` | `(result: LoginResult) => void` | — | Called on successful login. See [Login Results](#login-results) for result structure. |
 | `onError` | `(error: Error) => void` | — | Called when login fails. |
 | `onReady` | `() => void` | — | Called when the widget has initialized and applied theme settings. |
@@ -114,11 +136,14 @@ The `onSuccess` callback receives a result object with a `method` property indic
 // OAuth login (Google, Apple, etc.)
 { method: 'oauth', oauth: { provider, scope, userHandle, userInfo }, magic: { idToken, userMetadata } }
 
+// Farcaster login
+{ method: 'farcaster', didToken: string, farcaster: { fid?, username?, displayName?, pfpUrl?, bio? } }
+
 // External wallet login
 { method: 'wallet', walletAddress: string }
 ```
 
-For email logins, use `result.didToken` for backend verification. For OAuth logins, use `result.magic.idToken`.
+For email and Farcaster logins, use `result.didToken` for backend verification. For OAuth logins, use `result.magic.idToken`. Farcaster logins also include the user's Farcaster profile data in `result.farcaster`.
 
 ## Examples
 
@@ -198,3 +223,4 @@ The widget automatically applies your Magic dashboard theme settings including c
 - [JavaScript SDK](/embedded-wallets/sdk/client-side/javascript)
 - [Email OTP Login](/embedded-wallets/authentication/login/email-otp)
 - [OAuth Implementation](/embedded-wallets/authentication/login/oauth/implementation)
+- [Farcaster Login](/embedded-wallets/authentication/login/farcaster)
