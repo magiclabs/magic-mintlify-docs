@@ -108,6 +108,29 @@ const magic = new Magic('YOUR_API_KEY', {
 
 You can get a project ID by creating a free account at [dashboard.walletconnect.com](https://dashboard.walletconnect.com).
 
+### Account Switching
+
+When a user switches to a different account in their wallet (e.g. MetaMask), the widget automatically re-runs SIWE authentication for the new account in the background. The user will see their wallet's native signing prompt — no widget UI changes occur. Use `onAccountChanged` to respond when the new session is ready:
+
+```jsx JavaScript icon="square-js"
+<MagicWidget
+  wallets={['metamask']}
+  onSuccess={(result) => {
+    if (result.method === 'wallet') {
+      setAddress(result.walletAddress);
+    }
+  }}
+  onAccountChanged={(result) => {
+    // New SIWE session is verified — safe to update your app state
+    setAddress(result.walletAddress);
+  }}
+  onError={(error) => {
+    // Fires for both initial login failures and account switch re-auth failures
+    console.error(error);
+  }}
+/>
+```
+
 ## API Reference
 
 ### Props
@@ -122,7 +145,8 @@ You can get a project ID by creating a free account at [dashboard.walletconnect.
 | `wallets` | `Array` | `[]` | External wallets to display: `'metamask'`, `'coinbase'`, `'phantom'`, `'rabby'`, `'walletconnect'`. |
 | `enableFarcaster` | `boolean` | `false` | Show a Farcaster login button alongside social providers. |
 | `onSuccess` | `(result: LoginResult) => void` | — | Called on successful login. See [Login Results](#login-results) for result structure. |
-| `onError` | `(error: Error) => void` | — | Called when login fails. |
+| `onAccountChanged` | `(result: WalletLoginResult) => void` | — | Called when a wallet user switches to a different account and re-authentication completes. Fires after the new SIWE session is verified, so `result.walletAddress` reflects the active account. |
+| `onError` | `(error: Error) => void` | — | Called when login fails, or when a re-authentication triggered by an account switch fails (e.g. the user rejects the signing prompt). |
 | `onReady` | `() => void` | — | Called when the widget has initialized and applied theme settings. |
 
 ### Login Results
