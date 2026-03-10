@@ -143,6 +143,39 @@ magic.Token.validate(did_token)
 
 The user resource and its methods are accessible on the Magic instance by the `User` attribute. It provides methods to interact with the User.
 
+### `get_metadata_by_email`
+
+Retrieves information about the user by the supplied `email` address.
+
+```python Python icon="python"
+User.get_metadata_by_email(email)
+```
+
+**Arguments**
+
+- `email` (str): The user's email address
+
+**Raises**
+
+- `RateLimitingError`: If you have sent too many requests within a given period of time
+- `BadRequestError`: If the supplied parameters are invalid
+- `AuthenticationError`: If your API **secret** key cannot be authenticated with Magic API server
+- `ForbiddenError`: If your API **secret** key is not authorized to access the resources
+- `APIError`: For any other API error
+- `APIConnectionError`: If your server cannot communicate with the Magic server. Normally this is a network communication error.
+
+<Note>
+  See [Error Handling](#response-and-error-handling) for more examples.
+</Note>
+
+**Returns**
+
+- A [`MagicResponse`](/embedded-wallets/sdk/server-side/python#magicresponse): The `data` field contains all of the user meta information.
+  - `email` (str): The user's email address
+  - `phone_number` (str): The user's phone number
+  - `subject` (str): The federated identity subject, if any
+  - `wallets` (arr): Array of the user's wallets
+
 ### `get_metadata_by_issuer`
 
 Retrieves information about the user by the supplied `iss` from the DID Token. This method is useful if you store the `iss` with your user data, **which is recommended**.
