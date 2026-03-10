@@ -18,7 +18,7 @@
     "default": "dark"
   },
   "contextual": {
-    "options": ["copy", "chatgpt", "claude", "cursor", "vscode"]
+    "options": ["copy", "view", "assistant", "chatgpt", "claude", "cursor", "vscode"]
   },
   "navigation": {
     "tabs": [
