@@ -320,7 +320,7 @@
       },
       {
         "tab": "Recipes",
-        "icon": "pencil",
+        "icon": "puzzle-piece",
         "groups": [
           {
             "group": "Server Wallets",
