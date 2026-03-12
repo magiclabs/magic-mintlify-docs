@@ -1,11 +1,11 @@
 ---
-title: "Alchemy Smart Wallets (EIP-7702)"
+title: "Alchemy Smart Wallets"
 description: "Wrap a Magic Server Wallet EOA in an Alchemy EIP-7702 smart wallet for gas-sponsored and batched transactions"
 ---
 
 ## Overview
 
-This guide shows how to combine **Magic's Server Wallet** with **Alchemy's Account Kit** to upgrade a TEE-managed EOA into an [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) smart wallet. The result is a server-side wallet that can send **gas-sponsored** and **batched** transactions on Base Sepolia — all without the end user managing keys or paying gas.
+This guide shows how to combine **Magic's Server Wallet** with **Alchemy's Account Kit SDK** to upgrade a TEE-managed EOA into an [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) smart wallet. The result is a server-side wallet that can send **gas-sponsored** and **batched** transactions on Base Sepolia — all without the end user managing keys or paying gas.
 
 The approach uses a Next.js API route as the integration layer: it authenticates the user, fetches the EOA from Magic's TEE, builds a custom signer that delegates cryptographic operations back to the TEE, and uses Alchemy's `SmartWalletClient` to send EIP-7702 calls.
 
@@ -22,25 +22,22 @@ To follow along, you'll need:
 1. A Magic **Secret Key** — from your [Magic Dashboard](https://dashboard.magic.link)
 2. An **OIDC Provider ID** — configured for your auth provider ([setup guide](/server-wallets/express-api/identity-provider))
 3. An **Alchemy API Key** — from your [Alchemy Dashboard](https://dashboard.alchemy.com/)
-4. An **Alchemy Gas Policy ID** (optional) — to sponsor gas for your users ([Alchemy gas manager docs](https://accountkit.alchemy.com/smart-wallets/gas-sponsorship/gas-manager))
+4. An **Alchemy Gas Policy ID** (optional) — to sponsor gas for your users ([Alchemy gas manager configuration](https://dashboard.alchemy.com/services/gas-manager))
 5. A Next.js app with **NextAuth** configured for authentication
 
 ***
 
 ## Install Dependencies
 
-<Tabs>
-<Tab title="NPM">
-```bash
+<CodeGroup>
+```bash NPM icon="npm"
 npm install @account-kit/wallet-client @account-kit/infra @aa-sdk/core viem next-auth
 ```
-</Tab>
-<Tab title="Yarn">
-```bash
+
+```bash Yarn icon="yarn"
 yarn add @account-kit/wallet-client @account-kit/infra @aa-sdk/core viem next-auth
 ```
-</Tab>
-</Tabs>
+</CodeGroup>
 
 ***
 
@@ -48,7 +45,7 @@ yarn add @account-kit/wallet-client @account-kit/infra @aa-sdk/core viem next-au
 
 Add the following to your `.env.local`:
 
-```bash
+```bash .env.local
 # Magic Server Wallet credentials
 SERVER_WALLET_SECRET_KEY=sk_live_XXXXXXXXXXXX
 NEXT_PUBLIC_OIDC_PROVIDER_ID=your-oidc-provider-id
@@ -368,7 +365,7 @@ Since the private key lives inside Magic's TEE (Trusted Execution Environment), 
     Learn how to create and manage wallets with Magic's TEE-based API.
   </Card>
 
-  <Card title="Alchemy Account Kit" icon="code" href="https://accountkit.alchemy.com/">
+  <Card title="Alchemy Smart Wallet Docs" icon="code" href="https://www.alchemy.com/docs/wallets">
     Explore Alchemy's smart wallet and account abstraction SDK.
   </Card>
 
