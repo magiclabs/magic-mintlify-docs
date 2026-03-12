@@ -109,49 +109,6 @@ const signTypedDataV4 = async (data: TypedMessage<MessageTypes>) => {
 };
 ```
 
-```typescript EIP-7702 Authorization
-import type { Address, Hex, SignedAuthorization } from 'viem';
-
-// Helper: convert TEE's decimal r/s values to 0x-prefixed 32-byte hex
-const decToHex = (dec: string): Hex =>
-  `0x${BigInt(dec).toString(16).padStart(64, '0')}` as Hex;
-
-const signEip7702Authorization = async (
-  chainId: number,
-  contractAddress: Address,
-  nonce: number,
-): Promise<SignedAuthorization<number>> => {
-  const body = {
-    chain_id: chainId,
-    address: contractAddress,
-    nonce,
-  };
-
-  const res = await fetch('/v1/wallet/sign/eip7702', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${YOUR_JWT_TOKEN}`,
-      'X-Magic-API-Key': 'YOUR_MAGIC_API_KEY',
-      'X-OIDC-Provider-ID': 'YOUR_OIDC_PROVIDER_ID',
-      'X-Magic-Chain': 'ETH',
-    },
-    body: JSON.stringify(body),
-  });
-
-  const { r, s, y_parity } = await res.json();
-
-  return {
-    address: contractAddress,
-    chainId,
-    nonce,
-    r: decToHex(r),
-    s: decToHex(s),
-    yParity: y_parity,
-  } as SignedAuthorization<number>;
-};
-```
-
 ```typescript Transaction Signing
 import { resolveProperties, Signature, Transaction, TransactionLike, TransactionRequest } from 'ethers';
 
