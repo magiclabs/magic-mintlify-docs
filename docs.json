@@ -325,6 +325,7 @@
           {
             "group": "Server Wallets",
             "pages": [
+              "recipes/server-wallets/alchemy-smart-wallets",
               "recipes/server-wallets/particle-network-universal-accounts"
             ]
           },
