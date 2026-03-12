@@ -1,11 +1,11 @@
 ---
 title: "Alchemy Smart Wallets"
-description: "Wrap a Magic Server Wallet EOA in an Alchemy EIP-7702 smart wallet for gas-sponsored and batched transactions"
+description: "Wrap a Magic Express Server Wallet EOA in an Alchemy EIP-7702 smart wallet for gas-sponsored and batched transactions"
 ---
 
 ## Overview
 
-This guide shows how to combine **Magic's Server Wallet** with **Alchemy's Account Kit SDK** to upgrade a TEE-managed EOA into an [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) smart wallet. The result is a server-side wallet that can send **gas-sponsored** and **batched** transactions on Base Sepolia — all without the end user managing keys or paying gas.
+This guide shows how to combine **Magic's Express Server Wallet** with **Alchemy's Account Kit SDK** to upgrade a TEE-managed EOA into an [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) smart wallet. The result is a server-side wallet that can send **gas-sponsored** and **batched** transactions on Base Sepolia — all without the end user managing keys or paying gas.
 
 The approach uses a Next.js API route as the integration layer: it authenticates the user, fetches the EOA from Magic's TEE, builds a custom signer that delegates cryptographic operations back to the TEE, and uses Alchemy's `SmartWalletClient` to send EIP-7702 calls.
 
@@ -113,9 +113,8 @@ const decToHex = (dec: string): Hex =>
 
 // Sign a raw hash via TEE and return a serialized signature
 const signRawHash = async (hash: Hex): Promise<Hex> => {
-  const res = await express<{ r: string; s: string; v: number }>(
-    "/v1/wallet/sign/data", jwt,
-    { method: "POST", body: JSON.stringify({ raw_data_hash: hash, chain: "ETH" }) }
+  const res = await teeRequest<{ r: string; s: string; v: number }>(
+    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
   );
   const yParity = Number(res.v) >= 27 ? Number(res.v) - 27 : Number(res.v);
   return serializeSignature({ r: decToHex(res.r), s: decToHex(res.s), yParity });
@@ -128,16 +127,12 @@ const signRawHash = async (hash: Hex): Promise<Hex> => {
 
 ```ts TypeScript icon="square-js"
 signAuthorization: async (unsignedAuth) => {
-  const res = await express<{ r: string; s: string; v: number; y_parity: number }>(
-    "/v1/wallet/sign/eip7702", jwt,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        chain_id: unsignedAuth.chainId,
-        address: unsignedAuth.address,
-        nonce: unsignedAuth.nonce,
-        chain: "ETH",
-      }),
+  const res = await teeRequest<{ r: string; s: string; v: number; y_parity: number }>(
+    "/v1/wallet/sign/eip7702", jwt, {
+      chain_id: unsignedAuth.chainId,
+      address: unsignedAuth.address,
+      nonce: unsignedAuth.nonce,
+      chain: "ETH",
     }
   );
 
