@@ -38,28 +38,6 @@
                   "home/security/cloud-security"
                 ]
               },
-              {
-                "group": "Integrations",
-                "pages": [
-                  {
-                    "group": "Server Wallets",
-                    "pages": [
-                      "home/integrations/server-wallets/particle-network-universal-accounts"
-                    ]
-                  },
-                  {
-                    "group": "Embedded Wallets",
-                    "pages": [
-                      "home/integrations/embedded-wallets/polymarket",
-                      "home/integrations/embedded-wallets/alchemy-account-abstraction",
-                      "home/integrations/embedded-wallets/zksync-zyfi-integration",
-                      "home/integrations/embedded-wallets/wagmi",
-                      "home/integrations/embedded-wallets/moonpay-integration",
-                      "home/integrations/embedded-wallets/zerodev-account-abstraction"
-                    ]
-                  }
-                ]
-              },
               "home/teams",
               "home/faq"
             ]
@@ -339,6 +317,30 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Recipes",
+        "icon": "puzzle-piece",
+        "groups": [
+          {
+            "group": "Server Wallets",
+            "pages": [
+              "recipes/server-wallets/alchemy-smart-wallets",
+              "recipes/server-wallets/particle-network-universal-accounts"
+            ]
+          },
+          {
+            "group": "Embedded Wallets",
+            "pages": [
+              "recipes/embedded-wallets/polymarket",
+              "recipes/embedded-wallets/alchemy-account-abstraction",
+              "recipes/embedded-wallets/zksync-zyfi-integration",
+              "recipes/embedded-wallets/wagmi",
+              "recipes/embedded-wallets/moonpay-integration",
+              "recipes/embedded-wallets/zerodev-account-abstraction"
+            ]
+          }
+        ]
       }
     ],
     "global": {
@@ -376,7 +378,15 @@
     },
     {
       "source": "/embedded-wallets/wallets/integrations/:path*",
-      "destination": "/home/integrations/embedded-wallets/:path*"
+      "destination": "/recipes/embedded-wallets/:path*"
+    },
+    {
+      "source": "/home/integrations/embedded-wallets/:path*",
+      "destination": "/recipes/embedded-wallets/:path*"
+    },
+    {
+      "source": "/home/integrations/server-wallets/:path*",
+      "destination": "/recipes/server-wallets/:path*"
     },
     {
       "source": "/embedded-wallets/blockchains/multichain",

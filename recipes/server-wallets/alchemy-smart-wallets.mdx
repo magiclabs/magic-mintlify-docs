@@ -1,0 +1,374 @@
+---
+title: "Alchemy Smart Wallets"
+description: "Wrap a Magic Express Server Wallet EOA in an Alchemy EIP-7702 smart wallet for gas-sponsored and batched transactions"
+---
+
+## Overview
+
+This guide shows how to combine **Magic's Express Server Wallet** with **Alchemy's Account Kit SDK** to upgrade a TEE-managed EOA into an [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) smart wallet. The result is a server-side wallet that can send **gas-sponsored** and **batched** transactions on Base Sepolia — all without the end user managing keys or paying gas.
+
+The approach uses a Next.js API route as the integration layer: it authenticates the user, fetches the EOA from Magic's TEE, builds a custom signer that delegates cryptographic operations back to the TEE, and uses Alchemy's `SmartWalletClient` to send EIP-7702 calls.
+
+<Info>
+  This recipe uses EIP-7702 delegation, which temporarily upgrades an EOA to behave like a smart contract account for a single transaction bundle. Unlike ERC-4337, the user keeps the same address — no counterfactual deployment needed.
+</Info>
+
+***
+
+## Prerequisites
+
+To follow along, you'll need:
+
+1. A Magic **Secret Key** — from your [Magic Dashboard](https://dashboard.magic.link)
+2. An **OIDC Provider ID** — configured for your auth provider ([setup guide](/server-wallets/express-api/identity-provider))
+3. An **Alchemy API Key** — from your [Alchemy Dashboard](https://dashboard.alchemy.com/)
+4. An **Alchemy Gas Policy ID** (optional) — to sponsor gas for your users ([Alchemy gas manager configuration](https://dashboard.alchemy.com/services/gas-manager))
+5. A Next.js app with **NextAuth** configured for authentication
+
+***
+
+## Install Dependencies
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install @account-kit/wallet-client @account-kit/infra @aa-sdk/core viem next-auth
+```
+
+```bash Yarn icon="yarn"
+yarn add @account-kit/wallet-client @account-kit/infra @aa-sdk/core viem next-auth
+```
+</CodeGroup>
+
+***
+
+## Environment Variables
+
+Add the following to your `.env.local`:
+
+```bash .env.local
+# Magic Server Wallet credentials
+SERVER_WALLET_SECRET_KEY=sk_live_XXXXXXXXXXXX
+NEXT_PUBLIC_OIDC_PROVIDER_ID=your-oidc-provider-id
+
+# Alchemy
+ALCHEMY_API_KEY=your-alchemy-api-key
+ALCHEMY_GAS_POLICY_ID=your-gas-policy-id  # optional, enables gas sponsorship
+```
+
+***
+
+## How It Works
+
+The integration lives entirely in a single Next.js API route. Here's the high-level flow:
+
+<Steps>
+  <Step title="Authenticate the User">
+    The API route validates the user's session via NextAuth and extracts their JWT. This token is used to authenticate all subsequent calls to Magic's TEE.
+
+```ts TypeScript icon="square-js"
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+const session = await getServerSession(authOptions);
+if (!session?.idToken) {
+  return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+}
+const jwt = session.idToken;
+```
+  </Step>
+
+  <Step title="Fetch the EOA from the TEE">
+    Call Magic's Express API to get (or create) the user's EOA wallet. The private key never leaves the TEE.
+
+```ts TypeScript icon="square-js"
+const walletRes = await fetch("https://tee.express.magiclabs.com/v1/wallet", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${jwt}`,
+    "X-Magic-Secret-Key": process.env.SERVER_WALLET_SECRET_KEY!,
+    "X-OIDC-Provider-ID": process.env.NEXT_PUBLIC_OIDC_PROVIDER_ID!,
+    "X-Magic-Chain": "ETH",
+  },
+  body: JSON.stringify({ chain: "ETH" }),
+});
+
+const { public_address: eoaAddress } = await walletRes.json();
+```
+  </Step>
+
+  <Step title="Build a Custom Signer">
+    Alchemy's `SmartWalletClient` expects a `SmartAccountSigner` interface. Since the private key lives in the TEE, we implement a custom signer that delegates all signing operations to Magic's Express API.
+
+    The signer needs three methods:
+
+    **`signMessage`** — hash the message locally with `hashMessage()` (EIP-191), then send the raw hash to the TEE's `sign/data` endpoint:
+
+```ts TypeScript icon="square-js"
+import { hashMessage, hashTypedData, serializeSignature } from "viem";
+
+// Helper: convert TEE's decimal r/s values to 0x-prefixed hex
+const decToHex = (dec: string): Hex =>
+  `0x${BigInt(dec).toString(16).padStart(64, "0")}` as Hex;
+
+// Sign a raw hash via TEE and return a serialized signature
+const signRawHash = async (hash: Hex): Promise<Hex> => {
+  const res = await teeRequest<{ r: string; s: string; v: number }>(
+    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
+  );
+  const yParity = Number(res.v) >= 27 ? Number(res.v) - 27 : Number(res.v);
+  return serializeSignature({ r: decToHex(res.r), s: decToHex(res.s), yParity });
+};
+```
+
+    **`signTypedData`** — same pattern, using `hashTypedData()` for EIP-712 structured data.
+
+    **`signAuthorization`** — for EIP-7702 delegation, call the TEE's dedicated `sign/eip7702` endpoint:
+
+```ts TypeScript icon="square-js"
+signAuthorization: async (unsignedAuth) => {
+  const res = await teeRequest<{ r: string; s: string; v: number; y_parity: number }>(
+    "/v1/wallet/sign/eip7702", jwt, {
+      chain_id: unsignedAuth.chainId,
+      address: unsignedAuth.address,
+      nonce: unsignedAuth.nonce,
+      chain: "ETH",
+    }
+  );
+
+  return {
+    address: unsignedAuth.address,
+    chainId: unsignedAuth.chainId,
+    nonce: unsignedAuth.nonce,
+    r: decToHex(res.r),
+    s: decToHex(res.s),
+    yParity: res.y_parity,
+  };
+},
+```
+
+    The complete signer object:
+
+```ts TypeScript icon="square-js"
+const signer = {
+  signerType: "magic-tee",
+  inner: {},
+  getAddress: async () => eoaAddress,
+  signMessage: async (message) => signRawHash(hashMessage(message)),
+  signTypedData: async (params) => signRawHash(hashTypedData(params)),
+  signAuthorization: async (unsignedAuth) => {
+    // ... EIP-7702 signing as shown above
+  },
+};
+```
+  </Step>
+
+  <Step title="Create the Smart Wallet Client">
+    Initialize Alchemy's `SmartWalletClient` with the custom signer, targeting Base Sepolia. If a gas policy ID is configured, transactions will be sponsored.
+
+```ts TypeScript icon="square-js"
+import { createSmartWalletClient } from "@account-kit/wallet-client";
+import { alchemy, baseSepolia } from "@account-kit/infra";
+
+const client = createSmartWalletClient({
+  transport: alchemy({ apiKey: process.env.ALCHEMY_API_KEY! }),
+  chain: baseSepolia,
+  signer: signer as SmartAccountSigner,
+  ...(process.env.ALCHEMY_GAS_POLICY_ID
+    ? { policyId: process.env.ALCHEMY_GAS_POLICY_ID }
+    : {}),
+});
+```
+  </Step>
+
+  <Step title="Send Transactions">
+    Use `sendCalls` with the `eip7702Auth` capability to send single or batched calls. The client handles EIP-7702 delegation, execution, and gas sponsorship automatically.
+
+```ts TypeScript icon="square-js"
+const calls = [
+  { to: "0x000000000000000000000000000000000000dEaD", value: "0x0", data: "0x" },
+  // Add more calls here for batching
+];
+
+const result = await client.sendCalls({
+  from: eoaAddress,
+  calls,
+  capabilities: { eip7702Auth: true },
+});
+
+// Wait for on-chain confirmation
+const status = await client.waitForCallsStatus({ id: result.id });
+const txHash = status.receipts?.[0]?.transactionHash;
+```
+  </Step>
+</Steps>
+
+***
+
+## Complete API Route
+
+Here's the full Next.js API route that ties everything together:
+
+```ts TypeScript icon="square-js"
+import { createSmartWalletClient } from "@account-kit/wallet-client";
+import type { SmartAccountSigner } from "@aa-sdk/core";
+import { alchemy, baseSepolia } from "@account-kit/infra";
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hashMessage, hashTypedData, serializeSignature } from "viem";
+import type { Address, Hex, SignedAuthorization } from "viem";
+
+const TEE_BASE = "https://tee.express.magiclabs.com";
+
+async function teeRequest<T>(path: string, jwt: string, body: object): Promise<T> {
+  const res = await fetch(`${TEE_BASE}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+      "X-Magic-Secret-Key": process.env.SERVER_WALLET_SECRET_KEY!,
+      "X-OIDC-Provider-ID": process.env.NEXT_PUBLIC_OIDC_PROVIDER_ID!,
+      "X-Magic-Chain": "ETH",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`TEE error: ${res.status}`);
+  return res.json();
+}
+
+export async function POST(req: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.idToken) {
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+  }
+  const jwt = session.idToken;
+  const body = await req.json().catch(() => ({}));
+  const mode = body.mode === "batch" ? "batch" : "single";
+
+  // 1. Fetch EOA
+  const { public_address: eoaAddress } = await teeRequest<{ public_address: string }>(
+    "/v1/wallet", jwt, { chain: "ETH" }
+  );
+
+  // 2. Build signer
+  const decToHex = (dec: string): Hex =>
+    `0x${BigInt(dec).toString(16).padStart(64, "0")}` as Hex;
+
+  const signRawHash = async (hash: Hex): Promise<Hex> => {
+    const res = await teeRequest<{ r: string; s: string; v: number }>(
+      "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
+    );
+    const yParity = Number(res.v) >= 27 ? Number(res.v) - 27 : Number(res.v);
+    return serializeSignature({ r: decToHex(res.r), s: decToHex(res.s), yParity });
+  };
+
+  const signer = {
+    signerType: "magic-tee",
+    inner: {},
+    getAddress: async (): Promise<Address> => eoaAddress as Address,
+    signMessage: async (message: any) => signRawHash(hashMessage(message)),
+    signTypedData: async (params: any) => signRawHash(hashTypedData(params)),
+    signAuthorization: async (unsignedAuth: any): Promise<SignedAuthorization<number>> => {
+      const res = await teeRequest<{ r: string; s: string; y_parity: number }>(
+        "/v1/wallet/sign/eip7702", jwt, {
+          chain_id: unsignedAuth.chainId,
+          address: unsignedAuth.address,
+          nonce: unsignedAuth.nonce,
+          chain: "ETH",
+        }
+      );
+      return {
+        address: unsignedAuth.address,
+        chainId: unsignedAuth.chainId,
+        nonce: unsignedAuth.nonce,
+        r: decToHex(res.r),
+        s: decToHex(res.s),
+        yParity: res.y_parity,
+      } as SignedAuthorization<number>;
+    },
+  };
+
+  // 3. Create client
+  const client = createSmartWalletClient({
+    transport: alchemy({ apiKey: process.env.ALCHEMY_API_KEY! }),
+    chain: baseSepolia,
+    signer: signer as unknown as SmartAccountSigner,
+    ...(process.env.ALCHEMY_GAS_POLICY_ID
+      ? { policyId: process.env.ALCHEMY_GAS_POLICY_ID }
+      : {}),
+  });
+
+  // 4. Send calls
+  const BURN = "0x000000000000000000000000000000000000dEaD" as Address;
+  const ZERO = "0x0000000000000000000000000000000000000000" as Address;
+  const calls =
+    mode === "batch"
+      ? [
+          { to: BURN, value: "0x0" as Hex, data: "0x" as Hex },
+          { to: ZERO, value: "0x0" as Hex, data: "0x" as Hex },
+        ]
+      : [{ to: BURN, value: "0x0" as Hex, data: "0x" as Hex }];
+
+  const result = await client.sendCalls({
+    from: eoaAddress as Address,
+    calls,
+    capabilities: { eip7702Auth: true },
+  });
+
+  const status = await client.waitForCallsStatus({ id: result.id });
+  const txHash = status.receipts?.[0]?.transactionHash ?? result.id;
+
+  return NextResponse.json({
+    txHash, mode, callCount: calls.length,
+    chain: baseSepolia.name, sponsored: !!process.env.ALCHEMY_GAS_POLICY_ID,
+  });
+}
+```
+
+***
+
+## Key Concepts
+
+### Why EIP-7702?
+
+EIP-7702 allows an EOA to temporarily delegate to a smart contract implementation for a single transaction bundle. This means:
+
+- **Same address** — the user keeps their existing EOA address, no new counterfactual smart account needed
+- **Batched calls** — multiple operations execute atomically in one transaction
+- **Gas sponsorship** — a paymaster can cover gas fees on behalf of the user
+- **No permanent state change** — the delegation is scoped to the transaction
+
+### Why a Custom Signer?
+
+Since the private key lives inside Magic's TEE (Trusted Execution Environment), we can't pass it directly to Alchemy's SDK. Instead, we implement the `SmartAccountSigner` interface with methods that proxy signing requests to the TEE's API endpoints. This keeps the key secure while still integrating with Alchemy's account abstraction tooling.
+
+### TEE Endpoints Used
+
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /v1/wallet` | Get or create an EOA wallet |
+| `POST /v1/wallet/sign/data` | Sign a raw hash (used for EIP-191 and EIP-712) |
+| `POST /v1/wallet/sign/eip7702` | Sign an EIP-7702 authorization |
+
+***
+
+## Resources
+
+<CardGroup cols="2">
+  <Card title="Server Wallet Docs" icon="brackets-curly" href="/server-wallets/introduction">
+    Learn how to create and manage wallets with Magic's TEE-based API.
+  </Card>
+
+  <Card title="Alchemy Smart Wallet Docs" icon="code" href="https://www.alchemy.com/docs/wallets">
+    Explore Alchemy's smart wallet and account abstraction SDK.
+  </Card>
+
+  <Card title="EIP-7702 Specification" icon="file-lines" href="https://eips.ethereum.org/EIPS/eip-7702">
+    Read the EIP-7702 specification for EOA delegation.
+  </Card>
+
+  <Card title="Identity Provider Setup" icon="key" href="/server-wallets/express-api/identity-provider">
+    Configure your OIDC provider for Magic's Server Wallet.
+  </Card>
+</CardGroup>
