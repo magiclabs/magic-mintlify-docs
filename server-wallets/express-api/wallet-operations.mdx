@@ -104,6 +104,66 @@ The s component of the ECDSA signature.
 The recovery parameter of the ECDSA signature.
 </ResponseField>
 
+### Sign EIP-7702 Authorization
+
+Sign an [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) authorization that delegates an EOA to a smart contract implementation. This is used to temporarily upgrade an EOA into a smart wallet for a transaction bundle, enabling features like batched calls and gas sponsorship.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/eip7702' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
+  -H 'X-OIDC-Provider-ID: YOUR_OIDC_PROVIDER_ID' \
+  -H 'X-Magic-Chain: ETH' \
+  -d '{
+    "chain_id": 84532,
+    "address": "0x1234567890abcdef1234567890abcdef12345678",
+    "nonce": 0
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "r": "12345678901234567890123456789012345678901234567890123456789012345678",
+  "s": "98765432109876543210987654321098765432109876543210987654321098765432",
+  "y_parity": 0
+}
+```
+
+#### Request Parameters
+
+<ParamField header="X-Magic-Chain" type="string" required post={["Header"]}>
+The blockchain to sign for. Available values: `ETH`
+</ParamField>
+
+<ParamField body="chain_id" type="number" required post={["Body"]}>
+The chain ID for the authorization (e.g., `84532` for Base Sepolia).
+</ParamField>
+
+<ParamField body="address" type="string" required post={["Body"]}>
+The smart contract address to delegate to (20-byte hex string).
+</ParamField>
+
+<ParamField body="nonce" type="number" required post={["Body"]}>
+The authorization nonce.
+</ParamField>
+
+#### Response Fields
+
+<ResponseField name="r" type="string">
+The r component of the ECDSA signature (decimal string).
+</ResponseField>
+
+<ResponseField name="s" type="string">
+The s component of the ECDSA signature (decimal string).
+</ResponseField>
+
+<ResponseField name="y_parity" type="number">
+The y-parity bit (`0` or `1`) used for EIP-7702 signature recovery.
+</ResponseField>
+
 ### Sign Message
 
 Sign an arbitrary message using the wallet's private key. Useful for authentication, off-chain verification, and personal signatures.
