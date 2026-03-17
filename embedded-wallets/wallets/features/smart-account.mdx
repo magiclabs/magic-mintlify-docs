@@ -1,0 +1,187 @@
+---
+title: Smart Account
+description: Send transactions through an EIP-7702 smart account with gas sponsorship, batched calls, and more.
+---
+
+## Overview
+
+<Note>Smart Account requires the `@magic-ext/smart-account` extension.</Note>
+
+Magic's Smart Account extension lets you send transactions through an [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) smart account powered by [Alchemy's Smart Wallet infrastructure](https://www.alchemy.com/smart-wallets). With EIP-7702, the user's existing EOA **is** the smart account — there is no separate contract deployment or address change.
+
+This enables:
+
+- **Gas sponsorship** — sponsor transaction fees for your users via an Alchemy Gas Manager policy
+- **Batched calls** — send multiple contract calls in a single atomic transaction
+- **Cross-chain support** — use any EVM chain supported by Alchemy
+
+### Prerequisites
+
+- An [Alchemy account](https://dashboard.alchemy.com/) with an API key
+- (Optional) A [Gas Manager](https://dashboard.alchemy.com/gas-manager) policy ID for gas sponsorship
+
+## Setup
+
+Install the Smart Account extension:
+
+```bash
+npm install @magic-ext/smart-account
+```
+
+Initialize Magic with the extension:
+
+```javascript JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { SmartAccountExtension } from '@magic-ext/smart-account';
+
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
+  extensions: [
+    new SmartAccountExtension({
+      apiKey: 'YOUR_ALCHEMY_API_KEY',
+      paymasterPolicyId: 'YOUR_POLICY_ID', // optional — enables gas sponsorship
+    }),
+  ],
+});
+```
+
+### Configuration Options
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `apiKey` | `string` | Yes | Your Alchemy API key |
+| `paymasterPolicyId` | `string` | No | Alchemy Gas Manager policy ID. When provided, transaction fees are sponsored |
+
+## Sending a Transaction
+
+Use `smartAccount.sendTransaction()` to send one or more calls through the smart account:
+
+```javascript JavaScript icon="square-js"
+const result = await magic.smartAccount.sendTransaction({
+  chainId: 11155111, // Sepolia
+  calls: [
+    {
+      to: '0x1234567890123456789012345678901234567890',
+      value: '1000000000000000', // 0.001 ETH in wei
+      data: '0x',
+    },
+  ],
+});
+
+console.log('Transaction hash:', result.transactionHash);
+console.log('Call ID:', result.id);
+```
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `chainId` | `number` | Yes | The chain ID for the transaction |
+| `calls` | `array` | Yes | Array of calls to execute |
+
+Each call in the `calls` array accepts:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `to` | `string` | Yes | The recipient or contract address |
+| `data` | `string` | No | Encoded calldata for contract interactions |
+| `value` | `string` | No | Value to send in wei |
+
+### Response
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | `string` | The call bundle ID |
+| `transactionHash` | `string \| undefined` | The on-chain transaction hash |
+| `chainId` | `number` | The chain ID the transaction was sent on |
+
+## Batched Transactions
+
+Send multiple calls in a single atomic transaction. All calls execute together — if one fails, they all revert.
+
+```javascript JavaScript icon="square-js"
+const result = await magic.smartAccount.sendTransaction({
+  chainId: 11155111,
+  calls: [
+    {
+      to: '0xContractA',
+      data: '0x...', // approve
+    },
+    {
+      to: '0xContractB',
+      data: '0x...', // swap
+    },
+  ],
+});
+
+console.log('Transaction hash:', result.transactionHash);
+```
+
+## Gas Sponsorship
+
+When a `paymasterPolicyId` is provided in the extension config, transaction gas fees are automatically sponsored through Alchemy's Gas Manager. Users don't need any ETH to send transactions.
+
+```javascript JavaScript icon="square-js"
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
+  extensions: [
+    new SmartAccountExtension({
+      apiKey: 'YOUR_ALCHEMY_API_KEY',
+      paymasterPolicyId: 'YOUR_POLICY_ID', // enables sponsorship
+    }),
+  ],
+});
+
+// This transaction's gas is sponsored — user needs no ETH
+const result = await magic.smartAccount.sendTransaction({
+  chainId: 11155111,
+  calls: [{ to: '0x...', data: '0x...' }],
+});
+```
+
+You can configure sponsorship rules (per-user limits, allowed contracts, chain restrictions) in the [Alchemy Gas Manager dashboard](https://dashboard.alchemy.com/gas-manager).
+
+## Complete Example
+
+```javascript JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { SmartAccountExtension } from '@magic-ext/smart-account';
+
+const magic = new Magic('YOUR_PUBLISHABLE_API_KEY', {
+  extensions: [
+    new SmartAccountExtension({
+      apiKey: 'YOUR_ALCHEMY_API_KEY',
+      paymasterPolicyId: 'YOUR_POLICY_ID',
+    }),
+  ],
+});
+
+async function sendSponsoredTransaction() {
+  try {
+    // Authenticate the user
+    await magic.auth.loginWithEmailOTP({ email: 'user@example.com' });
+
+    // Send a sponsored transaction
+    const result = await magic.smartAccount.sendTransaction({
+      chainId: 11155111,
+      calls: [
+        {
+          to: '0x1234567890123456789012345678901234567890',
+          value: '0',
+          data: '0x',
+        },
+      ],
+    });
+
+    console.log('Transaction hash:', result.transactionHash);
+    console.log('Call ID:', result.id);
+  } catch (error) {
+    console.error('Transaction failed:', error);
+  }
+}
+```
+
+## Resources
+
+- [EIP-7702](/embedded-wallets/wallets/features/eip-7702)
+- [Alchemy Smart Wallets](https://www.alchemy.com/smart-wallets)
+- [Alchemy Gas Manager](https://dashboard.alchemy.com/gas-manager)
+- [Quickstart](/embedded-wallets/quickstart/overview)
