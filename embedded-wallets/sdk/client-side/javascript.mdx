@@ -1558,6 +1558,72 @@ interface OAuthRedirectResult {
 };
 ```
 
+## Smart Account Module
+
+The Smart Account Module and its members are accessible on the Magic SDK instance by the `smartAccount` property.
+
+To use the Smart Account Module in your application, install `@magic-ext/smart-account` along with `magic-sdk`.
+
+<Note>
+For more detailed information, see the [Smart Account](/embedded-wallets/wallets/features/smart-account) documentation.
+</Note>
+
+### `sendTransaction`
+
+Sends one or more calls through an EIP-7702 smart account via Alchemy's Smart Wallet infrastructure.
+
+**Arguments**
+
+- `params` (Object):
+  - `chainId` (Number): The chain ID for the transaction
+  - `calls` (Array): Array of call objects, each containing:
+    - `to` (String): The recipient or contract address
+    - `data` (String, optional): Encoded calldata
+    - `value` (String, optional): Value to send in wei
+
+**Returns**
+
+- `Promise<{ id: string; transactionHash: string | undefined; chainId: number; }>`: Resolves with the call bundle ID, transaction hash, and chain ID
+
+**Example**
+
+```javascript JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { SmartAccountExtension } from '@magic-ext/smart-account';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new SmartAccountExtension({
+      apiKey: 'YOUR_ALCHEMY_API_KEY',
+      paymasterPolicyId: 'YOUR_POLICY_ID', // optional — enables gas sponsorship
+    }),
+  ],
+});
+
+// Send a single call
+const result = await magic.smartAccount.sendTransaction({
+  chainId: 11155111,
+  calls: [
+    {
+      to: '0x1234567890123456789012345678901234567890',
+      value: '1000000000000000',
+      data: '0x',
+    },
+  ],
+});
+
+console.log('Transaction hash:', result.transactionHash);
+
+// Send batched calls (atomic)
+const batchResult = await magic.smartAccount.sendTransaction({
+  chainId: 11155111,
+  calls: [
+    { to: '0xContractA', data: '0x...' },
+    { to: '0xContractB', data: '0x...' },
+  ],
+});
+```
+
 ## EVM Module
 
 The EVM Module and it's members are accessible on the Magic SDK instance by the `evm` property.
