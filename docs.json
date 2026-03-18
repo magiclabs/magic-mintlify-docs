@@ -334,7 +334,6 @@
             "group": "Embedded Wallets",
             "pages": [
               "recipes/embedded-wallets/polymarket",
-              "recipes/embedded-wallets/alchemy-account-abstraction",
               "recipes/embedded-wallets/zksync-zyfi-integration",
               "recipes/embedded-wallets/wagmi",
               "recipes/embedded-wallets/moonpay-integration",
