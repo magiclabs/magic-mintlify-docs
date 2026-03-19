@@ -336,6 +336,7 @@
             "pages": [
               "recipes/server-wallets/alchemy-smart-wallets",
               "recipes/server-wallets/morpho-yield",
+              "recipes/server-wallets/send-usdc",
               "recipes/server-wallets/particle-network-universal-accounts"
             ]
           },
