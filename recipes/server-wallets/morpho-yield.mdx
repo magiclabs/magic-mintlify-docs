@@ -165,29 +165,41 @@ async function depositToVault(jwt: string, eoaAddress: Address, amount: string) 
   };
 
   // Approve USDC
+  const approveData = encodeFunctionData({
+    abi: erc20Abi,
+    functionName: "approve",
+    args: [VAULT_ADDRESS, depositAmount],
+  });
+  const approveGas = await publicClient.estimateGas({
+    account: eoaAddress,
+    to: USDC_ADDRESS,
+    data: approveData,
+  });
   await signAndSend(jwt, {
     ...txBase,
     to: USDC_ADDRESS,
     nonce,
-    gas: 60000n,
-    data: encodeFunctionData({
-      abi: erc20Abi,
-      functionName: "approve",
-      args: [VAULT_ADDRESS, depositAmount],
-    }),
+    gas: approveGas,
+    data: approveData,
   });
 
   // Deposit into vault
+  const depositData = encodeFunctionData({
+    abi: vaultAbi,
+    functionName: "deposit",
+    args: [depositAmount, eoaAddress],
+  });
+  const depositGas = await publicClient.estimateGas({
+    account: eoaAddress,
+    to: VAULT_ADDRESS,
+    data: depositData,
+  });
   const txHash = await signAndSend(jwt, {
     ...txBase,
     to: VAULT_ADDRESS,
     nonce: nonce + 1,
-    gas: 300000n,
-    data: encodeFunctionData({
-      abi: vaultAbi,
-      functionName: "deposit",
-      args: [depositAmount, eoaAddress],
-    }),
+    gas: depositGas,
+    data: depositData,
   });
 
   return txHash;
@@ -278,18 +290,24 @@ async function withdrawAll(jwt: string, eoaAddress: Address) {
   const nonce = await publicClient.getTransactionCount({ address: eoaAddress });
   const fees = await publicClient.estimateFeesPerGas();
 
+  const redeemData = encodeFunctionData({
+    abi: redeemAbi,
+    functionName: "redeem",
+    args: [shares, eoaAddress, eoaAddress],
+  });
+  const redeemGas = await publicClient.estimateGas({
+    account: eoaAddress,
+    to: VAULT_ADDRESS,
+    data: redeemData,
+  });
   const txHash = await signAndSend(jwt, {
     chainId: 8453,
     to: VAULT_ADDRESS,
     nonce,
-    gas: 300000n,
+    gas: redeemGas,
     maxFeePerGas: fees.maxFeePerGas,
     maxPriorityFeePerGas: fees.maxPriorityFeePerGas,
-    data: encodeFunctionData({
-      abi: redeemAbi,
-      functionName: "redeem",
-      args: [shares, eoaAddress, eoaAddress],
-    }),
+    data: redeemData,
   });
 
   return txHash;
@@ -362,7 +380,7 @@ Individual vault addresses change as new vaults are deployed by curators. Use th
 
 **Solutions:**
 - Ensure the wallet has ETH on Base for gas fees
-- Gas limits in the examples are conservative — increase if needed
+- The examples use `estimateGas` — if estimation fails, the transaction would likely revert on-chain too
 - Base gas fees are typically very low (fractions of a cent)
 </Accordion>
 </AccordionGroup>
