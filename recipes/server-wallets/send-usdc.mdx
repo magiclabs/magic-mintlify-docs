@@ -1,0 +1,287 @@
+---
+title: "Send USDC"
+description: "Send USDC on Base using Magic Express Server Wallets"
+---
+
+## Overview
+
+This guide shows how to use **Magic's Express Server Wallet** to send USDC on Base. The private key never leaves the TEE — your server builds the ERC-20 transfer transaction, signs it via the Express API, and broadcasts the result.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+1. A Magic **Secret Key** — from your [Magic Dashboard](https://dashboard.magic.link)
+2. An **OIDC Provider ID** — configured for your auth provider ([setup guide](/server-wallets/express-api/identity-provider))
+3. A Base RPC endpoint (e.g., from [Alchemy](https://www.alchemy.com/) or [QuickNode](https://www.quicknode.com/))
+4. A user JWT from your authentication provider
+
+### How It Works
+
+1. Your server authenticates the user and obtains a JWT
+2. JWT is sent to Magic's TEE to get (or create) the user's EOA
+3. Your server builds the ERC-20 `transfer` transaction
+4. Transaction hash is signed via the TEE's `/v1/wallet/sign/data` endpoint
+5. Signed transaction is broadcast to Base via your RPC provider
+
+---
+
+## TEE Request Helper
+
+All TEE calls use the same authentication headers. Create a reusable helper for your server-side code.
+
+```ts TypeScript icon="square-js"
+const TEE_BASE = "https://tee.express.magiclabs.com";
+
+async function teeRequest<T>(path: string, jwt: string, body: object): Promise<T> {
+  const res = await fetch(`${TEE_BASE}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+      "X-Magic-Secret-Key": "YOUR_SECRET_KEY",
+      "X-OIDC-Provider-ID": "YOUR_OIDC_PROVIDER_ID",
+      "X-Magic-Chain": "ETH",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`TEE error: ${res.status}`);
+  return res.json();
+}
+```
+
+---
+
+## Get or Create a Wallet
+
+Fetch the user's wallet address. If one doesn't exist, it will be created automatically.
+
+```ts TypeScript icon="square-js"
+const { public_address: eoaAddress } = await teeRequest<{ public_address: string }>(
+  "/v1/wallet", jwt, {}
+);
+```
+
+---
+
+## Sign and Broadcast Transactions
+
+Build the transaction locally, compute its unsigned hash, sign via the TEE, and broadcast. This example uses [viem](https://viem.sh) but you can use any EVM library that can serialize unsigned transactions and compute their keccak256 hash.
+
+```ts TypeScript icon="square-js"
+import {
+  createPublicClient,
+  http,
+  encodeFunctionData,
+  serializeTransaction,
+  keccak256,
+  type TransactionSerializable,
+  type Hex,
+} from "viem";
+import { base } from "viem/chains";
+
+const publicClient = createPublicClient({
+  chain: base,
+  transport: http("YOUR_BASE_RPC_URL"),
+});
+
+async function signAndSend(jwt: string, tx: TransactionSerializable) {
+  // Serialize the unsigned transaction and hash it
+  const serialized = serializeTransaction(tx);
+  const hash = keccak256(serialized);
+
+  // Sign the hash via TEE
+  const { r, s, v } = await teeRequest<{ r: string; s: string; v: string }>(
+    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
+  );
+
+  // Serialize with signature and broadcast
+  const yParity = Number(v) >= 27 ? Number(v) - 27 : Number(v);
+  const signed = serializeTransaction(tx, {
+    r: r as Hex,
+    s: s as Hex,
+    yParity,
+  });
+  return await publicClient.sendRawTransaction({ serializedTransaction: signed });
+}
+```
+
+---
+
+## Sending USDC
+
+Build the ERC-20 `transfer` transaction with the recipient and amount, estimate gas, and send.
+
+```ts TypeScript icon="square-js"
+import { parseUnits, formatUnits, type Address } from "viem";
+
+const USDC_ADDRESS: Address = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const USDC_DECIMALS = 6;
+
+const erc20Abi = [
+  {
+    name: "transfer",
+    type: "function",
+    inputs: [
+      { name: "to", type: "address" },
+      { name: "value", type: "uint256" },
+    ],
+    outputs: [{ type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    name: "balanceOf",
+    type: "function",
+    inputs: [{ name: "account", type: "address" }],
+    outputs: [{ type: "uint256" }],
+    stateMutability: "view",
+  },
+] as const;
+
+async function sendUSDC(jwt: string, eoaAddress: Address, to: Address, amount: string) {
+  const value = parseUnits(amount, USDC_DECIMALS);
+  const nonce = await publicClient.getTransactionCount({ address: eoaAddress });
+  const fees = await publicClient.estimateFeesPerGas();
+
+  const data = encodeFunctionData({
+    abi: erc20Abi,
+    functionName: "transfer",
+    args: [to, value],
+  });
+
+  const gas = await publicClient.estimateGas({
+    account: eoaAddress,
+    to: USDC_ADDRESS,
+    data,
+  });
+
+  const txHash = await signAndSend(jwt, {
+    chainId: 8453,
+    to: USDC_ADDRESS,
+    nonce,
+    gas,
+    maxFeePerGas: fees.maxFeePerGas,
+    maxPriorityFeePerGas: fees.maxPriorityFeePerGas,
+    data,
+  });
+
+  return txHash;
+}
+
+// Send 10 USDC
+await sendUSDC(jwt, eoaAddress, "0xRecipientAddress", "10");
+```
+
+---
+
+## Checking Balance
+
+Read the user's USDC balance before or after a transfer.
+
+```ts TypeScript icon="square-js"
+async function getUSDCBalance(address: Address) {
+  const balance = await publicClient.readContract({
+    address: USDC_ADDRESS,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: [address],
+  });
+
+  return formatUnits(balance, USDC_DECIMALS);
+}
+
+const balance = await getUSDCBalance(eoaAddress);
+console.log(`Balance: ${balance} USDC`);
+```
+
+---
+
+## Contract Addresses
+
+Key addresses on Base (chain ID 8453):
+
+```ts TypeScript icon="square-js"
+// USDC on Base (native, issued by Circle)
+const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+```
+
+<Info>
+Base has both native USDC (`0x8335...`) and bridged USDbC (`0xd9aA...`). This guide uses **native USDC**, which is the standard token on Base.
+</Info>
+
+---
+
+## TEE Endpoints Used
+
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /v1/wallet` | Get or create an EOA wallet |
+| `POST /v1/wallet/sign/data` | Sign a raw transaction hash |
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="TEE returns 401 or 403">
+**Symptoms:** Authentication errors when calling TEE endpoints.
+
+**Solutions:**
+- Verify the JWT token is valid and not expired
+- Check that `X-Magic-Secret-Key` matches your dashboard credentials
+- Ensure the OIDC Provider ID is correct
+- Confirm your domain is allowlisted in the Magic Dashboard
+</Accordion>
+
+<Accordion title="Transfer reverts">
+**Symptoms:** The transfer transaction fails or reverts on-chain.
+
+**Solutions:**
+- Check that the wallet has sufficient USDC balance on Base
+- Verify the recipient address is valid (not the zero address)
+- Ensure the wallet has ETH on Base for gas fees
+</Accordion>
+
+<Accordion title="Wrong token sent">
+**Symptoms:** Tokens were sent but don't appear as USDC in the recipient's wallet.
+
+**Solutions:**
+- Confirm you're using the native USDC address (`0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`), not bridged USDbC
+- Check the transaction on [Basescan](https://basescan.org) to verify the token contract
+</Accordion>
+
+<Accordion title="Nonce errors">
+**Symptoms:** Transaction fails with a nonce-related error.
+
+**Solutions:**
+- Ensure no concurrent transactions are being sent for the same wallet
+- If a previous transaction is pending, wait for it to confirm
+- Fetch the nonce with `"pending"` to account for in-flight transactions
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Resources
+
+<CardGroup cols={2}>
+<Card title="Express API Docs" icon="brackets-curly" href="/server-wallets/express-api/overview">
+  Learn about Magic's Express Server Wallet API
+</Card>
+
+<Card title="EVM Data Preparation" icon="code" href="/server-wallets/express-api/data-preparation/evm">
+  Guide for preparing EVM transaction data for signing
+</Card>
+
+<Card title="Base Documentation" icon="book" href="https://docs.base.org/">
+  Official Base network documentation
+</Card>
+
+<Card title="USDC on Base" icon="circle-dollar-to-slot" href="https://www.circle.com/usdc">
+  Learn about Circle's USDC stablecoin
+</Card>
+</CardGroup>
+
+---

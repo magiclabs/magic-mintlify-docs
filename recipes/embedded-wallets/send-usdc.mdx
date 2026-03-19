@@ -1,0 +1,220 @@
+---
+title: "Send USDC"
+description: "Send USDC on Base using Magic Embedded Wallets"
+---
+
+## Overview
+
+This guide shows how to use Magic's Embedded Wallet to send USDC on Base. Users authenticate with Magic, and your app builds and sends the ERC-20 transfer transaction through the wallet's provider — no backend required.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+1. A Magic **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link)
+2. A Base RPC endpoint (e.g., from [Alchemy](https://www.alchemy.com/) or [QuickNode](https://www.quicknode.com/))
+3. USDC on Base in the user's wallet
+4. ETH on Base for gas fees (typically fractions of a cent)
+
+### How It Works
+
+1. User authenticates with Magic
+2. Magic SDK creates an Embedded Wallet for the user
+3. Your app builds an ERC-20 `transfer` call with the recipient and amount
+4. The transaction is sent via the wallet's provider and confirmed on-chain
+
+---
+
+## Setting Up the Client
+
+Initialize Magic and create viem clients connected to Base.
+
+```typescript TypeScript icon="square-js"
+import { Magic } from "magic-sdk";
+import { createWalletClient, createPublicClient, custom, http } from "viem";
+import { base } from "viem/chains";
+
+const magic = new Magic("YOUR_PUBLISHABLE_KEY", {
+  network: {
+    rpcUrl: "https://base-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY",
+    chainId: 8453,
+  },
+});
+
+// Public client for read operations
+const publicClient = createPublicClient({
+  chain: base,
+  transport: http("https://base-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY"),
+});
+
+// Wallet client for transactions (after user authenticates)
+const walletClient = createWalletClient({
+  chain: base,
+  transport: custom(magic.rpcProvider),
+});
+
+const [userAddress] = await walletClient.getAddresses();
+```
+
+---
+
+## Contract Setup
+
+Define the USDC address and the minimal ERC-20 ABI needed for transfers.
+
+```typescript TypeScript icon="square-js"
+import { type Address, parseUnits, formatUnits } from "viem";
+
+const USDC_ADDRESS: Address = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const USDC_DECIMALS = 6;
+
+const erc20Abi = [
+  {
+    name: "transfer",
+    type: "function",
+    inputs: [
+      { name: "to", type: "address" },
+      { name: "value", type: "uint256" },
+    ],
+    outputs: [{ type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    name: "balanceOf",
+    type: "function",
+    inputs: [{ name: "account", type: "address" }],
+    outputs: [{ type: "uint256" }],
+    stateMutability: "view",
+  },
+] as const;
+```
+
+---
+
+## Sending USDC
+
+Call the ERC-20 `transfer` function to send USDC to any address.
+
+```typescript TypeScript icon="square-js"
+async function sendUSDC(to: Address, amount: string) {
+  const value = parseUnits(amount, USDC_DECIMALS);
+
+  const hash = await walletClient.writeContract({
+    address: USDC_ADDRESS,
+    abi: erc20Abi,
+    functionName: "transfer",
+    args: [to, value],
+    account: userAddress,
+  });
+
+  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+  return receipt.transactionHash;
+}
+
+// Send 10 USDC
+await sendUSDC("0xRecipientAddress", "10");
+```
+
+---
+
+## Checking Balance
+
+Read the user's USDC balance before or after a transfer.
+
+```typescript TypeScript icon="square-js"
+async function getUSDCBalance(address: Address) {
+  const balance = await publicClient.readContract({
+    address: USDC_ADDRESS,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: [address],
+  });
+
+  return formatUnits(balance, USDC_DECIMALS);
+}
+
+const balance = await getUSDCBalance(userAddress);
+console.log(`Balance: ${balance} USDC`);
+```
+
+---
+
+## Contract Addresses
+
+Key addresses on Base (chain ID 8453):
+
+```typescript TypeScript icon="square-js"
+// USDC on Base (native, issued by Circle)
+const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+```
+
+<Info>
+Base has both native USDC (`0x8335...`) and bridged USDbC (`0xd9aA...`). This guide uses **native USDC**, which is the standard token on Base.
+</Info>
+
+---
+
+## Key Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| [`magic-sdk`](https://www.npmjs.com/package/magic-sdk) | Magic authentication and Embedded Wallet |
+| [`viem`](https://viem.sh/) | Ethereum client for contract interactions |
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="Transfer reverts">
+**Symptoms:** The transfer transaction fails or reverts on-chain.
+
+**Solutions:**
+- Check that the user has sufficient USDC balance on Base
+- Verify the recipient address is valid (not the zero address)
+- Ensure the user has ETH on Base for gas fees
+</Accordion>
+
+<Accordion title="Wrong token sent">
+**Symptoms:** Tokens were sent but don't appear as USDC in the recipient's wallet.
+
+**Solutions:**
+- Confirm you're using the native USDC address (`0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`), not bridged USDbC
+- Check the transaction on [Basescan](https://basescan.org) to verify the token contract
+</Accordion>
+
+<Accordion title="Transaction stuck or slow">
+**Symptoms:** Transaction is pending for a long time.
+
+**Solutions:**
+- Base transactions typically confirm in 2-3 seconds
+- Check [Basescan](https://basescan.org) for the transaction status
+- If the network is congested, the transaction will still confirm — just wait
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Resources
+
+<CardGroup cols={2}>
+<Card title="Magic Embedded Wallets" icon="wallet" href="/embedded-wallets/introduction">
+  Learn about Magic's Embedded Wallet product
+</Card>
+
+<Card title="Base Documentation" icon="book" href="https://docs.base.org/">
+  Official Base network documentation
+</Card>
+
+<Card title="EVM Transaction Signing" icon="pen" href="/embedded-wallets/wallets/features/transaction-signing">
+  Guide for signing transactions with Magic wallets
+</Card>
+
+<Card title="USDC on Base" icon="circle-dollar-to-slot" href="https://www.circle.com/usdc">
+  Learn about Circle's USDC stablecoin
+</Card>
+</CardGroup>
+
+---
