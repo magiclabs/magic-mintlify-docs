@@ -335,6 +335,7 @@
             "group": "Server Wallets",
             "pages": [
               "recipes/server-wallets/alchemy-smart-wallets",
+              "recipes/server-wallets/morpho-yield",
               "recipes/server-wallets/particle-network-universal-accounts"
             ]
           },

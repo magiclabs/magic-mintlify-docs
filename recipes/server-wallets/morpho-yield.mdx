@@ -1,0 +1,539 @@
+---
+title: "Yield on Morpho"
+description: "Earn yield on USDC by depositing into Morpho Vaults with Magic Server Wallets on Base"
+---
+
+## Overview
+
+This guide shows how to use **Magic's Express Server Wallet** to deposit USDC into a Morpho Vault on Base and earn yield — entirely from server-side code. The private key never leaves the TEE, and all signing happens through Magic's Express API.
+
+Morpho Vaults implement the [ERC-4626](https://eips.ethereum.org/EIPS/eip-4626) tokenized vault standard. Users deposit an underlying asset (e.g., USDC), receive vault shares, and earn yield as the share price appreciates over time.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+1. A Magic **Secret Key** — from your [Magic Dashboard](https://dashboard.magic.link)
+2. An **OIDC Provider ID** — configured for your auth provider ([setup guide](/server-wallets/express-api/identity-provider))
+3. A Base RPC endpoint (e.g., from [Alchemy](https://www.alchemy.com/) or [QuickNode](https://www.quicknode.com/))
+4. A Next.js app with **NextAuth** configured for authentication
+
+### How It Works
+
+All operations happen server-side through a Next.js API route:
+
+1. User authenticates via NextAuth — API route extracts their JWT
+2. JWT is sent to Magic's TEE to get (or create) the user's EOA
+3. API route builds the transaction (approve, deposit, or redeem)
+4. Transaction hash is signed via the TEE's `/v1/wallet/sign/data` endpoint
+5. Signed transaction is broadcast to Base via a public RPC
+
+<Info>
+The private key never leaves Magic's TEE. Your server only sees the public address and signed transaction output.
+</Info>
+
+---
+
+## Install Dependencies
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install ethers next-auth
+```
+
+```bash Yarn icon="yarn"
+yarn add ethers next-auth
+```
+</CodeGroup>
+
+---
+
+## Environment Variables
+
+Add the following to your `.env.local`:
+
+```bash .env.local
+# Magic Server Wallet credentials
+SERVER_WALLET_SECRET_KEY=sk_live_XXXXXXXXXXXX
+NEXT_PUBLIC_OIDC_PROVIDER_ID=your-oidc-provider-id
+
+# Base RPC
+BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR_KEY
+```
+
+---
+
+## How It Works
+
+<Steps>
+  <Step title="Authenticate and Fetch the EOA">
+    Validate the user's session via NextAuth and call Magic's TEE to get their wallet address.
+
+```ts TypeScript icon="square-js"
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+const session = await getServerSession(authOptions);
+if (!session?.idToken) {
+  return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+}
+const jwt = session.idToken;
+
+// Get or create the user's wallet
+const { public_address: eoaAddress } = await teeRequest<{ public_address: string }>(
+  "/v1/wallet", jwt, {}
+);
+```
+  </Step>
+
+  <Step title="Build the TEE Request Helper">
+    Create a reusable function for TEE API calls. All signing operations use the same authentication headers.
+
+```ts TypeScript icon="square-js"
+const TEE_BASE = "https://tee.express.magiclabs.com";
+
+async function teeRequest<T>(path: string, jwt: string, body: object): Promise<T> {
+  const res = await fetch(`${TEE_BASE}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+      "X-Magic-Secret-Key": process.env.SERVER_WALLET_SECRET_KEY!,
+      "X-OIDC-Provider-ID": process.env.NEXT_PUBLIC_OIDC_PROVIDER_ID!,
+      "X-Magic-Chain": "ETH",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`TEE error: ${res.status}`);
+  return res.json();
+}
+```
+  </Step>
+
+  <Step title="Sign and Broadcast Transactions">
+    Build the transaction locally, get its unsigned hash, sign via the TEE, then broadcast. This helper handles the full flow for any EVM transaction.
+
+```ts TypeScript icon="square-js"
+import {
+  JsonRpcProvider,
+  Transaction,
+  Signature,
+  Contract,
+  resolveProperties,
+  type TransactionRequest,
+} from "ethers";
+
+const provider = new JsonRpcProvider(process.env.BASE_RPC_URL);
+
+async function signAndSend(jwt: string, txRequest: TransactionRequest) {
+  const resolved = await resolveProperties(txRequest);
+  delete resolved.from;
+
+  const btx = Transaction.from(resolved);
+
+  // Sign the unsigned transaction hash via TEE
+  const { r, s, v } = await teeRequest<{ r: string; s: string; v: string }>(
+    "/v1/wallet/sign/data",
+    jwt,
+    { raw_data_hash: btx.unsignedHash, chain: "ETH" }
+  );
+
+  btx.signature = Signature.from({ r, s, v });
+
+  // Broadcast to Base
+  const txResponse = await provider.broadcastTransaction(btx.serialized);
+  return await txResponse.wait();
+}
+```
+  </Step>
+
+  <Step title="Deposit into a Morpho Vault">
+    Use the `signAndSend` helper to execute the approve and deposit transactions.
+
+```ts TypeScript icon="square-js"
+const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const VAULT_ADDRESS = "0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61";
+
+const erc20 = new Contract(USDC_ADDRESS, [
+  "function approve(address spender, uint256 value) returns (bool)",
+  "function allowance(address owner, address spender) view returns (uint256)",
+], provider);
+
+const vault = new Contract(VAULT_ADDRESS, [
+  "function deposit(uint256 assets, address receiver) returns (uint256)",
+  "function redeem(uint256 shares, address receiver, address owner) returns (uint256)",
+  "function balanceOf(address account) view returns (uint256)",
+  "function convertToAssets(uint256 shares) view returns (uint256)",
+], provider);
+
+async function depositToVault(jwt: string, eoaAddress: string, amount: bigint) {
+  const nonce = await provider.getTransactionCount(eoaAddress);
+  const feeData = await provider.getFeeData();
+
+  // Approve USDC for vault
+  const allowance = await erc20.allowance(eoaAddress, VAULT_ADDRESS);
+  if (allowance < amount) {
+    await signAndSend(jwt, {
+      to: USDC_ADDRESS,
+      from: eoaAddress,
+      data: erc20.interface.encodeFunctionData("approve", [VAULT_ADDRESS, amount]),
+      nonce,
+      gasLimit: 60000n,
+      maxFeePerGas: feeData.maxFeePerGas,
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
+      chainId: 8453n,
+    });
+  }
+
+  // Deposit
+  const depositNonce = allowance < amount ? nonce + 1 : nonce;
+  const receipt = await signAndSend(jwt, {
+    to: VAULT_ADDRESS,
+    from: eoaAddress,
+    data: vault.interface.encodeFunctionData("deposit", [amount, eoaAddress]),
+    nonce: depositNonce,
+    gasLimit: 300000n,
+    maxFeePerGas: feeData.maxFeePerGas,
+    maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
+    chainId: 8453n,
+  });
+
+  return receipt;
+}
+```
+  </Step>
+
+  <Step title="Check Position and Withdraw">
+    Read the user's vault shares and convert to underlying value. Withdraw by redeeming all shares.
+
+```ts TypeScript icon="square-js"
+async function getPosition(eoaAddress: string) {
+  const shares = await vault.balanceOf(eoaAddress);
+  if (shares === 0n) return { shares: "0", value: "0" };
+
+  const assets = await vault.convertToAssets(shares);
+  return {
+    shares: shares.toString(),
+    value: assets.toString(),
+  };
+}
+
+async function withdrawAll(jwt: string, eoaAddress: string) {
+  const shares = await vault.balanceOf(eoaAddress);
+  if (shares === 0n) throw new Error("No position to withdraw");
+
+  const nonce = await provider.getTransactionCount(eoaAddress);
+  const feeData = await provider.getFeeData();
+
+  const receipt = await signAndSend(jwt, {
+    to: VAULT_ADDRESS,
+    from: eoaAddress,
+    data: vault.interface.encodeFunctionData("redeem", [shares, eoaAddress, eoaAddress]),
+    nonce,
+    gasLimit: 300000n,
+    maxFeePerGas: feeData.maxFeePerGas,
+    maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
+    chainId: 8453n,
+  });
+
+  return receipt;
+}
+```
+  </Step>
+</Steps>
+
+---
+
+## Complete API Route
+
+Here's the full Next.js API route that ties everything together. It supports three actions: `deposit`, `withdraw`, and `position`.
+
+```ts TypeScript icon="square-js"
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import {
+  JsonRpcProvider,
+  Transaction,
+  Signature,
+  Contract,
+  parseUnits,
+  formatUnits,
+  resolveProperties,
+  type TransactionRequest,
+} from "ethers";
+
+const TEE_BASE = "https://tee.express.magiclabs.com";
+const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const VAULT_ADDRESS = "0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61";
+const USDC_DECIMALS = 6;
+
+const provider = new JsonRpcProvider(process.env.BASE_RPC_URL);
+
+const erc20 = new Contract(USDC_ADDRESS, [
+  "function approve(address spender, uint256 value) returns (bool)",
+  "function allowance(address owner, address spender) view returns (uint256)",
+  "function balanceOf(address account) view returns (uint256)",
+], provider);
+
+const vault = new Contract(VAULT_ADDRESS, [
+  "function deposit(uint256 assets, address receiver) returns (uint256)",
+  "function redeem(uint256 shares, address receiver, address owner) returns (uint256)",
+  "function balanceOf(address account) view returns (uint256)",
+  "function convertToAssets(uint256 shares) view returns (uint256)",
+], provider);
+
+async function teeRequest<T>(path: string, jwt: string, body: object): Promise<T> {
+  const res = await fetch(`${TEE_BASE}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+      "X-Magic-Secret-Key": process.env.SERVER_WALLET_SECRET_KEY!,
+      "X-OIDC-Provider-ID": process.env.NEXT_PUBLIC_OIDC_PROVIDER_ID!,
+      "X-Magic-Chain": "ETH",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`TEE error: ${res.status}`);
+  return res.json();
+}
+
+async function signAndSend(jwt: string, txRequest: TransactionRequest) {
+  const resolved = await resolveProperties(txRequest);
+  delete resolved.from;
+
+  const btx = Transaction.from(resolved);
+  const { r, s, v } = await teeRequest<{ r: string; s: string; v: string }>(
+    "/v1/wallet/sign/data", jwt, { raw_data_hash: btx.unsignedHash, chain: "ETH" }
+  );
+
+  btx.signature = Signature.from({ r, s, v });
+  const txResponse = await provider.broadcastTransaction(btx.serialized);
+  return await txResponse.wait();
+}
+
+export async function POST(req: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.idToken) {
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+  }
+  const jwt = session.idToken;
+
+  const body = await req.json().catch(() => ({}));
+  const action = body.action as string;
+
+  // Get or create wallet
+  const { public_address: eoaAddress } = await teeRequest<{ public_address: string }>(
+    "/v1/wallet", jwt, {}
+  );
+
+  // Read position
+  if (action === "position") {
+    const [usdcBal, shares] = await Promise.all([
+      erc20.balanceOf(eoaAddress),
+      vault.balanceOf(eoaAddress),
+    ]);
+    let vaultValue = "0";
+    if (shares > 0n) {
+      const assets = await vault.convertToAssets(shares);
+      vaultValue = formatUnits(assets, USDC_DECIMALS);
+    }
+    return NextResponse.json({
+      address: eoaAddress,
+      usdcBalance: formatUnits(usdcBal, USDC_DECIMALS),
+      vaultShares: shares.toString(),
+      vaultValue,
+    });
+  }
+
+  // Deposit
+  if (action === "deposit") {
+    const amount = parseUnits(body.amount, USDC_DECIMALS);
+    const nonce = await provider.getTransactionCount(eoaAddress);
+    const feeData = await provider.getFeeData();
+    const txBase = {
+      from: eoaAddress,
+      maxFeePerGas: feeData.maxFeePerGas,
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
+      chainId: 8453n,
+    };
+
+    // Approve if needed
+    const allowance = await erc20.allowance(eoaAddress, VAULT_ADDRESS);
+    let currentNonce = nonce;
+
+    if (allowance < amount) {
+      await signAndSend(jwt, {
+        ...txBase,
+        to: USDC_ADDRESS,
+        data: erc20.interface.encodeFunctionData("approve", [VAULT_ADDRESS, amount]),
+        nonce: currentNonce,
+        gasLimit: 60000n,
+      });
+      currentNonce++;
+    }
+
+    // Deposit
+    const receipt = await signAndSend(jwt, {
+      ...txBase,
+      to: VAULT_ADDRESS,
+      data: vault.interface.encodeFunctionData("deposit", [amount, eoaAddress]),
+      nonce: currentNonce,
+      gasLimit: 300000n,
+    });
+
+    return NextResponse.json({
+      txHash: receipt?.hash,
+      action: "deposit",
+      amount: body.amount,
+    });
+  }
+
+  // Withdraw
+  if (action === "withdraw") {
+    const shares = await vault.balanceOf(eoaAddress);
+    if (shares === 0n) {
+      return NextResponse.json({ error: "No position to withdraw" }, { status: 400 });
+    }
+
+    const nonce = await provider.getTransactionCount(eoaAddress);
+    const feeData = await provider.getFeeData();
+
+    const receipt = await signAndSend(jwt, {
+      to: VAULT_ADDRESS,
+      from: eoaAddress,
+      data: vault.interface.encodeFunctionData("redeem", [shares, eoaAddress, eoaAddress]),
+      nonce,
+      gasLimit: 300000n,
+      maxFeePerGas: feeData.maxFeePerGas,
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
+      chainId: 8453n,
+    });
+
+    return NextResponse.json({
+      txHash: receipt?.hash,
+      action: "withdraw",
+    });
+  }
+
+  return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+}
+```
+
+---
+
+## Key Concepts
+
+### Why Server Wallets?
+
+Server Wallets are ideal for backend-driven applications where:
+
+- **Users shouldn't manage keys** — the wallet is created and managed entirely server-side
+- **Transactions happen programmatically** — triggered by business logic, not user interaction
+- **Security is paramount** — keys live in a TEE, never exposed to application code
+
+### Transaction Signing Flow
+
+Since the private key lives inside Magic's TEE, we can't sign transactions locally. Instead:
+
+1. Build a complete transaction object with all fields (nonce, gas, data, chainId)
+2. Compute its unsigned hash using ethers' `Transaction.from().unsignedHash`
+3. Send the hash to the TEE's `/v1/wallet/sign/data` endpoint
+4. Attach the returned signature (`r`, `s`, `v`) to the transaction
+5. Broadcast the serialized signed transaction via a public RPC
+
+### TEE Endpoints Used
+
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /v1/wallet` | Get or create an EOA wallet |
+| `POST /v1/wallet/sign/data` | Sign a raw transaction hash |
+
+---
+
+## Contract Addresses
+
+Key addresses on Base (chain ID 8453):
+
+```ts TypeScript icon="square-js"
+// USDC on Base
+const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+
+// Gauntlet USDC Prime vault (Morpho)
+const VAULT_ADDRESS = "0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61";
+```
+
+<Info>
+Individual vault addresses change as new vaults are deployed by curators. Use the [Morpho API](https://api.morpho.org/graphql) or browse [app.morpho.org](https://app.morpho.org) to find current vaults.
+</Info>
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="TEE returns 401 or 403">
+**Symptoms:** Authentication errors when calling TEE endpoints.
+
+**Solutions:**
+- Verify the JWT token is valid and not expired
+- Check that `X-Magic-Secret-Key` matches your dashboard credentials
+- Ensure the OIDC Provider ID is correct
+- Confirm your domain is allowlisted in the Magic Dashboard
+</Accordion>
+
+<Accordion title="Transaction reverts on-chain">
+**Symptoms:** The signed transaction broadcasts but reverts.
+
+**Solutions:**
+- Check that the wallet has sufficient USDC balance on Base
+- Ensure the approval was confirmed before the deposit
+- Verify the vault address is correct and the vault is active
+- Some vaults have deposit caps — check if the vault is full
+</Accordion>
+
+<Accordion title="Nonce errors">
+**Symptoms:** Transaction fails with a nonce-related error.
+
+**Solutions:**
+- The nonce is fetched before each operation — ensure no concurrent transactions
+- If a previous transaction is pending, wait for it to confirm
+- Use `provider.getTransactionCount(address, "pending")` to account for pending transactions
+</Accordion>
+
+<Accordion title="Insufficient gas">
+**Symptoms:** Transaction fails with out-of-gas error.
+
+**Solutions:**
+- Ensure the wallet has ETH on Base for gas fees
+- Gas limits in the examples are conservative — increase `gasLimit` if needed
+- Base gas fees are typically very low (fractions of a cent)
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Resources
+
+<CardGroup cols={2}>
+<Card title="Morpho Yield Demo" icon="github" href="https://github.com/magiclabs/example-morpho-yield">
+  Complete Next.js app with Magic Server Wallets + Morpho on Base
+</Card>
+
+<Card title="Express API Docs" icon="brackets-curly" href="/server-wallets/express-api/overview">
+  Learn about Magic's Express Server Wallet API
+</Card>
+
+<Card title="EVM Data Preparation" icon="code" href="/server-wallets/express-api/data-preparation/evm">
+  Guide for preparing EVM transaction data for signing
+</Card>
+
+<Card title="Morpho Documentation" icon="book" href="https://docs.morpho.org/">
+  Official Morpho protocol documentation
+</Card>
+</CardGroup>
+
+---
