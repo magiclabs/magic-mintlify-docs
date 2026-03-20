@@ -346,6 +346,7 @@
               "recipes/embedded-wallets/polymarket",
               "recipes/embedded-wallets/morpho-yield",
               "recipes/embedded-wallets/send-usdc",
+              "recipes/embedded-wallets/send-usdc-solana",
               "recipes/embedded-wallets/zksync-zyfi-integration",
               "recipes/embedded-wallets/wagmi",
               "recipes/embedded-wallets/moonpay-integration",
