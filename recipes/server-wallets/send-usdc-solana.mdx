@@ -1,0 +1,295 @@
+---
+title: "Send USDC on Solana"
+description: "Send USDC on Solana"
+---
+
+## Overview
+
+This guide shows how to use **Magic's Express Server Wallet** to send USDC on Solana. The private key never leaves the TEE — your server builds the SPL token transfer transaction, signs it via the Express API, and broadcasts the result.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+1. A Magic **Secret Key** — from your [Magic Dashboard](https://dashboard.magic.link)
+2. An **OIDC Provider ID** — configured for your auth provider ([setup guide](/server-wallets/express-api/identity-provider))
+3. A Solana RPC endpoint (e.g., from [Helius](https://www.helius.dev/) or [QuickNode](https://www.quicknode.com/))
+4. A user JWT from your authentication provider
+
+### How It Works
+
+1. Your server authenticates the user and obtains a JWT
+2. JWT is sent to Magic's TEE to get (or create) the user's Solana wallet
+3. Your server builds the SPL token transfer transaction
+4. Transaction message is signed via the TEE's `/v1/wallet/sign/message` endpoint
+5. Signed transaction is broadcast to Solana via your RPC provider
+
+---
+
+## TEE Request Helper
+
+All TEE calls use the same authentication headers. Note that Solana uses `X-Magic-Chain: SOL` instead of `ETH`.
+
+```ts TypeScript icon="square-js"
+const TEE_BASE = "https://tee.express.magiclabs.com";
+
+async function teeRequest<T>(path: string, jwt: string, body: object): Promise<T> {
+  const res = await fetch(`${TEE_BASE}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+      "X-Magic-Secret-Key": "YOUR_SECRET_KEY",
+      "X-OIDC-Provider-ID": "YOUR_OIDC_PROVIDER_ID",
+      "X-Magic-Chain": "SOL",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`TEE error: ${res.status}`);
+  return res.json();
+}
+```
+
+---
+
+## Get or Create a Wallet
+
+Fetch the user's Solana wallet address. If one doesn't exist, it will be created automatically.
+
+```ts TypeScript icon="square-js"
+const { public_address: walletAddress } = await teeRequest<{ public_address: string }>(
+  "/v1/wallet", jwt, { chain: "SOL" }
+);
+```
+
+---
+
+## Sign and Broadcast Transactions
+
+Build the transaction locally, serialize the message, sign via the TEE, and broadcast.
+
+```ts TypeScript icon="square-js"
+import { Connection, PublicKey, Transaction } from "@solana/web3.js";
+
+const connection = new Connection("YOUR_SOLANA_RPC_URL");
+
+async function signAndSend(jwt: string, walletAddress: string, transaction: Transaction) {
+  const walletPubkey = new PublicKey(walletAddress);
+
+  // Serialize the transaction message as base64
+  const messageBytes = transaction.serializeMessage();
+  const messageBase64 = Buffer.from(messageBytes).toString("base64");
+
+  // Sign via TEE
+  const { signature } = await teeRequest<{ signature: string }>(
+    "/v1/wallet/sign/message", jwt, { message_base64: messageBase64 }
+  );
+
+  // Attach signature to the transaction
+  const sigBytes = signature.startsWith("0x")
+    ? Buffer.from(signature.slice(2), "hex")
+    : Buffer.from(signature, "base64");
+  transaction.addSignature(walletPubkey, sigBytes);
+
+  // Broadcast
+  const txSignature = await connection.sendRawTransaction(transaction.serialize());
+  await connection.confirmTransaction(txSignature);
+
+  return txSignature;
+}
+```
+
+---
+
+## Sending USDC
+
+Build the SPL token transfer instruction, creating the recipient's token account if needed.
+
+```ts TypeScript icon="square-js"
+import {
+  getAssociatedTokenAddress,
+  createAssociatedTokenAccountInstruction,
+  createTransferInstruction,
+  getAccount,
+} from "@solana/spl-token";
+
+// USDC on Solana mainnet
+const USDC_MINT = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
+const USDC_DECIMALS = 6;
+
+async function sendUSDC(
+  jwt: string,
+  walletAddress: string,
+  recipientAddress: string,
+  amount: string,
+) {
+  const walletPubkey = new PublicKey(walletAddress);
+  const recipient = new PublicKey(recipientAddress);
+  const transferAmount = BigInt(Math.round(parseFloat(amount) * 10 ** USDC_DECIMALS));
+
+  // Get Associated Token Accounts
+  const senderATA = await getAssociatedTokenAddress(USDC_MINT, walletPubkey);
+  const recipientATA = await getAssociatedTokenAddress(USDC_MINT, recipient);
+
+  const blockhash = await connection.getLatestBlockhash();
+  const transaction = new Transaction({
+    ...blockhash,
+    feePayer: walletPubkey,
+  });
+
+  // Create recipient's token account if it doesn't exist
+  try {
+    await getAccount(connection, recipientATA);
+  } catch {
+    transaction.add(
+      createAssociatedTokenAccountInstruction(
+        walletPubkey,  // payer
+        recipientATA,  // ATA to create
+        recipient,     // owner of the new ATA
+        USDC_MINT,     // token mint
+      )
+    );
+  }
+
+  // Add the transfer instruction
+  transaction.add(
+    createTransferInstruction(
+      senderATA,      // source
+      recipientATA,   // destination
+      walletPubkey,   // owner of source account
+      transferAmount, // amount in smallest units
+    )
+  );
+
+  return await signAndSend(jwt, walletAddress, transaction);
+}
+
+// Send 10 USDC
+await sendUSDC(jwt, walletAddress, "RecipientSolanaAddress", "10");
+```
+
+<Info>
+Creating a recipient's Associated Token Account costs ~0.002 SOL in rent. This is a one-time cost — subsequent transfers to the same recipient skip this step.
+</Info>
+
+---
+
+## Checking Balance
+
+Query the user's USDC token account to display their balance.
+
+```ts TypeScript icon="square-js"
+async function getUSDCBalance(ownerAddress: string) {
+  const owner = new PublicKey(ownerAddress);
+  const ata = await getAssociatedTokenAddress(USDC_MINT, owner);
+
+  try {
+    const account = await getAccount(connection, ata);
+    const balance = Number(account.amount) / 10 ** USDC_DECIMALS;
+    return balance.toString();
+  } catch {
+    // Token account doesn't exist — balance is zero
+    return "0";
+  }
+}
+
+const balance = await getUSDCBalance(walletAddress);
+console.log(`Balance: ${balance} USDC`);
+```
+
+---
+
+## Token Addresses
+
+Key addresses on Solana mainnet:
+
+```ts TypeScript icon="square-js"
+// USDC on Solana (native, issued by Circle)
+const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+```
+
+<Info>
+Solana uses **mint addresses** instead of contract addresses. Each SPL token has a unique mint, and wallets hold tokens in Associated Token Accounts (ATAs) derived from the mint and owner.
+</Info>
+
+---
+
+## TEE Endpoints Used
+
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /v1/wallet` | Get or create a Solana wallet |
+| `POST /v1/wallet/sign/message` | Sign a base64-encoded transaction message |
+
+<Warning>
+Solana uses the `/v1/wallet/sign/message` endpoint with `message_base64` — not `/v1/wallet/sign/data` which is used for EVM chains. Make sure `X-Magic-Chain` is set to `SOL`.
+</Warning>
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="TEE returns 401 or 403">
+**Symptoms:** Authentication errors when calling TEE endpoints.
+
+**Solutions:**
+- Verify the JWT token is valid and not expired
+- Check that `X-Magic-Secret-Key` matches your dashboard credentials
+- Ensure the OIDC Provider ID is correct
+- Confirm `X-Magic-Chain` is set to `SOL`, not `ETH`
+</Accordion>
+
+<Accordion title="Transfer fails with insufficient funds">
+**Symptoms:** Transaction simulation fails before sending.
+
+**Solutions:**
+- Check that the wallet has enough USDC in their token account
+- Ensure the wallet has SOL for transaction fees (~0.000005 SOL)
+- If creating a recipient ATA, the wallet needs ~0.002 SOL for rent
+</Accordion>
+
+<Accordion title="Invalid signature error">
+**Symptoms:** Transaction fails with a signature verification error.
+
+**Solutions:**
+- Ensure you're using `/v1/wallet/sign/message`, not `/v1/wallet/sign/data`
+- Verify the transaction's `feePayer` matches the wallet's public key
+- Check that the signature is correctly decoded (handle both hex and base64 formats)
+</Accordion>
+
+<Accordion title="Token account not found">
+**Symptoms:** `getAccount` throws an error for the sender's ATA.
+
+**Solutions:**
+- The wallet may not have a USDC token account yet
+- Send USDC to the wallet first — this creates the ATA automatically
+- You can create the ATA manually with `createAssociatedTokenAccountInstruction`
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Resources
+
+<CardGroup cols={2}>
+<Card title="Express API Docs" icon="brackets-curly" href="/server-wallets/express-api/overview">
+  Learn about Magic's Express Server Wallet API
+</Card>
+
+<Card title="Solana Data Preparation" icon="code" href="/server-wallets/express-api/data-preparation/solana">
+  Guide for preparing Solana transaction data for signing
+</Card>
+
+<Card title="Solana Documentation" icon="book" href="https://solana.com/docs">
+  Official Solana developer documentation
+</Card>
+
+<Card title="USDC on Solana" icon="circle-dollar-to-slot" href="https://www.circle.com/usdc">
+  Learn about Circle's USDC stablecoin
+</Card>
+</CardGroup>
+
+---
