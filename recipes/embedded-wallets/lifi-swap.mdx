@@ -1,0 +1,335 @@
+---
+title: "Swap Tokens with Li.Fi"
+description: "Swap tokens on Base using Magic Embedded Wallets and the Li.Fi API"
+---
+
+## Overview
+
+This guide shows how to use Magic's Embedded Wallet with the [Li.Fi API](https://li.fi/) to swap tokens on Base. Li.Fi aggregates DEXs and bridges, finding the best rate across multiple protocols. Your app fetches a quote, handles token approval, and executes the swap — all client-side through the user's Embedded Wallet.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+1. A Magic **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link)
+2. A Base RPC endpoint (e.g., from [Alchemy](https://www.alchemy.com/) or [QuickNode](https://www.quicknode.com/))
+3. Tokens on Base in the user's wallet (ETH for gas + the token to swap)
+
+### How It Works
+
+1. User authenticates with Magic
+2. Your app fetches a swap quote from Li.Fi's `/v1/quote` endpoint
+3. If swapping an ERC-20 token, the user approves Li.Fi's contract to spend their tokens
+4. Your app sends the swap transaction using the `transactionRequest` from the quote
+5. Li.Fi routes the swap through the best available DEX
+
+---
+
+## Setting Up the Client
+
+Initialize Magic and create viem clients connected to Base.
+
+```typescript TypeScript icon="square-js"
+import { Magic } from "magic-sdk";
+import { createWalletClient, createPublicClient, custom, http } from "viem";
+import { base } from "viem/chains";
+
+const magic = new Magic("YOUR_PUBLISHABLE_KEY", {
+  network: {
+    rpcUrl: "https://base-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY",
+    chainId: 8453,
+  },
+});
+
+const publicClient = createPublicClient({
+  chain: base,
+  transport: http("https://base-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY"),
+});
+
+const walletClient = createWalletClient({
+  chain: base,
+  transport: custom(magic.rpcProvider),
+});
+
+const [userAddress] = await walletClient.getAddresses();
+```
+
+---
+
+## Getting a Swap Quote
+
+Fetch a quote from Li.Fi to find the best swap route. No API key is required.
+
+```typescript TypeScript icon="square-js"
+const LIFI_API = "https://li.quest/v1";
+
+interface QuoteResponse {
+  estimate: {
+    toAmount: string;
+    toAmountMin: string;
+    approvalAddress: string;
+    gasCosts: { estimate: string; token: { symbol: string } }[];
+  };
+  transactionRequest: {
+    from: string;
+    to: string;
+    data: string;
+    value: string;
+    gasLimit: string;
+    gasPrice: string;
+    chainId: number;
+  };
+}
+
+async function getQuote(
+  fromToken: string,
+  toToken: string,
+  amount: string,
+  fromAddress: string,
+): Promise<QuoteResponse> {
+  const params = new URLSearchParams({
+    fromChain: "8453",
+    toChain: "8453",
+    fromToken,
+    toToken,
+    fromAmount: amount,
+    fromAddress,
+    slippage: "0.005",
+  });
+
+  const res = await fetch(`${LIFI_API}/quote?${params}`);
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || `Quote failed: ${res.status}`);
+  }
+  return res.json();
+}
+```
+
+<Info>
+The `slippage` parameter is a decimal — `0.005` means 0.5%. Li.Fi returns `toAmountMin` which accounts for slippage, so users know the minimum they'll receive.
+</Info>
+
+---
+
+## Token Approval
+
+When swapping an ERC-20 token (not native ETH), the user must approve Li.Fi's contract to spend their tokens. The approval address comes from the quote response.
+
+```typescript TypeScript icon="square-js"
+import { type Address, parseUnits, erc20Abi } from "viem";
+
+async function checkAndApprove(
+  tokenAddress: Address,
+  spender: Address,
+  amount: bigint,
+) {
+  // Check current allowance
+  const allowance = await publicClient.readContract({
+    address: tokenAddress,
+    abi: erc20Abi,
+    functionName: "allowance",
+    args: [userAddress, spender],
+  });
+
+  if (allowance >= amount) return; // Already approved
+
+  // Approve the exact amount
+  const hash = await walletClient.writeContract({
+    address: tokenAddress,
+    abi: erc20Abi,
+    functionName: "approve",
+    args: [spender, amount],
+    account: userAddress,
+  });
+
+  await publicClient.waitForTransactionReceipt({ hash });
+}
+```
+
+---
+
+## Executing the Swap
+
+Combine the quote, approval, and transaction execution into a single flow.
+
+```typescript TypeScript icon="square-js"
+// Native ETH is represented by the zero address in Li.Fi
+const NATIVE_TOKEN = "0x0000000000000000000000000000000000000000";
+const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const USDC_DECIMALS = 6;
+
+async function swapTokens(
+  fromToken: Address,
+  toToken: Address,
+  amount: string,
+  decimals: number,
+) {
+  const fromAmount = parseUnits(amount, decimals).toString();
+
+  // 1. Get quote
+  const quote = await getQuote(fromToken, toToken, fromAmount, userAddress);
+
+  // 2. Approve if swapping an ERC-20 (not native ETH)
+  if (fromToken !== NATIVE_TOKEN) {
+    await checkAndApprove(
+      fromToken,
+      quote.estimate.approvalAddress as Address,
+      BigInt(fromAmount),
+    );
+  }
+
+  // 3. Execute the swap
+  const hash = await walletClient.sendTransaction({
+    to: quote.transactionRequest.to as Address,
+    data: quote.transactionRequest.data as `0x${string}`,
+    value: BigInt(quote.transactionRequest.value),
+    gas: BigInt(quote.transactionRequest.gasLimit),
+    account: userAddress,
+  });
+
+  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+  return {
+    hash: receipt.transactionHash,
+    toAmount: quote.estimate.toAmount,
+    toAmountMin: quote.estimate.toAmountMin,
+  };
+}
+```
+
+---
+
+## Example: Swap ETH for USDC
+
+```typescript TypeScript icon="square-js"
+// Swap 0.01 ETH for USDC on Base
+const result = await swapTokens(
+  NATIVE_TOKEN,          // from: native ETH
+  USDC_ADDRESS,          // to: USDC
+  "0.01",                // amount
+  18,                    // ETH has 18 decimals
+);
+
+console.log(`Swap tx: ${result.hash}`);
+```
+
+---
+
+## Example: Swap USDC for ETH
+
+```typescript TypeScript icon="square-js"
+// Swap 10 USDC for ETH on Base
+const result = await swapTokens(
+  USDC_ADDRESS,          // from: USDC
+  NATIVE_TOKEN,          // to: native ETH
+  "10",                  // amount
+  USDC_DECIMALS,         // USDC has 6 decimals
+);
+
+console.log(`Swap tx: ${result.hash}`);
+```
+
+<Info>
+When swapping USDC for ETH, the approval step runs automatically. When swapping ETH for USDC, no approval is needed since ETH is the native token.
+</Info>
+
+---
+
+## Token Addresses
+
+Common tokens on Base (chain ID 8453):
+
+```typescript TypeScript icon="square-js"
+// Native ETH (use zero address in Li.Fi)
+const ETH = "0x0000000000000000000000000000000000000000";
+
+// USDC on Base (native, issued by Circle)
+const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+
+// DAI on Base
+const DAI = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb";
+```
+
+<Info>
+Li.Fi also accepts token symbols (e.g., `"ETH"`, `"USDC"`) instead of addresses, but using addresses is more reliable to avoid ambiguity.
+</Info>
+
+---
+
+## Key Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| [`magic-sdk`](https://www.npmjs.com/package/magic-sdk) | Magic authentication and Embedded Wallet |
+| [`viem`](https://viem.sh/) | Ethereum client for contract interactions |
+
+No additional SDK is needed — Li.Fi's REST API is called directly via `fetch`.
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="Quote returns no route">
+**Symptoms:** The `/quote` endpoint returns an error or empty result.
+
+**Solutions:**
+- Verify the token addresses are correct for Base (chain ID 8453)
+- Check that `fromAmount` is in the smallest unit (e.g., wei for ETH, 6 decimals for USDC)
+- Ensure the amount is large enough — very small swaps may not have viable routes
+- Try increasing `slippage` if the market is volatile
+</Accordion>
+
+<Accordion title="Swap transaction reverts">
+**Symptoms:** The transaction is sent but reverts on-chain.
+
+**Solutions:**
+- Check that the token approval was confirmed before sending the swap
+- The quote may have expired — quotes are only valid for a short time, so fetch a new one and retry
+- Ensure the user has enough ETH for gas fees on Base
+</Accordion>
+
+<Accordion title="Approval transaction fails">
+**Symptoms:** The ERC-20 approval transaction fails.
+
+**Solutions:**
+- Verify the user holds the token they're trying to swap
+- Check that the `approvalAddress` from the quote is being used (not the swap contract)
+- Ensure the user has ETH for the approval gas fee
+</Accordion>
+
+<Accordion title="Received less than expected">
+**Symptoms:** The output amount is lower than the quoted estimate.
+
+**Solutions:**
+- This is normal within the slippage tolerance — check `toAmountMin` for the guaranteed minimum
+- Reduce `slippage` in the quote request for tighter control (but too low may cause failures)
+- For large swaps, consider splitting into smaller transactions
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Resources
+
+<CardGroup cols={2}>
+<Card title="Magic Embedded Wallets" icon="wallet" href="/embedded-wallets/introduction">
+  Learn about Magic's Embedded Wallet product
+</Card>
+
+<Card title="Li.Fi Documentation" icon="book" href="https://docs.li.fi/">
+  Official Li.Fi API and SDK documentation
+</Card>
+
+<Card title="EVM Transaction Signing" icon="pen" href="/embedded-wallets/wallets/features/transaction-signing">
+  Guide for signing transactions with Magic wallets
+</Card>
+
+<Card title="Base Documentation" icon="globe" href="https://docs.base.org/">
+  Official Base network documentation
+</Card>
+</CardGroup>
+
+---
