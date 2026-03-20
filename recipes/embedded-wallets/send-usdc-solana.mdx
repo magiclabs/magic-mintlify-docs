@@ -1,0 +1,256 @@
+---
+title: "Send USDC on Solana"
+description: "Send USDC on Solana"
+---
+
+## Overview
+
+This guide shows how to use Magic's Embedded Wallet to send USDC on Solana. Users authenticate with Magic, and your app builds an SPL token transfer transaction, signs it via Magic's Solana extension, and broadcasts it to the network.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+1. A Magic **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link)
+2. A Solana RPC endpoint (e.g., from [Helius](https://www.helius.dev/) or [QuickNode](https://www.quicknode.com/))
+3. USDC in the user's Solana wallet
+4. SOL for transaction fees (typically ~0.000005 SOL per transaction)
+
+### How It Works
+
+1. User authenticates with Magic
+2. Magic SDK creates an Embedded Wallet with a Solana keypair
+3. Your app builds an SPL token transfer instruction with the recipient and amount
+4. The transaction is signed via `magic.solana.signTransaction()` and broadcast to the network
+
+<Info>
+On Solana, USDC is an SPL token — not a smart contract like ERC-20. Each wallet needs an **Associated Token Account (ATA)** to hold USDC. If the recipient doesn't have one, your app must create it as part of the transaction.
+</Info>
+
+---
+
+## Setting Up the Client
+
+Initialize Magic with the Solana extension and create a connection to the Solana network.
+
+```typescript TypeScript icon="square-js"
+import { Magic } from "magic-sdk";
+import { SolanaExtension } from "@magic-ext/solana";
+import { Connection, PublicKey } from "@solana/web3.js";
+
+const magic = new Magic("YOUR_PUBLISHABLE_KEY", {
+  extensions: [
+    new SolanaExtension({
+      rpcUrl: "YOUR_SOLANA_RPC_URL",
+    }),
+  ],
+});
+
+const connection = new Connection("YOUR_SOLANA_RPC_URL");
+
+// Get the user's public key (after authentication)
+const publicAddress = await magic.solana.getPublicAddress();
+const userPublicKey = new PublicKey(publicAddress);
+```
+
+---
+
+## Token Setup
+
+Define the USDC mint address and helper to get Associated Token Accounts.
+
+```typescript TypeScript icon="square-js"
+import {
+  getAssociatedTokenAddress,
+  createAssociatedTokenAccountInstruction,
+  createTransferInstruction,
+  getAccount,
+} from "@solana/spl-token";
+
+// USDC on Solana mainnet
+const USDC_MINT = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
+const USDC_DECIMALS = 6;
+```
+
+---
+
+## Sending USDC
+
+Build the SPL token transfer instruction, creating the recipient's token account if needed.
+
+```typescript TypeScript icon="square-js"
+import { Transaction } from "@solana/web3.js";
+
+async function sendUSDC(recipientAddress: string, amount: string) {
+  const recipient = new PublicKey(recipientAddress);
+  const transferAmount = BigInt(Math.round(parseFloat(amount) * 10 ** USDC_DECIMALS));
+
+  // Get Associated Token Accounts for sender and recipient
+  const senderATA = await getAssociatedTokenAddress(USDC_MINT, userPublicKey);
+  const recipientATA = await getAssociatedTokenAddress(USDC_MINT, recipient);
+
+  const blockhash = await connection.getLatestBlockhash();
+  const transaction = new Transaction({
+    ...blockhash,
+    feePayer: userPublicKey,
+  });
+
+  // Create recipient's token account if it doesn't exist
+  try {
+    await getAccount(connection, recipientATA);
+  } catch {
+    transaction.add(
+      createAssociatedTokenAccountInstruction(
+        userPublicKey, // payer
+        recipientATA,  // ATA to create
+        recipient,     // owner of the new ATA
+        USDC_MINT,     // token mint
+      )
+    );
+  }
+
+  // Add the transfer instruction
+  transaction.add(
+    createTransferInstruction(
+      senderATA,     // source
+      recipientATA,  // destination
+      userPublicKey,  // owner of source account
+      transferAmount, // amount in smallest units
+    )
+  );
+
+  // Sign with Magic and broadcast
+  const signedTransaction = await magic.solana.signTransaction(transaction, {
+    requireAllSignatures: false,
+    verifySignatures: true,
+  });
+
+  const signature = await connection.sendRawTransaction(
+    Buffer.from(signedTransaction.rawTransaction, "base64")
+  );
+
+  await connection.confirmTransaction({
+    signature,
+    ...blockhash,
+  });
+
+  return signature;
+}
+
+// Send 10 USDC
+await sendUSDC("RecipientSolanaAddress", "10");
+```
+
+<Info>
+Creating a recipient's Associated Token Account costs ~0.002 SOL in rent. This is a one-time cost — subsequent transfers to the same recipient skip this step.
+</Info>
+
+---
+
+## Checking Balance
+
+Query the user's USDC token account to display their balance.
+
+```typescript TypeScript icon="square-js"
+async function getUSDCBalance(ownerAddress: PublicKey) {
+  const ata = await getAssociatedTokenAddress(USDC_MINT, ownerAddress);
+
+  try {
+    const account = await getAccount(connection, ata);
+    const balance = Number(account.amount) / 10 ** USDC_DECIMALS;
+    return balance.toString();
+  } catch {
+    // Token account doesn't exist — balance is zero
+    return "0";
+  }
+}
+
+const balance = await getUSDCBalance(userPublicKey);
+console.log(`Balance: ${balance} USDC`);
+```
+
+---
+
+## Token Addresses
+
+Key addresses on Solana mainnet:
+
+```typescript TypeScript icon="square-js"
+// USDC on Solana (native, issued by Circle)
+const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+```
+
+<Info>
+Solana uses **mint addresses** instead of contract addresses. Each SPL token has a unique mint, and wallets hold tokens in Associated Token Accounts (ATAs) derived from the mint and owner.
+</Info>
+
+---
+
+## Key Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| [`magic-sdk`](https://www.npmjs.com/package/magic-sdk) | Magic authentication and Embedded Wallet |
+| [`@magic-ext/solana`](https://www.npmjs.com/package/@magic-ext/solana) | Solana extension for Magic |
+| [`@solana/web3.js`](https://www.npmjs.com/package/@solana/web3.js) | Solana client for transactions |
+| [`@solana/spl-token`](https://www.npmjs.com/package/@solana/spl-token) | SPL token transfer instructions |
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="Transfer fails with insufficient funds">
+**Symptoms:** Transaction simulation fails before sending.
+
+**Solutions:**
+- Check that the user has enough USDC in their token account
+- Ensure the user has SOL for transaction fees (~0.000005 SOL)
+- If creating a recipient ATA, the user needs ~0.002 SOL for rent
+</Accordion>
+
+<Accordion title="Token account not found">
+**Symptoms:** `getAccount` throws an error for the sender's ATA.
+
+**Solutions:**
+- The user's wallet may not have a USDC token account yet
+- Send USDC to the wallet first — this creates the ATA automatically
+- You can create the ATA manually with `createAssociatedTokenAccountInstruction`
+</Accordion>
+
+<Accordion title="Transaction confirmation timeout">
+**Symptoms:** `confirmTransaction` takes too long or times out.
+
+**Solutions:**
+- Solana transactions typically confirm in 1-2 seconds
+- Check the transaction on [Solana Explorer](https://explorer.solana.com) using the signature
+- Try using a different RPC endpoint if you're hitting rate limits
+- Increase the commitment level to `"confirmed"` instead of `"finalized"`
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Resources
+
+<CardGroup cols={2}>
+<Card title="Magic Solana Guide" icon="wallet" href="/embedded-wallets/blockchains/non-evm/solana">
+  Magic SDK setup for Solana
+</Card>
+
+<Card title="Solana Documentation" icon="book" href="https://solana.com/docs">
+  Official Solana developer documentation
+</Card>
+
+<Card title="SPL Token Program" icon="coins" href="https://spl.solana.com/token">
+  Documentation for the SPL Token standard
+</Card>
+
+<Card title="USDC on Solana" icon="circle-dollar-to-slot" href="https://www.circle.com/usdc">
+  Learn about Circle's USDC stablecoin
+</Card>
+</CardGroup>
+
+---
