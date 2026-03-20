@@ -338,6 +338,7 @@
               "recipes/server-wallets/morpho-yield",
               "recipes/server-wallets/send-usdc",
               "recipes/server-wallets/send-usdc-solana",
+              "recipes/server-wallets/lifi-swap",
               "recipes/server-wallets/particle-network-universal-accounts"
             ]
           },
