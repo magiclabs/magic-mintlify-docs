@@ -90,6 +90,11 @@ html.dark [data-component-part="card-icon"] svg rect {
   fill: #ffffff !important;
 }
 
+/* Code block fade overlay fix for dark mode */
+html.dark [data-fade-overlay] {
+  background: transparent !important;
+}
+
 /* Feedback buttons transparency */
 .dark\:bg-codeblock\/50:is(.dark *) {
   background-color: transparent !important;
