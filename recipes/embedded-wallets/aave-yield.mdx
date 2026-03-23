@@ -5,7 +5,7 @@ description: "Earn yield by supplying USDC to AAVE V3 on Base using Magic Embedd
 
 ## Overview
 
-This guide shows how to use Magic's Embedded Wallet to supply USDC to [AAVE V3](https://aave.com/) on Base. Users deposit USDC into AAVE's lending pool and receive aUSDC — an interest-bearing token that grows in value over time. When they're ready, they can withdraw their USDC plus earned yield.
+This guide shows how to use Magic's Embedded Wallet to supply USDC to [AAVE V3](https://aave.com/) on Base using the [`@aave/client`](https://aave.com/docs/aave-v3/getting-started/typescript) SDK. Users deposit USDC into AAVE's lending pool and receive aUSDC — an interest-bearing token that grows in value over time. When they're ready, they can withdraw their USDC plus earned yield.
 
 ---
 
@@ -21,21 +21,27 @@ Before starting, ensure you have:
 ### How It Works
 
 1. User authenticates with Magic
-2. Your app approves the AAVE Pool contract to spend the user's USDC
-3. USDC is supplied to AAVE's lending pool via the `supply` function
+2. The AAVE SDK generates a supply transaction (handling approval automatically)
+3. The transaction is sent through the user's Embedded Wallet via viem
 4. The user receives aUSDC, which accrues interest automatically
-5. When ready, the user withdraws their USDC plus earned yield via the `withdraw` function
+5. When ready, the user withdraws their USDC plus earned yield
 
 ---
 
-## Setting Up the Client
+## Setting Up the Clients
 
-Initialize Magic and create viem clients connected to Base.
+Install dependencies and initialize Magic, viem, and the AAVE client.
+
+```bash
+npm install magic-sdk viem @aave/client
+```
 
 ```typescript TypeScript icon="square-js"
 import { Magic } from "magic-sdk";
 import { createWalletClient, createPublicClient, custom, http } from "viem";
 import { base } from "viem/chains";
+import { AaveClient, bigDecimal, evmAddress } from "@aave/client";
+import { sendWith } from "@aave/client/viem";
 
 const magic = new Magic("YOUR_PUBLISHABLE_KEY", {
   network: {
@@ -55,48 +61,148 @@ const walletClient = createWalletClient({
 });
 
 const [userAddress] = await walletClient.getAddresses();
+
+const aaveClient = AaveClient.create();
 ```
 
 ---
 
-## Contract Setup
-
-Define the AAVE V3 Pool address, USDC address, and the ABIs needed for supply, withdraw, and balance checks.
+## Contract Addresses
 
 ```typescript TypeScript icon="square-js"
-import { type Address, parseUnits, formatUnits, maxUint256 } from "viem";
-
-// AAVE V3 Pool on Base
-const AAVE_POOL: Address = "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5";
+// AAVE V3 Pool on Base (market address)
+const AAVE_POOL = "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5";
 
 // USDC on Base (native, issued by Circle)
-const USDC_ADDRESS: Address = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 const USDC_DECIMALS = 6;
+```
+
+---
+
+## Supplying USDC
+
+Use the AAVE SDK's `supply` action to generate the transaction, then send it via the Magic wallet. The SDK returns an execution plan that may require an approval step before the supply transaction.
+
+```typescript TypeScript icon="square-js"
+import { supply } from "@aave/client/actions";
+
+async function supplyUSDC(amount: number) {
+  const result = await supply(aaveClient, {
+    market: AAVE_POOL,
+    amount: {
+      erc20: {
+        currency: USDC_ADDRESS,
+        value: bigDecimal(amount),
+      },
+    },
+    sender: evmAddress(userAddress),
+    chainId: 8453,
+  });
+
+  if (result.isErr()) {
+    throw new Error(`Supply failed: ${result.error}`);
+  }
+
+  const plan = result.value;
+
+  // Handle approval if required
+  if (plan.__typename === "ApprovalRequired") {
+    const approveHash = await walletClient.sendTransaction({
+      to: plan.approval.to,
+      value: BigInt(plan.approval.value),
+      data: plan.approval.data,
+      account: userAddress,
+    });
+    await publicClient.waitForTransactionReceipt({ hash: approveHash });
+
+    const supplyHash = await walletClient.sendTransaction({
+      to: plan.originalTransaction.to,
+      value: BigInt(plan.originalTransaction.value),
+      data: plan.originalTransaction.data,
+      account: userAddress,
+    });
+    return await publicClient.waitForTransactionReceipt({ hash: supplyHash });
+  }
+
+  if (plan.__typename === "TransactionRequest") {
+    const hash = await walletClient.sendTransaction({
+      to: plan.to,
+      value: BigInt(plan.value),
+      data: plan.data,
+      account: userAddress,
+    });
+    return await publicClient.waitForTransactionReceipt({ hash });
+  }
+
+  throw new Error(`Unhandled plan type: ${plan.__typename}`);
+}
+
+// Supply 10 USDC
+await supplyUSDC(10);
+```
+
+<Info>
+The AAVE SDK handles the approval check internally. If the Pool already has sufficient allowance, it returns a `TransactionRequest` directly. Otherwise, it returns `ApprovalRequired` with both the approval and supply transactions.
+</Info>
+
+---
+
+## Withdrawing USDC
+
+Use the `withdraw` action to pull USDC back from the lending pool, including any earned yield.
+
+```typescript TypeScript icon="square-js"
+import { withdraw } from "@aave/client/actions";
+
+async function withdrawUSDC(amount: number) {
+  const result = await withdraw(aaveClient, {
+    market: AAVE_POOL,
+    amount: {
+      erc20: {
+        currency: USDC_ADDRESS,
+        value: bigDecimal(amount),
+      },
+    },
+    sender: evmAddress(userAddress),
+    chainId: 8453,
+  });
+
+  if (result.isErr()) {
+    throw new Error(`Withdraw failed: ${result.error}`);
+  }
+
+  const plan = result.value;
+
+  if (plan.__typename === "TransactionRequest") {
+    const hash = await walletClient.sendTransaction({
+      to: plan.to,
+      value: BigInt(plan.value),
+      data: plan.data,
+      account: userAddress,
+    });
+    return await publicClient.waitForTransactionReceipt({ hash });
+  }
+
+  throw new Error(`Unhandled plan type: ${plan.__typename}`);
+}
+
+// Withdraw 5 USDC
+await withdrawUSDC(5);
+```
+
+---
+
+## Checking Position
+
+Read the user's aUSDC balance to see their current position including accrued yield. The aToken address is retrieved from the Pool's reserve data.
+
+```typescript TypeScript icon="square-js"
+import { formatUnits } from "viem";
+
+const AAVE_POOL_ADDRESS = "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5";
 
 const poolAbi = [
-  {
-    name: "supply",
-    type: "function",
-    inputs: [
-      { name: "asset", type: "address" },
-      { name: "amount", type: "uint256" },
-      { name: "onBehalfOf", type: "address" },
-      { name: "referralCode", type: "uint16" },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    name: "withdraw",
-    type: "function",
-    inputs: [
-      { name: "asset", type: "address" },
-      { name: "amount", type: "uint256" },
-      { name: "to", type: "address" },
-    ],
-    outputs: [{ type: "uint256" }],
-    stateMutability: "nonpayable",
-  },
   {
     name: "getReserveData",
     type: "function",
@@ -127,17 +233,7 @@ const poolAbi = [
   },
 ] as const;
 
-const erc20Abi = [
-  {
-    name: "approve",
-    type: "function",
-    inputs: [
-      { name: "spender", type: "address" },
-      { name: "value", type: "uint256" },
-    ],
-    outputs: [{ type: "bool" }],
-    stateMutability: "nonpayable",
-  },
+const erc20BalanceAbi = [
   {
     name: "balanceOf",
     type: "function",
@@ -145,130 +241,29 @@ const erc20Abi = [
     outputs: [{ type: "uint256" }],
     stateMutability: "view",
   },
-  {
-    name: "allowance",
-    type: "function",
-    inputs: [
-      { name: "owner", type: "address" },
-      { name: "spender", type: "address" },
-    ],
-    outputs: [{ type: "uint256" }],
-    stateMutability: "view",
-  },
 ] as const;
-```
 
----
-
-## Supplying USDC
-
-Approve the AAVE Pool to spend the user's USDC, then supply it to the lending pool.
-
-```typescript TypeScript icon="square-js"
-async function supplyUSDC(amount: string) {
-  const value = parseUnits(amount, USDC_DECIMALS);
-
-  // Check current allowance
-  const allowance = await publicClient.readContract({
-    address: USDC_ADDRESS,
-    abi: erc20Abi,
-    functionName: "allowance",
-    args: [userAddress, AAVE_POOL],
-  });
-
-  // Approve if needed
-  if (allowance < value) {
-    const approveHash = await walletClient.writeContract({
-      address: USDC_ADDRESS,
-      abi: erc20Abi,
-      functionName: "approve",
-      args: [AAVE_POOL, value],
-      account: userAddress,
-    });
-    await publicClient.waitForTransactionReceipt({ hash: approveHash });
-  }
-
-  // Supply to AAVE
-  const hash = await walletClient.writeContract({
-    address: AAVE_POOL,
-    abi: poolAbi,
-    functionName: "supply",
-    args: [USDC_ADDRESS, value, userAddress, 0],
-    account: userAddress,
-  });
-
-  const receipt = await publicClient.waitForTransactionReceipt({ hash });
-  return receipt.transactionHash;
-}
-
-// Supply 10 USDC
-await supplyUSDC("10");
-```
-
-<Info>
-The `onBehalfOf` parameter lets you supply on behalf of another address. Pass the user's own address to credit the aTokens to them. The `referralCode` is inactive — pass `0`.
-</Info>
-
----
-
-## Withdrawing USDC
-
-Withdraw USDC from the lending pool. Pass `maxUint256` as the amount to withdraw the entire balance including earned yield.
-
-```typescript TypeScript icon="square-js"
-async function withdrawUSDC(amount?: string) {
-  // Use maxUint256 to withdraw everything, or specify an amount
-  const value = amount ? parseUnits(amount, USDC_DECIMALS) : maxUint256;
-
-  const hash = await walletClient.writeContract({
-    address: AAVE_POOL,
-    abi: poolAbi,
-    functionName: "withdraw",
-    args: [USDC_ADDRESS, value, userAddress],
-    account: userAddress,
-  });
-
-  const receipt = await publicClient.waitForTransactionReceipt({ hash });
-  return receipt.transactionHash;
-}
-
-// Withdraw 5 USDC
-await withdrawUSDC("5");
-
-// Withdraw everything
-await withdrawUSDC();
-```
-
----
-
-## Checking Position
-
-Read the user's aUSDC balance to see their current position including accrued yield. The aToken address is retrieved from the Pool's reserve data.
-
-```typescript TypeScript icon="square-js"
 async function getPosition() {
   // Get the aToken address for USDC
   const reserveData = await publicClient.readContract({
-    address: AAVE_POOL,
+    address: AAVE_POOL_ADDRESS,
     abi: poolAbi,
     functionName: "getReserveData",
     args: [USDC_ADDRESS],
   });
 
-  const aTokenAddress = reserveData.aTokenAddress;
-
   // Read aToken balance (includes accrued yield)
   const aTokenBalance = await publicClient.readContract({
-    address: aTokenAddress,
-    abi: erc20Abi,
+    address: reserveData.aTokenAddress,
+    abi: erc20BalanceAbi,
     functionName: "balanceOf",
     args: [userAddress],
   });
 
-  // Read USDC balance
+  // Read USDC wallet balance
   const usdcBalance = await publicClient.readContract({
     address: USDC_ADDRESS,
-    abi: erc20Abi,
+    abi: erc20BalanceAbi,
     functionName: "balanceOf",
     args: [userAddress],
   });
@@ -290,32 +285,13 @@ The aUSDC balance increases over time as interest accrues. Unlike vault-based pr
 
 ---
 
-## Contract Addresses
-
-Key addresses on Base (chain ID 8453):
-
-```typescript TypeScript icon="square-js"
-// AAVE V3 Pool
-const AAVE_POOL = "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5";
-
-// USDC on Base (native, issued by Circle)
-const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
-```
-
-<Info>
-The aToken address for USDC is not hardcoded — it's retrieved dynamically from `getReserveData`. This ensures compatibility even if AAVE upgrades their aToken implementation.
-</Info>
-
----
-
 ## Key Dependencies
 
 | Package | Purpose |
 |---------|---------|
 | [`magic-sdk`](https://www.npmjs.com/package/magic-sdk) | Magic authentication and Embedded Wallet |
-| [`viem`](https://viem.sh/) | Ethereum client for contract interactions |
-
-No additional SDK is needed — all interactions are directly with AAVE's on-chain contracts.
+| [`viem`](https://viem.sh/) | Ethereum client for transaction execution |
+| [`@aave/client`](https://aave.com/docs/aave-v3/getting-started/typescript) | AAVE V3 SDK for building supply and withdraw transactions |
 
 ---
 
@@ -326,7 +302,7 @@ No additional SDK is needed — all interactions are directly with AAVE's on-cha
 **Symptoms:** The supply transaction fails or reverts on-chain.
 
 **Solutions:**
-- Check that the USDC approval was confirmed before calling `supply`
+- Check that the USDC approval was confirmed before the supply transaction
 - Verify the user has sufficient USDC balance on Base
 - Ensure the user has ETH on Base for gas fees
 - Confirm the USDC address is correct (native USDC, not bridged USDbC)
@@ -350,13 +326,13 @@ No additional SDK is needed — all interactions are directly with AAVE's on-cha
 - The balance is correct — yield accrual just takes time to be visible at small amounts
 </Accordion>
 
-<Accordion title="Approval transaction fails">
-**Symptoms:** The ERC-20 approval to the AAVE Pool fails.
+<Accordion title="SDK returns InsufficientBalanceError">
+**Symptoms:** The `supply` action returns a plan with `__typename: "InsufficientBalanceError"`.
 
 **Solutions:**
-- Verify the user holds USDC on Base
-- Check that the Pool address is correct (`0xA238Dd80C259a72e81d7e4664a9801593F98d1c5`)
-- Ensure the user has ETH for the approval gas fee
+- The user doesn't have enough USDC to supply the requested amount
+- Check the `plan.required.value` field for the amount needed
+- Verify the token balance on Base before calling `supply`
 </Accordion>
 </AccordionGroup>
 
