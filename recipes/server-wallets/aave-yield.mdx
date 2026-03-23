@@ -1,0 +1,445 @@
+---
+title: "Yield on AAVE"
+description: "Earn yield by supplying USDC to AAVE V3 on Base using Magic Express Server Wallets"
+---
+
+## Overview
+
+This guide shows how to use **Magic's Express Server Wallet** to supply USDC to [AAVE V3](https://aave.com/) on Base using the [`@aave/client`](https://aave.com/docs/aave-v3/getting-started/typescript) SDK. The SDK generates the transaction plan, and your server signs it via the TEE and broadcasts — the private key never leaves the TEE.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+1. A Magic **Secret Key** — from your [Magic Dashboard](https://dashboard.magic.link)
+2. An **OIDC Provider ID** — configured for your auth provider ([setup guide](/server-wallets/express-api/identity-provider))
+3. A Base RPC endpoint (e.g., from [Alchemy](https://www.alchemy.com/) or [QuickNode](https://www.quicknode.com/))
+4. A user JWT from your authentication provider
+
+### How It Works
+
+1. Your server authenticates the user and obtains a JWT
+2. JWT is sent to Magic's TEE to get (or create) the user's EOA
+3. The AAVE SDK generates the supply or withdraw transaction plan
+4. If approval is required, the approval transaction is signed via the TEE and broadcast
+5. The main transaction is signed via the TEE and broadcast
+6. The user receives aUSDC, which accrues interest automatically
+
+---
+
+## TEE Request Helper
+
+All TEE calls use the same authentication headers. Create a reusable helper for your server-side code.
+
+```ts TypeScript icon="square-js"
+const TEE_BASE = "https://tee.express.magiclabs.com";
+
+async function teeRequest<T>(path: string, jwt: string, body: object): Promise<T> {
+  const res = await fetch(`${TEE_BASE}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+      "X-Magic-Secret-Key": "YOUR_SECRET_KEY",
+      "X-OIDC-Provider-ID": "YOUR_OIDC_PROVIDER_ID",
+      "X-Magic-Chain": "ETH",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`TEE error: ${res.status}`);
+  return res.json();
+}
+```
+
+---
+
+## Get or Create a Wallet
+
+Fetch the user's wallet address. If one doesn't exist, it will be created automatically.
+
+```ts TypeScript icon="square-js"
+const { public_address: eoaAddress } = await teeRequest<{ public_address: string }>(
+  "/v1/wallet", jwt, {}
+);
+```
+
+---
+
+## Sign and Broadcast Transactions
+
+Build the transaction locally, compute its unsigned hash, sign via the TEE, and broadcast.
+
+```ts TypeScript icon="square-js"
+import {
+  createPublicClient,
+  http,
+  serializeTransaction,
+  keccak256,
+  type TransactionSerializable,
+  type Hex,
+} from "viem";
+import { base } from "viem/chains";
+
+const publicClient = createPublicClient({
+  chain: base,
+  transport: http("YOUR_BASE_RPC_URL"),
+});
+
+async function signAndSend(jwt: string, tx: TransactionSerializable) {
+  const serialized = serializeTransaction(tx);
+  const hash = keccak256(serialized);
+
+  const { r, s, v } = await teeRequest<{ r: string; s: string; v: string }>(
+    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
+  );
+
+  const yParity = Number(v) >= 27 ? Number(v) - 27 : Number(v);
+  const signed = serializeTransaction(tx, {
+    r: r as Hex,
+    s: s as Hex,
+    yParity,
+  });
+  return await publicClient.sendRawTransaction({ serializedTransaction: signed });
+}
+```
+
+---
+
+## Setting Up the AAVE Client
+
+Install dependencies and initialize the AAVE client.
+
+```bash
+npm install @aave/client viem
+```
+
+```ts TypeScript icon="square-js"
+import { AaveClient, evmAddress } from "@aave/client";
+import { supply, withdraw } from "@aave/client/actions";
+
+const aaveClient = AaveClient.create();
+
+// AAVE V3 Pool on Base (market address)
+const AAVE_POOL = "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5";
+
+// USDC on Base (native, issued by Circle)
+const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const USDC_DECIMALS = 6;
+```
+
+---
+
+## Executing an AAVE Plan via TEE
+
+The AAVE SDK returns an execution plan that may include an approval step. This helper signs and broadcasts each step through the TEE.
+
+```ts TypeScript icon="square-js"
+import type { Address } from "viem";
+
+async function executePlan(jwt: string, eoaAddress: Address, plan: any) {
+  const nonce = await publicClient.getTransactionCount({ address: eoaAddress });
+  const fees = await publicClient.estimateFeesPerGas();
+
+  const txBase = {
+    chainId: 8453,
+    maxFeePerGas: fees.maxFeePerGas,
+    maxPriorityFeePerGas: fees.maxPriorityFeePerGas,
+  };
+
+  let currentNonce = nonce;
+
+  if (plan.__typename === "ApprovalRequired") {
+    // Sign and send approval
+    const approveGas = await publicClient.estimateGas({
+      account: eoaAddress,
+      to: plan.approval.to as Address,
+      data: plan.approval.data as Hex,
+      value: BigInt(plan.approval.value),
+    });
+
+    await signAndSend(jwt, {
+      ...txBase,
+      to: plan.approval.to as Address,
+      data: plan.approval.data as Hex,
+      value: BigInt(plan.approval.value),
+      gas: approveGas * 2n,
+      nonce: currentNonce,
+    });
+    currentNonce++;
+
+    // Sign and send the main transaction
+    const mainGas = await publicClient.estimateGas({
+      account: eoaAddress,
+      to: plan.originalTransaction.to as Address,
+      data: plan.originalTransaction.data as Hex,
+      value: BigInt(plan.originalTransaction.value),
+    });
+
+    return await signAndSend(jwt, {
+      ...txBase,
+      to: plan.originalTransaction.to as Address,
+      data: plan.originalTransaction.data as Hex,
+      value: BigInt(plan.originalTransaction.value),
+      gas: mainGas * 2n,
+      nonce: currentNonce,
+    });
+  }
+
+  if (plan.__typename === "TransactionRequest") {
+    const gas = await publicClient.estimateGas({
+      account: eoaAddress,
+      to: plan.to as Address,
+      data: plan.data as Hex,
+      value: BigInt(plan.value),
+    });
+
+    return await signAndSend(jwt, {
+      ...txBase,
+      to: plan.to as Address,
+      data: plan.data as Hex,
+      value: BigInt(plan.value),
+      gas: gas * 2n,
+      nonce: currentNonce,
+    });
+  }
+
+  if (plan.__typename === "InsufficientBalanceError") {
+    throw new Error(`Insufficient balance: ${plan.required.value} required`);
+  }
+
+  throw new Error(`Unhandled plan type: ${plan.__typename}`);
+}
+```
+
+---
+
+## Supplying USDC
+
+Use the AAVE SDK to generate a supply plan, then execute it via the TEE.
+
+```ts TypeScript icon="square-js"
+async function supplyUSDC(jwt: string, eoaAddress: Address, amount: string) {
+  const result = await supply(aaveClient, {
+    market: AAVE_POOL,
+    amount: {
+      erc20: {
+        currency: USDC_ADDRESS,
+        value: amount,
+      },
+    },
+    sender: evmAddress(eoaAddress),
+    chainId: 8453,
+  });
+
+  if (result.isErr()) {
+    throw new Error(`Supply failed: ${result.error}`);
+  }
+
+  return await executePlan(jwt, eoaAddress, result.value);
+}
+
+// Supply 10 USDC
+await supplyUSDC(jwt, eoaAddress, "10");
+```
+
+---
+
+## Withdrawing USDC
+
+Use the `withdraw` action to pull USDC back from the lending pool, including any earned yield.
+
+```ts TypeScript icon="square-js"
+async function withdrawUSDC(jwt: string, eoaAddress: Address, amount: string) {
+  const result = await withdraw(aaveClient, {
+    market: AAVE_POOL,
+    amount: {
+      erc20: {
+        currency: USDC_ADDRESS,
+        value: { exact: amount },
+      },
+    },
+    sender: evmAddress(eoaAddress),
+    chainId: 8453,
+  });
+
+  if (result.isErr()) {
+    throw new Error(`Withdraw failed: ${result.error}`);
+  }
+
+  return await executePlan(jwt, eoaAddress, result.value);
+}
+
+// Withdraw 5 USDC
+await withdrawUSDC(jwt, eoaAddress, "5");
+```
+
+---
+
+## Checking Position
+
+Read the user's aUSDC balance to see their current position including accrued yield.
+
+```ts TypeScript icon="square-js"
+import { formatUnits } from "viem";
+
+const poolAbi = [
+  {
+    name: "getReserveData",
+    type: "function",
+    inputs: [{ name: "asset", type: "address" }],
+    outputs: [
+      {
+        type: "tuple",
+        components: [
+          { name: "configuration", type: "uint256" },
+          { name: "liquidityIndex", type: "uint128" },
+          { name: "currentLiquidityRate", type: "uint128" },
+          { name: "variableBorrowIndex", type: "uint128" },
+          { name: "currentVariableBorrowRate", type: "uint128" },
+          { name: "currentStableBorrowRate", type: "uint128" },
+          { name: "lastUpdateTimestamp", type: "uint40" },
+          { name: "id", type: "uint16" },
+          { name: "aTokenAddress", type: "address" },
+          { name: "stableDebtTokenAddress", type: "address" },
+          { name: "variableDebtTokenAddress", type: "address" },
+          { name: "interestRateStrategyAddress", type: "address" },
+          { name: "accruedToTreasury", type: "uint128" },
+          { name: "unbacked", type: "uint128" },
+          { name: "isolationModeTotalDebt", type: "uint128" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+] as const;
+
+const erc20BalanceAbi = [
+  {
+    name: "balanceOf",
+    type: "function",
+    inputs: [{ name: "account", type: "address" }],
+    outputs: [{ type: "uint256" }],
+    stateMutability: "view",
+  },
+] as const;
+
+async function getPosition(eoaAddress: Address) {
+  const reserveData = await publicClient.readContract({
+    address: AAVE_POOL as Address,
+    abi: poolAbi,
+    functionName: "getReserveData",
+    args: [USDC_ADDRESS as Address],
+  });
+
+  const aTokenBalance = await publicClient.readContract({
+    address: reserveData.aTokenAddress,
+    abi: erc20BalanceAbi,
+    functionName: "balanceOf",
+    args: [eoaAddress],
+  });
+
+  const usdcBalance = await publicClient.readContract({
+    address: USDC_ADDRESS as Address,
+    abi: erc20BalanceAbi,
+    functionName: "balanceOf",
+    args: [eoaAddress],
+  });
+
+  return {
+    supplied: formatUnits(aTokenBalance, USDC_DECIMALS),
+    wallet: formatUnits(usdcBalance, USDC_DECIMALS),
+  };
+}
+```
+
+<Info>
+The aUSDC balance increases over time as interest accrues. Unlike vault-based protocols, AAVE's aTokens are rebasing — the balance itself grows, so `1 aUSDC` always equals `1 USDC` of underlying value.
+</Info>
+
+---
+
+## Key Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| [`viem`](https://viem.sh/) | Ethereum client for transaction serialization and broadcasting |
+| [`@aave/client`](https://aave.com/docs/aave-v3/getting-started/typescript) | AAVE V3 SDK for building supply and withdraw transactions |
+
+---
+
+## TEE Endpoints Used
+
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /v1/wallet` | Get or create an EOA wallet |
+| `POST /v1/wallet/sign/data` | Sign a raw transaction hash |
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="TEE returns 401 or 403">
+**Symptoms:** Authentication errors when calling TEE endpoints.
+
+**Solutions:**
+- Verify the JWT token is valid and not expired
+- Check that `X-Magic-Secret-Key` matches your dashboard credentials
+- Ensure the OIDC Provider ID is correct
+- Confirm your domain is allowlisted in the Magic Dashboard
+</Accordion>
+
+<Accordion title="Supply transaction reverts">
+**Symptoms:** The supply transaction fails or reverts on-chain.
+
+**Solutions:**
+- Check that the USDC approval was confirmed before the supply transaction
+- Verify the wallet has sufficient USDC balance on Base
+- Ensure the wallet has ETH on Base for gas fees
+- Confirm the USDC address is correct (native USDC, not bridged USDbC)
+</Accordion>
+
+<Accordion title="SDK returns InsufficientBalanceError">
+**Symptoms:** The `supply` action returns a plan with `__typename: "InsufficientBalanceError"`.
+
+**Solutions:**
+- The wallet doesn't have enough USDC to supply the requested amount
+- Check the `plan.required.value` field for the amount needed
+- Verify the token balance on Base before calling `supply`
+</Accordion>
+
+<Accordion title="Nonce errors">
+**Symptoms:** Transaction fails with a nonce-related error.
+
+**Solutions:**
+- Ensure no concurrent transactions are being sent for the same wallet
+- If a previous transaction is pending, wait for it to confirm
+- The `executePlan` helper increments the nonce after each step — ensure it's not called concurrently
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Resources
+
+<CardGroup cols={2}>
+<Card title="Express API Docs" icon="brackets-curly" href="/server-wallets/express-api/overview">
+  Learn about Magic's Express Server Wallet API
+</Card>
+
+<Card title="AAVE V3 Documentation" icon="book" href="https://aave.com/docs">
+  Official AAVE protocol documentation
+</Card>
+
+<Card title="EVM Data Preparation" icon="code" href="/server-wallets/express-api/data-preparation/evm">
+  Guide for preparing EVM transaction data for signing
+</Card>
+
+<Card title="AAVE Base Markets" icon="chart-line" href="https://app.aave.com/?marketName=proto_base_v3">
+  View current AAVE supply rates on Base
+</Card>
+</CardGroup>
+
+---
