@@ -337,9 +337,10 @@
             "pages": [
               "recipes/server-wallets/alchemy-smart-wallets",
               "recipes/server-wallets/morpho-yield",
+              "recipes/server-wallets/aave-yield",
+              "recipes/server-wallets/lifi-swap",
               "recipes/server-wallets/send-usdc",
               "recipes/server-wallets/send-usdc-solana",
-              "recipes/server-wallets/lifi-swap",
               "recipes/server-wallets/particle-network-universal-accounts"
             ]
           },
@@ -349,9 +350,9 @@
               "recipes/embedded-wallets/polymarket",
               "recipes/embedded-wallets/morpho-yield",
               "recipes/embedded-wallets/aave-yield",
+              "recipes/embedded-wallets/lifi-swap",
               "recipes/embedded-wallets/send-usdc",
               "recipes/embedded-wallets/send-usdc-solana",
-              "recipes/embedded-wallets/lifi-swap",
               "recipes/embedded-wallets/zksync-zyfi-integration",
               "recipes/embedded-wallets/wagmi",
               "recipes/embedded-wallets/moonpay-integration",
