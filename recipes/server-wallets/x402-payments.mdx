@@ -1,0 +1,329 @@
+---
+title: "x402 Payments"
+description: "Pay for API access with USDC using Magic Express Server Wallets and the x402 payment protocol"
+---
+
+## Overview
+
+This guide shows how to use **Magic's Express Server Wallet** to pay for [x402](https://www.x402.org/)-protected API endpoints. x402 is an open payment protocol by Coinbase that uses the HTTP `402 Payment Required` status code to enable instant, gasless stablecoin payments over HTTP. Your server signs the payment via the TEE and the x402 facilitator handles settlement — the private key never leaves the TEE.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+1. A Magic **Secret Key** — from your [Magic Dashboard](https://dashboard.magic.link)
+2. An **OIDC Provider ID** — configured for your auth provider ([setup guide](/server-wallets/express-api/identity-provider))
+3. A user JWT from your authentication provider
+4. USDC on Base Sepolia in the user's wallet (for testing)
+
+### How It Works
+
+1. Your server authenticates the user and obtains a JWT
+2. JWT is sent to Magic's TEE to get (or create) the user's EOA
+3. Your server makes a request to an x402-protected endpoint
+4. The server responds with HTTP 402 and payment requirements
+5. The x402 client signs a gasless USDC transfer (EIP-3009) via the TEE
+6. The request is retried with the payment signature
+7. A facilitator settles the payment on-chain
+
+<Info>
+x402 payments are **gasless** for the payer. The protocol uses EIP-3009 `transferWithAuthorization`, which means only a typed data signature is needed — no ETH required for gas. The facilitator submits the on-chain transaction.
+</Info>
+
+---
+
+## TEE Request Helper
+
+All TEE calls use the same authentication headers. Create a reusable helper for your server-side code.
+
+```ts TypeScript icon="square-js"
+const TEE_BASE = "https://tee.express.magiclabs.com";
+
+async function teeRequest<T>(path: string, jwt: string, body: object): Promise<T> {
+  const res = await fetch(`${TEE_BASE}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+      "X-Magic-Secret-Key": "YOUR_SECRET_KEY",
+      "X-OIDC-Provider-ID": "YOUR_OIDC_PROVIDER_ID",
+      "X-Magic-Chain": "ETH",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`TEE error: ${res.status}`);
+  return res.json();
+}
+```
+
+---
+
+## Get or Create a Wallet
+
+Fetch the user's wallet address. If one doesn't exist, it will be created automatically.
+
+```ts TypeScript icon="square-js"
+const { public_address: eoaAddress } = await teeRequest<{ public_address: string }>(
+  "/v1/wallet", jwt, {}
+);
+```
+
+---
+
+## Creating a TEE-Backed Account
+
+The x402 SDK expects a viem `Account` object that can sign typed data. Create a custom account that delegates signing to the TEE.
+
+```ts TypeScript icon="square-js"
+import { toAccount } from "viem/accounts";
+import { hashTypedData, type Address, type Hex } from "viem";
+
+function createTeeAccount(jwt: string, address: Address) {
+  return toAccount({
+    address,
+    signMessage: async ({ message }) => {
+      const hash = typeof message === "string"
+        ? hashMessage(message)
+        : hashMessage({ raw: message as Hex });
+      return signHashViaTee(jwt, hash);
+    },
+    signTransaction: async () => {
+      throw new Error("Use signAndSend for transactions");
+    },
+    signTypedData: async ({ domain, types, primaryType, message }) => {
+      const hash = hashTypedData({ domain, types, primaryType, message });
+      return signHashViaTee(jwt, hash);
+    },
+  });
+}
+
+async function signHashViaTee(jwt: string, hash: Hex): Promise<Hex> {
+  const { r, s, v } = await teeRequest<{ r: string; s: string; v: string }>(
+    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
+  );
+  const yParity = Number(v) >= 27 ? Number(v) - 27 : Number(v);
+  return `0x${r.slice(2)}${s.slice(2)}${yParity.toString(16).padStart(2, "0")}` as Hex;
+}
+
+const teeAccount = createTeeAccount(jwt, eoaAddress as Address);
+```
+
+---
+
+## Setting Up the x402 Client
+
+Register the TEE-backed account with the x402 client and create a payment-enabled fetch wrapper.
+
+```ts TypeScript icon="square-js"
+import { x402Client } from "@x402/core/client";
+import { wrapFetchWithPayment } from "@x402/fetch";
+import { ExactEvmScheme } from "@x402/evm/exact/client";
+
+const client = new x402Client();
+client.register("eip155:*", new ExactEvmScheme(teeAccount));
+
+const fetchWithPayment = wrapFetchWithPayment(fetch, client);
+```
+
+---
+
+## Making Paid Requests
+
+Use `fetchWithPayment` just like the regular `fetch` API. If the server responds with 402, the x402 client automatically handles the payment flow via the TEE.
+
+```ts TypeScript icon="square-js"
+async function getPaidResource(jwt: string, url: string) {
+  const response = await fetchWithPayment(url, { method: "GET" });
+
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
+// Example: fetch weather data from an x402-protected API
+const data = await getPaidResource(jwt, "https://api.example.com/weather");
+console.log("Weather:", data);
+```
+
+The x402 client handles everything automatically:
+1. Receives the 402 response with payment requirements
+2. Signs a gasless USDC transfer via the TEE
+3. Retries the request with the payment signature in the header
+4. Returns the successful response
+
+---
+
+## Setting Up a Test Server
+
+To test the payment flow, set up a simple Express server that requires x402 payment.
+
+```bash
+npm install express @x402/express @x402/evm @x402/core
+```
+
+```ts TypeScript icon="square-js"
+import express from "express";
+import { paymentMiddleware, x402ResourceServer } from "@x402/express";
+import { ExactEvmScheme } from "@x402/evm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+
+const app = express();
+
+// Your wallet address to receive payments
+const payTo = "0xYourWalletAddress";
+
+// Use the free testnet facilitator (no signup required)
+const facilitatorClient = new HTTPFacilitatorClient({
+  url: "https://x402.org/facilitator",
+});
+
+const server = new x402ResourceServer(facilitatorClient)
+  .register("eip155:84532", new ExactEvmScheme());
+
+app.use(
+  paymentMiddleware(
+    {
+      "GET /weather": {
+        accepts: [
+          {
+            scheme: "exact",
+            price: "$0.001",
+            network: "eip155:84532", // Base Sepolia
+            payTo,
+          },
+        ],
+        description: "Get current weather data",
+        mimeType: "application/json",
+      },
+    },
+    server,
+  ),
+);
+
+app.get("/weather", (req, res) => {
+  res.json({ weather: "sunny", temperature: 72, city: "San Francisco" });
+});
+
+app.listen(4021, () => {
+  console.log("x402 server running at http://localhost:4021");
+});
+```
+
+<Info>
+The testnet facilitator at `https://x402.org/facilitator` requires no API keys or signup. For production, switch to the [Coinbase CDP facilitator](https://docs.cdp.coinbase.com/x402/welcome) with network `eip155:8453` (Base mainnet).
+</Info>
+
+---
+
+## Switching to Production
+
+To move from testnet to mainnet, update the network and facilitator:
+
+```ts TypeScript icon="square-js"
+// Server: use CDP facilitator with Base mainnet
+const facilitatorClient = new HTTPFacilitatorClient({
+  url: "https://api.cdp.coinbase.com/platform/v2/x402",
+});
+
+const server = new x402ResourceServer(facilitatorClient)
+  .register("eip155:8453", new ExactEvmScheme());
+
+// Route config: update network
+{
+  scheme: "exact",
+  price: "$0.01",
+  network: "eip155:8453", // Base mainnet
+  payTo: "0xYourWalletAddress",
+}
+```
+
+---
+
+## Key Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| [`viem`](https://viem.sh/) | Ethereum client, account utilities, and typed data hashing |
+| [`@x402/fetch`](https://www.npmjs.com/package/@x402/fetch) | Wraps fetch with automatic x402 payment handling |
+| [`@x402/evm`](https://www.npmjs.com/package/@x402/evm) | EVM payment scheme for x402 |
+| [`@x402/core`](https://www.npmjs.com/package/@x402/core) | Core x402 client and server utilities |
+| [`@x402/express`](https://www.npmjs.com/package/@x402/express) | Express middleware for x402-protected endpoints |
+
+---
+
+## TEE Endpoints Used
+
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /v1/wallet` | Get or create an EOA wallet |
+| `POST /v1/wallet/sign/data` | Sign a raw data hash (EIP-712 typed data hash) |
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="TEE returns 401 or 403">
+**Symptoms:** Authentication errors when calling TEE endpoints.
+
+**Solutions:**
+- Verify the JWT token is valid and not expired
+- Check that `X-Magic-Secret-Key` matches your dashboard credentials
+- Ensure the OIDC Provider ID is correct
+- Confirm your domain is allowlisted in the Magic Dashboard
+</Accordion>
+
+<Accordion title="Payment signature rejected">
+**Symptoms:** The facilitator rejects the payment signature.
+
+**Solutions:**
+- Ensure the wallet has sufficient USDC on the correct network (Base Sepolia for testing, Base mainnet for production)
+- Verify the TEE is signing the correct EIP-712 hash
+- Check that the `signHashViaTee` function is correctly reconstructing the signature from r, s, v components
+</Accordion>
+
+<Accordion title="402 response not handled">
+**Symptoms:** The fetch call returns a raw 402 response instead of automatically paying.
+
+**Solutions:**
+- Make sure you're using `fetchWithPayment` (the wrapped version), not the native `fetch`
+- Verify the x402 client has a scheme registered for the server's network
+- Check that `ExactEvmScheme` is imported from `@x402/evm/exact/client` (not `/server`)
+</Accordion>
+
+<Accordion title="Wrong network error">
+**Symptoms:** Payment fails with a network mismatch error.
+
+**Solutions:**
+- Use `eip155:84532` for Base Sepolia or `eip155:8453` for Base mainnet
+- The client scheme must match the network the server is requesting payment on
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Resources
+
+<CardGroup cols={2}>
+<Card title="Express API Docs" icon="brackets-curly" href="/server-wallets/express-api/overview">
+  Learn about Magic's Express Server Wallet API
+</Card>
+
+<Card title="x402 Documentation" icon="book" href="https://docs.cdp.coinbase.com/x402/welcome">
+  Official x402 protocol documentation
+</Card>
+
+<Card title="x402 GitHub" icon="github" href="https://github.com/coinbase/x402">
+  Reference implementations and examples
+</Card>
+
+<Card title="x402 Foundation" icon="globe" href="https://www.x402.org/">
+  Protocol specification and facilitator info
+</Card>
+</CardGroup>
+
+---
