@@ -96,7 +96,7 @@ async function supplyUSDC(amount: string) {
         value: amount,
       },
     },
-    supplier: evmAddress(userAddress),
+    sender: evmAddress(userAddress),
     chainId: 8453,
   });
 

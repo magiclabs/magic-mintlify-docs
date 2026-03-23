@@ -229,7 +229,7 @@ async function supplyUSDC(jwt: string, eoaAddress: Address, amount: string) {
         value: amount,
       },
     },
-    supplier: evmAddress(eoaAddress),
+    sender: evmAddress(eoaAddress),
     chainId: 8453,
   });
 
