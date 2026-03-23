@@ -40,7 +40,7 @@ npm install magic-sdk viem @aave/client
 import { Magic } from "magic-sdk";
 import { createWalletClient, createPublicClient, custom, http } from "viem";
 import { base } from "viem/chains";
-import { AaveClient, bigDecimal, evmAddress } from "@aave/client";
+import { AaveClient, evmAddress } from "@aave/client";
 import { sendWith } from "@aave/client/viem";
 
 const magic = new Magic("YOUR_PUBLISHABLE_KEY", {
@@ -87,16 +87,16 @@ Use the AAVE SDK's `supply` action to generate the transaction, then send it via
 ```typescript TypeScript icon="square-js"
 import { supply } from "@aave/client/actions";
 
-async function supplyUSDC(amount: number) {
+async function supplyUSDC(amount: string) {
   const result = await supply(aaveClient, {
     market: AAVE_POOL,
     amount: {
       erc20: {
         currency: USDC_ADDRESS,
-        value: bigDecimal(amount),
+        value: amount,
       },
     },
-    sender: evmAddress(userAddress),
+    supplier: evmAddress(userAddress),
     chainId: 8453,
   });
 
@@ -139,7 +139,7 @@ async function supplyUSDC(amount: number) {
 }
 
 // Supply 10 USDC
-await supplyUSDC(10);
+await supplyUSDC("10");
 ```
 
 <Info>
@@ -155,13 +155,13 @@ Use the `withdraw` action to pull USDC back from the lending pool, including any
 ```typescript TypeScript icon="square-js"
 import { withdraw } from "@aave/client/actions";
 
-async function withdrawUSDC(amount: number) {
+async function withdrawUSDC(amount: string) {
   const result = await withdraw(aaveClient, {
     market: AAVE_POOL,
     amount: {
       erc20: {
         currency: USDC_ADDRESS,
-        value: bigDecimal(amount),
+        value: { exact: amount },
       },
     },
     sender: evmAddress(userAddress),
@@ -188,7 +188,7 @@ async function withdrawUSDC(amount: number) {
 }
 
 // Withdraw 5 USDC
-await withdrawUSDC(5);
+await withdrawUSDC("5");
 ```
 
 ---
