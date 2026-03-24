@@ -142,12 +142,16 @@ Display the authenticated user's wallet with `magic.wallet.showUI()`. This will 
 
 ## Get user address
 
-One thing you may want to do is retrieve the address and balance of a logged in user. To do this, call the getInfo function and set it as a variable. Then on that variable call the publicAddress property to get the user's address.
+To retrieve the public address of the authenticated user, call `magic.user.getInfo()` and access the address through the `wallets` object. As of SDK v30.0.0, wallet addresses are organized by blockchain under `metadata.wallets` rather than returned as a top-level `publicAddress` field.
 
 ```typescript TypeScript icon="square-js"
 const metadata = await magic?.user.getInfo();
-const publicAddress = metadata.publicAddress;
+const publicAddress = metadata.wallets.ethereum?.publicAddress;
 ```
+
+<Note>
+If you are on **SDK v29.x or below**, the address is available directly as `metadata.publicAddress`. See the [`getInfo` SDK reference](/embedded-wallets/sdk/client-side/javascript#getinfo) for the full legacy response shape and migration details.
+</Note>
 
 ## Get user balance
 
@@ -169,7 +173,7 @@ Here is an example of sending a transaction:
 ```typescript TypeScript icon="square-js"
 async function sendEth(amount: number, recipientAddress: string) {
   const metadata = await magic?.user.getInfo();
-  const senderAddress = metadata.publicAddress;
+  const senderAddress = metadata.wallets.ethereum?.publicAddress;
 
   const txnParams = {
     from: senderAddress,

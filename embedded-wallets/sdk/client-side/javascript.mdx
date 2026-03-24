@@ -1558,6 +1558,10 @@ interface OAuthRedirectResult {
 };
 ```
 
+<Note>
+The shape of `magic.userMetadata` (typed as `MagicUserMetadata`) differs by SDK version. On **SDK v30.0.0+**, wallet addresses are nested under a `wallets` object — access the Ethereum address via `result.magic.userMetadata.wallets?.ethereum?.publicAddress`. On **SDK v29.x and below**, the address is available as a flat field: `result.magic.userMetadata.publicAddress`. See the [`getInfo` method](#getinfo) above for the full response shapes of each version.
+</Note>
+
 ## Smart Account Module
 
 The Smart Account Module and its members are accessible on the Magic SDK instance by the `smartAccount` property.
