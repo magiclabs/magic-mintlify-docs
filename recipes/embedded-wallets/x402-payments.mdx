@@ -1,0 +1,308 @@
+---
+title: "x402 Payments"
+description: "Pay for API access with USDC using Magic Embedded Wallets and the x402 payment protocol"
+---
+
+## Overview
+
+This guide shows how to use Magic's Embedded Wallet to pay for [x402](https://www.x402.org/)-protected API endpoints. x402 is an open payment protocol by Coinbase that uses the HTTP `402 Payment Required` status code to enable instant, gasless stablecoin payments over HTTP. When a server responds with 402, your app automatically signs a USDC payment and retries — no gas fees, no manual transfers.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+1. A Magic **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link)
+2. A Base RPC endpoint (e.g., from [Alchemy](https://www.alchemy.com/) or [QuickNode](https://www.quicknode.com/))
+3. USDC on Base Sepolia in the user's wallet (for testing)
+
+### How It Works
+
+1. User authenticates with Magic
+2. Your app makes a request to an x402-protected endpoint
+3. The server responds with HTTP 402 and payment requirements
+4. The x402 client signs a gasless USDC transfer (EIP-3009) using the user's wallet
+5. The request is retried with the payment signature
+6. A facilitator verifies and settles the payment on-chain
+7. The server returns the requested resource
+
+<Info>
+x402 payments are **gasless** for the payer. The protocol uses EIP-3009 `transferWithAuthorization`, which means the user signs a typed data message — no ETH needed for gas. The facilitator submits the on-chain transaction.
+</Info>
+
+---
+
+## Setting Up the Clients
+
+Install dependencies and initialize Magic with viem.
+
+```bash
+npm install magic-sdk viem @x402/fetch @x402/evm @x402/core
+```
+
+```typescript TypeScript icon="square-js"
+import { Magic } from "magic-sdk";
+import { createWalletClient, custom } from "viem";
+import { baseSepolia } from "viem/chains";
+
+const magic = new Magic("YOUR_PUBLISHABLE_KEY", {
+  network: {
+    rpcUrl: "https://base-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_KEY",
+    chainId: 84532,
+  },
+});
+
+const walletClient = createWalletClient({
+  chain: baseSepolia,
+  transport: custom(magic.rpcProvider),
+});
+
+const [userAddress] = await walletClient.getAddresses();
+```
+
+---
+
+## Creating a Custom Account
+
+The x402 SDK expects a viem `Account` object that can sign typed data. Create a custom account adapter that delegates signing to Magic's wallet.
+
+```typescript TypeScript icon="square-js"
+import { toAccount } from "viem/accounts";
+import type { Address } from "viem";
+
+function createMagicAccount(
+  walletClient: any,
+  address: Address,
+) {
+  return toAccount({
+    address,
+    signMessage: async ({ message }) => {
+      return walletClient.signMessage({ message, account: address });
+    },
+    signTransaction: async (tx) => {
+      return walletClient.signTransaction({ ...tx, account: address });
+    },
+    signTypedData: async ({ domain, types, primaryType, message }) => {
+      return walletClient.signTypedData({
+        domain,
+        types,
+        primaryType,
+        message,
+        account: address,
+      });
+    },
+  });
+}
+
+const magicAccount = createMagicAccount(walletClient, userAddress);
+```
+
+---
+
+## Setting Up the x402 Client
+
+Register the Magic account with the x402 client and create a payment-enabled fetch wrapper.
+
+```typescript TypeScript icon="square-js"
+import { x402Client } from "@x402/core/client";
+import { wrapFetchWithPayment } from "@x402/fetch";
+import { ExactEvmScheme } from "@x402/evm/exact/client";
+
+const client = new x402Client();
+client.register("eip155:*", new ExactEvmScheme(magicAccount));
+
+const fetchWithPayment = wrapFetchWithPayment(fetch, client);
+```
+
+---
+
+## Making Paid Requests
+
+Use `fetchWithPayment` just like the regular `fetch` API. If the server responds with 402, the x402 client automatically handles the payment flow.
+
+```typescript TypeScript icon="square-js"
+async function getPaidResource(url: string) {
+  const response = await fetchWithPayment(url, { method: "GET" });
+
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
+// Example: fetch weather data from an x402-protected API
+const data = await getPaidResource("https://api.example.com/weather");
+console.log("Weather:", data);
+```
+
+The x402 client handles everything automatically:
+1. Receives the 402 response with payment requirements
+2. Signs a gasless USDC transfer using the Magic wallet
+3. Retries the request with the payment signature in the header
+4. Returns the successful response
+
+---
+
+## Setting Up a Test Server
+
+To test the payment flow, you can set up a simple Express server that requires x402 payment.
+
+```bash
+npm install express @x402/express @x402/evm @x402/core
+```
+
+```typescript TypeScript icon="square-js"
+import express from "express";
+import { paymentMiddleware, x402ResourceServer } from "@x402/express";
+import { ExactEvmScheme } from "@x402/evm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+
+const app = express();
+
+// Your wallet address to receive payments
+const payTo = "0xYourWalletAddress";
+
+// Use the free testnet facilitator (no signup required)
+const facilitatorClient = new HTTPFacilitatorClient({
+  url: "https://x402.org/facilitator",
+});
+
+const server = new x402ResourceServer(facilitatorClient)
+  .register("eip155:84532", new ExactEvmScheme());
+
+app.use(
+  paymentMiddleware(
+    {
+      "GET /weather": {
+        accepts: [
+          {
+            scheme: "exact",
+            price: "$0.001",
+            network: "eip155:84532", // Base Sepolia
+            payTo,
+          },
+        ],
+        description: "Get current weather data",
+        mimeType: "application/json",
+      },
+    },
+    server,
+  ),
+);
+
+app.get("/weather", (req, res) => {
+  res.json({ weather: "sunny", temperature: 72, city: "San Francisco" });
+});
+
+app.listen(4021, () => {
+  console.log("x402 server running at http://localhost:4021");
+});
+```
+
+<Info>
+The testnet facilitator at `https://x402.org/facilitator` requires no API keys or signup. For production, switch to the [Coinbase CDP facilitator](https://docs.cdp.coinbase.com/x402/welcome) with network `eip155:8453` (Base mainnet).
+</Info>
+
+---
+
+## Switching to Production
+
+To move from testnet to mainnet, update the network and facilitator:
+
+```typescript TypeScript icon="square-js"
+// Client: use Base mainnet
+const magic = new Magic("YOUR_PUBLISHABLE_KEY", {
+  network: {
+    rpcUrl: "https://base-mainnet.g.alchemy.com/v2/YOUR_ALCHEMY_KEY",
+    chainId: 8453,
+  },
+});
+
+// Server: use CDP facilitator with Base mainnet
+const facilitatorClient = new HTTPFacilitatorClient({
+  url: "https://api.cdp.coinbase.com/platform/v2/x402",
+});
+
+const server = new x402ResourceServer(facilitatorClient)
+  .register("eip155:8453", new ExactEvmScheme());
+
+// Route config: update network
+{
+  scheme: "exact",
+  price: "$0.01",
+  network: "eip155:8453", // Base mainnet
+  payTo: "0xYourWalletAddress",
+}
+```
+
+---
+
+## Key Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| [`magic-sdk`](https://www.npmjs.com/package/magic-sdk) | Magic authentication and Embedded Wallet |
+| [`viem`](https://viem.sh/) | Ethereum client and account utilities |
+| [`@x402/fetch`](https://www.npmjs.com/package/@x402/fetch) | Wraps fetch with automatic x402 payment handling |
+| [`@x402/evm`](https://www.npmjs.com/package/@x402/evm) | EVM payment scheme for x402 |
+| [`@x402/core`](https://www.npmjs.com/package/@x402/core) | Core x402 client and server utilities |
+| [`@x402/express`](https://www.npmjs.com/package/@x402/express) | Express middleware for x402-protected endpoints |
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="Payment signature rejected">
+**Symptoms:** The facilitator rejects the payment signature.
+
+**Solutions:**
+- Ensure the user has sufficient USDC on the correct network (Base Sepolia for testing, Base mainnet for production)
+- Verify the Magic wallet is connected to the right chain
+- Check that the `signTypedData` call is not being blocked by content security policy
+</Accordion>
+
+<Accordion title="402 response not handled">
+**Symptoms:** The fetch call returns a raw 402 response instead of automatically paying.
+
+**Solutions:**
+- Make sure you're using `fetchWithPayment` (the wrapped version), not the native `fetch`
+- Verify the x402 client has a scheme registered for the server's network
+- Check that `ExactEvmScheme` is imported from `@x402/evm/exact/client` (not `/server`)
+</Accordion>
+
+<Accordion title="Wrong network error">
+**Symptoms:** Payment fails with a network mismatch error.
+
+**Solutions:**
+- The Magic instance must be configured for the same chain as the x402 server
+- Use `eip155:84532` for Base Sepolia or `eip155:8453` for Base mainnet
+- Ensure the viem chain matches (`baseSepolia` or `base`)
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Resources
+
+<CardGroup cols={2}>
+<Card title="Magic Embedded Wallets" icon="wallet" href="/embedded-wallets/introduction">
+  Learn about Magic's Embedded Wallet product
+</Card>
+
+<Card title="x402 Documentation" icon="book" href="https://docs.cdp.coinbase.com/x402/welcome">
+  Official x402 protocol documentation
+</Card>
+
+<Card title="x402 GitHub" icon="github" href="https://github.com/coinbase/x402">
+  Reference implementations and examples
+</Card>
+
+<Card title="x402 Foundation" icon="globe" href="https://www.x402.org/">
+  Protocol specification and facilitator info
+</Card>
+</CardGroup>
+
+---
