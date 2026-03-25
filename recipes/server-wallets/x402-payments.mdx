@@ -78,7 +78,7 @@ The x402 SDK expects a viem `Account` object that can sign typed data. Create a 
 
 ```ts TypeScript icon="square-js"
 import { toAccount } from "viem/accounts";
-import { hashTypedData, type Address, type Hex } from "viem";
+import { hashTypedData, serializeSignature, type Address, type Hex } from "viem";
 
 function createTeeAccount(jwt: string, address: Address) {
   return toAccount({
@@ -103,8 +103,7 @@ async function signHashViaTee(jwt: string, hash: Hex): Promise<Hex> {
   const { r, s, v } = await teeRequest<{ r: string; s: string; v: string }>(
     "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
   );
-  const yParity = Number(v) >= 27 ? Number(v) - 27 : Number(v);
-  return `0x${r.slice(2)}${s.slice(2)}${yParity.toString(16).padStart(2, "0")}` as Hex;
+  return serializeSignature({ r: r as Hex, s: s as Hex, yParity: Number(v) - 27 });
 }
 
 const teeAccount = createTeeAccount(jwt, eoaAddress as Address);
