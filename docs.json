@@ -21,6 +21,7 @@
     "options": [
       "copy",
       "view",
+      "assistant",
       "chatgpt",
       "claude",
       "cursor",
