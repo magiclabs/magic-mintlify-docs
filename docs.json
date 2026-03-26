@@ -342,6 +342,7 @@
               "recipes/server-wallets/send-usdc",
               "recipes/server-wallets/send-usdc-solana",
               "recipes/server-wallets/x402-payments",
+              "recipes/server-wallets/hyperliquid-trading",
               "recipes/server-wallets/particle-network-universal-accounts"
             ]
           },
@@ -355,6 +356,7 @@
               "recipes/embedded-wallets/send-usdc",
               "recipes/embedded-wallets/send-usdc-solana",
               "recipes/embedded-wallets/x402-payments",
+              "recipes/embedded-wallets/hyperliquid-trading",
               "recipes/embedded-wallets/zksync-zyfi-integration",
               "recipes/embedded-wallets/wagmi",
               "recipes/embedded-wallets/moonpay-integration",

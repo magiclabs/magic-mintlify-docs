@@ -1,0 +1,312 @@
+---
+title: "Hyperliquid Trading"
+description: "Trade perpetual futures on Hyperliquid using Magic Embedded Wallets"
+---
+
+## Overview
+
+This guide shows how to use **Magic's Embedded Wallet** to trade perpetual futures on [Hyperliquid](https://hyperliquid.xyz/). The [`@nktkas/hyperliquid`](https://github.com/nktkas/hyperliquid) SDK accepts any viem-compatible account, so your app creates a custom account that delegates `signTypedData` to the Magic wallet — no private key management needed.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+1. A Magic **Publishable** API Key from your [Magic Dashboard](https://dashboard.magic.link)
+2. USDC on Hyperliquid testnet — deposit via the [Hyperliquid testnet UI](https://app.hyperliquid-testnet.xyz)
+
+### How It Works
+
+1. User authenticates with Magic
+2. A viem wallet client wraps Magic's RPC provider
+3. A custom account delegates `signTypedData` to the Magic wallet
+4. The `@nktkas/hyperliquid` ExchangeClient uses this account for order signing
+5. Orders, cancellations, and leverage updates are signed and submitted to Hyperliquid
+
+<Info>
+Hyperliquid uses EIP-712 typed data signatures for all exchange actions. The `@nktkas/hyperliquid` SDK handles nonces and signature construction automatically — your Magic account only needs to implement `signTypedData`.
+</Info>
+
+---
+
+## Setting Up the Wallet Client
+
+Install dependencies and initialize Magic with viem.
+
+```bash
+npm install magic-sdk viem @nktkas/hyperliquid
+```
+
+```ts TypeScript icon="square-js"
+import { Magic } from "magic-sdk";
+import { createWalletClient, custom } from "viem";
+import { arbitrum } from "viem/chains";
+
+const magic = new Magic("YOUR_PUBLISHABLE_KEY");
+
+const walletClient = createWalletClient({
+  chain: arbitrum,
+  transport: custom(magic.rpcProvider),
+});
+
+const [userAddress] = await walletClient.getAddresses();
+```
+
+---
+
+## Creating a Custom Account
+
+The Hyperliquid SDK expects a wallet with a `signTypedData` method. Create a custom account adapter that delegates signing to Magic's wallet.
+
+```ts TypeScript icon="square-js"
+import { toAccount } from "viem/accounts";
+import type { Address } from "viem";
+
+function createMagicAccount(
+  walletClient: any,
+  address: Address,
+) {
+  return toAccount({
+    address,
+    signMessage: async ({ message }) => {
+      return walletClient.signMessage({ message, account: address });
+    },
+    signTransaction: async (tx) => {
+      return walletClient.signTransaction({ ...tx, account: address });
+    },
+    signTypedData: async ({ domain, types, primaryType, message }) => {
+      return walletClient.signTypedData({
+        domain,
+        types,
+        primaryType,
+        message,
+        account: address,
+      });
+    },
+  });
+}
+
+const magicAccount = createMagicAccount(walletClient, userAddress);
+```
+
+---
+
+## Setting Up Hyperliquid Clients
+
+Initialize the SDK with the Magic-backed account.
+
+```ts TypeScript icon="square-js"
+import { ExchangeClient, InfoClient, HttpTransport } from "@nktkas/hyperliquid";
+
+// Testnet transport
+const transport = new HttpTransport({ isTestnet: true });
+
+// Read-only client for market data (no wallet needed)
+const info = new InfoClient({ transport });
+
+// Trading client (uses Magic account for signing)
+const exchange = new ExchangeClient({ transport, wallet: magicAccount });
+```
+
+---
+
+## Reading Market Data
+
+Use the `InfoClient` to fetch prices, order books, and account state. These calls are read-only and don't require signing.
+
+```ts TypeScript icon="square-js"
+// Get all mid prices
+const mids = await info.allMids();
+console.log("BTC:", mids["BTC"], "ETH:", mids["ETH"]);
+
+// Get L2 order book for BTC
+const book = await info.l2Book({ coin: "BTC", nSigFigs: 3 });
+console.log("Best bid:", book.levels[0][0]); // { px, sz, n }
+console.log("Best ask:", book.levels[1][0]);
+
+// Get user's positions and margin
+const state = await info.clearinghouseState({ user: userAddress });
+console.log("Account value:", state.marginSummary.accountValue);
+console.log("Positions:", state.assetPositions);
+```
+
+---
+
+## Placing Orders
+
+The ExchangeClient handles nonce generation and EIP-712 signing automatically.
+
+### Limit Order
+
+Place a Good-Til-Canceled limit order at a specific price.
+
+```ts TypeScript icon="square-js"
+const result = await exchange.order({
+  orders: [{
+    a: 0,           // Asset index (0 = BTC)
+    b: true,        // Buy (true = long, false = short)
+    p: "95000",     // Limit price
+    s: "0.01",      // Size in base currency
+    r: false,       // Not reduce-only
+    t: { limit: { tif: "Gtc" } },
+  }],
+  grouping: "na",
+});
+
+console.log("Order status:", result.response.data.statuses);
+// [{ resting: { oid: 12345 } }]
+```
+
+### Market Order
+
+Hyperliquid doesn't have a native market order type. Use an Immediate-or-Cancel (IOC) limit order with a slippage price.
+
+```ts TypeScript icon="square-js"
+// Get current price for slippage calculation
+const mids = await info.allMids();
+const currentPrice = parseFloat(mids["ETH"]);
+const slippagePrice = (currentPrice * 1.01).toFixed(1); // +1% for buys
+
+const result = await exchange.order({
+  orders: [{
+    a: 4,                    // Asset index (4 = ETH)
+    b: true,                 // Buy
+    p: slippagePrice,        // Max price willing to pay
+    s: "0.1",                // Size
+    r: false,
+    t: { limit: { tif: "Ioc" } },
+  }],
+  grouping: "na",
+});
+
+console.log("Fill:", result.response.data.statuses);
+// [{ filled: { totalSz: "0.1", avgPx: "3456.78" } }]
+```
+
+<Info>
+For market buys, set the slippage price **above** the current mid. For market sells, set it **below**. The unfilled portion of an IOC order is automatically canceled.
+</Info>
+
+---
+
+## Canceling Orders
+
+```ts TypeScript icon="square-js"
+// Cancel by order ID
+await exchange.cancel({
+  cancels: [
+    { a: 0, o: 12345 }, // Cancel order 12345 on BTC
+  ],
+});
+
+// Cancel by client order ID
+await exchange.cancelByCloid({
+  cancels: [{ asset: 0, cloid: "0x0001" }],
+});
+```
+
+---
+
+## Updating Leverage
+
+```ts TypeScript icon="square-js"
+await exchange.updateLeverage({
+  asset: 0,         // BTC
+  isCross: true,    // Cross-margin mode
+  leverage: 10,
+});
+```
+
+---
+
+## Switching to Production
+
+To move from testnet to mainnet, update the transport and deposit real USDC:
+
+```ts TypeScript icon="square-js"
+// Mainnet transport (default)
+const transport = new HttpTransport();
+```
+
+Deposit USDC to Hyperliquid mainnet by bridging from Arbitrum via the [Hyperliquid app](https://app.hyperliquid.xyz).
+
+<Info>
+Asset indices can change between testnet and mainnet. In production, use `info.meta()` to look up the correct index for each asset dynamically rather than hardcoding values.
+</Info>
+
+---
+
+## Key Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| [`magic-sdk`](https://www.npmjs.com/package/magic-sdk) | Magic authentication and Embedded Wallet |
+| [`@nktkas/hyperliquid`](https://github.com/nktkas/hyperliquid) | TypeScript SDK for Hyperliquid exchange API |
+| [`viem`](https://viem.sh/) | Ethereum client and account utilities |
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="Magic wallet not connected">
+**Symptoms:** `getAddresses()` returns an empty array or errors.
+
+**Solutions:**
+- Ensure the user is logged in before creating the wallet client
+- Verify your Magic Publishable API Key is correct
+- Check that `magic.rpcProvider` is passed to `custom()` transport
+</Accordion>
+
+<Accordion title="Order rejected with invalid signature">
+**Symptoms:** Hyperliquid rejects the order with a signature error.
+
+**Solutions:**
+- Verify the custom account's `signTypedData` correctly delegates to the wallet client
+- Ensure the account address matches the address that deposited USDC on Hyperliquid
+- Check that the wallet client chain is set to `arbitrum`
+</Accordion>
+
+<Accordion title="Insufficient margin">
+**Symptoms:** Order rejected due to insufficient margin or balance.
+
+**Solutions:**
+- Deposit USDC to Hyperliquid via the [testnet UI](https://app.hyperliquid-testnet.xyz) or [mainnet UI](https://app.hyperliquid.xyz)
+- Check available margin with `info.clearinghouseState({ user: address })`
+- Reduce order size or increase leverage
+</Accordion>
+
+<Accordion title="Asset index not found">
+**Symptoms:** Order rejected because the asset index is invalid.
+
+**Solutions:**
+- Use `info.meta()` to look up the correct asset index for each coin
+- Asset indices may differ between testnet and mainnet
+- Common indices: 0 = BTC, 4 = ETH (but always verify with `meta()`)
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Resources
+
+<CardGroup cols={2}>
+<Card title="Magic Embedded Wallets" icon="wallet" href="/embedded-wallets/introduction">
+  Learn about Magic's Embedded Wallet product
+</Card>
+
+<Card title="Hyperliquid Documentation" icon="book" href="https://hyperliquid.gitbook.io/hyperliquid-docs">
+  Official Hyperliquid protocol documentation
+</Card>
+
+<Card title="@nktkas/hyperliquid SDK" icon="github" href="https://github.com/nktkas/hyperliquid">
+  TypeScript SDK with full API coverage
+</Card>
+
+<Card title="Hyperliquid Testnet" icon="globe" href="https://app.hyperliquid-testnet.xyz">
+  Testnet UI for deposits and testing
+</Card>
+</CardGroup>
+
+---
