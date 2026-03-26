@@ -16,15 +16,17 @@ Before starting, ensure you have:
 1. A Magic **Secret Key** — from your [Magic Dashboard](https://dashboard.magic.link)
 2. An **OIDC Provider ID** — configured for your auth provider ([setup guide](/server-wallets/express-api/identity-provider))
 3. A user JWT from your authentication provider
-4. USDC on Hyperliquid testnet — deposit via the [Hyperliquid testnet UI](https://app.hyperliquid-testnet.xyz)
+4. USDC on Arbitrum One and ETH for gas (to activate the wallet on Hyperliquid mainnet — required even for testnet)
 
 ### How It Works
 
 1. Your server authenticates the user and obtains a JWT
 2. JWT is sent to Magic's TEE to get (or create) the user's EOA
-3. A custom viem account delegates `signTypedData` calls to the TEE
-4. The `@nktkas/hyperliquid` ExchangeClient uses this account for order signing
-5. Orders, cancellations, and leverage updates are signed and submitted to Hyperliquid
+3. Your app deposits at least $5 USDC from Arbitrum to activate the wallet on Hyperliquid
+4. For testnet: claim 1,000 mock USDC via the faucet API
+5. A custom viem account delegates `signTypedData` calls to the TEE
+6. The `@nktkas/hyperliquid` ExchangeClient uses this account for order signing
+7. Orders, cancellations, and leverage updates are signed and submitted to Hyperliquid
 
 <Info>
 Hyperliquid uses EIP-712 typed data signatures for all exchange actions. The `@nktkas/hyperliquid` SDK handles nonces and signature construction automatically — your TEE account only needs to implement `signTypedData`.
@@ -128,6 +130,120 @@ const info = new InfoClient({ transport });
 
 // Trading client (uses TEE-backed account for signing)
 const exchange = new ExchangeClient({ transport, wallet: teeAccount });
+```
+
+---
+
+## Depositing USDC
+
+Hyperliquid runs on its own L1 chain — you can't trade directly from an Arbitrum wallet. To fund your Hyperliquid account, send USDC to the bridge contract on Arbitrum. This is a standard ERC20 `transfer` — your Hyperliquid account is credited within ~1 minute.
+
+First, set up a public client and transaction helper for Arbitrum One:
+
+```ts TypeScript icon="square-js"
+import {
+  createPublicClient, http, encodeFunctionData, parseUnits,
+  serializeTransaction, keccak256, type TransactionSerializable,
+} from "viem";
+import { arbitrum } from "viem/chains";
+
+const arbClient = createPublicClient({
+  chain: arbitrum,
+  transport: http("https://arb1.arbitrum.io/rpc"),
+});
+
+async function signAndSend(jwt: string, tx: TransactionSerializable) {
+  const serialized = serializeTransaction(tx);
+  const hash = keccak256(serialized);
+
+  const { r, s, v } = await teeRequest<{ r: string; s: string; v: string }>(
+    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
+  );
+
+  const yParity = Number(v) >= 27 ? Number(v) - 27 : Number(v);
+  const signed = serializeTransaction(tx, { r: r as Hex, s: s as Hex, yParity });
+  return await arbClient.sendRawTransaction({ serializedTransaction: signed });
+}
+```
+
+Then deposit USDC to the bridge:
+
+```ts TypeScript icon="square-js"
+const BRIDGE_ADDRESS = "0x2Df1c51E09aECF9cacB7bc98cB1742757f163dF7";
+const USDC_ADDRESS = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
+
+const usdcAbi = [
+  {
+    name: "transfer",
+    type: "function",
+    inputs: [
+      { name: "to", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [{ type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+// Deposit 10 USDC into Hyperliquid
+const amount = parseUnits("10", 6); // USDC has 6 decimals
+
+const nonce = await arbClient.getTransactionCount({ address: eoaAddress as Address });
+const txHash = await signAndSend(jwt, {
+  to: USDC_ADDRESS as Address,
+  data: encodeFunctionData({
+    abi: usdcAbi,
+    functionName: "transfer",
+    args: [BRIDGE_ADDRESS, amount],
+  }),
+  chainId: arbitrum.id,
+  nonce,
+});
+
+console.log("Deposit tx:", txHash);
+// Funds arrive on Hyperliquid within ~1 minute
+```
+
+<Warning>
+The minimum deposit is **5 USDC**. Deposits below this amount are not credited and cannot be recovered.
+</Warning>
+
+---
+
+## Testnet Faucet
+
+Once a wallet has been activated with a mainnet deposit of at least $5 USDC, you can claim 1,000 mock USDC on Hyperliquid testnet. This is a one-time claim per address.
+
+```ts TypeScript icon="square-js"
+const response = await fetch("https://api.hyperliquid-testnet.xyz/info", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    type: "claimDrip",
+    user: eoaAddress,
+  }),
+});
+
+const result = await response.json();
+console.log("Faucet claim:", result);
+```
+
+After claiming, switch to testnet clients for development and testing.
+
+---
+
+## Withdrawing USDC
+
+To withdraw USDC from Hyperliquid back to Arbitrum, use the SDK's `withdraw3` method. The withdrawal is signed on Hyperliquid and processed by validators — no Arbitrum transaction is needed from the user.
+
+```ts TypeScript icon="square-js"
+// Withdraw 10 USDC back to Arbitrum
+await exchange.withdraw3({
+  destination: eoaAddress,
+  amount: "10",
+});
+
+// Funds arrive on Arbitrum within ~3-4 minutes
 ```
 
 ---
@@ -243,14 +359,15 @@ await exchange.updateLeverage({
 
 ## Switching to Production
 
-To move from testnet to mainnet, update the transport and deposit real USDC:
+To move from testnet to mainnet, remove the `isTestnet` flag from the transport. The deposit and withdrawal code already uses mainnet addresses.
 
 ```ts TypeScript icon="square-js"
 // Mainnet transport (default)
 const transport = new HttpTransport();
-```
 
-Deposit USDC to Hyperliquid mainnet by bridging from Arbitrum via the [Hyperliquid app](https://app.hyperliquid.xyz).
+const info = new InfoClient({ transport });
+const exchange = new ExchangeClient({ transport, wallet: teeAccount });
+```
 
 <Info>
 Asset indices can change between testnet and mainnet. In production, use `info.meta()` to look up the correct index for each asset dynamically rather than hardcoding values.
@@ -302,8 +419,9 @@ Asset indices can change between testnet and mainnet. In production, use `info.m
 **Symptoms:** Order rejected due to insufficient margin or balance.
 
 **Solutions:**
-- Deposit USDC to Hyperliquid via the [testnet UI](https://app.hyperliquid-testnet.xyz) or [mainnet UI](https://app.hyperliquid.xyz)
+- Deposit USDC to Hyperliquid using the bridge contract (see [Depositing USDC](#depositing-usdc) above)
 - Check available margin with `info.clearinghouseState({ user: address })`
+- Ensure at least 5 USDC was deposited (minimum)
 - Reduce order size or increase leverage
 </Accordion>
 
