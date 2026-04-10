@@ -11,8 +11,6 @@ The Express API supports EIP-7702 through a dedicated signing endpoint:
 
 - `POST /v1/wallet/sign/eip7702` — Signs an authorization that delegates your EOA to a smart contract implementation
 
-Unlike other signing endpoints, this endpoint computes the authorization hash internally. You only need to provide the delegation parameters.
-
 ### Use cases
 
 - Temporarily delegate an EOA to a smart contract implementation for advanced features
@@ -22,7 +20,7 @@ Unlike other signing endpoints, this endpoint computes the authorization hash in
 ### Compatibility
 
 - Requires a network that supports EIP-7702 (e.g., Ethereum Mainnet, Sepolia, Arbitrum, Base, Optimism)
-- The wallet must have ETH (or the network's native token) to pay for gas when submitting the authorization on-chain
+- Signing an authorization is gasless; gas is only required when the signed authorization is included in an on-chain transaction
 
 ## Sign an EIP-7702 Authorization
 
