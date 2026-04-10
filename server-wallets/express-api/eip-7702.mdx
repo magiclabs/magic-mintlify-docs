@@ -42,7 +42,7 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/eip7702' \
   }'
 ```
 
-### Request parameters
+### Request Parameters
 
 <ParamField body="chain_id" type="integer" required>
   The chain ID for the authorization.
@@ -56,7 +56,9 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/eip7702' \
   The account nonce for the authorization.
 </ParamField>
 
-### Response
+### Response Fields
+
+**Response:**
 
 ```json
 {
@@ -66,15 +68,15 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/eip7702' \
 }
 ```
 
-<ResponseField name="r" type="string" required>
+<ResponseField name="r" type="string">
   The `r` component of the signature, returned as a decimal string.
 </ResponseField>
 
-<ResponseField name="s" type="string" required>
+<ResponseField name="s" type="string">
   The `s` component of the signature, returned as a decimal string.
 </ResponseField>
 
-<ResponseField name="y_parity" type="integer" required>
+<ResponseField name="y_parity" type="integer">
   The `y_parity` value of the signature (0 or 1).
 </ResponseField>
 
