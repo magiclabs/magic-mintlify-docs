@@ -1,0 +1,134 @@
+---
+title: "EIP-7702"
+description: "Sign EIP-7702 authorizations to delegate EOA capabilities to smart contracts using the Express API."
+---
+
+## Overview
+
+[EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) introduces a new transaction type (Type-4) that allows Externally Owned Accounts (EOAs) to temporarily delegate to smart contract code. This enables account abstraction features like batched transactions, gas sponsorship, and session keys for regular wallets.
+
+The Express API supports EIP-7702 through a dedicated signing endpoint:
+
+- `POST /v1/wallet/sign/eip7702` — Signs an authorization that delegates your EOA to a smart contract implementation
+
+Unlike other signing endpoints, this endpoint computes the authorization hash internally. You only need to provide the delegation parameters.
+
+### Use cases
+
+- Temporarily delegate an EOA to a smart contract implementation for advanced features
+- Enable batched transactions through a delegated smart account
+- Integrate with account abstraction infrastructure that leverages EIP-7702
+
+### Compatibility
+
+- Requires a network that supports EIP-7702 (e.g., Ethereum Mainnet, Sepolia, Arbitrum, Base, Optimism)
+- The wallet must have ETH (or the network's native token) to pay for gas when submitting the authorization on-chain
+
+## Sign an EIP-7702 Authorization
+
+Send a `POST` request to `/v1/wallet/sign/eip7702` with the delegation parameters.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/eip7702' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
+  -H 'X-OIDC-Provider-ID: YOUR_OIDC_PROVIDER_ID' \
+  -H 'X-Magic-Chain: ETH' \
+  -d '{
+    "chain_id": 11155111,
+    "address": "0x000000004F43C49e93C970E84001853a70923B03",
+    "nonce": 0
+  }'
+```
+
+### Request parameters
+
+<ParamField body="chain_id" type="integer" required>
+  The chain ID for the authorization.
+</ParamField>
+
+<ParamField body="address" type="string" required>
+  The smart contract implementation address to delegate to.
+</ParamField>
+
+<ParamField body="nonce" type="integer" required>
+  The account nonce for the authorization.
+</ParamField>
+
+### Response
+
+```json
+{
+  "r": "123456789012345678901234567890",
+  "s": "987654321098765432109876543210",
+  "y_parity": 1
+}
+```
+
+<ResponseField name="r" type="string" required>
+  The `r` component of the signature, returned as a decimal string.
+</ResponseField>
+
+<ResponseField name="s" type="string" required>
+  The `s` component of the signature, returned as a decimal string.
+</ResponseField>
+
+<ResponseField name="y_parity" type="integer" required>
+  The `y_parity` value of the signature (0 or 1).
+</ResponseField>
+
+<Warning>
+  The `r` and `s` values are returned as **decimal strings**, not hex. You need to convert them to hex before using them with libraries like viem.
+</Warning>
+
+## Usage with viem
+
+The response values need to be converted from decimal strings to hex to construct a `SignedAuthorization` object compatible with viem:
+
+```typescript TypeScript icon="square-js"
+import type { Address, Hex, SignedAuthorization } from 'viem';
+
+const decToHex = (dec: string): Hex =>
+  `0x${BigInt(dec).toString(16).padStart(64, '0')}` as Hex;
+
+const signEip7702Authorization = async (
+  chainId: number,
+  contractAddress: Address,
+  nonce: number,
+): Promise<SignedAuthorization<number>> => {
+  const body = {
+    chain_id: chainId,
+    address: contractAddress,
+    nonce,
+  };
+
+  const res = await fetch('https://tee.express.magiclabs.com/v1/wallet/sign/eip7702', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${YOUR_JWT_TOKEN}`,
+      'X-Magic-API-Key': 'YOUR_MAGIC_API_KEY',
+      'X-OIDC-Provider-ID': 'YOUR_OIDC_PROVIDER_ID',
+      'X-Magic-Chain': 'ETH',
+    },
+    body: JSON.stringify(body),
+  });
+
+  const { r, s, y_parity } = await res.json();
+
+  return {
+    address: contractAddress,
+    chainId,
+    nonce,
+    r: decToHex(r),
+    s: decToHex(s),
+    yParity: y_parity,
+  } as SignedAuthorization<number>;
+};
+```
+
+## Resources
+
+- [EIP-7702 Specification](https://eips.ethereum.org/EIPS/eip-7702)
+- [Wallet Operations](/server-wallets/express-api/wallet-operations)
