@@ -7,10 +7,6 @@ description: "Sign EIP-7702 authorizations to delegate EOA capabilities to smart
 
 [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) introduces a new transaction type (Type-4) that allows Externally Owned Accounts (EOAs) to temporarily delegate to smart contract code. This enables account abstraction features like batched transactions, gas sponsorship, and session keys for regular wallets.
 
-The Express API supports EIP-7702 through a dedicated signing endpoint:
-
-- `POST /v1/wallet/sign/eip7702` — Signs an authorization that delegates your EOA to a smart contract implementation
-
 ### Use cases
 
 - Temporarily delegate an EOA to a smart contract implementation for advanced features
