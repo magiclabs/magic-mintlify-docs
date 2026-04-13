@@ -1,0 +1,146 @@
+---
+title: "Overview"
+description: "Unified Orchestration Accounts (UOA) provide multi-chain wallet management, perpetual DEX integration, and orchestrated fund transfers through a single API."
+---
+
+## What is Unified Orchestration Accounts?
+
+Unified Orchestration Accounts (UOA) is an orchestration layer built on top of Magic's Server Wallets. It provides a single API to manage user accounts across multiple blockchains and perpetual DEX venues, plan and execute multi-step fund transfers, and bridge assets cross-chain.
+
+UOA handles the complexity of routing funds between wallets and trading venues so you can focus on building your application.
+
+### Key Benefits
+
+<CardGroup cols={2}>
+<Card title="Multi-Chain Wallets" icon="link">
+Automatically provision and manage wallets across Ethereum, Arbitrum, Polygon, Solana, and Ink from a single account.
+</Card>
+
+<Card title="Perp DEX Integration" icon="chart-line">
+Initialize and manage accounts on Hyperliquid, Nado, x10, and Polymarket with unified deposit, withdrawal, and balance APIs.
+</Card>
+
+<Card title="Transfer Orchestration" icon="route">
+Plan and execute multi-step transfers between wallets and DEX venues with automatic route planning, cost estimation, and fallback strategies.
+</Card>
+
+<Card title="Cross-Chain Bridging" icon="bridge">
+Bridge assets across chains via LiFi integration with quote, execute, and status tracking built in.
+</Card>
+</CardGroup>
+
+## Supported Chains and Tokens
+
+### Chains
+
+| Chain | Code | Type |
+|-------|------|------|
+| Ethereum | `ETH` | EVM |
+| Arbitrum | `ARB` | EVM |
+| Polygon | `POL` | EVM |
+| Optimism | `OPT` | EVM |
+| Base | `BASE` | EVM |
+| Ink | `INK` | EVM |
+| Solana | `SOL` | Non-EVM |
+
+### Tokens
+
+| Token | Code | Description |
+|-------|------|-------------|
+| ETH | `ETH` | Native Ether |
+| WETH | `WETH` | Wrapped Ether |
+| USDC | `USDC` | USD Coin |
+| USDC.e | `USDC_E` | Bridged USDC |
+| POL | `POL` | Native Polygon token |
+| SOL | `SOL` | Native Solana token |
+
+## Supported DEX Venues
+
+| Venue | Code | Chain | Notes |
+|-------|------|-------|-------|
+| Hyperliquid | `HYPERLIQUID` | Arbitrum | Strict deposit floor + fixed withdrawal fee |
+| Nado | `NADO` | Ink | Wallet-signed operations, no separate onboarding |
+| x10 | `X10` | Arbitrum | Magic-backed onboarding |
+| Polymarket | `POLYMARKET` | Polygon | Prediction market with Gnosis Safe proxy + gasless relayer |
+
+## Architecture
+
+UOA sits between your application and the blockchain, providing three layers of functionality:
+
+1. **Account layer** -- Creates and manages user accounts with wallets across all supported chains. Each user gets one wallet per chain, derived deterministically.
+
+2. **DEX layer** -- Initializes and manages perp DEX venue accounts. Handles the venue-specific onboarding flows, credential management, and balance queries.
+
+3. **Transfer layer** -- Plans and executes multi-step transfer routes. A single transfer request (e.g., move USDC from Hyperliquid to Polymarket) is broken down into steps like `dex_withdraw -> bridge_swap -> dex_deposit`, executed asynchronously with checkpoint-based resume on failure.
+
+## Authentication
+
+All UOA endpoints require two authentication headers:
+
+<ParamField header="Authorization" type="string" required>
+Bearer token (JWT) issued by your application for end-user authentication. Format: `Bearer YOUR_JWT_TOKEN`
+</ParamField>
+
+<ParamField header="X-MAGIC-SECRET-KEY" type="string" required>
+Your Magic secret key for application-level authentication.
+</ParamField>
+
+The authentication flow works as follows:
+
+<Steps>
+<Step title="User authenticates with your app">
+Your application authenticates the user (e.g., via Magic Link, OAuth, or any identity provider) and issues a JWT.
+</Step>
+
+<Step title="Configure your identity provider">
+Register your JWT issuer, audience, and JWKS URL with UOA so it can validate your tokens.
+</Step>
+
+<Step title="Send authenticated requests">
+Include both the user's JWT (`Authorization: Bearer ...`) and your Magic secret key (`X-MAGIC-SECRET-KEY`) on every request.
+</Step>
+
+<Step title="UOA resolves the user">
+UOA validates the JWT, resolves the user by the `sub` claim scoped to your application, and processes the request.
+</Step>
+</Steps>
+
+## Transfer Execution Model
+
+Transfers are modeled as asynchronous, resumable tasks. When you create a transfer, UOA:
+
+1. **Plans the route** -- Determines the steps needed (withdraw, bridge, deposit) with fallback routes
+2. **Creates a task** -- Returns a `task_id` immediately so you can track progress
+3. **Executes asynchronously** -- Runs each step in sequence, persisting progress at each checkpoint
+4. **Supports resume** -- If a step fails, you can resume the task from the last successful checkpoint
+
+### Transfer Step Types
+
+| Step | Description |
+|------|-------------|
+| `dex_withdraw` | Withdraw funds from a perp venue to the user's wallet |
+| `bridge_swap` | Cross-chain bridge transfer (powered by LiFi) |
+| `dex_deposit` | Deposit funds into a perp venue |
+| `wait_for_arrival` | Poll and wait for asset arrival on the destination |
+
+### Task Statuses
+
+| Status | Description |
+|--------|-------------|
+| `PENDING` | Task created, awaiting execution |
+| `IN_PROGRESS` | Currently executing transfer steps |
+| `COMPLETED` | All steps finished successfully |
+| `FAILED` | A step failed (can be resumed) |
+| `CANCELLED` | Task was cancelled (can be resumed) |
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Getting Started" icon="rocket" href="/server-wallets/uoa/getting-started">
+Set up your first UOA integration with step-by-step instructions.
+</Card>
+
+<Card title="API Reference" icon="code" href="/server-wallets/uoa/api-reference">
+Explore the complete API surface for accounts, transfers, wallets, and more.
+</Card>
+</CardGroup>

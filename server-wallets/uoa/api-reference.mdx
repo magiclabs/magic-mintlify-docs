@@ -1,0 +1,1403 @@
+---
+title: "API Reference"
+description: "Complete API reference for Unified Orchestration Accounts covering account management, wallet operations, transfers, tasks, withdrawals, and cross-chain bridging."
+---
+
+## Authentication
+
+All endpoints require the following headers unless otherwise noted:
+
+<ParamField header="Authorization" type="string" required>
+Bearer token (JWT) for end-user authentication. Format: `Bearer YOUR_JWT_TOKEN`
+</ParamField>
+
+<ParamField header="X-MAGIC-SECRET-KEY" type="string" required>
+Your Magic secret key for application-level authentication.
+</ParamField>
+
+## Error Responses
+
+All endpoints return standard HTTP status codes with a consistent error format:
+
+```json
+{
+  "detail": "Error message describing what went wrong"
+}
+```
+
+| Status | Description |
+|--------|-------------|
+| `400` | Bad request -- invalid input, unsupported chain/token combination |
+| `401` | Unauthorized -- missing or invalid authentication |
+| `403` | Forbidden -- inactive app or invalid secret key |
+| `404` | Not found -- user, task, or app does not exist |
+| `409` | Conflict -- duplicate data or task already in progress |
+| `500` | Internal server error |
+
+---
+
+## Account Management
+
+### Create or Fetch Account
+
+Create a new account or return the existing one for the authenticated user. Wallets are provisioned across all supported chains automatically.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'YOUR_UOA_BASE_URL/account' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "app_user_id": "user-123",
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "public_address": {
+    "ETH": "0x1234567890abcdef1234567890abcdef12345678",
+    "SOL": "7nYB5F2xVT9hVjhxUoZ5HQxvPz2kTmSoQvGPmxfTjKN"
+  },
+  "perp_dex_status": {}
+}
+```
+
+#### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the account was created or fetched successfully.
+</ResponseField>
+
+<ResponseField name="app_user_id" type="string">
+The user identifier from your application (JWT `sub` claim).
+</ResponseField>
+
+<ResponseField name="user_id" type="string">
+The UOA-internal user UUID.
+</ResponseField>
+
+<ResponseField name="public_address" type="object">
+Map of chain code to wallet address (e.g., `{"ETH": "0x...", "SOL": "7nYB..."}`).
+</ResponseField>
+
+<ResponseField name="perp_dex_status" type="object">
+Map of DEX venue to initialization status.
+</ResponseField>
+
+---
+
+### Get Account Info
+
+Return the authenticated user's stored account state.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'YOUR_UOA_BASE_URL/account' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "app_user_id": "user-123",
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "public_address": {
+    "ETH": "0x1234...5678",
+    "ARB": "0x1234...5678",
+    "SOL": "7nYB5F...TjKN"
+  },
+  "perp_dex_status": {
+    "HYPERLIQUID": { "initialized": true }
+  }
+}
+```
+
+#### Response Fields
+
+<ResponseField name="app_user_id" type="string">
+The user identifier from your application.
+</ResponseField>
+
+<ResponseField name="user_id" type="string">
+The UOA-internal user UUID.
+</ResponseField>
+
+<ResponseField name="public_address" type="object">
+Map of chain code to wallet address.
+</ResponseField>
+
+<ResponseField name="perp_dex_status" type="object">
+Map of DEX venue to initialization status.
+</ResponseField>
+
+---
+
+### Get Wallet Balances
+
+Get on-chain wallet balances for the authenticated user across all chains.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'YOUR_UOA_BASE_URL/account/wallet' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "public_address": {
+    "ETH": "0x1234...5678",
+    "ARB": "0x1234...5678"
+  },
+  "assets": {
+    "ETH": { "ETH": "0.05", "USDC": "100.00" },
+    "ARB": { "ETH": "0.01", "USDC": "250.00" }
+  }
+}
+```
+
+#### Response Fields
+
+<ResponseField name="public_address" type="object">
+Map of chain code to wallet address.
+</ResponseField>
+
+<ResponseField name="assets" type="object">
+Map of chain code to token balances. Each chain maps token codes to decimal string amounts.
+</ResponseField>
+
+---
+
+## Perp DEX Management
+
+### Check DEX Requirements
+
+Check whether the authenticated user meets the requirements to initialize a perp DEX venue (e.g., minimum balance, gas availability).
+
+```bash cURL icon="square-terminal"
+curl -X POST 'YOUR_UOA_BASE_URL/account/check-perp-dex-requirements' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "dex": "HYPERLIQUID"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "dex": "HYPERLIQUID",
+  "requirements_met": true,
+  "requirements": {
+    "min_balance": "5.00",
+    "has_gas": true
+  },
+  "message": "All requirements met"
+}
+```
+
+#### Request Parameters
+
+<ParamField body="dex" type="string" required>
+The DEX venue to check. Values: `HYPERLIQUID`, `NADO`, `X10`, `POLYMARKET`
+</ParamField>
+
+#### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the check completed successfully.
+</ResponseField>
+
+<ResponseField name="dex" type="string">
+The DEX venue that was checked.
+</ResponseField>
+
+<ResponseField name="requirements_met" type="boolean">
+Whether all requirements are satisfied for initialization.
+</ResponseField>
+
+<ResponseField name="requirements" type="object">
+Detailed requirements breakdown (venue-specific).
+</ResponseField>
+
+<ResponseField name="message" type="string">
+Human-readable status message.
+</ResponseField>
+
+---
+
+### Initialize DEX
+
+Initialize a perp DEX venue for the authenticated user. This handles venue-specific onboarding flows.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'YOUR_UOA_BASE_URL/account/init-perp-dex' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "dex": "HYPERLIQUID",
+    "force_reinit": false
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "dex": "HYPERLIQUID",
+  "status": {
+    "initialized": true,
+    "onboarded_at": "2026-04-01T12:00:00Z"
+  },
+  "message": "Hyperliquid initialized successfully"
+}
+```
+
+#### Request Parameters
+
+<ParamField body="dex" type="string" required>
+The DEX venue to initialize. Values: `HYPERLIQUID`, `NADO`, `X10`, `POLYMARKET`
+</ParamField>
+
+<ParamField body="force_reinit" type="boolean" default="false">
+Force re-initialization even if the venue is already set up.
+</ParamField>
+
+#### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether initialization completed successfully.
+</ResponseField>
+
+<ResponseField name="dex" type="string">
+The DEX venue that was initialized.
+</ResponseField>
+
+<ResponseField name="status" type="object">
+Venue-specific initialization status.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+Human-readable status message.
+</ResponseField>
+
+---
+
+### Get DEX Assets
+
+Get perp DEX asset state including balances and transfer rules for a specific venue.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'YOUR_UOA_BASE_URL/account/perp?dex=HYPERLIQUID' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "dex": "HYPERLIQUID",
+  "initialized": true,
+  "assets": {
+    "USDC": "500.00",
+    "unrealized_pnl": "12.50"
+  },
+  "transfer_rules": {
+    "chain": "ARB",
+    "token": "USDC",
+    "deposit": {
+      "supported": true,
+      "minimum_amount": "5.00",
+      "fee": {
+        "amount": "0",
+        "token": "USDC",
+        "fee_type": "none",
+        "note": null
+      },
+      "note": null
+    },
+    "withdrawal": {
+      "supported": true,
+      "minimum_amount": "1.00",
+      "fee": {
+        "amount": "1.00",
+        "token": "USDC",
+        "fee_type": "fixed",
+        "note": "Fixed withdrawal fee"
+      },
+      "note": null
+    }
+  },
+  "error": null
+}
+```
+
+#### Query Parameters
+
+<ParamField query="dex" type="string" required>
+The DEX venue to query. Values: `HYPERLIQUID`, `NADO`, `X10`, `POLYMARKET`
+</ParamField>
+
+#### Response Fields
+
+<ResponseField name="dex" type="string">
+The DEX venue queried.
+</ResponseField>
+
+<ResponseField name="initialized" type="boolean">
+Whether the venue is initialized for this user.
+</ResponseField>
+
+<ResponseField name="assets" type="object">
+Token balances and positions on the venue. `null` if not initialized.
+</ResponseField>
+
+<ResponseField name="transfer_rules" type="object">
+Deposit and withdrawal rules including minimum amounts and fees. `null` if not initialized.
+
+<Expandable title="transfer_rules fields">
+<ResponseField name="chain" type="string">
+The chain used for deposits/withdrawals.
+</ResponseField>
+
+<ResponseField name="token" type="string">
+The token used for deposits/withdrawals.
+</ResponseField>
+
+<ResponseField name="deposit" type="object">
+Deposit rules: `supported`, `minimum_amount`, `fee`, and `note`.
+</ResponseField>
+
+<ResponseField name="withdrawal" type="object">
+Withdrawal rules: `supported`, `minimum_amount`, `fee`, and `note`.
+</ResponseField>
+</Expandable>
+</ResponseField>
+
+<ResponseField name="error" type="string">
+Error message if the query failed. `null` on success.
+</ResponseField>
+
+---
+
+### Get DEX Credentials
+
+Get platform-specific API credentials for the authenticated user's DEX account.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'YOUR_UOA_BASE_URL/account/perp-credentials?dex=HYPERLIQUID' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "dex": "HYPERLIQUID",
+  "initialized": true,
+  "api_key": "...",
+  "api_secret": "...",
+  "error": null
+}
+```
+
+#### Query Parameters
+
+<ParamField query="dex" type="string" required>
+The DEX venue to query credentials for. Values: `HYPERLIQUID`, `NADO`, `X10`, `POLYMARKET`
+</ParamField>
+
+#### Response Fields
+
+<ResponseField name="dex" type="string">
+The DEX venue queried.
+</ResponseField>
+
+<ResponseField name="initialized" type="boolean">
+Whether the venue is initialized for this user.
+</ResponseField>
+
+<ResponseField name="error" type="string">
+Error message if the query failed. `null` on success.
+</ResponseField>
+
+<Info>
+Additional credential fields are venue-specific and vary by DEX.
+</Info>
+
+---
+
+### Get DEX Transfer History
+
+Get DEX-native transfer history for the authenticated user.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'YOUR_UOA_BASE_URL/account/perp-dex-transfers?dex=HYPERLIQUID' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "dex": "HYPERLIQUID",
+  "results": [
+    {
+      "type": "deposit",
+      "amount": "100.00",
+      "token": "USDC",
+      "timestamp": "2026-04-01T12:00:00Z"
+    }
+  ],
+  "error": null
+}
+```
+
+#### Query Parameters
+
+<ParamField query="dex" type="string" required>
+The DEX venue to query transfer history for. Values: `HYPERLIQUID`, `NADO`, `X10`, `POLYMARKET`
+</ParamField>
+
+#### Response Fields
+
+<ResponseField name="dex" type="string">
+The DEX venue queried.
+</ResponseField>
+
+<ResponseField name="results" type="array">
+List of transfer records (venue-specific format).
+</ResponseField>
+
+<ResponseField name="error" type="string">
+Error message if the query failed. `null` on success.
+</ResponseField>
+
+---
+
+## Polymarket Trading
+
+### Place Buy Order
+
+Place a BUY order on Polymarket for the authenticated user.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'YOUR_UOA_BASE_URL/account/polymarket/buy' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "token_id": "71321045679252212...",
+    "price": "0.55",
+    "size": "10",
+    "order_type": "GTC"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "side": "BUY",
+  "token_id": "71321045679252212...",
+  "price": "0.55",
+  "size": "10",
+  "order_type": "GTC",
+  "order_id": "0xabc123...",
+  "status": "filled",
+  "message": "Order placed successfully",
+  "error": null,
+  "raw_response": null
+}
+```
+
+#### Request Parameters
+
+<ParamField body="token_id" type="string" required>
+The Polymarket condition token ID for the outcome to trade.
+</ParamField>
+
+<ParamField body="price" type="string" required>
+The limit price (between 0 and 1, representing probability).
+</ParamField>
+
+<ParamField body="size" type="string" required>
+The order size in USDC.
+</ParamField>
+
+<ParamField body="order_type" type="string" default="GTC">
+Order type. Values: `GTC` (Good Till Cancelled), `FOK` (Fill or Kill), `FAK` (Fill and Kill).
+</ParamField>
+
+#### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the order was placed successfully.
+</ResponseField>
+
+<ResponseField name="side" type="string">
+The order side (`BUY`).
+</ResponseField>
+
+<ResponseField name="order_id" type="string">
+The Polymarket order ID. `null` if the order failed.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+The order status. `null` if the order failed.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+Human-readable status message.
+</ResponseField>
+
+<ResponseField name="error" type="string">
+Error message if the order failed. `null` on success.
+</ResponseField>
+
+---
+
+### Place Sell Order
+
+Place a SELL order on Polymarket. Uses the same request and response format as the buy endpoint.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'YOUR_UOA_BASE_URL/account/polymarket/sell' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "token_id": "71321045679252212...",
+    "price": "0.60",
+    "size": "5",
+    "order_type": "GTC"
+  }'
+```
+
+The request parameters and response fields are identical to the [Buy Order](#place-buy-order) endpoint, with `side` set to `SELL`.
+
+---
+
+## Wallet Operations
+
+### Sign Data
+
+Sign data with the authenticated user's Magic wallet.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'YOUR_UOA_BASE_URL/wallet/sign' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "message": "Hello, world!"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "signature": "0xabcdef1234567890...",
+  "raw_data_hash": "0x1234567890abcdef...",
+  "app_user_id": "user-123"
+}
+```
+
+#### Request Parameters
+
+<ParamField body="raw_data_hash" type="string">
+A `0x`-prefixed hex hash to sign directly. Provide either this or `message`.
+</ParamField>
+
+<ParamField body="message" type="string">
+A plain text message to hash (keccak256) and sign. Provide either this or `raw_data_hash`.
+</ParamField>
+
+<Warning>
+You must provide exactly one of `raw_data_hash` or `message`. Providing both or neither will return an error.
+</Warning>
+
+#### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the signing operation completed successfully.
+</ResponseField>
+
+<ResponseField name="signature" type="string">
+The hex-encoded signature.
+</ResponseField>
+
+<ResponseField name="raw_data_hash" type="string">
+The hash that was signed.
+</ResponseField>
+
+<ResponseField name="app_user_id" type="string">
+The user identifier from your application.
+</ResponseField>
+
+---
+
+## Transfer Operations
+
+### Estimate Transfer Cost
+
+Estimate the cost of a transfer route before executing it.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'YOUR_UOA_BASE_URL/transfer/estimate-cost' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "source": "WALLET",
+    "destination": "PERP_DEX",
+    "amount": "100",
+    "chain": "ARB",
+    "token": "USDC"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "source": "WALLET",
+  "destination": "PERP_DEX",
+  "amount": "100",
+  "steps": [
+    {
+      "action": "dex_deposit",
+      "dex": "HYPERLIQUID",
+      "cost_eth": "0.0001",
+      "cost_usdc": "0.25",
+      "breakdown": {
+        "gas_cost_eth": "0.0001",
+        "bridge_fee_usdc": "0",
+        "platform_fee_usdc": "0"
+      },
+      "estimated_gas": 150000,
+      "gas_breakdown": null
+    }
+  ],
+  "total_cost_eth": "0.0001",
+  "total_cost_usdc": "0.25",
+  "message": null,
+  "route": null
+}
+```
+
+#### Request Parameters
+
+<ParamField body="source" type="string" required>
+Where to transfer from. Values: `WALLET`, `PERP_DEX`, `POLYMARKET`
+</ParamField>
+
+<ParamField body="destination" type="string" required>
+Where to transfer to. Values: `WALLET`, `PERP_DEX`, `POLYMARKET`
+</ParamField>
+
+<ParamField body="amount" type="string" required>
+The amount to transfer as a decimal string (e.g., `"100"`).
+</ParamField>
+
+<ParamField body="chain" type="string" default="ARB">
+The chain context for the transfer. Values: `ETH`, `ARB`, `POL`, `SOL`, `OPT`, `BASE`, `INK`
+</ParamField>
+
+<ParamField body="token" type="string" default="USDC">
+The token to transfer. Values: `ETH`, `WETH`, `USDC`, `USDC_E`, `POL`, `SOL`
+</ParamField>
+
+<ParamField body="transfer_mode" type="string">
+Optional transfer mode. Values: `sponsored` (gas-sponsored), `legacy`
+</ParamField>
+
+#### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the estimate was computed successfully.
+</ResponseField>
+
+<ResponseField name="steps" type="array">
+List of planned transfer steps with individual cost breakdowns.
+
+<Expandable title="Step fields">
+<ResponseField name="action" type="string">
+The transfer action (e.g., `dex_deposit`, `bridge_swap`, `dex_withdraw`).
+</ResponseField>
+
+<ResponseField name="dex" type="string">
+The DEX venue or bridge provider for this step.
+</ResponseField>
+
+<ResponseField name="cost_eth" type="string">
+Estimated cost in ETH.
+</ResponseField>
+
+<ResponseField name="cost_usdc" type="string">
+Estimated cost in USDC.
+</ResponseField>
+
+<ResponseField name="breakdown" type="object">
+Detailed cost breakdown: `gas_cost_eth`, `bridge_fee_usdc`, `platform_fee_usdc`.
+</ResponseField>
+</Expandable>
+</ResponseField>
+
+<ResponseField name="total_cost_eth" type="string">
+Total estimated cost across all steps in ETH.
+</ResponseField>
+
+<ResponseField name="total_cost_usdc" type="string">
+Total estimated cost across all steps in USDC.
+</ResponseField>
+
+---
+
+### Create Transfer
+
+Create and execute a transfer task. The transfer is executed asynchronously. Use the returned `task_id` to monitor progress.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'YOUR_UOA_BASE_URL/transfer' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "source": "PERP_DEX",
+    "destination": "POLYMARKET",
+    "amount": "50",
+    "chain": "ARB",
+    "token": "USDC"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "message": "Transfer task created and executing"
+}
+```
+
+The response also includes an `X-Task-ID` header for convenience.
+
+#### Request Parameters
+
+The request parameters are identical to [Estimate Transfer Cost](#estimate-transfer-cost).
+
+#### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the task was created successfully.
+</ResponseField>
+
+<ResponseField name="task_id" type="string">
+The UUID of the created transfer task. Use this to poll for status.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+Human-readable status message.
+</ResponseField>
+
+---
+
+## Task Management
+
+### List Tasks
+
+Get the authenticated user's transfer tasks, ordered by most recent.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'YOUR_UOA_BASE_URL/tasks?limit=10' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "tasks": [
+    {
+      "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "user_id": "550e8400-e29b-41d4-a716-446655440000",
+      "source": "WALLET",
+      "destination": "PERP_DEX",
+      "amount": "100",
+      "chain": "ARB",
+      "token": "USDC",
+      "status": "COMPLETED",
+      "created_at": "2026-04-01T12:00:00Z",
+      "updated_at": "2026-04-01T12:01:30Z",
+      "progress": {},
+      "metadata": null
+    }
+  ]
+}
+```
+
+#### Query Parameters
+
+<ParamField query="limit" type="integer" default="5">
+Maximum number of tasks to return.
+</ParamField>
+
+#### Response Fields
+
+<ResponseField name="user_id" type="string">
+The UOA-internal user UUID.
+</ResponseField>
+
+<ResponseField name="tasks" type="array">
+List of task objects.
+
+<Expandable title="Task fields">
+<ResponseField name="task_id" type="string">
+The task UUID.
+</ResponseField>
+
+<ResponseField name="source" type="string">
+Transfer source location.
+</ResponseField>
+
+<ResponseField name="destination" type="string">
+Transfer destination location.
+</ResponseField>
+
+<ResponseField name="amount" type="string">
+Transfer amount as a decimal string.
+</ResponseField>
+
+<ResponseField name="chain" type="string">
+Chain code for the transfer.
+</ResponseField>
+
+<ResponseField name="token" type="string">
+Token code for the transfer.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+Task status: `PENDING`, `IN_PROGRESS`, `COMPLETED`, `FAILED`, or `CANCELLED`.
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+ISO 8601 timestamp of task creation.
+</ResponseField>
+
+<ResponseField name="updated_at" type="string">
+ISO 8601 timestamp of last update.
+</ResponseField>
+
+<ResponseField name="progress" type="object">
+Step-level execution progress.
+</ResponseField>
+
+<ResponseField name="metadata" type="object">
+Additional task metadata including route plan. `null` if not available.
+</ResponseField>
+</Expandable>
+</ResponseField>
+
+---
+
+### Get Task
+
+Get a specific transfer task by ID.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'YOUR_UOA_BASE_URL/task/a1b2c3d4-e5f6-7890-abcd-ef1234567890' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "source": "WALLET",
+  "destination": "PERP_DEX",
+  "amount": "100",
+  "chain": "ARB",
+  "token": "USDC",
+  "status": "IN_PROGRESS",
+  "created_at": "2026-04-01T12:00:00Z",
+  "updated_at": "2026-04-01T12:00:45Z",
+  "progress": {
+    "current_step": 1,
+    "total_steps": 2,
+    "steps": [
+      { "action": "approve", "status": "completed" },
+      { "action": "dex_deposit", "status": "in_progress" }
+    ]
+  },
+  "metadata": null
+}
+```
+
+#### Path Parameters
+
+<ParamField path="task_id" type="string" required>
+The UUID of the task to retrieve.
+</ParamField>
+
+#### Response Fields
+
+The response fields are the same as those in the [List Tasks](#list-tasks) task object.
+
+---
+
+### Resume Task
+
+Resume a failed or cancelled transfer task from the last successful checkpoint.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'YOUR_UOA_BASE_URL/task/a1b2c3d4-e5f6-7890-abcd-ef1234567890/resume' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "message": "Task resumed"
+}
+```
+
+#### Path Parameters
+
+<ParamField path="task_id" type="string" required>
+The UUID of the task to resume.
+</ParamField>
+
+<Info>
+Only tasks with status `FAILED` or `CANCELLED` can be resumed. Attempting to resume a `COMPLETED`, `IN_PROGRESS`, or `PENDING` task will return an error.
+</Info>
+
+#### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the task was resumed successfully.
+</ResponseField>
+
+<ResponseField name="task_id" type="string">
+The UUID of the resumed task.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+Human-readable status message.
+</ResponseField>
+
+---
+
+## Withdraw
+
+### Withdraw to External Address
+
+Send funds from the authenticated user's Magic wallet to an external address.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'YOUR_UOA_BASE_URL/withdraw' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "to_address": "0xRecipientAddress...",
+    "amount": "50",
+    "token": "USDC",
+    "chain": "ARB"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "tx_hash": "0xabcdef1234567890...",
+  "from_address": "0x1234...5678",
+  "to_address": "0xRecipientAddress...",
+  "amount": "50",
+  "token": "USDC",
+  "chain": "ARB",
+  "message": "Withdrawal completed"
+}
+```
+
+#### Request Parameters
+
+<ParamField body="to_address" type="string" required>
+The recipient wallet address.
+</ParamField>
+
+<ParamField body="amount" type="string" required>
+The amount to withdraw as a decimal string.
+</ParamField>
+
+<ParamField body="token" type="string" default="USDC">
+The token to withdraw. Values: `ETH`, `WETH`, `USDC`, `USDC_E`, `POL`, `SOL`
+</ParamField>
+
+<ParamField body="chain" type="string" default="ARB">
+The chain to withdraw on. Values: `ETH`, `ARB`, `POL`, `SOL`, `OPT`, `BASE`, `INK`
+</ParamField>
+
+#### Supported Token/Chain Combinations
+
+| Chain | Supported Tokens |
+|-------|-----------------|
+| ETH | ETH, WETH, USDC, USDC_E |
+| ARB | ETH, WETH, USDC, USDC_E |
+| POL | POL, USDC, USDC_E |
+| SOL | SOL, USDC |
+| OPT | ETH, WETH, USDC, USDC_E |
+| BASE | ETH, WETH, USDC |
+| INK | ETH, WETH, USDC |
+
+#### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the withdrawal was executed successfully.
+</ResponseField>
+
+<ResponseField name="tx_hash" type="string">
+The on-chain transaction hash.
+</ResponseField>
+
+<ResponseField name="from_address" type="string">
+The sender's wallet address.
+</ResponseField>
+
+<ResponseField name="to_address" type="string">
+The recipient's wallet address.
+</ResponseField>
+
+<ResponseField name="amount" type="string">
+The amount withdrawn.
+</ResponseField>
+
+<ResponseField name="token" type="string">
+The token that was withdrawn.
+</ResponseField>
+
+<ResponseField name="chain" type="string">
+The chain the withdrawal was executed on.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+Human-readable status message.
+</ResponseField>
+
+---
+
+## LiFi Cross-Chain Bridge
+
+### Get Quote
+
+Get a LiFi quote for a cross-chain or same-chain token transfer.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'YOUR_UOA_BASE_URL/lifi/quote?from_chain=ETH&to_chain=ARB&from_token=USDC&to_token=USDC&from_amount=1000000' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "action": { "fromChainId": 1, "toChainId": 42161 },
+    "estimate": { "toAmount": "995000", "executionDuration": 120 },
+    "transactionRequest": { "to": "0x...", "data": "0x...", "value": "0" },
+    "tool": "stargate"
+  }
+}
+```
+
+#### Query Parameters
+
+<ParamField query="from_chain" type="string" required>
+Source chain. Values: `ETH`, `ARB`, `POL`, `SOL`, `INK`
+</ParamField>
+
+<ParamField query="to_chain" type="string" required>
+Destination chain. Values: `ETH`, `ARB`, `POL`, `SOL`, `INK`
+</ParamField>
+
+<ParamField query="from_token" type="string" required>
+Source token. Values: `ETH`, `USDC`, `USDC_E`, `POL`, `SOL`
+</ParamField>
+
+<ParamField query="to_token" type="string" required>
+Destination token. Values: `ETH`, `USDC`, `USDC_E`, `POL`, `SOL`
+</ParamField>
+
+<ParamField query="from_amount" type="string" required>
+Amount in smallest units (e.g., `1000000` for 1 USDC).
+</ParamField>
+
+<ParamField query="slippage" type="number" default="0.005">
+Slippage tolerance between 0 and 1 (e.g., `0.005` for 0.5%).
+</ParamField>
+
+<ParamField query="order" type="string">
+Route preference. Values: `FASTEST`, `CHEAPEST`
+</ParamField>
+
+---
+
+### Execute Quote
+
+Execute a LiFi quote by approving (if needed) and sending the transaction.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'YOUR_UOA_BASE_URL/lifi/execute' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "quote": { "...full quote object from GET /lifi/quote..." }
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "tx_hash": "0xabcdef1234567890..."
+}
+```
+
+#### Request Parameters
+
+<ParamField body="quote" type="object" required>
+The full quote object returned from `GET /lifi/quote`.
+</ParamField>
+
+#### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the transaction was submitted successfully.
+</ResponseField>
+
+<ResponseField name="tx_hash" type="string">
+The transaction hash on the source chain.
+</ResponseField>
+
+---
+
+### Check Transfer Status
+
+Check the status of a LiFi cross-chain transfer.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'YOUR_UOA_BASE_URL/lifi/status?tx_hash=0xabc...&bridge=stargate&from_chain=ETH&to_chain=ARB'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "DONE",
+    "substatus": "COMPLETED",
+    "substatusMessage": "Transfer completed successfully",
+    "receiving": { "amount": "995000", "token": "USDC" },
+    "sending": { "amount": "1000000", "token": "USDC" }
+  }
+}
+```
+
+#### Query Parameters
+
+<ParamField query="tx_hash" type="string" required>
+Transaction hash on the source chain.
+</ParamField>
+
+<ParamField query="bridge" type="string" required>
+Bridge tool key from the quote response (e.g., `stargate`).
+</ParamField>
+
+<ParamField query="from_chain" type="string" required>
+Source chain code.
+</ParamField>
+
+<ParamField query="to_chain" type="string" required>
+Destination chain code.
+</ParamField>
+
+<Info>
+This endpoint does not require authentication.
+</Info>
+
+---
+
+### Wait for Transfer
+
+Poll LiFi status until the transfer completes or fails. This is a long-running endpoint.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'YOUR_UOA_BASE_URL/lifi/wait?tx_hash=0xabc...&bridge=stargate&from_chain=ETH&to_chain=ARB&timeout_sec=300'
+```
+
+#### Query Parameters
+
+<ParamField query="tx_hash" type="string" required>
+Transaction hash on the source chain.
+</ParamField>
+
+<ParamField query="bridge" type="string" required>
+Bridge tool key from the quote response.
+</ParamField>
+
+<ParamField query="from_chain" type="string" required>
+Source chain code.
+</ParamField>
+
+<ParamField query="to_chain" type="string" required>
+Destination chain code.
+</ParamField>
+
+<ParamField query="poll_interval_sec" type="integer" default="5">
+Polling interval in seconds. Range: 5--60.
+</ParamField>
+
+<ParamField query="timeout_sec" type="integer" default="300">
+Maximum wait time in seconds. Range: 30--600.
+</ParamField>
+
+The response format is the same as [Check Transfer Status](#check-transfer-status).
+
+<Info>
+This endpoint does not require authentication.
+</Info>
+
+---
+
+## Sponsored Transfers (Testnet)
+
+### Alchemy Sponsored Transfer
+
+Send a gas-sponsored transfer via Alchemy wallet APIs. Currently available on testnet chains only.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'YOUR_UOA_BASE_URL/alchemy/sponsored-transfer' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "chain": "ARB",
+    "network": "TESTNET",
+    "token": "USDC",
+    "amount": "10",
+    "destination_address": "0xRecipient...",
+    "fee_bps": 100
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "user_operation_hash": "0x...",
+  "chain": "ARB",
+  "network": "TESTNET",
+  "token": "USDC",
+  "total_amount": "10",
+  "transfer_amount": "9.90",
+  "fee_amount": "0.10",
+  "fee_bps": 100,
+  "from_owner_address": "0x...",
+  "transfer_to_address": "0xRecipient...",
+  "fee_to_address": "0x...",
+  "message": "Sponsored transfer completed"
+}
+```
+
+#### Request Parameters
+
+<ParamField body="chain" type="string" required>
+The chain to execute on. Values: `ETH`, `ARB`, `POL`
+</ParamField>
+
+<ParamField body="network" type="string" default="TESTNET">
+Network type. Currently only `TESTNET` is supported.
+</ParamField>
+
+<ParamField body="token" type="string" required>
+The token to transfer. Values: `ETH`, `POL`, `USDC`
+</ParamField>
+
+<ParamField body="amount" type="string" required>
+The total amount to send (transfer + fee) as a decimal string.
+</ParamField>
+
+<ParamField body="destination_address" type="string" required>
+The recipient wallet address.
+</ParamField>
+
+<ParamField body="fee_bps" type="integer" default="100">
+Fee in basis points deducted from the total amount. Range: 1--9999. (100 bps = 1%)
+</ParamField>
+
+<ParamField body="fee_recipient_address" type="string">
+Optional address to receive the fee. Defaults to a configured fee address.
+</ParamField>
+
+#### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the sponsored transfer completed successfully.
+</ResponseField>
+
+<ResponseField name="user_operation_hash" type="string">
+The user operation hash for tracking.
+</ResponseField>
+
+<ResponseField name="total_amount" type="string">
+The total amount sent (transfer + fee).
+</ResponseField>
+
+<ResponseField name="transfer_amount" type="string">
+The amount received by the destination address.
+</ResponseField>
+
+<ResponseField name="fee_amount" type="string">
+The fee deducted from the total amount.
+</ResponseField>
+
+<ResponseField name="fee_bps" type="integer">
+The fee rate in basis points.
+</ResponseField>
+
+<Warning>
+Sponsored transfers are currently only available on testnet (Sepolia, Amoy). Mainnet support is coming soon.
+</Warning>

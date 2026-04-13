@@ -82,6 +82,14 @@
             ]
           },
           {
+            "group": "Unified Orchestration Accounts",
+            "pages": [
+              "server-wallets/uoa/overview",
+              "server-wallets/uoa/getting-started",
+              "server-wallets/uoa/api-reference"
+            ]
+          },
+          {
             "group": "Core API",
             "pages": [
               "server-wallets/core-api/overview",
