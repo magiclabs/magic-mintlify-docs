@@ -244,6 +244,45 @@ See [Error Handling](#response-and-error-handling) for more examples.
     * `oauth_provider` (str): OAuth provider, if any
     * `wallets` (arr): Array of user's wallet addresses
 
+### `get_metadata_by_public_addresses`
+
+Retrieves metadata for a batch of users by their Ethereum public addresses in a single request. This method is useful when you need to look up information for a large number of users, as it avoids the rate limiting issues you would encounter by calling [`get_metadata_by_public_address`](#get_metadata_by_public_address) in a loop.
+
+```python Python icon="python"
+User.get_metadata_by_public_addresses(public_addresses)
+```
+
+**Arguments**
+
+* `public_addresses` (arr): Array of Ethereum public addresses. Maximum of 500 addresses per request.
+
+**Raises**
+
+* `RateLimitingError`: If you have sent too many requests within a given period of time.
+* `BadRequestError`: If the batch size exceeds 500 addresses, or if any other supplied parameters are invalid.
+* `AuthenticationError`: If your API **secret** key cannot be authenticated with Magic API server
+* `ForbiddenError`: If your API **secret** key is not authorized to access the resources
+* `APIError`: For any other API error
+* `APIConnectionError`: If your server cannot communicate with the Magic server. Normally this is a network communication error.
+
+<Note>
+See [Error Handling](#response-and-error-handling) for more examples.
+</Note>
+
+**Returns**
+
+* A [`MagicResponse`](/embedded-wallets/sdk/server-side/python#magicresponse): The `data` field contains:
+  * `users` (list): Successfully resolved users. Each entry contains:
+    * `issuer` (str): The user's Decentralized ID
+    * `public_address` (str): The user's Ethereum public address
+    * `email` (str): The user's email address
+    * `phone_number` (str): The user's phone number
+    * `oauth_provider` (str): OAuth provider, if any
+    * `subject` (str): Federated identity subject, if any
+    * `username` (str): WebAuthn username, if any
+    * `wallets` (arr): Array of user's wallet addresses
+  * `errors` (dict): A mapping of `public_address` → error message for any addresses that could not be resolved (e.g. user not found, address belongs to a different app, or malformed address). Successfully resolved addresses are not present in this dict.
+
 ### `get_metadata_by_token`
 
 Retrieves information about the user by the supplied DID Token.
