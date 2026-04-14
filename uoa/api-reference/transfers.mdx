@@ -5,7 +5,15 @@ description: "API reference for UOA transfer operations including cost estimatio
 
 ## Authentication
 
-<Snippet file="uoa-auth.mdx" />
+All endpoints require the following headers unless otherwise noted:
+
+<ParamField header="Authorization" type="string" required>
+Bearer token (JWT) for end-user authentication. Format: `Bearer YOUR_JWT_TOKEN`
+</ParamField>
+
+<ParamField header="X-MAGIC-SECRET-KEY" type="string" required>
+Your Magic secret key for application-level authentication.
+</ParamField>
 
 ---
 
