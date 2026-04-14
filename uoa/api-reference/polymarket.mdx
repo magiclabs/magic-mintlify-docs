@@ -1,0 +1,110 @@
+---
+title: "Polymarket Trading"
+description: "API reference for placing buy and sell orders on Polymarket through UOA."
+---
+
+## Authentication
+
+<Snippet file="uoa-auth.mdx" />
+
+---
+
+## Place Buy Order
+
+Place a BUY order on Polymarket for the authenticated user.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/account/polymarket/buy' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "token_id": "71321045679252212...",
+    "price": "0.55",
+    "size": "10",
+    "order_type": "GTC"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "side": "BUY",
+  "token_id": "71321045679252212...",
+  "price": "0.55",
+  "size": "10",
+  "order_type": "GTC",
+  "order_id": "0xabc123...",
+  "status": "filled",
+  "message": "Order placed successfully",
+  "error": null,
+  "raw_response": null
+}
+```
+
+### Request Parameters
+
+<ParamField body="token_id" type="string" required>
+The Polymarket condition token ID for the outcome to trade.
+</ParamField>
+
+<ParamField body="price" type="string" required>
+The limit price (between 0 and 1, representing probability).
+</ParamField>
+
+<ParamField body="size" type="string" required>
+The order size in USDC.
+</ParamField>
+
+<ParamField body="order_type" type="string" default="GTC">
+Order type. Values: `GTC` (Good Till Cancelled), `FOK` (Fill or Kill), `FAK` (Fill and Kill).
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the order was placed successfully.
+</ResponseField>
+
+<ResponseField name="side" type="string">
+The order side (`BUY`).
+</ResponseField>
+
+<ResponseField name="order_id" type="string">
+The Polymarket order ID. `null` if the order failed.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+The order status. `null` if the order failed.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+Human-readable status message.
+</ResponseField>
+
+<ResponseField name="error" type="string">
+Error message if the order failed. `null` on success.
+</ResponseField>
+
+---
+
+## Place Sell Order
+
+Place a SELL order on Polymarket. Uses the same request and response format as the buy endpoint.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/account/polymarket/sell' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "token_id": "71321045679252212...",
+    "price": "0.60",
+    "size": "5",
+    "order_type": "GTC"
+  }'
+```
+
+The request parameters and response fields are identical to the [Buy Order](#place-buy-order) endpoint, with `side` set to `SELL`.

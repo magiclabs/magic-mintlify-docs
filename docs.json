@@ -82,14 +82,6 @@
             ]
           },
           {
-            "group": "Unified Orchestration Accounts",
-            "pages": [
-              "server-wallets/uoa/overview",
-              "server-wallets/uoa/getting-started",
-              "server-wallets/uoa/api-reference"
-            ]
-          },
-          {
             "group": "Core API",
             "pages": [
               "server-wallets/core-api/overview",
@@ -338,6 +330,30 @@
         ]
       },
       {
+        "tab": "Unified Orchestration Accounts",
+        "icon": "layer-group",
+        "groups": [
+          {
+            "group": "Unified Orchestration Accounts",
+            "pages": [
+              "uoa/overview",
+              "uoa/getting-started"
+            ]
+          },
+          {
+            "group": "API Reference",
+            "pages": [
+              "uoa/api-reference/accounts",
+              "uoa/api-reference/perp-dex",
+              "uoa/api-reference/transfers",
+              "uoa/api-reference/wallet-operations",
+              "uoa/api-reference/polymarket",
+              "uoa/api-reference/bridging"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "Recipes",
         "icon": "puzzle-piece",
         "groups": [
@@ -423,6 +439,18 @@
     {
       "source": "/embedded-wallets/blockchains/multichain",
       "destination": "/embedded-wallets/wallets/features/multichain"
+    },
+    {
+      "source": "/server-wallets/uoa/overview",
+      "destination": "/uoa/overview"
+    },
+    {
+      "source": "/server-wallets/uoa/getting-started",
+      "destination": "/uoa/getting-started"
+    },
+    {
+      "source": "/server-wallets/uoa/api-reference",
+      "destination": "/uoa/api-reference/accounts"
     }
   ],
   "logo": {

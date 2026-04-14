@@ -1,0 +1,321 @@
+---
+title: "Perp DEX"
+description: "API reference for UOA perpetual DEX venue management including initialization, balances, credentials, and transfer history."
+---
+
+## Authentication
+
+<Snippet file="uoa-auth.mdx" />
+
+---
+
+## Check DEX Requirements
+
+Check whether the authenticated user meets the requirements to initialize a perp DEX venue (e.g., minimum balance, gas availability).
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/account/check-perp-dex-requirements' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "dex": "hyperliquid"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "dex": "hyperliquid",
+  "requirements_met": true,
+  "requirements": {
+    "min_balance": "5.00",
+    "has_gas": true
+  },
+  "message": "All requirements met"
+}
+```
+
+### Request Parameters
+
+<ParamField body="dex" type="string" required>
+The DEX venue to check. Values: `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the check completed successfully.
+</ResponseField>
+
+<ResponseField name="dex" type="string">
+The DEX venue that was checked.
+</ResponseField>
+
+<ResponseField name="requirements_met" type="boolean">
+Whether all requirements are satisfied for initialization.
+</ResponseField>
+
+<ResponseField name="requirements" type="object">
+Detailed requirements breakdown (venue-specific).
+</ResponseField>
+
+<ResponseField name="message" type="string">
+Human-readable status message.
+</ResponseField>
+
+---
+
+## Initialize DEX
+
+Initialize a perp DEX venue for the authenticated user. This handles venue-specific onboarding flows.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/account/init-perp-dex' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "dex": "hyperliquid",
+    "force_reinit": false
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "dex": "hyperliquid",
+  "status": {
+    "initialized": true,
+    "onboarded_at": "2026-04-01T12:00:00Z"
+  },
+  "message": "Hyperliquid initialized successfully"
+}
+```
+
+### Request Parameters
+
+<ParamField body="dex" type="string" required>
+The DEX venue to initialize. Values: `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
+</ParamField>
+
+<ParamField body="force_reinit" type="boolean" default="false">
+Force re-initialization even if the venue is already set up.
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether initialization completed successfully.
+</ResponseField>
+
+<ResponseField name="dex" type="string">
+The DEX venue that was initialized.
+</ResponseField>
+
+<ResponseField name="status" type="object">
+Venue-specific initialization status.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+Human-readable status message.
+</ResponseField>
+
+---
+
+## Get DEX Assets
+
+Get perp DEX asset state including balances and transfer rules for a specific venue.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://uoa-server.magic.xyz/account/perp?dex=hyperliquid' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "dex": "hyperliquid",
+  "initialized": true,
+  "assets": {
+    "USDC": "500.00",
+    "unrealized_pnl": "12.50"
+  },
+  "transfer_rules": {
+    "chain": "ARB",
+    "token": "USDC",
+    "deposit": {
+      "supported": true,
+      "minimum_amount": "5.00",
+      "fee": {
+        "amount": "0",
+        "token": "USDC",
+        "fee_type": "none",
+        "note": null
+      },
+      "note": null
+    },
+    "withdrawal": {
+      "supported": true,
+      "minimum_amount": "1.00",
+      "fee": {
+        "amount": "1.00",
+        "token": "USDC",
+        "fee_type": "fixed",
+        "note": "Fixed withdrawal fee"
+      },
+      "note": null
+    }
+  },
+  "error": null
+}
+```
+
+### Query Parameters
+
+<ParamField query="dex" type="string" required>
+The DEX venue to query. Values: `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="dex" type="string">
+The DEX venue queried.
+</ResponseField>
+
+<ResponseField name="initialized" type="boolean">
+Whether the venue is initialized for this user.
+</ResponseField>
+
+<ResponseField name="assets" type="object">
+Token balances and positions on the venue. `null` if not initialized.
+</ResponseField>
+
+<ResponseField name="transfer_rules" type="object">
+Deposit and withdrawal rules including minimum amounts and fees. `null` if not initialized.
+
+<Expandable title="transfer_rules fields">
+<ResponseField name="chain" type="string">
+The chain used for deposits/withdrawals.
+</ResponseField>
+
+<ResponseField name="token" type="string">
+The token used for deposits/withdrawals.
+</ResponseField>
+
+<ResponseField name="deposit" type="object">
+Deposit rules: `supported`, `minimum_amount`, `fee`, and `note`.
+</ResponseField>
+
+<ResponseField name="withdrawal" type="object">
+Withdrawal rules: `supported`, `minimum_amount`, `fee`, and `note`.
+</ResponseField>
+</Expandable>
+</ResponseField>
+
+<ResponseField name="error" type="string">
+Error message if the query failed. `null` on success.
+</ResponseField>
+
+---
+
+## Get DEX Credentials
+
+Get platform-specific API credentials for the authenticated user's DEX account.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://uoa-server.magic.xyz/account/perp-credentials?dex=hyperliquid' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "dex": "hyperliquid",
+  "initialized": true,
+  "api_key": "...",
+  "api_secret": "...",
+  "error": null
+}
+```
+
+### Query Parameters
+
+<ParamField query="dex" type="string" required>
+The DEX venue to query credentials for. Values: `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="dex" type="string">
+The DEX venue queried.
+</ResponseField>
+
+<ResponseField name="initialized" type="boolean">
+Whether the venue is initialized for this user.
+</ResponseField>
+
+<ResponseField name="error" type="string">
+Error message if the query failed. `null` on success.
+</ResponseField>
+
+<Info>
+Additional credential fields are venue-specific and vary by DEX.
+</Info>
+
+---
+
+## Get DEX Transfer History
+
+Get DEX-native transfer history for the authenticated user.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://uoa-server.magic.xyz/account/perp-dex-transfers?dex=hyperliquid' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "dex": "hyperliquid",
+  "results": [
+    {
+      "type": "deposit",
+      "amount": "100.00",
+      "token": "USDC",
+      "timestamp": "2026-04-01T12:00:00Z"
+    }
+  ],
+  "error": null
+}
+```
+
+### Query Parameters
+
+<ParamField query="dex" type="string" required>
+The DEX venue to query transfer history for. Values: `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="dex" type="string">
+The DEX venue queried.
+</ResponseField>
+
+<ResponseField name="results" type="array">
+List of transfer records (venue-specific format).
+</ResponseField>
+
+<ResponseField name="error" type="string">
+Error message if the query failed. `null` on success.
+</ResponseField>

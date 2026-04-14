@@ -1,0 +1,164 @@
+---
+title: "Wallet Operations"
+description: "API reference for UOA wallet signing and withdrawal operations."
+---
+
+## Authentication
+
+<Snippet file="uoa-auth.mdx" />
+
+---
+
+## Sign Data
+
+Sign data with the authenticated user's Magic wallet.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/wallet/sign' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "message": "Hello, world!"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "signature": "0xabcdef1234567890...",
+  "raw_data_hash": "0x1234567890abcdef...",
+  "app_user_id": "user-123"
+}
+```
+
+### Request Parameters
+
+<ParamField body="raw_data_hash" type="string">
+A `0x`-prefixed hex hash to sign directly. Provide either this or `message`.
+</ParamField>
+
+<ParamField body="message" type="string">
+A plain text message to hash (keccak256) and sign. Provide either this or `raw_data_hash`.
+</ParamField>
+
+<Warning>
+You must provide exactly one of `raw_data_hash` or `message`. Providing both or neither will return an error.
+</Warning>
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the signing operation completed successfully.
+</ResponseField>
+
+<ResponseField name="signature" type="string">
+The hex-encoded signature.
+</ResponseField>
+
+<ResponseField name="raw_data_hash" type="string">
+The hash that was signed.
+</ResponseField>
+
+<ResponseField name="app_user_id" type="string">
+The user identifier from your application.
+</ResponseField>
+
+---
+
+## Withdraw to External Address
+
+Send funds from the authenticated user's Magic wallet to an external address.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/withdraw' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "to_address": "0xRecipientAddress...",
+    "amount": "50",
+    "token": "USDC",
+    "chain": "ARB"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "tx_hash": "0xabcdef1234567890...",
+  "from_address": "0x1234...5678",
+  "to_address": "0xRecipientAddress...",
+  "amount": "50",
+  "token": "USDC",
+  "chain": "ARB",
+  "message": "Withdrawal completed"
+}
+```
+
+### Request Parameters
+
+<ParamField body="to_address" type="string" required>
+The recipient wallet address.
+</ParamField>
+
+<ParamField body="amount" type="string" required>
+The amount to withdraw as a decimal string.
+</ParamField>
+
+<ParamField body="token" type="string" default="USDC">
+The token to withdraw. Values: `ETH`, `WETH`, `USDC`, `USDC.E`, `POL`, `SOL`
+</ParamField>
+
+<ParamField body="chain" type="string" default="ARB">
+The chain to withdraw on. Values: `ETH`, `ARB`, `POL`, `SOL`, `STRK`, `INK`
+</ParamField>
+
+### Supported Token/Chain Combinations
+
+| Chain | Supported Tokens |
+|-------|-----------------|
+| ETH | ETH, WETH, USDC, USDC.E |
+| ARB | ETH, WETH, USDC, USDC.E |
+| POL | POL, USDC, USDC.E |
+| SOL | SOL, USDC |
+| STRK | ETH, USDC |
+| INK | ETH, WETH, USDC |
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the withdrawal was executed successfully.
+</ResponseField>
+
+<ResponseField name="tx_hash" type="string">
+The on-chain transaction hash.
+</ResponseField>
+
+<ResponseField name="from_address" type="string">
+The sender's wallet address.
+</ResponseField>
+
+<ResponseField name="to_address" type="string">
+The recipient's wallet address.
+</ResponseField>
+
+<ResponseField name="amount" type="string">
+The amount withdrawn.
+</ResponseField>
+
+<ResponseField name="token" type="string">
+The token that was withdrawn.
+</ResponseField>
+
+<ResponseField name="chain" type="string">
+The chain the withdrawal was executed on.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+Human-readable status message.
+</ResponseField>

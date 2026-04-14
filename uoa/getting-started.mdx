@@ -16,8 +16,8 @@ Visit the [Magic Dashboard](https://dashboard.magic.link) and sign up for a Magi
 In your dashboard, create a new application and obtain your **Secret Key**. You will use this as the `X-MAGIC-SECRET-KEY` header on all requests.
 </Step>
 
-<Step title="Set up an identity provider">
-Configure an [identity provider](/server-wallets/express-api/identity-provider) (Auth0, Firebase Auth, NextAuth, or a custom OIDC provider) that issues JWTs for your users.
+<Step title="Set up authentication">
+Choose one of the authentication options below to issue JWTs for your users.
 </Step>
 
 <Step title="Register your app with UOA">
@@ -38,9 +38,75 @@ curl -X POST 'https://uoa-server.magic.xyz/apps' \
 </Step>
 </Steps>
 
-## Authentication
+## Authentication Options
 
-All API requests require two headers:
+UOA requires a JWT (`Authorization` header) and your Magic secret key (`X-MAGIC-SECRET-KEY` header) on every request. You can obtain the user JWT through either Magic Embedded Wallets or an external identity provider.
+
+<Tabs>
+<Tab title="Magic Embedded Wallets">
+
+Use [Magic Embedded Wallets](/embedded-wallets/introduction) to authenticate users directly in your frontend. The Magic SDK handles login and issues a DID token that you use as the JWT for UOA requests.
+
+### Install the Magic SDK
+
+```bash npm
+npm install magic-sdk
+```
+
+### Initialize Magic
+
+```typescript lib/magic.ts
+import { Magic } from 'magic-sdk';
+
+const magic = new Magic(process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY!);
+```
+
+### Authenticate and get a DID token
+
+```typescript
+// Log in with Email OTP
+const didToken = await magic.auth.loginWithEmailOTP({ email: 'user@example.com' });
+
+// Or use any other Magic login method:
+// await magic.auth.loginWithSMS({ phoneNumber: '+1234567890' })
+// await magic.oauth.loginWithRedirect({ provider: 'google' })
+```
+
+### Use the DID token with UOA
+
+Pass the DID token as the `Authorization` header on your backend when making UOA API calls:
+
+```typescript
+const response = await fetch('https://uoa-server.magic.xyz/account', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${didToken}`,
+    'X-MAGIC-SECRET-KEY': process.env.MAGIC_SECRET_KEY!,
+  },
+});
+```
+
+<Warning>
+The `X-MAGIC-SECRET-KEY` is a server-side secret. Never expose it in client-side code. Use a backend proxy to forward requests to UOA.
+</Warning>
+
+<Info>
+When using Magic Embedded Wallets, you can use the Magic OIDC provider ID from your dashboard when registering your app with UOA. The issuer and JWKS URL are provided by Magic automatically.
+</Info>
+
+</Tab>
+
+<Tab title="External Identity Provider">
+
+Configure an external [identity provider](/server-wallets/express-api/identity-provider) (Auth0, Firebase Auth, NextAuth, or a custom OIDC provider) that issues JWTs for your users.
+
+### Configure your provider
+
+Register your JWT issuer, audience, and JWKS URL with UOA during app registration so it can validate your tokens.
+
+### Send authenticated requests
+
+Include both the user's JWT and your Magic secret key on every request:
 
 ```bash
 Authorization: Bearer <USER_JWT_TOKEN>
@@ -50,6 +116,9 @@ X-MAGIC-SECRET-KEY: <YOUR_MAGIC_SECRET_KEY>
 <Warning>
 The `X-MAGIC-SECRET-KEY` is a server-side secret. Never expose it in client-side code. Use a backend proxy to forward requests to UOA.
 </Warning>
+
+</Tab>
+</Tabs>
 
 ## Create an Account
 
@@ -241,7 +310,7 @@ curl -X POST 'https://uoa-server.magic.xyz/task/a1b2c3d4-e5f6-7890-abcd-ef123456
 ## Next Steps
 
 <CardGroup cols={2}>
-<Card title="API Reference" icon="code" href="/server-wallets/uoa/api-reference">
+<Card title="API Reference" icon="code" href="/uoa/api-reference/accounts">
 Explore the complete API surface including all endpoints, parameters, and response schemas.
 </Card>
 

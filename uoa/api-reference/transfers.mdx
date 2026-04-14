@@ -1,0 +1,366 @@
+---
+title: "Transfers & Tasks"
+description: "API reference for UOA transfer operations including cost estimation, transfer execution, and task management."
+---
+
+## Authentication
+
+<Snippet file="uoa-auth.mdx" />
+
+---
+
+## Estimate Transfer Cost
+
+Estimate the cost of a transfer route before executing it.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/transfer/estimate-transfer-cost' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "source": "self",
+    "destination": "hyperliquid",
+    "amount": "100",
+    "chain": "ARB",
+    "token": "USDC"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "source": "self",
+  "destination": "hyperliquid",
+  "amount": "100",
+  "steps": [
+    {
+      "action": "deposit",
+      "dex": "hyperliquid",
+      "cost_eth": "0.0001",
+      "cost_usdc": "0.25",
+      "breakdown": {
+        "gas_cost_eth": "0.0001",
+        "bridge_fee_usdc": "0",
+        "platform_fee_usdc": "0"
+      },
+      "estimated_gas": 150000,
+      "gas_breakdown": null
+    }
+  ],
+  "total_cost_eth": "0.0001",
+  "total_cost_usdc": "0.25",
+  "message": null,
+  "route": null
+}
+```
+
+### Request Parameters
+
+<ParamField body="source" type="string" required>
+Where to transfer from. Values: `self`, `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
+</ParamField>
+
+<ParamField body="destination" type="string" required>
+Where to transfer to. Values: `self`, `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
+</ParamField>
+
+<ParamField body="amount" type="string" required>
+The amount to transfer as a decimal string (e.g., `"100"`).
+</ParamField>
+
+<ParamField body="chain" type="string" default="ARB">
+The chain context for the transfer. Values: `ETH`, `ARB`, `POL`, `SOL`, `STRK`, `INK`
+</ParamField>
+
+<ParamField body="token" type="string" default="USDC">
+The token to transfer. Values: `ETH`, `WETH`, `USDC`, `USDC.E`, `POL`, `SOL`
+</ParamField>
+
+<ParamField body="transfer_mode" type="string">
+Optional transfer mode. Values: `sponsored` (gas-sponsored), `legacy`
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the estimate was computed successfully.
+</ResponseField>
+
+<ResponseField name="steps" type="array">
+List of planned transfer steps with individual cost breakdowns.
+
+<Expandable title="Step fields">
+<ResponseField name="action" type="string">
+The transfer action (e.g., `deposit`, `bridge`, `withdrawal`).
+</ResponseField>
+
+<ResponseField name="dex" type="string">
+The DEX venue or bridge provider for this step.
+</ResponseField>
+
+<ResponseField name="cost_eth" type="string">
+Estimated cost in ETH.
+</ResponseField>
+
+<ResponseField name="cost_usdc" type="string">
+Estimated cost in USDC.
+</ResponseField>
+
+<ResponseField name="breakdown" type="object">
+Detailed cost breakdown: `gas_cost_eth`, `bridge_fee_usdc`, `platform_fee_usdc`.
+</ResponseField>
+</Expandable>
+</ResponseField>
+
+<ResponseField name="total_cost_eth" type="string">
+Total estimated cost across all steps in ETH.
+</ResponseField>
+
+<ResponseField name="total_cost_usdc" type="string">
+Total estimated cost across all steps in USDC.
+</ResponseField>
+
+---
+
+## Create Transfer
+
+Create and execute a transfer task. The transfer is executed asynchronously. Use the returned `task_id` to monitor progress.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/transfer' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "source": "extended",
+    "destination": "polymarket",
+    "amount": "50",
+    "chain": "ARB",
+    "token": "USDC"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "message": "Transfer task created and executing"
+}
+```
+
+The response also includes an `X-Task-ID` header for convenience.
+
+### Request Parameters
+
+The request parameters are identical to [Estimate Transfer Cost](#estimate-transfer-cost).
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the task was created successfully.
+</ResponseField>
+
+<ResponseField name="task_id" type="string">
+The UUID of the created transfer task. Use this to poll for status.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+Human-readable status message.
+</ResponseField>
+
+---
+
+## List Tasks
+
+Get the authenticated user's transfer tasks, ordered by most recent.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://uoa-server.magic.xyz/tasks?limit=10' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "tasks": [
+    {
+      "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "user_id": "550e8400-e29b-41d4-a716-446655440000",
+      "source": "self",
+      "destination": "hyperliquid",
+      "amount": "100",
+      "chain": "ARB",
+      "token": "USDC",
+      "status": "COMPLETED",
+      "created_at": "2026-04-01T12:00:00Z",
+      "updated_at": "2026-04-01T12:01:30Z",
+      "progress": {},
+      "metadata": null
+    }
+  ]
+}
+```
+
+### Query Parameters
+
+<ParamField query="limit" type="integer" default="5">
+Maximum number of tasks to return.
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="user_id" type="string">
+The UOA-internal user UUID.
+</ResponseField>
+
+<ResponseField name="tasks" type="array">
+List of task objects.
+
+<Expandable title="Task fields">
+<ResponseField name="task_id" type="string">
+The task UUID.
+</ResponseField>
+
+<ResponseField name="source" type="string">
+Transfer source location.
+</ResponseField>
+
+<ResponseField name="destination" type="string">
+Transfer destination location.
+</ResponseField>
+
+<ResponseField name="amount" type="string">
+Transfer amount as a decimal string.
+</ResponseField>
+
+<ResponseField name="chain" type="string">
+Chain code for the transfer.
+</ResponseField>
+
+<ResponseField name="token" type="string">
+Token code for the transfer.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+Task status: `PENDING`, `IN_PROGRESS`, `COMPLETED`, `FAILED`, or `CANCELLED`.
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+ISO 8601 timestamp of task creation.
+</ResponseField>
+
+<ResponseField name="updated_at" type="string">
+ISO 8601 timestamp of last update.
+</ResponseField>
+
+<ResponseField name="progress" type="object">
+Step-level execution progress.
+</ResponseField>
+
+<ResponseField name="metadata" type="object">
+Additional task metadata including route plan. `null` if not available.
+</ResponseField>
+</Expandable>
+</ResponseField>
+
+---
+
+## Get Task
+
+Get a specific transfer task by ID.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://uoa-server.magic.xyz/task/a1b2c3d4-e5f6-7890-abcd-ef1234567890' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "source": "self",
+  "destination": "hyperliquid",
+  "amount": "100",
+  "chain": "ARB",
+  "token": "USDC",
+  "status": "IN_PROGRESS",
+  "created_at": "2026-04-01T12:00:00Z",
+  "updated_at": "2026-04-01T12:00:45Z",
+  "progress": {
+    "current_step": 1,
+    "total_steps": 2,
+    "steps": [
+      { "action": "approve", "status": "completed" },
+      { "action": "deposit", "status": "in_progress" }
+    ]
+  },
+  "metadata": null
+}
+```
+
+### Path Parameters
+
+<ParamField path="task_id" type="string" required>
+The UUID of the task to retrieve.
+</ParamField>
+
+### Response Fields
+
+The response fields are the same as those in the [List Tasks](#list-tasks) task object.
+
+---
+
+## Resume Task
+
+Resume a failed or cancelled transfer task from the last successful checkpoint.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/task/a1b2c3d4-e5f6-7890-abcd-ef1234567890/resume' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "message": "Task resumed"
+}
+```
+
+### Path Parameters
+
+<ParamField path="task_id" type="string" required>
+The UUID of the task to resume.
+</ParamField>
+
+<Info>
+Only tasks with status `FAILED` or `CANCELLED` can be resumed. Attempting to resume a `COMPLETED`, `IN_PROGRESS`, or `PENDING` task will return an error.
+</Info>
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the task was resumed successfully.
+</ResponseField>
+
+<ResponseField name="task_id" type="string">
+The UUID of the resumed task.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+Human-readable status message.
+</ResponseField>

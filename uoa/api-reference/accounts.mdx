@@ -1,0 +1,141 @@
+---
+title: "Accounts"
+description: "API reference for UOA account management and wallet balance queries."
+---
+
+## Authentication
+
+<Snippet file="uoa-auth.mdx" />
+
+---
+
+## Create or Fetch Account
+
+Create a new account or return the existing one for the authenticated user. Wallets are provisioned across all supported chains automatically.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/account' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "app_user_id": "user-123",
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "public_address": {
+    "ETH": "0x1234567890abcdef1234567890abcdef12345678",
+    "SOL": "7nYB5F2xVT9hVjhxUoZ5HQxvPz2kTmSoQvGPmxfTjKN"
+  },
+  "perp_dex_status": {}
+}
+```
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the account was created or fetched successfully.
+</ResponseField>
+
+<ResponseField name="app_user_id" type="string">
+The user identifier from your application (JWT `sub` claim).
+</ResponseField>
+
+<ResponseField name="user_id" type="string">
+The UOA-internal user UUID.
+</ResponseField>
+
+<ResponseField name="public_address" type="object">
+Map of chain code to wallet address (e.g., `{"ETH": "0x...", "SOL": "7nYB..."}`).
+</ResponseField>
+
+<ResponseField name="perp_dex_status" type="object">
+Map of DEX venue to initialization status.
+</ResponseField>
+
+---
+
+## Get Account Info
+
+Return the authenticated user's stored account state.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://uoa-server.magic.xyz/account' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "app_user_id": "user-123",
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "public_address": {
+    "ETH": "0x1234...5678",
+    "ARB": "0x1234...5678",
+    "SOL": "7nYB5F...TjKN"
+  },
+  "perp_dex_status": {
+    "hyperliquid": { "initialized": true }
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="app_user_id" type="string">
+The user identifier from your application.
+</ResponseField>
+
+<ResponseField name="user_id" type="string">
+The UOA-internal user UUID.
+</ResponseField>
+
+<ResponseField name="public_address" type="object">
+Map of chain code to wallet address.
+</ResponseField>
+
+<ResponseField name="perp_dex_status" type="object">
+Map of DEX venue to initialization status.
+</ResponseField>
+
+---
+
+## Get Wallet Balances
+
+Get on-chain wallet balances for the authenticated user across all chains.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://uoa-server.magic.xyz/account/wallet' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "public_address": {
+    "ETH": "0x1234...5678",
+    "ARB": "0x1234...5678"
+  },
+  "assets": {
+    "ETH": { "ETH": "0.05", "USDC": "100.00" },
+    "ARB": { "ETH": "0.01", "USDC": "250.00" }
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="public_address" type="object">
+Map of chain code to wallet address.
+</ResponseField>
+
+<ResponseField name="assets" type="object">
+Map of chain code to token balances. Each chain maps token codes to decimal string amounts.
+</ResponseField>

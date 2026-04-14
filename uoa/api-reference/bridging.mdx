@@ -1,0 +1,295 @@
+---
+title: "Cross-Chain Bridging"
+description: "API reference for LiFi cross-chain bridge operations and sponsored transfers through UOA."
+---
+
+## Authentication
+
+<Snippet file="uoa-auth.mdx" />
+
+---
+
+## Get Quote
+
+Get a LiFi quote for a cross-chain or same-chain token transfer.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://uoa-server.magic.xyz/lifi/quote?from_chain=ETH&to_chain=ARB&from_token=USDC&to_token=USDC&from_amount=1000000' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "action": { "fromChainId": 1, "toChainId": 42161 },
+    "estimate": { "toAmount": "995000", "executionDuration": 120 },
+    "transactionRequest": { "to": "0x...", "data": "0x...", "value": "0" },
+    "tool": "stargate"
+  }
+}
+```
+
+### Query Parameters
+
+<ParamField query="from_chain" type="string" required>
+Source chain. Values: `ETH`, `ARB`, `POL`, `SOL`, `STRK`, `INK`
+</ParamField>
+
+<ParamField query="to_chain" type="string" required>
+Destination chain. Values: `ETH`, `ARB`, `POL`, `SOL`, `STRK`, `INK`
+</ParamField>
+
+<ParamField query="from_token" type="string" required>
+Source token. Values: `ETH`, `WETH`, `USDC`, `USDC.E`, `POL`, `SOL`
+</ParamField>
+
+<ParamField query="to_token" type="string" required>
+Destination token. Values: `ETH`, `WETH`, `USDC`, `USDC.E`, `POL`, `SOL`
+</ParamField>
+
+<ParamField query="from_amount" type="string" required>
+Amount in smallest units (e.g., `1000000` for 1 USDC).
+</ParamField>
+
+<ParamField query="slippage" type="number" default="0.005">
+Slippage tolerance between 0 and 1 (e.g., `0.005` for 0.5%).
+</ParamField>
+
+<ParamField query="order" type="string">
+Route preference. Values: `FASTEST`, `CHEAPEST`
+</ParamField>
+
+---
+
+## Execute Quote
+
+Execute a LiFi quote by approving (if needed) and sending the transaction.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/lifi/execute' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "quote": { "...full quote object from GET /lifi/quote..." }
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "tx_hash": "0xabcdef1234567890..."
+}
+```
+
+### Request Parameters
+
+<ParamField body="quote" type="object" required>
+The full quote object returned from `GET /lifi/quote`.
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the transaction was submitted successfully.
+</ResponseField>
+
+<ResponseField name="tx_hash" type="string">
+The transaction hash on the source chain.
+</ResponseField>
+
+---
+
+## Check Transfer Status
+
+Check the status of a LiFi cross-chain transfer.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://uoa-server.magic.xyz/lifi/status?tx_hash=0xabc...&bridge=stargate&from_chain=ETH&to_chain=ARB'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "DONE",
+    "substatus": "COMPLETED",
+    "substatusMessage": "Transfer completed successfully",
+    "receiving": { "amount": "995000", "token": "USDC" },
+    "sending": { "amount": "1000000", "token": "USDC" }
+  }
+}
+```
+
+### Query Parameters
+
+<ParamField query="tx_hash" type="string" required>
+Transaction hash on the source chain.
+</ParamField>
+
+<ParamField query="bridge" type="string" required>
+Bridge tool key from the quote response (e.g., `stargate`).
+</ParamField>
+
+<ParamField query="from_chain" type="string" required>
+Source chain code.
+</ParamField>
+
+<ParamField query="to_chain" type="string" required>
+Destination chain code.
+</ParamField>
+
+<Info>
+This endpoint does not require authentication.
+</Info>
+
+---
+
+## Wait for Transfer
+
+Poll LiFi status until the transfer completes or fails. This is a long-running endpoint.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://uoa-server.magic.xyz/lifi/wait?tx_hash=0xabc...&bridge=stargate&from_chain=ETH&to_chain=ARB&timeout_sec=300'
+```
+
+### Query Parameters
+
+<ParamField query="tx_hash" type="string" required>
+Transaction hash on the source chain.
+</ParamField>
+
+<ParamField query="bridge" type="string" required>
+Bridge tool key from the quote response.
+</ParamField>
+
+<ParamField query="from_chain" type="string" required>
+Source chain code.
+</ParamField>
+
+<ParamField query="to_chain" type="string" required>
+Destination chain code.
+</ParamField>
+
+<ParamField query="poll_interval_sec" type="integer" default="15">
+Polling interval in seconds. Range: 5--60.
+</ParamField>
+
+<ParamField query="timeout_sec" type="integer" default="300">
+Maximum wait time in seconds. Range: 30--600.
+</ParamField>
+
+The response format is the same as [Check Transfer Status](#check-transfer-status).
+
+<Info>
+This endpoint does not require authentication.
+</Info>
+
+---
+
+## Alchemy Sponsored Transfer
+
+Send a gas-sponsored transfer via Alchemy wallet APIs. Currently available on testnet chains only.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/alchemy/sponsored-transfer' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "chain": "ARB",
+    "network": "testnet",
+    "token": "USDC",
+    "amount": "10",
+    "destination_address": "0xRecipient...",
+    "fee_bps": 100
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "user_operation_hash": "0x...",
+  "chain": "ARB",
+  "network": "testnet",
+  "token": "USDC",
+  "total_amount": "10",
+  "transfer_amount": "9.90",
+  "fee_amount": "0.10",
+  "fee_bps": 100,
+  "from_owner_address": "0x...",
+  "transfer_to_address": "0xRecipient...",
+  "fee_to_address": "0x...",
+  "message": "Sponsored transfer completed"
+}
+```
+
+### Request Parameters
+
+<ParamField body="chain" type="string" required>
+The chain to execute on. Values: `ETH`, `ARB`, `POL`
+</ParamField>
+
+<ParamField body="network" type="string" default="testnet">
+Network type. Currently only `testnet` is supported. Values: `mainnet`, `testnet`
+</ParamField>
+
+<ParamField body="token" type="string" required>
+The token to transfer. Values: `ETH`, `POL`, `USDC`
+</ParamField>
+
+<ParamField body="amount" type="string" required>
+The total amount to send (transfer + fee) as a decimal string.
+</ParamField>
+
+<ParamField body="destination_address" type="string" required>
+The recipient wallet address.
+</ParamField>
+
+<ParamField body="fee_bps" type="integer" default="100">
+Fee in basis points deducted from the total amount. Range: 1--9999. (100 bps = 1%)
+</ParamField>
+
+<ParamField body="fee_recipient_address" type="string">
+Optional address to receive the fee. Defaults to a configured fee address.
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the sponsored transfer completed successfully.
+</ResponseField>
+
+<ResponseField name="user_operation_hash" type="string">
+The user operation hash for tracking.
+</ResponseField>
+
+<ResponseField name="total_amount" type="string">
+The total amount sent (transfer + fee).
+</ResponseField>
+
+<ResponseField name="transfer_amount" type="string">
+The amount received by the destination address.
+</ResponseField>
+
+<ResponseField name="fee_amount" type="string">
+The fee deducted from the total amount.
+</ResponseField>
+
+<ResponseField name="fee_bps" type="integer">
+The fee rate in basis points.
+</ResponseField>
+
+<Warning>
+Sponsored transfers are currently only available on testnet (Sepolia, Amoy). Mainnet support is coming soon.
+</Warning>

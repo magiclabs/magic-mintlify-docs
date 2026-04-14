@@ -43,7 +43,7 @@ All endpoints return standard HTTP status codes with a consistent error format:
 Create a new account or return the existing one for the authenticated user. Wallets are provisioned across all supported chains automatically.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'YOUR_UOA_BASE_URL/account' \
+curl -X POST 'https://uoa-server.magic.xyz/account' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
 ```
@@ -92,7 +92,7 @@ Map of DEX venue to initialization status.
 Return the authenticated user's stored account state.
 
 ```bash cURL icon="square-terminal"
-curl -X GET 'YOUR_UOA_BASE_URL/account' \
+curl -X GET 'https://uoa-server.magic.xyz/account' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
 ```
@@ -109,7 +109,7 @@ curl -X GET 'YOUR_UOA_BASE_URL/account' \
     "SOL": "7nYB5F...TjKN"
   },
   "perp_dex_status": {
-    "HYPERLIQUID": { "initialized": true }
+    "hyperliquid": { "initialized": true }
   }
 }
 ```
@@ -139,7 +139,7 @@ Map of DEX venue to initialization status.
 Get on-chain wallet balances for the authenticated user across all chains.
 
 ```bash cURL icon="square-terminal"
-curl -X GET 'YOUR_UOA_BASE_URL/account/wallet' \
+curl -X GET 'https://uoa-server.magic.xyz/account/wallet' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
 ```
@@ -178,12 +178,12 @@ Map of chain code to token balances. Each chain maps token codes to decimal stri
 Check whether the authenticated user meets the requirements to initialize a perp DEX venue (e.g., minimum balance, gas availability).
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'YOUR_UOA_BASE_URL/account/check-perp-dex-requirements' \
+curl -X POST 'https://uoa-server.magic.xyz/account/check-perp-dex-requirements' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
   -d '{
-    "dex": "HYPERLIQUID"
+    "dex": "hyperliquid"
   }'
 ```
 
@@ -192,7 +192,7 @@ curl -X POST 'YOUR_UOA_BASE_URL/account/check-perp-dex-requirements' \
 ```json
 {
   "success": true,
-  "dex": "HYPERLIQUID",
+  "dex": "hyperliquid",
   "requirements_met": true,
   "requirements": {
     "min_balance": "5.00",
@@ -205,7 +205,7 @@ curl -X POST 'YOUR_UOA_BASE_URL/account/check-perp-dex-requirements' \
 #### Request Parameters
 
 <ParamField body="dex" type="string" required>
-The DEX venue to check. Values: `HYPERLIQUID`, `NADO`, `X10`, `POLYMARKET`
+The DEX venue to check. Values: `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
 </ParamField>
 
 #### Response Fields
@@ -237,12 +237,12 @@ Human-readable status message.
 Initialize a perp DEX venue for the authenticated user. This handles venue-specific onboarding flows.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'YOUR_UOA_BASE_URL/account/init-perp-dex' \
+curl -X POST 'https://uoa-server.magic.xyz/account/init-perp-dex' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
   -d '{
-    "dex": "HYPERLIQUID",
+    "dex": "hyperliquid",
     "force_reinit": false
   }'
 ```
@@ -252,7 +252,7 @@ curl -X POST 'YOUR_UOA_BASE_URL/account/init-perp-dex' \
 ```json
 {
   "success": true,
-  "dex": "HYPERLIQUID",
+  "dex": "hyperliquid",
   "status": {
     "initialized": true,
     "onboarded_at": "2026-04-01T12:00:00Z"
@@ -264,7 +264,7 @@ curl -X POST 'YOUR_UOA_BASE_URL/account/init-perp-dex' \
 #### Request Parameters
 
 <ParamField body="dex" type="string" required>
-The DEX venue to initialize. Values: `HYPERLIQUID`, `NADO`, `X10`, `POLYMARKET`
+The DEX venue to initialize. Values: `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
 </ParamField>
 
 <ParamField body="force_reinit" type="boolean" default="false">
@@ -296,7 +296,7 @@ Human-readable status message.
 Get perp DEX asset state including balances and transfer rules for a specific venue.
 
 ```bash cURL icon="square-terminal"
-curl -X GET 'YOUR_UOA_BASE_URL/account/perp?dex=HYPERLIQUID' \
+curl -X GET 'https://uoa-server.magic.xyz/account/perp?dex=hyperliquid' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
 ```
@@ -305,7 +305,7 @@ curl -X GET 'YOUR_UOA_BASE_URL/account/perp?dex=HYPERLIQUID' \
 
 ```json
 {
-  "dex": "HYPERLIQUID",
+  "dex": "hyperliquid",
   "initialized": true,
   "assets": {
     "USDC": "500.00",
@@ -344,7 +344,7 @@ curl -X GET 'YOUR_UOA_BASE_URL/account/perp?dex=HYPERLIQUID' \
 #### Query Parameters
 
 <ParamField query="dex" type="string" required>
-The DEX venue to query. Values: `HYPERLIQUID`, `NADO`, `X10`, `POLYMARKET`
+The DEX venue to query. Values: `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
 </ParamField>
 
 #### Response Fields
@@ -394,7 +394,7 @@ Error message if the query failed. `null` on success.
 Get platform-specific API credentials for the authenticated user's DEX account.
 
 ```bash cURL icon="square-terminal"
-curl -X GET 'YOUR_UOA_BASE_URL/account/perp-credentials?dex=HYPERLIQUID' \
+curl -X GET 'https://uoa-server.magic.xyz/account/perp-credentials?dex=hyperliquid' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
 ```
@@ -403,7 +403,7 @@ curl -X GET 'YOUR_UOA_BASE_URL/account/perp-credentials?dex=HYPERLIQUID' \
 
 ```json
 {
-  "dex": "HYPERLIQUID",
+  "dex": "hyperliquid",
   "initialized": true,
   "api_key": "...",
   "api_secret": "...",
@@ -414,7 +414,7 @@ curl -X GET 'YOUR_UOA_BASE_URL/account/perp-credentials?dex=HYPERLIQUID' \
 #### Query Parameters
 
 <ParamField query="dex" type="string" required>
-The DEX venue to query credentials for. Values: `HYPERLIQUID`, `NADO`, `X10`, `POLYMARKET`
+The DEX venue to query credentials for. Values: `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
 </ParamField>
 
 #### Response Fields
@@ -442,7 +442,7 @@ Additional credential fields are venue-specific and vary by DEX.
 Get DEX-native transfer history for the authenticated user.
 
 ```bash cURL icon="square-terminal"
-curl -X GET 'YOUR_UOA_BASE_URL/account/perp-dex-transfers?dex=HYPERLIQUID' \
+curl -X GET 'https://uoa-server.magic.xyz/account/perp-dex-transfers?dex=hyperliquid' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
 ```
@@ -451,7 +451,7 @@ curl -X GET 'YOUR_UOA_BASE_URL/account/perp-dex-transfers?dex=HYPERLIQUID' \
 
 ```json
 {
-  "dex": "HYPERLIQUID",
+  "dex": "hyperliquid",
   "results": [
     {
       "type": "deposit",
@@ -467,7 +467,7 @@ curl -X GET 'YOUR_UOA_BASE_URL/account/perp-dex-transfers?dex=HYPERLIQUID' \
 #### Query Parameters
 
 <ParamField query="dex" type="string" required>
-The DEX venue to query transfer history for. Values: `HYPERLIQUID`, `NADO`, `X10`, `POLYMARKET`
+The DEX venue to query transfer history for. Values: `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
 </ParamField>
 
 #### Response Fields
@@ -493,7 +493,7 @@ Error message if the query failed. `null` on success.
 Place a BUY order on Polymarket for the authenticated user.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'YOUR_UOA_BASE_URL/account/polymarket/buy' \
+curl -X POST 'https://uoa-server.magic.xyz/account/polymarket/buy' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
@@ -574,7 +574,7 @@ Error message if the order failed. `null` on success.
 Place a SELL order on Polymarket. Uses the same request and response format as the buy endpoint.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'YOUR_UOA_BASE_URL/account/polymarket/sell' \
+curl -X POST 'https://uoa-server.magic.xyz/account/polymarket/sell' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
@@ -597,7 +597,7 @@ The request parameters and response fields are identical to the [Buy Order](#pla
 Sign data with the authenticated user's Magic wallet.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'YOUR_UOA_BASE_URL/wallet/sign' \
+curl -X POST 'https://uoa-server.magic.xyz/wallet/sign' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
@@ -658,13 +658,13 @@ The user identifier from your application.
 Estimate the cost of a transfer route before executing it.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'YOUR_UOA_BASE_URL/transfer/estimate-cost' \
+curl -X POST 'https://uoa-server.magic.xyz/transfer/estimate-transfer-cost' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
   -d '{
-    "source": "WALLET",
-    "destination": "PERP_DEX",
+    "source": "self",
+    "destination": "hyperliquid",
     "amount": "100",
     "chain": "ARB",
     "token": "USDC"
@@ -676,13 +676,13 @@ curl -X POST 'YOUR_UOA_BASE_URL/transfer/estimate-cost' \
 ```json
 {
   "success": true,
-  "source": "WALLET",
-  "destination": "PERP_DEX",
+  "source": "self",
+  "destination": "hyperliquid",
   "amount": "100",
   "steps": [
     {
-      "action": "dex_deposit",
-      "dex": "HYPERLIQUID",
+      "action": "deposit",
+      "dex": "hyperliquid",
       "cost_eth": "0.0001",
       "cost_usdc": "0.25",
       "breakdown": {
@@ -704,11 +704,11 @@ curl -X POST 'YOUR_UOA_BASE_URL/transfer/estimate-cost' \
 #### Request Parameters
 
 <ParamField body="source" type="string" required>
-Where to transfer from. Values: `WALLET`, `PERP_DEX`, `POLYMARKET`
+Where to transfer from. Values: `self`, `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
 </ParamField>
 
 <ParamField body="destination" type="string" required>
-Where to transfer to. Values: `WALLET`, `PERP_DEX`, `POLYMARKET`
+Where to transfer to. Values: `self`, `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`
 </ParamField>
 
 <ParamField body="amount" type="string" required>
@@ -716,11 +716,11 @@ The amount to transfer as a decimal string (e.g., `"100"`).
 </ParamField>
 
 <ParamField body="chain" type="string" default="ARB">
-The chain context for the transfer. Values: `ETH`, `ARB`, `POL`, `SOL`, `OPT`, `BASE`, `INK`
+The chain context for the transfer. Values: `ETH`, `ARB`, `POL`, `SOL`, `STRK`, `INK`
 </ParamField>
 
 <ParamField body="token" type="string" default="USDC">
-The token to transfer. Values: `ETH`, `WETH`, `USDC`, `USDC_E`, `POL`, `SOL`
+The token to transfer. Values: `ETH`, `WETH`, `USDC`, `USDC.E`, `POL`, `SOL`
 </ParamField>
 
 <ParamField body="transfer_mode" type="string">
@@ -738,7 +738,7 @@ List of planned transfer steps with individual cost breakdowns.
 
 <Expandable title="Step fields">
 <ResponseField name="action" type="string">
-The transfer action (e.g., `dex_deposit`, `bridge_swap`, `dex_withdraw`).
+The transfer action (e.g., `deposit`, `bridge`, `withdrawal`).
 </ResponseField>
 
 <ResponseField name="dex" type="string">
@@ -774,13 +774,13 @@ Total estimated cost across all steps in USDC.
 Create and execute a transfer task. The transfer is executed asynchronously. Use the returned `task_id` to monitor progress.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'YOUR_UOA_BASE_URL/transfer' \
+curl -X POST 'https://uoa-server.magic.xyz/transfer' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
   -d '{
-    "source": "PERP_DEX",
-    "destination": "POLYMARKET",
+    "source": "extended",
+    "destination": "polymarket",
     "amount": "50",
     "chain": "ARB",
     "token": "USDC"
@@ -826,7 +826,7 @@ Human-readable status message.
 Get the authenticated user's transfer tasks, ordered by most recent.
 
 ```bash cURL icon="square-terminal"
-curl -X GET 'YOUR_UOA_BASE_URL/tasks?limit=10' \
+curl -X GET 'https://uoa-server.magic.xyz/tasks?limit=10' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
 ```
@@ -840,8 +840,8 @@ curl -X GET 'YOUR_UOA_BASE_URL/tasks?limit=10' \
     {
       "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
       "user_id": "550e8400-e29b-41d4-a716-446655440000",
-      "source": "WALLET",
-      "destination": "PERP_DEX",
+      "source": "self",
+      "destination": "hyperliquid",
       "amount": "100",
       "chain": "ARB",
       "token": "USDC",
@@ -924,7 +924,7 @@ Additional task metadata including route plan. `null` if not available.
 Get a specific transfer task by ID.
 
 ```bash cURL icon="square-terminal"
-curl -X GET 'YOUR_UOA_BASE_URL/task/a1b2c3d4-e5f6-7890-abcd-ef1234567890' \
+curl -X GET 'https://uoa-server.magic.xyz/task/a1b2c3d4-e5f6-7890-abcd-ef1234567890' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
 ```
@@ -935,8 +935,8 @@ curl -X GET 'YOUR_UOA_BASE_URL/task/a1b2c3d4-e5f6-7890-abcd-ef1234567890' \
 {
   "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "user_id": "550e8400-e29b-41d4-a716-446655440000",
-  "source": "WALLET",
-  "destination": "PERP_DEX",
+  "source": "self",
+  "destination": "hyperliquid",
   "amount": "100",
   "chain": "ARB",
   "token": "USDC",
@@ -948,7 +948,7 @@ curl -X GET 'YOUR_UOA_BASE_URL/task/a1b2c3d4-e5f6-7890-abcd-ef1234567890' \
     "total_steps": 2,
     "steps": [
       { "action": "approve", "status": "completed" },
-      { "action": "dex_deposit", "status": "in_progress" }
+      { "action": "deposit", "status": "in_progress" }
     ]
   },
   "metadata": null
@@ -972,7 +972,7 @@ The response fields are the same as those in the [List Tasks](#list-tasks) task 
 Resume a failed or cancelled transfer task from the last successful checkpoint.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'YOUR_UOA_BASE_URL/task/a1b2c3d4-e5f6-7890-abcd-ef1234567890/resume' \
+curl -X POST 'https://uoa-server.magic.xyz/task/a1b2c3d4-e5f6-7890-abcd-ef1234567890/resume' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
 ```
@@ -1020,7 +1020,7 @@ Human-readable status message.
 Send funds from the authenticated user's Magic wallet to an external address.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'YOUR_UOA_BASE_URL/withdraw' \
+curl -X POST 'https://uoa-server.magic.xyz/withdraw' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
@@ -1058,23 +1058,22 @@ The amount to withdraw as a decimal string.
 </ParamField>
 
 <ParamField body="token" type="string" default="USDC">
-The token to withdraw. Values: `ETH`, `WETH`, `USDC`, `USDC_E`, `POL`, `SOL`
+The token to withdraw. Values: `ETH`, `WETH`, `USDC`, `USDC.E`, `POL`, `SOL`
 </ParamField>
 
 <ParamField body="chain" type="string" default="ARB">
-The chain to withdraw on. Values: `ETH`, `ARB`, `POL`, `SOL`, `OPT`, `BASE`, `INK`
+The chain to withdraw on. Values: `ETH`, `ARB`, `POL`, `SOL`, `STRK`, `INK`
 </ParamField>
 
 #### Supported Token/Chain Combinations
 
 | Chain | Supported Tokens |
 |-------|-----------------|
-| ETH | ETH, WETH, USDC, USDC_E |
-| ARB | ETH, WETH, USDC, USDC_E |
-| POL | POL, USDC, USDC_E |
+| ETH | ETH, WETH, USDC, USDC.E |
+| ARB | ETH, WETH, USDC, USDC.E |
+| POL | POL, USDC, USDC.E |
 | SOL | SOL, USDC |
-| OPT | ETH, WETH, USDC, USDC_E |
-| BASE | ETH, WETH, USDC |
+| STRK | ETH, USDC |
 | INK | ETH, WETH, USDC |
 
 #### Response Fields
@@ -1120,7 +1119,7 @@ Human-readable status message.
 Get a LiFi quote for a cross-chain or same-chain token transfer.
 
 ```bash cURL icon="square-terminal"
-curl -X GET 'YOUR_UOA_BASE_URL/lifi/quote?from_chain=ETH&to_chain=ARB&from_token=USDC&to_token=USDC&from_amount=1000000' \
+curl -X GET 'https://uoa-server.magic.xyz/lifi/quote?from_chain=ETH&to_chain=ARB&from_token=USDC&to_token=USDC&from_amount=1000000' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
 ```
@@ -1142,19 +1141,19 @@ curl -X GET 'YOUR_UOA_BASE_URL/lifi/quote?from_chain=ETH&to_chain=ARB&from_token
 #### Query Parameters
 
 <ParamField query="from_chain" type="string" required>
-Source chain. Values: `ETH`, `ARB`, `POL`, `SOL`, `INK`
+Source chain. Values: `ETH`, `ARB`, `POL`, `SOL`, `STRK`, `INK`
 </ParamField>
 
 <ParamField query="to_chain" type="string" required>
-Destination chain. Values: `ETH`, `ARB`, `POL`, `SOL`, `INK`
+Destination chain. Values: `ETH`, `ARB`, `POL`, `SOL`, `STRK`, `INK`
 </ParamField>
 
 <ParamField query="from_token" type="string" required>
-Source token. Values: `ETH`, `USDC`, `USDC_E`, `POL`, `SOL`
+Source token. Values: `ETH`, `WETH`, `USDC`, `USDC.E`, `POL`, `SOL`
 </ParamField>
 
 <ParamField query="to_token" type="string" required>
-Destination token. Values: `ETH`, `USDC`, `USDC_E`, `POL`, `SOL`
+Destination token. Values: `ETH`, `WETH`, `USDC`, `USDC.E`, `POL`, `SOL`
 </ParamField>
 
 <ParamField query="from_amount" type="string" required>
@@ -1176,7 +1175,7 @@ Route preference. Values: `FASTEST`, `CHEAPEST`
 Execute a LiFi quote by approving (if needed) and sending the transaction.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'YOUR_UOA_BASE_URL/lifi/execute' \
+curl -X POST 'https://uoa-server.magic.xyz/lifi/execute' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
@@ -1217,7 +1216,7 @@ The transaction hash on the source chain.
 Check the status of a LiFi cross-chain transfer.
 
 ```bash cURL icon="square-terminal"
-curl -X GET 'YOUR_UOA_BASE_URL/lifi/status?tx_hash=0xabc...&bridge=stargate&from_chain=ETH&to_chain=ARB'
+curl -X GET 'https://uoa-server.magic.xyz/lifi/status?tx_hash=0xabc...&bridge=stargate&from_chain=ETH&to_chain=ARB'
 ```
 
 **Response:**
@@ -1264,7 +1263,7 @@ This endpoint does not require authentication.
 Poll LiFi status until the transfer completes or fails. This is a long-running endpoint.
 
 ```bash cURL icon="square-terminal"
-curl -X GET 'YOUR_UOA_BASE_URL/lifi/wait?tx_hash=0xabc...&bridge=stargate&from_chain=ETH&to_chain=ARB&timeout_sec=300'
+curl -X GET 'https://uoa-server.magic.xyz/lifi/wait?tx_hash=0xabc...&bridge=stargate&from_chain=ETH&to_chain=ARB&timeout_sec=300'
 ```
 
 #### Query Parameters
@@ -1285,7 +1284,7 @@ Source chain code.
 Destination chain code.
 </ParamField>
 
-<ParamField query="poll_interval_sec" type="integer" default="5">
+<ParamField query="poll_interval_sec" type="integer" default="15">
 Polling interval in seconds. Range: 5--60.
 </ParamField>
 
@@ -1308,13 +1307,13 @@ This endpoint does not require authentication.
 Send a gas-sponsored transfer via Alchemy wallet APIs. Currently available on testnet chains only.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'YOUR_UOA_BASE_URL/alchemy/sponsored-transfer' \
+curl -X POST 'https://uoa-server.magic.xyz/alchemy/sponsored-transfer' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer USER_JWT_TOKEN' \
   -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
   -d '{
     "chain": "ARB",
-    "network": "TESTNET",
+    "network": "testnet",
     "token": "USDC",
     "amount": "10",
     "destination_address": "0xRecipient...",
@@ -1329,7 +1328,7 @@ curl -X POST 'YOUR_UOA_BASE_URL/alchemy/sponsored-transfer' \
   "success": true,
   "user_operation_hash": "0x...",
   "chain": "ARB",
-  "network": "TESTNET",
+  "network": "testnet",
   "token": "USDC",
   "total_amount": "10",
   "transfer_amount": "9.90",
@@ -1348,8 +1347,8 @@ curl -X POST 'YOUR_UOA_BASE_URL/alchemy/sponsored-transfer' \
 The chain to execute on. Values: `ETH`, `ARB`, `POL`
 </ParamField>
 
-<ParamField body="network" type="string" default="TESTNET">
-Network type. Currently only `TESTNET` is supported.
+<ParamField body="network" type="string" default="testnet">
+Network type. Currently only `testnet` is supported. Values: `mainnet`, `testnet`
 </ParamField>
 
 <ParamField body="token" type="string" required>
