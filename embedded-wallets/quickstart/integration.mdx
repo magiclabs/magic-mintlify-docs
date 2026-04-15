@@ -14,11 +14,11 @@ Navigate to your project directory and install the Magic SDK as a project depend
 
 <CodeGroup>
 ```bash NPM icon="npm"
-npm install magic-sdk
+npm install magic-sdk ethers
 ```
 
 ```bash Yarn icon="yarn"
-yarn add magic-sdk
+yarn add magic-sdk ethers
 ```
 </CodeGroup>
 
@@ -33,7 +33,8 @@ Grab your Magic **Publishable** API Key from your [Magic Dashboard](https://dash
 
 ## Initialize Magic
 
-To get started, simply initialize an instance of Magic with your Publishable API Key and your choice of blockchain. Then initialize your chosen blockchain library, like Ethers.js, with the RPC provider in a separate file.
+To get started, initialize an instance of Magic with your Publishable API Key and your choice of blockchain. Then initialize your chosen blockchain library, like Ethers.js, with the RPC provider in a separate file.
+This guide uses Ethers v6 APIs such as `BrowserProvider`, `parseEther`, and `formatEther`.
 Here's how you would initialize the Magic instance.
 
 ```typescript TypeScript icon="square-js"
@@ -97,38 +98,38 @@ When you want to use the Magic instance, import the hook and destructure the req
 const { magic } = useMagic();
 ```
 
-In a separate file, create a hook to initialize your web3 instance. For this quickstart we will be using the Web3.js library but you can use other web3 blockchain libraries such as Ethers.js.
+In a separate file, create a hook to initialize your ethers provider instance.
 
 ```typescript TypeScript icon="square-js"
-import { Web3 } from  'web3';
-import { useEffect, useState } from  'react';
-import { useMagic } from  './MagicProvider';
+import { BrowserProvider } from "ethers";
+import { useEffect, useState } from "react";
+import { useMagic } from "./MagicProvider";
 
-const  useWeb3  = () => {
+const useEthersProvider = () => {
   const { magic } = useMagic();
-  const [web3, setWeb3] = useState<Web3 | null>(null);
+  const [provider, setProvider] = useState<BrowserProvider | null>(null);
 
   useEffect(() => {
     if (magic) {
-      setWeb3(new Web3((magic as any).rpcProvider));
+      setProvider(new BrowserProvider((magic as any).rpcProvider));
     } else {
-      console.log('Magic is not initialized');
+      console.log("Magic is not initialized");
     }
   }, [magic]);
-  
-  return web3;
+
+  return provider;
 };
 
-export default useWeb3;
+export default useEthersProvider;
 ```
 
-Now whenever you need to use the web3 instance, import the hook into the file you need it in and call it within your component to get the web3 instance.
+Now whenever you need to use the provider, import the hook into the file you need it in and call it within your component.
 
 ```typescript TypeScript icon="square-js"
-const web3 = useWeb3();
+const provider = useEthersProvider();
 ```
 
-The above code snippets initializes Magic and web3 with a public Sepolia Testnet URL. You can point the instance to a different chain by modifying the URL and Chain ID. Magic seamlessly supports over 30+ different blockchains.
+The above code snippets initialize Magic and ethers with a public Sepolia Testnet URL. You can point the instance to a different chain by modifying the URL and Chain ID. Magic seamlessly supports over 30+ different blockchains.
 
 ## Authenticate your users
 
@@ -155,41 +156,42 @@ If you are on **SDK v29.x or below**, the address is available directly as `meta
 
 ## Get user balance
 
-To get the token balance of a user, import the web3 instance and then inside an asynchronous function call the getBalance function and pass the Magic user's public address to it. Given that the Magic instance is connected to the Sepolia network, calling getBalance will return the amount of Sepolia tokens the user has.
+To get the token balance of a user, import the ethers provider and call `getBalance` with the Magic user's public address. Given that the Magic instance is connected to the Sepolia network, calling `getBalance` will return the amount of Sepolia tokens the user has.
 
-In this we will be using the web3 instance mentioned earlier.
+In this example, we use the provider created earlier.
 
 ```typescript TypeScript icon="square-js"
-const web3 = useWeb3();
-const balance = await web3.eth.getBalance(publicAddress);
+import { formatEther } from "ethers";
+
+const provider = useEthersProvider();
+const balance = await provider.getBalance(publicAddress);
+const balanceInEth = formatEther(balance);
 ```
 
 ## Interact with the network
 
-Magic integrates with all popular blockchain libraries so that you don't have to change anything about how you interact with the blockchain. For example, if you're using Ethereum or other EVM chains, you can get the user's wallet address or sign and send transactions the same way you normally would using Web3.js or Ethers.js.
+Magic integrates with all popular blockchain libraries so that you don't have to change anything about how you interact with the blockchain. For example, if you're using Ethereum or other EVM chains, you can get the user's wallet address or sign and send transactions the same way you normally would using ethers.js.
 
 Here is an example of sending a transaction:
 
 ```typescript TypeScript icon="square-js"
-async function sendEth(amount: number, recipientAddress: string) {
-  const metadata = await magic?.user.getInfo();
-  const senderAddress = metadata.wallets.ethereum?.publicAddress;
+import { parseEther } from "ethers";
 
-  const txnParams = {
-    from: senderAddress,
-    to: recipientAddress,
-    value: web3.utils.toWei(amount, "ether"),
-    gas: 21000,
+async function sendEth(amount: number, recipientAddress: string) {
+  if (!provider) {
+    throw new Error("Ethers provider is not initialized");
   }
 
-  web3.eth
-    .sendTransaction(txnParams as any)
-    .on("transactionHash", (txHash: string) => {
-      console.log("Transaction hash:", txHash)
-    })
-    .then((receipt: any) => {
-      console.log("Transaction receipt:", receipt)
-    })
+  const signer = await provider.getSigner();
+  const tx = await signer.sendTransaction({
+    to: recipientAddress,
+    value: parseEther(amount.toString()),
+    gasLimit: 21000,
+  });
+
+  console.log("Transaction hash:", tx.hash);
+  const receipt = await tx.wait();
+  console.log("Transaction receipt:", receipt);
 }
 ```
 

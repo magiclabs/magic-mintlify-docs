@@ -7,8 +7,8 @@ title: Personal Signatures
 Magic offers out-of-the-box Signature Request UI when the user is prompted to sign a personal or typed message for the following EVM RPC methods:
 
 - ⁠`personal_sign`
-- `signTypedData_v3`
-- `signTypedData_v4`
+- `eth_signTypedData_v3`
+- `eth_signTypedData_v4`
 
 These methods allow dApps to verifiably prove the ownership of the user's account by getting a signature from their private key and using it to sign arbitrary and/or typed data. Additionally, it is possible to obtain a user's signature during login in a single step using [login with verification feature](/embedded-wallets/authentication/customization/login-ui#usage-0).
 
@@ -33,21 +33,23 @@ These methods allow dApps to verifiably prove the ownership of the user's accoun
 <Tab title="personal_sign">
 ```javascript JavaScript icon="square-js"
 
-import Web3 from "web3";
+import { BrowserProvider } from "ethers";
 import { Magic } from "magic-sdk";
 import { recoverPersonalSignature } from "@metamask/eth-sig-util";
 
 const magic = new Magic("YOUR_API_KEY", {
-  network: "goerli",
+  network: "sepolia",
 });
-const web3 = new Web3(magic.rpcProvider);
+const provider = new BrowserProvider(magic.rpcProvider);
 
 const signAndVerify = async () => {
-  const signedMessage = await web3.eth.personal.sign(
-    "Here is a basic message!",
-    account,
-    ""
-  );
+  const signer = await provider.getSigner();
+  const account = await signer.getAddress();
+  const message = "Here is a basic message!";
+  const signedMessage = await magic.rpcProvider.request({
+    method: "personal_sign",
+    params: [message, account],
+  });
   console.log("signedMessage:", signedMessage);
   // recover the public address of the signer to verify
   const recoveredAddress = recoverPersonalSignature({
@@ -64,14 +66,14 @@ const signAndVerify = async () => {
 </Tab>
 <Tab title="signTypedData_v3">
 ```javascript JavaScript icon="square-js"
-import Web3 from "web3";
+import { BrowserProvider } from "ethers";
 import { Magic } from "magic-sdk";
 import { recoverTypedSignature } from "@metamask/eth-sig-util";
 
 const magic = new Magic("YOUR_API_KEY", {
-  network: "goerli",
+  network: "sepolia",
 });
-const web3 = new Web3(magic.rpcProvider);
+const provider = new BrowserProvider(magic.rpcProvider);
 
 export const signTypedDataV3Payload = {
   types: {
@@ -108,8 +110,10 @@ export const signTypedDataV3Payload = {
 };
 
 const signAndVerify = async () => {
+  const signer = await provider.getSigner();
+  const account = await signer.getAddress();
   const params = [account, signTypedDataV3Payload];
-  const method = "eth_signTypedData_v4";
+  const method = "eth_signTypedData_v3";
   const signature = await magic.rpcProvider.request({
     method,
     params,
@@ -132,32 +136,24 @@ const signAndVerify = async () => {
 </Tab>
 <Tab title="signTypedData_v4">
 ```javascript JavaScript icon="square-js"
-import Web3 from "web3";
+import { BrowserProvider } from "ethers";
 import { Magic } from "magic-sdk";
-import { recoverPersonalSignature } from "@metamask/eth-sig-util";
+import { recoverTypedSignature } from "@metamask/eth-sig-util";
 
 const magic = new Magic("YOUR_API_KEY", {
-  network: "goerli",
+  network: "sepolia",
 });
-const web3 = new Web3(magic.rpcProvider);
+const provider = new BrowserProvider(magic.rpcProvider);
 
 export const signTypedDataV4Payload = {
   domain: {
-    // Defining the chain aka Rinkeby goerli or Ethereum Main Net
-    chainId: 5,
-    // Give a user friendly name to the specific contract you are signing for.
+    chainId: 1,
     name: "Ether Mail",
-    // If name isn't enough add verifying contract to make sure you are establishing contracts with the proper entity
     verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
-    // Just let's you know the latest version. Definitely make sure the field name is correct.
     version: "1",
   },
-
-  // Defining the message signing data content.
   message: {
-    /* - Anything you want. Just a JSON Blob that encodes the data you want to send - No required fields - This is DApp Specific - Be as explicit as possible when building out the message schema. */
     contents: "Hello, Bob!",
-    attachedMoneyInEth: 4.2,
     from: {
       name: "Cow",
       wallets: [
@@ -176,28 +172,23 @@ export const signTypedDataV4Payload = {
       },
     ],
   },
-  // Refers to the keys of the _types_ object below.
   primaryType: "Mail",
   types: {
-    // TODO: Clarify if EIP712Domain refers to the domain the contract is hosted on
     EIP712Domain: [
       { name: "name", type: "string" },
       { name: "version", type: "string" },
       { name: "chainId", type: "uint256" },
       { name: "verifyingContract", type: "address" },
     ],
-    // Not an EIP712Domain definition
     Group: [
       { name: "name", type: "string" },
       { name: "members", type: "Person[]" },
     ],
-    // Refer to PrimaryType
     Mail: [
       { name: "from", type: "Person" },
       { name: "to", type: "Person[]" },
       { name: "contents", type: "string" },
     ],
-    // Not an EIP712Domain definition
     Person: [
       { name: "name", type: "string" },
       { name: "wallets", type: "address[]" },
@@ -206,7 +197,9 @@ export const signTypedDataV4Payload = {
 };
 
 const signAndVerify = async () => {
-  const params = [account, signTypedDataV3Payload];
+  const signer = await provider.getSigner();
+  const account = await signer.getAddress();
+  const params = [account, signTypedDataV4Payload];
   const method = "eth_signTypedData_v4";
   const signature = await magic.rpcProvider.request({
     method,
@@ -215,7 +208,7 @@ const signAndVerify = async () => {
   console.log("signature:", signature);
   // recover the public address of the signer to verify
   const recoveredAddress = recoverTypedSignature({
-    data: signTypedDataV3Payload,
+    data: signTypedDataV4Payload,
     signature,
     version: "V4",
   });

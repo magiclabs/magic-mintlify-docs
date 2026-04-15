@@ -25,8 +25,9 @@ yarn add magic-sdk @loopring-web/loopring-sdk
 
 ```js JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
+import { BrowserProvider } from "ethers";
 import * as sdk from '@loopring-web/loopring-sdk';
-import {LOOPRING_EXPORTED_ACCOUNT, LoopringAPI, signatureKeyPairMock, TOKEN_INFO, web3} from "./Loopring";
+import { LOOPRING_EXPORTED_ACCOUNT, LoopringAPI, signatureKeyPairMock, TOKEN_INFO } from "./Loopring";
 
 const customNodeOptions = {
     // Your own ethereum node URL
@@ -36,14 +37,14 @@ const customNodeOptions = {
 
 const magic = new Magic("YOUR API KEY", {network: customNodeOptions});
 
-const web3 = new Web3(magic.rpcProvider)
+const provider = new BrowserProvider(magic.rpcProvider);
 
 // Step1. get account info payerAddress should be magic wallet public address
 const { accInfo } = await LoopringAPI.exchangeAPI.getAccount({owner: payerAddress});
 console.log("accInfo:", accInfo);
 
 // Step 2. eddsaKey
-const eddsaKey = await signatureKeyPairMock(accInfo, web3);
+const eddsaKey = await signatureKeyPairMock(accInfo, provider);
 console.log("eddsaKey:", eddsaKey.sk);
 // Step 3. get apikey
 const { apiKey } = await LoopringAPI.userAPI.getUserApiKey({
@@ -88,7 +89,7 @@ const request = {
 
 const transactionResult = await LoopringAPI.userAPI.submitInternalTransfer({
     request,
-    web3,
+    web3: provider,
     chainId: sdk.ChainId.GOERLI,
     walletType: sdk.ConnectorNames.Unknown,
     eddsaKey: eddsaKey.sk,

@@ -46,23 +46,24 @@ Before you can send transaction on the Celo blockchain, you'll need to acquire s
 
 ```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
-import { newKitFromWeb3 } from '@celo/contractkit';
-import Web3 from 'web3';
+import { newKit } from '@celo/contractkit';
+import { parseEther } from 'ethers';
 
+const rpcUrl = 'https://alfajores-forno.celo-testnet.org';
 const magic = new Magic('YOUR_API_KEY', {
   network: {
-    rpcUrl: 'https://alfajores-forno.celo-testnet.org',
+    rpcUrl,
   },
 });
 
-const web3 = new Web3(magic.rpcProvider);
-const kit = newKitFromWeb3(web3);
+const kit = newKit(rpcUrl);
+kit.connection.web3.setProvider(magic.rpcProvider);
 
 const { publicAddress } = await magic.user.getMetadata();
 
 kit.defaultAccount = publicAddress;
 
-const oneGold = kit.web3.utils.toWei('1', 'ether');
+const oneGold = parseEther('1').toString();
 
 const tx = await kit.sendTransaction({
   from: publicAddress,
@@ -96,8 +97,7 @@ Before you can send transaction on the Celo blockchain, you'll need to acquire s
 
 ```js JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
-import { newKitFromWeb3 } from '@celo/contractkit';
-import Web3 from 'web3';
+import { BrowserProvider, Contract } from 'ethers';
 
 const magic = new Magic('YOUR_API_KEY', {
   network: {
@@ -141,20 +141,14 @@ const abi = [
 ];
 const { publicAddress } = await magic.user.getMetadata();
 
-const web3 = new Web3(magic.rpcProvider);
-const kit = newKitFromWeb3(web3);
+const provider = new BrowserProvider(magic.rpcProvider);
+const signer = await provider.getSigner();
+const instance = new Contract(contractAddress, abi, signer);
 
-let instance = new web3.eth.Contract(abi, contractAddress);
+const tx = await instance.setName('new name');
+const receipt = await tx.wait();
 
-const txObject = await instance.methods.setName('new name');
-
-let tx = await kit.sendTransactionObject(txObject, { from: publicAddress, gasPrice: 1000000000 });
-
-const hash = await tx.getHash();
-
-let receipt = await tx.waitReceipt();
-
-console.log('contract send result: ', hash, receipt);
+console.log('contract send result: ', tx.hash, receipt);
 ```
 
 ## Compatibility
