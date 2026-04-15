@@ -14,12 +14,16 @@ Magic interacts with the Loopring blockchain via Magic SDK and the `loopring-sd
 
 <CodeGroup>
 ```bash NPM icon="npm"
-npm install --save magic-sdk @loopring-web/loopring-sdk
+npm install --save magic-sdk @loopring-web/loopring-sdk ethers
 ```
 ```bash Yarn icon="yarn"
-yarn add magic-sdk @loopring-web/loopring-sdk
+yarn add magic-sdk @loopring-web/loopring-sdk ethers
 ```
 </CodeGroup>
+
+<Note>
+Some Loopring SDK APIs still use parameter names like `web3`. In this example, those parameters are passed an EIP-1193 compatible ethers `BrowserProvider`.
+</Note>
 
 ## Send Transaction
 

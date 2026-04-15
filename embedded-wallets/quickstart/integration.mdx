@@ -177,6 +177,8 @@ Here is an example of sending a transaction:
 ```typescript TypeScript icon="square-js"
 import { parseEther } from "ethers";
 
+const provider = useEthersProvider();
+
 async function sendEth(amount: number, recipientAddress: string) {
   if (!provider) {
     throw new Error("Ethers provider is not initialized");
