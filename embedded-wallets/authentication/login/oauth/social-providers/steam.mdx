@@ -1,0 +1,88 @@
+---
+title: Steam Social Login with Magic
+sidebarTitle: Steam
+description: "You can allow your users to sign up & log in to your web app with their Steam account."
+---
+
+<Note>
+Steam uses [OpenID 2.0](https://openid.net/specs/openid-authentication-2_0.html) rather than OAuth 2.0. Magic handles the protocol difference for you — the SDK surface is the same as the other social providers.
+</Note>
+
+## Usage
+
+### Prerequisites
+
+* You will need a [Steam](https://store.steampowered.com/) account
+* You will need a [Steam Web API key](https://steamcommunity.com/dev/apikey)
+* You will need to have the [Magic SDK installed](/embedded-wallets/sdk/overview) into your web app
+* You will need to have the [Magic SDK - OAuth Extension](/embedded-wallets/authentication/login/oauth/oauth-implementation) installed into your web app (`@magic-ext/oauth2` **v15.6.0 or higher** is required for Steam support)
+
+### Steam Setup
+
+After installing the OAuth extension, you can now enable Steam Login for your Magic app:
+
+1.  Sign in at [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey) and register a **Steam Web API key**. Steam will ask you to associate the key with a domain — use the domain you'll be calling `loginWithRedirect` from.
+2.  Go to your [Magic Dashboard](https://dashboard.magic.link/login)
+3.  Select the Magic app for which you'd like to enable Steam Login, or create a new app
+4.  Navigate to **Social Login** from the sidebar
+5.  Click the toggle for **Steam**
+6.  Input the **Web API Key** for your Steam app
+7.  Add the **Redirect URI** you are passing as the `redirectURI` argument to the access control allowlist under **App Settings**:
+
+    ```javascript JavaScript icon="square-js"
+    await magic.oauth2.loginWithRedirect({
+      provider: 'steam',
+      redirectURI: 'https://your-app.com/your/oauth/callback', // allowlist this in your Magic Dashboard
+    });
+    ```
+
+8.  In Magic Dashboard, click **Save**
+
+<Note>
+Steam does not require a per-app client registration on their side. The only configuration Steam needs is the Web API key. Redirect URI validation happens on Magic's side via the app's redirect allowlist.
+</Note>
+
+## Implementation
+
+Trigger the login flow:
+
+```javascript JavaScript icon="square-js"
+await magic.oauth2.loginWithRedirect({
+  provider: 'steam',
+  redirectURI: 'https://your-app.com/your/oauth/callback',
+});
+```
+
+On the callback page, resolve the result the same way you would for any other OAuth provider:
+
+```javascript JavaScript icon="square-js"
+const result = await magic.oauth2.getRedirectResult();
+```
+
+`getRedirectResult` automatically detects Steam's OpenID 2.0 response parameters and routes them through the Steam verification flow — no separate method call is needed.
+
+The result interface:
+
+```typescript
+interface OAuthRedirectResult {
+  magic: {
+    idToken: string;
+    userMetadata: MagicUserMetadata;
+  },
+  oauth: {
+    provider: 'steam';
+    userHandle: string;
+    userInfo: {
+      steamId: string;
+      personaName?: string;
+      profileUrl?: string;
+      avatarUrl?: string;
+      realName?: string;
+    };
+  };
+};
+```
+
+<Note>
+Profile fields beyond `steamId` (persona name, avatar, etc.) are fetched from Steam's `GetPlayerSummaries` API. If Steam is unreachable or the Web API key is invalid, these fields will be `null` for first-time logins. For returning users, Magic preserves the last-known profile data.
+</Note>
