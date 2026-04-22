@@ -21,13 +21,13 @@ Steam uses [OpenID 2.0](https://openid.net/specs/openid-authentication-2_0.html)
 
 After installing the OAuth extension, you can now enable Steam Login for your Magic app:
 
-1.  Sign in at [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey) and register a **Steam Web API key**. Steam will ask you to associate the key with a domain — use the domain you'll be calling `loginWithRedirect` from.
+1.  Sign in at [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey) and register a **Steam Web API key**
 2.  Go to your [Magic Dashboard](https://dashboard.magic.link/login)
 3.  Select the Magic app for which you'd like to enable Steam Login, or create a new app
-4.  Navigate to **Social Login** from the sidebar
+4.  Navigate to **Authentication** > **Social Login** from the sidebar
 5.  Click the toggle for **Steam**
-6.  Input the **Web API Key** for your Steam app
-7.  Add the **Redirect URI** you are passing as the `redirectURI` argument to the access control allowlist under **App Settings**:
+6.  Input the **Web API Key** for your Steam app and save
+7.  Go to **Settings** > **Allowed Origins & Redirects** and add the **Redirect URI** you are passing as the `redirectURI` argument to the redirect allowlist:
 
     ```javascript JavaScript icon="square-js"
     await magic.oauth2.loginWithRedirect({
