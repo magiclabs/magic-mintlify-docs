@@ -146,7 +146,8 @@
                           "embedded-wallets/authentication/login/oauth/social-providers/twitch",
                           "embedded-wallets/authentication/login/oauth/social-providers/microsoft",
                           "embedded-wallets/authentication/login/oauth/social-providers/gitlab",
-                          "embedded-wallets/authentication/login/oauth/social-providers/telegram"
+                          "embedded-wallets/authentication/login/oauth/social-providers/telegram",
+                          "embedded-wallets/authentication/login/oauth/social-providers/steam"
                         ]
                       }
                     ]
