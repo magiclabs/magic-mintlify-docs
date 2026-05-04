@@ -17,7 +17,11 @@ In your dashboard, create a new application and obtain your **Secret Key**. You 
 </Step>
 
 <Step title="Set up authentication">
-Choose one of the authentication options below to issue JWTs for your users.
+Configure your application to issue JWTs for end users.
+</Step>
+
+<Step title="Set up Server Wallets">
+Follow the dashboard guide to set up Server Wallets for your application. Use the same Magic credential and returned provider ID when registering your UOA wallet setup.
 </Step>
 
 <Step title="Register your app with UOA">
@@ -38,73 +42,9 @@ curl -X POST 'https://uoa-server.magic.xyz/apps' \
 </Step>
 </Steps>
 
-## Authentication Options
+## Authentication
 
-UOA requires a JWT (`Authorization` header) and your Magic secret key (`X-MAGIC-SECRET-KEY` header) on every request. You can obtain the user JWT through either Magic Embedded Wallets or an external identity provider.
-
-<Tabs>
-<Tab title="Magic Embedded Wallets">
-
-Use [Magic Embedded Wallets](/embedded-wallets/introduction) to authenticate users directly in your frontend. The Magic SDK handles login and issues a DID token that you use as the JWT for UOA requests.
-
-### Install the Magic SDK
-
-```bash npm
-npm install magic-sdk
-```
-
-### Initialize Magic
-
-```typescript lib/magic.ts
-import { Magic } from 'magic-sdk';
-
-const magic = new Magic(process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY!);
-```
-
-### Authenticate and get a DID token
-
-```typescript
-// Log in with Email OTP
-const didToken = await magic.auth.loginWithEmailOTP({ email: 'user@example.com' });
-
-// Or use any other Magic login method:
-// await magic.auth.loginWithSMS({ phoneNumber: '+1234567890' })
-// await magic.oauth.loginWithRedirect({ provider: 'google' })
-```
-
-### Use the DID token with UOA
-
-Pass the DID token as the `Authorization` header on your backend when making UOA API calls:
-
-```typescript
-const response = await fetch('https://uoa-server.magic.xyz/account', {
-  method: 'POST',
-  headers: {
-    'Authorization': `Bearer ${didToken}`,
-    'X-MAGIC-SECRET-KEY': process.env.MAGIC_SECRET_KEY!,
-  },
-});
-```
-
-<Warning>
-The `X-MAGIC-SECRET-KEY` is a server-side secret. Never expose it in client-side code. Use a backend proxy to forward requests to UOA.
-</Warning>
-
-<Info>
-When using Magic Embedded Wallets, you can use the Magic OIDC provider ID from your dashboard when registering your app with UOA. The issuer and JWKS URL are provided by Magic automatically.
-</Info>
-
-</Tab>
-
-<Tab title="External Identity Provider">
-
-Configure an external [identity provider](/server-wallets/express-api/identity-provider) (Auth0, Firebase Auth, NextAuth, or a custom OIDC provider) that issues JWTs for your users.
-
-### Configure your provider
-
-Register your JWT issuer, audience, and JWKS URL with UOA during app registration so it can validate your tokens.
-
-### Send authenticated requests
+UOA requires a JWT (`Authorization` header) and your Magic secret key (`X-MAGIC-SECRET-KEY` header) on every authenticated request. Your application is responsible for generating the end-user JWT.
 
 Include both the user's JWT and your Magic secret key on every request:
 
@@ -117,12 +57,9 @@ X-MAGIC-SECRET-KEY: <YOUR_MAGIC_SECRET_KEY>
 The `X-MAGIC-SECRET-KEY` is a server-side secret. Never expose it in client-side code. Use a backend proxy to forward requests to UOA.
 </Warning>
 
-</Tab>
-</Tabs>
-
 ## Create an Account
 
-Create or fetch a user account. This provisions wallets across all supported chains automatically.
+Create or fetch a user account. This provisions wallet addresses for supported EVM and Solana chains.
 
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://uoa-server.magic.xyz/account' \
@@ -149,37 +86,19 @@ curl -X POST 'https://uoa-server.magic.xyz/account' \
 Calling `POST /account` multiple times for the same user returns the same account. Wallet addresses are derived deterministically.
 </Info>
 
-## Check Wallet Balances
+## Fetch Wallet Balances
 
-Once the account is created, you can query on-chain balances across all chains.
-
-```bash cURL icon="square-terminal"
-curl -X GET 'https://uoa-server.magic.xyz/account/wallet' \
-  -H 'Authorization: Bearer USER_JWT_TOKEN' \
-  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
-```
-
-**Response:**
-
-```json
-{
-  "public_address": {
-    "ETH": "0x1234...5678",
-    "ARB": "0x1234...5678",
-    "POL": "0x1234...5678",
-    "SOL": "7nYB5F...TjKN"
-  },
-  "assets": {
-    "ETH": { "ETH": "0.05", "USDC": "100.00" },
-    "ARB": { "ETH": "0.01", "USDC": "250.00" },
-    "SOL": { "SOL": "1.5", "USDC": "50.00" }
-  }
-}
-```
+Use the wallet addresses returned from `POST /account` to fetch wallet balances directly from your frontend or backend using your preferred EVM and Solana RPC providers.
 
 ## Initialize a Perp DEX
 
-Before you can deposit funds into a DEX venue, you need to initialize it for the user. First, check if the requirements are met:
+Perp DEX setup has three high-level steps:
+
+1. Initialize the venue account with `POST /account/init-perp-dex`.
+2. Make an initial deposit if the venue requires funding before trading setup.
+3. Initialize trading with `POST /account/init-perp-dex-trading`.
+
+First, check if the requirements are met:
 
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://uoa-server.magic.xyz/account/check-perp-dex-requirements' \
@@ -215,6 +134,20 @@ curl -X POST 'https://uoa-server.magic.xyz/account/init-perp-dex' \
   },
   "message": "Hyperliquid initialized successfully"
 }
+```
+
+Use the returned status and venue requirements to decide whether the user needs an initial deposit before trading setup.
+
+After the account is initialized and funded, initialize trading:
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/account/init-perp-dex-trading' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "dex": "hyperliquid"
+  }'
 ```
 
 ## Execute a Transfer
@@ -261,7 +194,7 @@ curl -X POST 'https://uoa-server.magic.xyz/transfer' \
 {
   "success": true,
   "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "message": "Transfer task created and executing"
+  "message": "Transfer task created. Monitor progress with task_id: a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 }
 ```
 
@@ -285,7 +218,7 @@ curl -X GET 'https://uoa-server.magic.xyz/task/a1b2c3d4-e5f6-7890-abcd-ef1234567
   "amount": "100",
   "chain": "ARB",
   "token": "USDC",
-  "status": "COMPLETED",
+  "status": "completed",
   "progress": {
     "current_step": 2,
     "total_steps": 2,
@@ -295,16 +228,6 @@ curl -X GET 'https://uoa-server.magic.xyz/task/a1b2c3d4-e5f6-7890-abcd-ef1234567
     ]
   }
 }
-```
-
-### Resume a Failed Transfer
-
-If a transfer fails, you can resume it from the last checkpoint:
-
-```bash cURL icon="square-terminal"
-curl -X POST 'https://uoa-server.magic.xyz/task/a1b2c3d4-e5f6-7890-abcd-ef1234567890/resume' \
-  -H 'Authorization: Bearer USER_JWT_TOKEN' \
-  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
 ```
 
 ## Next Steps

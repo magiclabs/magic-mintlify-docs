@@ -60,6 +60,7 @@ curl -X POST 'https://uoa-server.magic.xyz/transfer/estimate-transfer-cost' \
   ],
   "total_cost_eth": "0.0001",
   "total_cost_usdc": "0.25",
+  "gas_sponsored": false,
   "message": null,
   "route": null
 }
@@ -80,15 +81,23 @@ The amount to transfer as a decimal string (e.g., `"100"`).
 </ParamField>
 
 <ParamField body="chain" type="string" default="ARB">
-The chain context for the transfer. Values: `ETH`, `ARB`, `POL`, `SOL`, `STRK`, `INK`
+The chain context for the transfer (API values match the `Chain` enum). If `source` or `destination` is `self`, this must be one of `ETH`, `ARB`, `POL`, `INK`, or `SOL` (UOA self-wallet policy). Pure venue→venue routes may use other chain contexts where the planner supports them.
 </ParamField>
 
 <ParamField body="token" type="string" default="USDC">
-The token to transfer. Values: `ETH`, `WETH`, `USDC`, `USDC.E`, `POL`, `SOL`
+The token to transfer. Values: `ETH`, `USDC`, `USDC.E`, `POL`, `SOL`
 </ParamField>
 
-<ParamField body="transfer_mode" type="string">
-Optional transfer mode. Values: `sponsored` (gas-sponsored), `legacy`
+<ParamField body="destination_chain" type="string">
+Destination chain for transfers to `self`. Required with `destination_token` for self-to-self transfers. Must be one of `ETH`, `ARB`, `POL`, `INK`, or `SOL` when used (same self-wallet policy as `chain`).
+</ParamField>
+
+<ParamField body="destination_token" type="string">
+Destination token for transfers to `self`. Required with `destination_chain` for self-to-self transfers. Values: `ETH`, `USDC`, `USDC.E`, `POL`, `SOL`
+</ParamField>
+
+<ParamField body="gas_sponsored" type="boolean" default="false">
+Whether to use gas-sponsored execution when supported (EVM only; Solana is never gas-sponsored in this stack).
 </ParamField>
 
 ### Response Fields
@@ -97,16 +106,28 @@ Optional transfer mode. Values: `sponsored` (gas-sponsored), `legacy`
 Whether the estimate was computed successfully.
 </ResponseField>
 
+<ResponseField name="source" type="string">
+Echo of the request `source` (`self` or a venue id).
+</ResponseField>
+
+<ResponseField name="destination" type="string">
+Echo of the request `destination`.
+</ResponseField>
+
+<ResponseField name="amount" type="string">
+Echo of the request `amount`.
+</ResponseField>
+
 <ResponseField name="steps" type="array">
 List of planned transfer steps with individual cost breakdowns.
 
 <Expandable title="Step fields">
 <ResponseField name="action" type="string">
-The transfer action (e.g., `deposit`, `bridge`, `withdrawal`).
+The transfer action: `deposit`, `withdrawal`, or `bridge`.
 </ResponseField>
 
 <ResponseField name="dex" type="string">
-The DEX venue or bridge provider for this step.
+Venue or bridge component for this step: a perp id (`extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`) or bridge provider such as `lifi`.
 </ResponseField>
 
 <ResponseField name="cost_eth" type="string">
@@ -118,7 +139,15 @@ Estimated cost in USDC.
 </ResponseField>
 
 <ResponseField name="breakdown" type="object">
-Detailed cost breakdown: `gas_cost_eth`, `bridge_fee_usdc`, `platform_fee_usdc`.
+Per-step cost breakdown: `gas_cost_eth`, `bridge_fee_usdc`, and `platform_fee_usdc` (decimal strings).
+</ResponseField>
+
+<ResponseField name="estimated_gas" type="integer | null">
+Optional gas units estimate for the step.
+</ResponseField>
+
+<ResponseField name="gas_breakdown" type="object | null">
+Optional extended gas detail when the estimator provides it.
 </ResponseField>
 </Expandable>
 </ResponseField>
@@ -129,6 +158,18 @@ Total estimated cost across all steps in ETH.
 
 <ResponseField name="total_cost_usdc" type="string">
 Total estimated cost across all steps in USDC.
+</ResponseField>
+
+<ResponseField name="gas_sponsored" type="boolean">
+Whether the estimate used gas-sponsored execution.
+</ResponseField>
+
+<ResponseField name="message" type="string | null">
+Optional human-readable note from the estimator (e.g. errors or caveats).
+</ResponseField>
+
+<ResponseField name="route" type="object | null">
+When present, a route summary (`route_id`, `reason`, `hops`, `steps`, `gas_policy`, chain estimates, optional `bridge_estimation_error`, `effective_minimum_deposit`, etc.). Omitted or `null` when the planner does not attach one.
 </ResponseField>
 
 ---
@@ -157,7 +198,7 @@ curl -X POST 'https://uoa-server.magic.xyz/transfer' \
 {
   "success": true,
   "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "message": "Transfer task created and executing"
+  "message": "Transfer task created. Monitor progress with task_id: a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 }
 ```
 
@@ -165,7 +206,7 @@ The response also includes an `X-Task-ID` header for convenience.
 
 ### Request Parameters
 
-The request parameters are identical to [Estimate Transfer Cost](#estimate-transfer-cost).
+The JSON body matches [Estimate Transfer Cost](#estimate-transfer-cost) (`source`, `destination`, `amount`, optional `chain`, `token`, `destination_chain`, `destination_token`, `gas_sponsored`).
 
 ### Response Fields
 
@@ -207,11 +248,11 @@ curl -X GET 'https://uoa-server.magic.xyz/tasks?limit=10' \
       "amount": "100",
       "chain": "ARB",
       "token": "USDC",
-      "status": "COMPLETED",
+      "status": "completed",
       "created_at": "2026-04-01T12:00:00Z",
       "updated_at": "2026-04-01T12:01:30Z",
       "progress": {},
-      "metadata": null
+      "metadata": {}
     }
   ]
 }
@@ -258,7 +299,7 @@ Token code for the transfer.
 </ResponseField>
 
 <ResponseField name="status" type="string">
-Task status: `PENDING`, `IN_PROGRESS`, `COMPLETED`, `FAILED`, or `CANCELLED`.
+Task status: `pending`, `in_progress`, `completed`, `failed`, or `cancelled`.
 </ResponseField>
 
 <ResponseField name="created_at" type="string">
@@ -270,11 +311,11 @@ ISO 8601 timestamp of last update.
 </ResponseField>
 
 <ResponseField name="progress" type="object">
-Step-level execution progress.
+Step-level execution progress. Shape varies by route and executor.
 </ResponseField>
 
 <ResponseField name="metadata" type="object">
-Additional task metadata including route plan. `null` if not available.
+Additional task metadata (e.g. route plan, execution checkpoints). Sensitive fields such as `auth_jwt` are **never** returned; the API strips them before responding.
 </ResponseField>
 </Expandable>
 </ResponseField>
@@ -302,7 +343,7 @@ curl -X GET 'https://uoa-server.magic.xyz/task/a1b2c3d4-e5f6-7890-abcd-ef1234567
   "amount": "100",
   "chain": "ARB",
   "token": "USDC",
-  "status": "IN_PROGRESS",
+  "status": "in_progress",
   "created_at": "2026-04-01T12:00:00Z",
   "updated_at": "2026-04-01T12:00:45Z",
   "progress": {
@@ -313,7 +354,7 @@ curl -X GET 'https://uoa-server.magic.xyz/task/a1b2c3d4-e5f6-7890-abcd-ef1234567
       { "action": "deposit", "status": "in_progress" }
     ]
   },
-  "metadata": null
+  "metadata": {}
 }
 ```
 
@@ -327,11 +368,13 @@ The UUID of the task to retrieve.
 
 The response fields are the same as those in the [List Tasks](#list-tasks) task object.
 
+For a task still in `pending` status, the server may enqueue background execution when you fetch it (internal retry using stored credentials).
+
 ---
 
 ## Resume Task
 
-Resume a failed or cancelled transfer task from the last successful checkpoint.
+Resume a **failed** or **cancelled** transfer task. Returns the same payload shape as [Create Transfer](#create-transfer) (`success`, `task_id`, `message`). Not allowed for `pending`, `in_progress`, or `completed` tasks.
 
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://uoa-server.magic.xyz/task/a1b2c3d4-e5f6-7890-abcd-ef1234567890/resume' \
@@ -345,30 +388,6 @@ curl -X POST 'https://uoa-server.magic.xyz/task/a1b2c3d4-e5f6-7890-abcd-ef123456
 {
   "success": true,
   "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "message": "Task resumed"
+  "message": "Task a1b2c3d4-e5f6-7890-abcd-ef1234567890 is being resumed from step 0"
 }
 ```
-
-### Path Parameters
-
-<ParamField path="task_id" type="string" required>
-The UUID of the task to resume.
-</ParamField>
-
-<Info>
-Only tasks with status `FAILED` or `CANCELLED` can be resumed. Attempting to resume a `COMPLETED`, `IN_PROGRESS`, or `PENDING` task will return an error.
-</Info>
-
-### Response Fields
-
-<ResponseField name="success" type="boolean">
-Whether the task was resumed successfully.
-</ResponseField>
-
-<ResponseField name="task_id" type="string">
-The UUID of the resumed task.
-</ResponseField>
-
-<ResponseField name="message" type="string">
-Human-readable status message.
-</ResponseField>

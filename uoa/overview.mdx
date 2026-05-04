@@ -5,7 +5,7 @@ description: "Unified Orchestration Accounts (UOA) provide multi-chain wallet ma
 
 ## What is Unified Orchestration Accounts?
 
-Unified Orchestration Accounts (UOA) is an orchestration layer built on top of Magic's Server Wallets. It provides a single API to manage user accounts across multiple blockchains and perpetual DEX venues, plan and execute multi-step fund transfers, and bridge assets cross-chain.
+Unified Orchestration Accounts (UOA) is an orchestration layer built on top of Magic's Server Wallets. It provides a single API to manage user accounts across multiple blockchains and perpetual DEX venues, and plan and execute multi-step fund transfers.
 
 UOA handles the complexity of routing funds between wallets and trading venues so you can focus on building your application.
 
@@ -13,7 +13,7 @@ UOA handles the complexity of routing funds between wallets and trading venues s
 
 <CardGroup cols={2}>
 <Card title="Multi-Chain Wallets" icon="link">
-Automatically provision and manage wallets across Ethereum, Arbitrum, Polygon, Starknet, Solana, and Ink from a single account.
+Automatically provision and manage wallets across Ethereum, Arbitrum, Polygon, Solana, and Ink from a single account.
 </Card>
 
 <Card title="Perp DEX Integration" icon="chart-line">
@@ -24,9 +24,6 @@ Initialize and manage accounts on Extended, Hyperliquid, Paradex, Nado, and Poly
 Plan and execute multi-step transfers between wallets and DEX venues with automatic route planning, cost estimation, and fallback strategies.
 </Card>
 
-<Card title="Cross-Chain Bridging" icon="bridge">
-Bridge assets across chains via LiFi integration with quote, execute, and status tracking built in.
-</Card>
 </CardGroup>
 
 ## Supported Chains and Tokens
@@ -38,7 +35,6 @@ Bridge assets across chains via LiFi integration with quote, execute, and status
 | Ethereum | `ETH` | EVM |
 | Arbitrum | `ARB` | EVM |
 | Polygon | `POL` | EVM |
-| Starknet | `STRK` | Non-EVM |
 | Ink | `INK` | EVM |
 | Solana | `SOL` | Non-EVM |
 
@@ -47,7 +43,6 @@ Bridge assets across chains via LiFi integration with quote, execute, and status
 | Token | Code | Description |
 |-------|------|-------------|
 | ETH | `ETH` | Native Ether |
-| WETH | `WETH` | Wrapped Ether |
 | USDC | `USDC` | USD Coin |
 | USDC.e | `USDC.E` | Bridged USDC |
 | POL | `POL` | Native Polygon token |
@@ -55,23 +50,23 @@ Bridge assets across chains via LiFi integration with quote, execute, and status
 
 ## Supported DEX Venues
 
-| Venue | Code | Chain | Notes |
-|-------|------|-------|-------|
-| Extended | `extended` | Arbitrum | Magic-backed onboarding |
-| Hyperliquid | `hyperliquid` | Arbitrum | Strict deposit floor + fixed withdrawal fee |
-| Paradex | `paradex` | Arbitrum | Rhino-based bridge transfers |
-| Nado | `nado` | Ink | Wallet-signed operations, no separate onboarding |
-| Polymarket | `polymarket` | Polygon | Prediction market with Gnosis Safe proxy + gasless relayer |
+| Venue | Code | Chain |
+|-------|------|-------|
+| Extended | `extended` | Arbitrum |
+| Hyperliquid | `hyperliquid` | Arbitrum |
+| Paradex | `paradex` | Arbitrum |
+| Nado | `nado` | Ink |
+| Polymarket | `polymarket` | Polygon |
 
 ## Architecture
 
 UOA sits between your application and the blockchain, providing three layers of functionality:
 
-1. **Account layer** -- Creates and manages user accounts with wallets across all supported chains. Each user gets one wallet per chain, derived deterministically.
+1. **Account layer** -- Creates and manages user accounts with wallet addresses for supported EVM and Solana chains.
 
 2. **DEX layer** -- Initializes and manages perp DEX venue accounts. Handles the venue-specific onboarding flows, credential management, and balance queries.
 
-3. **Transfer layer** -- Plans and executes multi-step transfer routes. A single transfer request (e.g., move USDC from Hyperliquid to Polymarket) is broken down into steps like `dex_withdraw -> bridge_swap -> dex_deposit`, executed asynchronously with checkpoint-based resume on failure.
+3. **Transfer layer** -- Plans and executes multi-step transfer routes. A single transfer request (e.g., move USDC from Hyperliquid to Polymarket) is broken down into steps like withdrawal, routing, and deposit, executed asynchronously with checkpoint tracking.
 
 ## Authentication
 
@@ -92,10 +87,6 @@ The authentication flow works as follows:
 Your application authenticates the user (e.g., via Magic Link, OAuth, or any identity provider) and issues a JWT.
 </Step>
 
-<Step title="Configure your identity provider">
-Register your JWT issuer, audience, and JWKS URL with UOA so it can validate your tokens.
-</Step>
-
 <Step title="Send authenticated requests">
 Include both the user's JWT (`Authorization: Bearer ...`) and your Magic secret key (`X-MAGIC-SECRET-KEY`) on every request.
 </Step>
@@ -107,30 +98,29 @@ UOA validates the JWT, resolves the user by the `sub` claim scoped to your appli
 
 ## Transfer Execution Model
 
-Transfers are modeled as asynchronous, resumable tasks. When you create a transfer, UOA:
+Transfers are modeled as asynchronous tasks. When you create a transfer, UOA:
 
-1. **Plans the route** -- Determines the steps needed (withdraw, bridge, deposit) with fallback routes
+1. **Plans the route** -- Determines the steps needed to move funds between wallets and venues
 2. **Creates a task** -- Returns a `task_id` immediately so you can track progress
 3. **Executes asynchronously** -- Runs each step in sequence, persisting progress at each checkpoint
-4. **Supports resume** -- If a step fails, you can resume the task from the last successful checkpoint
+4. **Tracks progress** -- Each task records step-level progress and failure details
 
 ### Transfer Step Types
 
 | Step | Description |
 |------|-------------|
 | `withdrawal` | Withdraw funds from a perp venue to the user's wallet |
-| `bridge` | Cross-chain bridge transfer (powered by LiFi) |
 | `deposit` | Deposit funds into a perp venue |
 
 ### Task Statuses
 
 | Status | Description |
 |--------|-------------|
-| `PENDING` | Task created, awaiting execution |
-| `IN_PROGRESS` | Currently executing transfer steps |
-| `COMPLETED` | All steps finished successfully |
-| `FAILED` | A step failed (can be resumed) |
-| `CANCELLED` | Task was cancelled (can be resumed) |
+| `pending` | Task created, awaiting execution |
+| `in_progress` | Currently executing transfer steps |
+| `completed` | All steps finished successfully |
+| `failed` | A step failed |
+| `cancelled` | Task was cancelled |
 
 ## Next Steps
 

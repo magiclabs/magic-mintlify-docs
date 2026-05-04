@@ -347,9 +347,7 @@
               "uoa/api-reference/accounts",
               "uoa/api-reference/perp-dex",
               "uoa/api-reference/transfers",
-              "uoa/api-reference/wallet-operations",
-              "uoa/api-reference/polymarket",
-              "uoa/api-reference/bridging"
+              "uoa/api-reference/wallet-operations"
             ]
           }
         ]
