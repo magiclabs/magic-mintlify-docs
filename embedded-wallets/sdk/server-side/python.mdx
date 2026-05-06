@@ -145,15 +145,16 @@ The user resource and its methods are accessible on the Magic instance by the `U
 
 ### `get_metadata_by_email`
 
-Retrieves information about the user by the supplied `email` address.
+Retrieves information about the user by the supplied `email` address. Resolves both email-based and Google OAuth users. When both an email user and an OAuth user share the same email (apps without Google autolinking), the email user is returned by default; pass `provider` to explicitly target an OAuth user.
 
 ```python Python icon="python"
-User.get_metadata_by_email(email)
+User.get_metadata_by_email(email, provider=None)
 ```
 
 **Arguments**
 
 - `email` (str): The user's email address
+- `provider` (str, optional): Optional OAuth provider filter (e.g. `"google"`). When set, the lookup targets the OAuth user with this email and provider directly, bypassing the default email lookup.
 
 **Raises**
 
@@ -174,7 +175,22 @@ User.get_metadata_by_email(email)
   - `email` (str): The user's email address
   - `phone_number` (str): The user's phone number
   - `subject` (str): The federated identity subject, if any
+  - `oauth_provider` (str): OAuth provider, if any
   - `wallets` (arr): Array of the user's wallets
+
+**Example**
+
+```python Python icon="python"
+from magic_admin import Magic
+
+magic = Magic(api_secret_key='<SECRET_API_KEY>')
+
+# Default lookup (email user takes precedence)
+response = magic.User.get_metadata_by_email("user@example.com")
+
+# Explicitly target a Google OAuth user with the same email
+response = magic.User.get_metadata_by_email("user@example.com", provider="google")
+```
 
 ### `get_metadata_by_issuer`
 
