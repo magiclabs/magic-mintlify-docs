@@ -1,0 +1,149 @@
+---
+title: Passkey
+description: "With Magic, you can use passkeys as an authentication method, allowing users to register and sign in quickly and securely using their passkeys."
+---
+
+## Overview
+
+Passkeys enable passwordless authentication using biometric sensors (such as fingerprints or facial recognition), PINs, or patterns. Built on WebAuthn standards, passkeys provide a more secure and user-friendly alternative to traditional passwords by leveraging public key cryptography. Unlike passwords, passkeys are resistant to phishing, cannot be reused across sites, and never leave the user's device.
+
+### Compatibility
+
+<Note>
+Passkey authentication is supported on modern browsers and devices that support WebAuthn. Check browser compatibility for optimal user experience across desktop and mobile devices.
+</Note>
+
+Passkey SDK methods are available via the `Passkey` extension of the [Web client-side SDK](/embedded-wallets/sdk/client-side/javascript).
+
+## Use Cases
+
+* Passwordless authentication using device biometrics (fingerprint, Face ID)
+* Secure multi-device authentication with synced passkeys
+* Simplified login flow without remembering passwords
+* Enhanced security with phishing-resistant authentication
+
+## Usage
+
+### Installation
+
+Passkey login works as an extension to Magic SDK. To add Passkey authentication to your Magic integration, start by installing the **Passkey Extension**:
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install magic-sdk @magic-ext/passkey
+```
+```bash Yarn icon="yarn"
+yarn add magic-sdk @magic-ext/passkey
+```
+</CodeGroup>
+
+### Initialization
+
+Create your Magic SDK instance with the Passkey extension:
+
+```javascript JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { PasskeyExtension } from '@magic-ext/passkey';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [new PasskeyExtension()],
+});
+```
+
+### Register new users
+
+Register new users with the `registerNewUser` function in the `passkey` extension. You can optionally provide a `username` and `nickname`:
+
+- **username**: Used as a display name in the user's password manager or authenticator
+- **nickname**: Stored by Magic to help identify the passkey among other registered passkeys
+
+```javascript JavaScript icon="square-js"
+try {
+  const result = await magic.passkey.registerNewUser({
+    username: 'user@example.com',
+    nickname: 'My Laptop'
+  });
+
+  // Access the DID token
+  const idToken = result.idToken;
+
+  // Access device information
+  console.log('Device ID:', result.deviceInfo.id);
+  console.log('Device nickname:', result.deviceInfo.nickname);
+} catch (e) {
+  // Handle errors if required!
+  console.error('Registration failed:', e);
+}
+```
+
+### Authenticate users
+
+Authenticate users with the `login` method in the `passkey` extension. The browser will prompt the user to select and verify their passkey:
+
+```javascript JavaScript icon="square-js"
+try {
+  const result = await magic.passkey.login();
+
+  // Access the DID token
+  const idToken = result.idToken;
+
+  // Access device information
+  console.log('Logged in with device:', result.deviceInfo.nickname);
+} catch (e) {
+  // Handle errors if required!
+  console.error('Login failed:', e);
+}
+```
+
+#### Return Type
+
+The `registerNewUser` and `login` methods return a `PasskeyResult` object:
+
+```typescript
+interface PasskeyResult {
+  idToken: string;
+  deviceInfo: {
+    id: string;
+    nickname: string;
+    transport: string;
+    userAgent: string;
+  };
+}
+```
+
+### Get User Metadata
+
+Retrieve passkey-specific metadata with the `getMetadata` method in the `passkey` extension. The response includes information about all devices registered for the current user:
+
+```javascript JavaScript icon="square-js"
+try {
+  const metadata = await magic.passkey.getMetadata();
+
+  /* passkey metadata shape
+     {
+       "devicesInfo": [
+         {
+           "id": "device-id-string",
+           "nickname": "My Laptop",
+           "transport": "internal",
+           "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)..."
+         },
+         {
+           "id": "another-device-id",
+           "nickname": "My Phone",
+           "transport": "hybrid",
+           "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0)..."
+         }
+       ]
+     }
+  */
+
+  // List all registered devices
+  metadata.devicesInfo.forEach(device => {
+    console.log(`Device: ${device.nickname} (${device.transport})`);
+  });
+} catch (e) {
+  // Handle errors if required!
+  console.error('Failed to retrieve metadata:', e);
+}
+```
