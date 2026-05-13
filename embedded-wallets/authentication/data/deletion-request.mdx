@@ -7,39 +7,45 @@ title: GDPR Deletion Request
   their wallet and cannot be recovered.
 </Warning>
 
-<Note>Available to users whose primary login is an email.</Note>
-
 ## Overview
 
 The **Deletion Request API** enables developers to delete users' information in compliance with GDPR. This API is designed for applications that require bulk deletion operations and supports authentication using the application's secret key.
+
+Users can be targeted by **email address**, **public wallet address**, or both in the same request. Targeting by public address lets you delete users whose primary login is not an email — for example, SMS, passkey, OAuth, Telegram, Steam, Farcaster, SIWE, or SpireKey users.
 
 ## Usage
 
 ### Request
 
-The bulk deletion endpoint supports deleting multiple user accounts in a single API call. To use this endpoint, send a POST request to the following URL with a payload that includes the list of email addresses associated with the accounts you want to delete.
+Send a `POST` request with a payload containing `emails`, `public_addresses`, or both. At least one of the two fields must be provided and non-empty.
 
 ```bash
 curl --location 'https://api.magic.link/v1/admin/user/deletion/request' \
 --header 'X-Magic-Secret-Key: <SECRET_KEY>' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-  "emails": ["user1@example.com", "user2@example.com"]
+  "emails": ["user1@example.com", "user2@example.com"],
+  "public_addresses": ["0xD57Ee2cda4e5d168650C2cE414e1981DE350Bb13"]
 }'
 ```
+
+#### Fields
+
+- `emails` (optional): Email addresses associated with end-user accounts to delete.
+- `public_addresses` (optional): Public wallet addresses associated with end-user accounts to delete. Each address is resolved against your app's active wallets.
 
 ### Response
 
 #### Success
 
-Upon successful request processing, the API returns a response with lists of processed and unprocessed emails.
+The API returns a response with lists of processed and unprocessed identifiers. Each entry mirrors the value supplied in the request (either an email or a public address).
 
-- `processed`: An array of emails that have been queued for deletion.
-- `unprocessed`: An array of emails that were not found and hence not processed.
+- `processed`: Identifiers that matched an active user and were queued for deletion.
+- `unprocessed`: Identifiers that did not match an active user for your app and were not deleted.
 
-```bash
+```json
 {
-  "processed": ["user1@example.com"],
+  "processed": ["user1@example.com", "0xD57Ee2cda4e5d168650C2cE414e1981DE350Bb13"],
   "unprocessed": ["user2@example.com"]
 }
 ```
@@ -48,6 +54,6 @@ Upon successful request processing, the API returns a response with lists of pro
 
 In the event of an error, the API will return an error code and message.
 
-- `400 Bad Request`: Your request is invalid. This often occurs due to missing the `emails` field in the request body.
+- `400 Bad Request`: Your request is invalid. This typically occurs when neither `emails` nor `public_addresses` is provided, or when the request body is malformed.
 - `401 Unauthorized`: Your authorization token is missing or invalid.
 - `429 Too Many Requests`: You have hit the rate limit for deletion requests. Please wait before sending more requests.
