@@ -1,13 +1,17 @@
 ---
 title: Google Social Login with Magic
 sidebarTitle: Google
-description: "You can allow your users to sign up & login into your web application with their Google account."
+description: "You can allow your users to sign up & login into your web application with their Google account, via either the standard OAuth redirect flow or an inline Google One Tap prompt."
 ---
+
+<Tip>
+Prefer an inline sign-in prompt to a redirect? Jump to the [Google One Tap](#google-one-tap) section below. Both flows share the same setup steps and resolve to the same Magic user and wallet.
+</Tip>
 
 ## Usage
 
 <Note>
-If your users are encountering an "Access blocked: magic.link has not completed the Google verification process" error, please [read below](/embedded-wallets/authentication/login/oauth/social-providers/google#verification-process).
+If your users are encountering an "Access blocked: magic.link has not completed the Google verification process" error, please [read below](#verification-process).
 </Note>
 
 ### Prerequisites
@@ -49,7 +53,149 @@ After installing the OAuth extension, you can now enable Google Login for your M
 9.  In Magic Dashboard, click **"Save"**
 10. Click "**Test Connection**" to give your new Google OAuth flow a try!
 
-### Verification Process
+## OAuth Redirect
+
+The standard Google sign-in flow redirects users to Google's OAuth screen and back to a callback URL on your site.
+
+```javascript JavaScript icon="square-js"
+await magic.oauth2.loginWithRedirect({
+  provider: 'google',
+  redirectURI: 'https://your-app.com/your/oauth/callback',
+});
+```
+
+For full usage including handling the redirect result and accessing the DID token, see the [OAuth Implementation](/embedded-wallets/authentication/login/oauth/oauth-implementation) guide.
+
+## Google One Tap
+
+Google One Tap shows an inline sign-in prompt embedded on your page, so users never leave your app during sign-in. You integrate [Google Identity Services (GSI)](https://developers.google.com/identity/gsi/web/guides/overview) on your site, receive a Google-issued ID token (JWT), and pass it to Magic via `loginWithGoogleIdToken`. Magic verifies the token and returns a session — and because identity resolution runs through the same Google OAuth provider as the redirect flow, **One Tap users resolve to the same Magic user and wallet as redirect-flow users** automatically.
+
+<Warning>
+The Google Client ID you use for One Tap **must match** the Client ID you entered in your Magic Dashboard's [Google Social Login configuration](#google-setup) above. If the Client IDs don't match, the request is rejected with a `400`.
+</Warning>
+
+This requires `@magic-ext/oauth2` `v15.8.0` or higher.
+
+### Implementation
+
+<Steps>
+  <Step title="Add a Google Identity Services helper" titleSize="h5" noAnchor>
+    Magic does not bundle Google Identity Services — your app loads the GSI client library and obtains the ID token, then passes it to Magic for verification. Save the following as `gsi.js` (or wherever you keep client utilities). It loads the GSI script the first time it's called, shows the One Tap prompt, and returns the resulting Google ID token as a Promise.
+
+    ```javascript JavaScript icon="square-js"
+    const GSI_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
+
+    let gsiPromise = null;
+
+    function loadGsi() {
+      if (gsiPromise) return gsiPromise;
+
+      gsiPromise = new Promise((resolve, reject) => {
+        if (window.google?.accounts?.id) {
+          resolve(window.google.accounts.id);
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = GSI_SCRIPT_SRC;
+        script.async = true;
+        script.defer = true;
+        script.onload = () => {
+          if (window.google?.accounts?.id) resolve(window.google.accounts.id);
+          else reject(new Error('GSI script loaded but window.google.accounts.id is unavailable.'));
+        };
+        script.onerror = () => reject(new Error(`Failed to load GSI script: ${GSI_SCRIPT_SRC}`));
+        document.head.appendChild(script);
+      });
+
+      return gsiPromise;
+    }
+
+    /**
+     * Loads GSI, shows the One Tap prompt, and resolves with the resulting Google ID token (JWT).
+     */
+    export async function promptGoogleOneTap({ clientId }) {
+      const accountsId = await loadGsi();
+
+      return new Promise((resolve, reject) => {
+        accountsId.initialize({
+          client_id: clientId,
+          callback: (response) => {
+            if (!response?.credential) {
+              reject(new Error('Google One Tap returned no credential.'));
+              return;
+            }
+            resolve(response.credential);
+          },
+        });
+
+        accountsId.prompt((notification) => {
+          if (notification.isNotDisplayed?.()) {
+            reject(new Error(`Google One Tap not displayed: ${notification.getNotDisplayedReason?.()}`));
+          }
+        });
+      });
+    }
+    ```
+
+    You'll also need to add your app's origin (for example `https://your-app.com` and `http://localhost:3000` for local development) to **Authorized JavaScript origins** on your OAuth 2.0 Client ID in the [Google Cloud Console](https://console.developers.google.com/) — GSI requires it.
+
+    Refer to [Google's One Tap documentation](https://developers.google.com/identity/gsi/web/guides/display-google-one-tap) for advanced configuration (auto-select, FedCM, cooldowns, button rendering, etc.).
+  </Step>
+
+  <Step title="Log in with Magic" titleSize="h5" noAnchor>
+    Call the helper to obtain the JWT, then pass it to `loginWithGoogleIdToken` along with the same Google Client ID. Magic verifies the token's signature, issuer, and audience against Google, then returns a DID token you can use with the [Admin SDK](/embedded-wallets/sdk/server-side/node#token-module) to verify the user on your backend.
+
+    ```javascript JavaScript icon="square-js"
+    import { Magic } from 'magic-sdk';
+    import { OAuthExtension } from '@magic-ext/oauth2';
+    import { promptGoogleOneTap } from './gsi';
+
+    const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID';
+
+    const magic = new Magic('YOUR_MAGIC_API_KEY', {
+      extensions: [new OAuthExtension()],
+    });
+
+    async function loginWithGoogle() {
+      const jwt = await promptGoogleOneTap({ clientId: GOOGLE_CLIENT_ID });
+
+      const didToken = await magic.oauth2.loginWithGoogleIdToken({
+        jwt,
+        googleClientId: GOOGLE_CLIENT_ID,
+      });
+
+      // Send didToken to your backend for verification
+      console.log(didToken);
+    }
+    ```
+  </Step>
+</Steps>
+
+### Method reference
+
+```typescript
+interface LoginWithGoogleIdTokenConfiguration {
+  jwt: string;            // Google-issued ID token (JWT) from the GSI callback
+  googleClientId: string; // Your Google OAuth Client ID
+  lifespan?: number;      // Optional DID token lifespan in seconds
+}
+
+magic.oauth2.loginWithGoogleIdToken(
+  configuration: LoginWithGoogleIdTokenConfiguration
+): Promise<string>;
+```
+
+### Other Google Identity Services flows
+
+The `loginWithGoogleIdToken` method accepts any Google-issued ID token, so it works with any [Google Identity Services](https://developers.google.com/identity/gsi/web) flow that returns an `id_token` credential:
+
+* **One Tap prompt** — `google.accounts.id.prompt()` (shown above)
+* **Sign in with Google button** — `google.accounts.id.renderButton(...)` for a customer-rendered button instead of the auto-prompt
+
+Both return a credential via the same callback contract, so the Magic-side integration is identical — only the GSI trigger differs.
+
+## Verification Process
 
 If your users are encountering an `Access blocked: magic.link has not completed the Google verification process` error, you will need to navigate to your Google developer dashboard and change your app's "Publishing status" from "Testing" to "In production".
 
@@ -80,7 +226,7 @@ The full list of criteria that requires verification from Google is as follows:
 
 ## Gmail Linking
 
-A user's email login and Google social login can automatically be linked so that logging in with either auth factor will resolve to a single wallet.
+A user's email login and Google social login can automatically be linked so that logging in with either auth factor will resolve to a single wallet. This applies to both the OAuth Redirect and One Tap flows above.
 
 <Info>
 Each login counts towards a unique monthly active wallet for billing purposes.
@@ -93,4 +239,5 @@ By default, this account linking is enabled in the dashboard when you enable Goo
 ## Resources
 
 * [Google Social Login Demo](https://magic-oauth-v2-dun.vercel.app)
-
+* [Google Identity Services — One Tap](https://developers.google.com/identity/gsi/web/guides/display-google-one-tap)
+* [Google Identity Services — Sign in with Google button](https://developers.google.com/identity/gsi/web/guides/display-button)
