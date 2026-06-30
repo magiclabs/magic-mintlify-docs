@@ -186,6 +186,173 @@ class LoginViewController: UIViewController {
 }
 ```
 
+### Headless Email OTP (`showUI: false`)
+
+If you'd rather build your own UI for the OTP, MFA, and device-verification prompts instead of using Magic's out-of-the-box modal, pass `showUI: false` in `LoginWithEmailOTPConfiguration`. The SDK then returns a `MagicEventPromise<String>` instead of immediately resolving — subscribe to it for inbound events from the relayer, and `emit` outbound events (like the OTP the user typed) back to it.
+
+**Arguments**
+
+- `configuration` (LoginWithEmailOTPConfiguration):
+  - `email` (string): The user email to log in with
+  - `showUI` (boolean): Pass `false` to drive the flow with your own UI
+- `eventLog` (boolean): If `true`, logs each event received/emitted to the console
+
+**Returns**
+
+- `MagicEventPromise<String>`: An event-driven promise. Call `.on(eventName:)` / `.onPersistent(eventName:)` to subscribe, `.emit(eventType:arg:)` to respond, and `.done` / `.catch` / `.onError` to handle the final result.
+
+**Events**
+
+Events are grouped into four enums under `AuthModule`, mirroring the `@magic-sdk/types` design:
+
+**`LoginWithEmailOTPEventOnReceived`** — inbound email OTP events
+
+| Case | Raw value | Meaning |
+| --- | --- | --- |
+| `emailOTPSent` | `email-otp-sent` | OTP email was sent — prompt the user for the code |
+| `invalidEmailOTP` | `invalid-email-otp` | Submitted OTP was invalid — may fire multiple times |
+| `expiredEmailOTP` | `expired-email-otp` | OTP expired |
+| `loginThrottled` | `login-throttled` | Too many attempts — client should back off |
+| `maxAttemptsReached` | `max-attempts-reached` | No retries left |
+
+**`LoginWithEmailOTPEventEmit`** — outbound email OTP events
+
+| Case | Raw value | Meaning |
+| --- | --- | --- |
+| `verifyEmailOTP` | `verify-email-otp` | Emit with the OTP the user entered |
+| `cancel` | `cancel` | Emit to cancel the in-progress login |
+
+**`MFAEventOnReceived`** — inbound MFA events (reusable across flows)
+
+| Case | Raw value | Meaning |
+| --- | --- | --- |
+| `mfaSentHandle` | `mfa-sent-handle` | User has MFA enabled — prompt for authenticator code |
+| `invalidMfaOTP` | `invalid-mfa-otp` | Submitted MFA code was invalid — may fire multiple times |
+| `recoveryCodeSentHandle` | `recovery-code-sent-handle` | Prompt for MFA recovery code |
+| `invalidRecoveryCode` | `invalid-recovery-code` | Submitted recovery code was invalid — may fire multiple times |
+| `recoveryCodeSuccess` | `recovery-code-success` | Recovery code accepted |
+
+**`MFAEventEmit`** — outbound MFA events (reusable across flows)
+
+| Case | Raw value | Meaning |
+| --- | --- | --- |
+| `verifyMFACode` | `verify-mfa-code` | Emit with the authenticator code the user entered |
+| `verifyRecoveryCode` | `verify-recovery-code` | Emit with the recovery code the user entered |
+| `lostDevice` | `lost-device` | Emit to switch from MFA to recovery-code flow |
+| `cancel` | `cancel` | Emit to cancel the in-progress MFA challenge |
+
+**`DeviceVerificationEventOnReceived`** — inbound device-verification events
+
+| Case | Raw value | Meaning |
+| --- | --- | --- |
+| `deviceNeedsApproval` | `device-needs-approval` | New device detected — user must approve via email |
+| `deviceVerificationEmailSent` | `device-verification-email-sent` | Device approval email was sent |
+| `deviceApproved` | `device-approved` | Device was approved — login will continue |
+| `deviceVerificationLinkExpired` | `device-verification-link-expired` | Device approval link expired |
+
+**`DeviceVerificationEventEmit`** — outbound device-verification events
+
+| Case | Raw value | Meaning |
+| --- | --- | --- |
+| `deviceRetry` | `device-retry` | Emit to resend the device verification email |
+
+Use `.on(eventName:)` for events that fire once, and `.onPersistent(eventName:)` for events that may fire repeatedly (e.g. `invalidEmailOTP` on each wrong attempt) so the subscription isn't torn down after the first occurrence.
+
+**Example**
+
+```swift Swift icon="swift"
+import MagicSDK
+
+class LoginViewController: UIViewController {
+    @IBOutlet weak var emailInput: UITextField!
+    let magic = Magic.shared
+
+    private var emailOTPHandle: MagicEventPromise<String>?
+
+    @IBAction func loginHeadless() {
+        guard let magic = magic, let email = emailInput.text else { return }
+
+        let configuration = LoginWithEmailOTPConfiguration(email: email, showUI: false)
+
+        emailOTPHandle = magic.auth.loginWithEmailOTP(configuration, eventLog: true)
+
+            // — Email OTP —
+            .on(eventName: AuthModule.LoginWithEmailOTPEventOnReceived.emailOTPSent.rawValue) { [weak self] in
+                // Prompt the user for the OTP they received by email, then:
+                let otp = "123456" // value collected from your own UI
+                self?.emailOTPHandle?.emit(eventType: AuthModule.LoginWithEmailOTPEventEmit.verifyEmailOTP.rawValue, arg: otp)
+            }
+            .onPersistent(eventName: AuthModule.LoginWithEmailOTPEventOnReceived.invalidEmailOTP.rawValue) { [weak self] in
+                // Invalid OTP — re-prompt; fires on each wrong attempt
+                let otp = "123456"
+                self?.emailOTPHandle?.emit(eventType: AuthModule.LoginWithEmailOTPEventEmit.verifyEmailOTP.rawValue, arg: otp)
+            }
+            .on(eventName: AuthModule.LoginWithEmailOTPEventOnReceived.expiredEmailOTP.rawValue) { [weak self] in
+                // OTP expired — restart the login flow
+            }
+            .on(eventName: AuthModule.LoginWithEmailOTPEventOnReceived.loginThrottled.rawValue) { [weak self] in
+                // Too many attempts — ask the user to wait before retrying
+            }
+            .on(eventName: AuthModule.LoginWithEmailOTPEventOnReceived.maxAttemptsReached.rawValue) { [weak self] in
+                // No retries left — end the flow
+            }
+
+            // — MFA —
+            .on(eventName: AuthModule.MFAEventOnReceived.mfaSentHandle.rawValue) { [weak self] in
+                // User has MFA enabled — prompt for their authenticator code, then:
+                let code = "123456" // value collected from your own UI
+                self?.emailOTPHandle?.emit(eventType: AuthModule.MFAEventEmit.verifyMFACode.rawValue, arg: code)
+            }
+            .onPersistent(eventName: AuthModule.MFAEventOnReceived.invalidMfaOTP.rawValue) { [weak self] in
+                // Invalid MFA code — re-prompt or switch to recovery:
+                self?.emailOTPHandle?.emit(eventType: AuthModule.MFAEventEmit.lostDevice.rawValue)
+            }
+            .on(eventName: AuthModule.MFAEventOnReceived.recoveryCodeSentHandle.rawValue) { [weak self] in
+                // Prompt for MFA recovery code, then:
+                let code = "RECOVERY-CODE" // value collected from your own UI
+                self?.emailOTPHandle?.emit(eventType: AuthModule.MFAEventEmit.verifyRecoveryCode.rawValue, arg: code)
+            }
+            .onPersistent(eventName: AuthModule.MFAEventOnReceived.invalidRecoveryCode.rawValue) { [weak self] in
+                // Invalid recovery code — re-prompt or cancel
+                self?.emailOTPHandle?.emit(eventType: AuthModule.MFAEventEmit.cancel.rawValue)
+            }
+            .on(eventName: AuthModule.MFAEventOnReceived.recoveryCodeSuccess.rawValue) { [weak self] in
+                // Recovery code accepted — login will complete via .done
+            }
+
+            // — Device verification —
+            .on(eventName: AuthModule.DeviceVerificationEventOnReceived.deviceNeedsApproval.rawValue) { [weak self] in
+                // New device — ask the user to check their inbox to approve
+            }
+            .on(eventName: AuthModule.DeviceVerificationEventOnReceived.deviceVerificationEmailSent.rawValue) { [weak self] in
+                // Device approval email sent — waiting for the user to click it
+            }
+            .on(eventName: AuthModule.DeviceVerificationEventOnReceived.deviceApproved.rawValue) { [weak self] in
+                // Device approved — login will continue automatically
+            }
+            .on(eventName: AuthModule.DeviceVerificationEventOnReceived.deviceVerificationLinkExpired.rawValue) { [weak self] in
+                // Approval link expired — retry
+                self?.emailOTPHandle?.emit(eventType: AuthModule.DeviceVerificationEventEmit.deviceRetry.rawValue)
+            }
+
+        emailOTPHandle?
+            .onError { error in
+                print("Error:", error.localizedDescription)
+            }
+            .done { didToken in
+                print("Result", didToken) // DIDToken — login complete
+            }
+            .catch { error in
+                print(error)
+            }
+    }
+}
+```
+
+<Note>
+  Cancel an in-progress headless login at any time: `emailOTPHandle?.emit(eventType: AuthModule.LoginWithEmailOTPEventEmit.cancel.rawValue)`.
+</Note>
+
 
 ## Wallet Module
 
