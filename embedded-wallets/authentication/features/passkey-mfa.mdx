@@ -1,6 +1,6 @@
 ---
 title: Passkey MFA
-description: "Add a passkey as a second authentication factor for users logging in with email OTP."
+description: "Add a passkey as a second authentication factor for users logging in with email OTP or OAuth."
 sidebarTitle: Passkey MFA
 ---
 
@@ -10,16 +10,16 @@ import { StartupPlanCallout } from "/snippets/paid-feature-callouts.mdx";
 
 ## Overview
 
-Passkey MFA lets you require users to verify their identity with a passkey after completing email OTP login. The passkey acts as a second factor using the device's biometric sensor (fingerprint, Face ID) or PIN — providing phishing-resistant security on top of email authentication.
+Passkey MFA lets you require users to verify their identity with a passkey after their primary login factor completes — whether that's email OTP or OAuth. The passkey acts as a second factor using the device's biometric sensor (fingerprint, Face ID) or PIN, providing phishing-resistant security on top of the primary authentication method.
 
 When a user has both [TOTP MFA](/embedded-wallets/authentication/features/mfa) and passkey MFA enabled, they can choose which method to use at login time. Recovery codes are issued at enrollment so users can regain access if they lose their device.
 
 ### Compatibility
 
 <Note>
-  Passkey MFA is only supported for the `loginWithEmailOTP` flow. It requires
-  the [Passkey extension](/embedded-wallets/authentication/login/passkey) and is
-  available on the Web SDK only.
+  Passkey MFA is supported for the `loginWithEmailOTP` and OAuth flows. It
+  requires the [Passkey extension](/embedded-wallets/authentication/login/passkey)
+  and is available on the Web SDK only.
 </Note>
 
 ## Setup
@@ -62,15 +62,25 @@ interface EnablePasskeyMfaResult {
 
 ### Magic-hosted UI (default)
 
-No additional code is required. When a user with passkey MFA enabled logs in via `loginWithEmailOTP`, Magic automatically presents the passkey verification step after email OTP.
+No additional code is required. Magic automatically presents the passkey verification step after the primary factor completes — whether that's email OTP or an OAuth redirect.
 
-```javascript JavaScript icon="square-js"
+<CodeGroup>
+```javascript Email OTP icon="square-js"
 const didToken = await magic.auth.loginWithEmailOTP({ email: 'user@example.com' });
 ```
+```javascript OAuth icon="square-js"
+// After returning from the OAuth redirect:
+const result = await magic.oauth2.getRedirectResult();
+```
+</CodeGroup>
 
-### Custom UI (`showUI: false`)
+### Custom UI
 
-When using `showUI: false`, you must handle MFA events on the login handle. Add the following events to your existing [email OTP event handler](/embedded-wallets/sdk/client-side/javascript#loginwithemailotp):
+When you control the UI, pass `showUI: false` (email OTP) or `showMfaModal: false` (OAuth) to handle the MFA step yourself. The MFA events are the same for both flows.
+
+#### Email OTP
+
+Add MFA events to your existing [email OTP event handler](/embedded-wallets/sdk/client-side/javascript#loginwithemailotp):
 
 ```javascript JavaScript icon="square-js"
 import {
@@ -99,17 +109,15 @@ handle
 
   // Only emitted when the user has both TOTP and passkey MFA enabled
   .on(MfaEventOnReceived.SelectMfaType, () => {
-    // Present a choice to the user and emit their selection
     const type = window.confirm('Verify with passkey? Click Cancel to use your authenticator app instead.')
       ? 'passkey'
       : 'totp';
     handle.emit(MfaEventEmit.SelectedMfaType, type);
   })
 
-  // Emitted when the passkey challenge is ready — the browser handles the prompt
+  // Emitted when the passkey challenge is ready — the browser handles the WebAuthn prompt
   .on(MfaEventOnReceived.MfaSentHandle, () => {
-    // No action required. The browser will prompt the user to verify with their passkey.
-    // If the user cannot access their passkey, emit LostDevice to start recovery.
+    // No action required. Emit LostDevice if the user cannot access their passkey.
     // handle.emit(MfaEventEmit.LostDevice);
   })
 
@@ -118,6 +126,53 @@ handle
 
   .on('done', (result) => {
     console.log('Login complete, DID token:', result);
+  })
+  .on('error', (err) => {
+    console.error('Login failed:', err);
+  });
+
+await handle;
+```
+
+#### OAuth
+
+Pass `showMfaModal: false` to `getRedirectResult` and attach the same MFA events:
+
+```javascript JavaScript icon="square-js"
+import {
+  Magic,
+  MfaEventOnReceived,
+  MfaEventEmit,
+} from 'magic-sdk';
+import { OAuthExtension } from '@magic-ext/oauth2';
+import { PasskeyExtension } from '@magic-ext/passkey';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [new OAuthExtension(), new PasskeyExtension()],
+});
+
+const handle = magic.oauth2.getRedirectResult({ showMfaModal: false });
+
+handle
+  // Only emitted when the user has both TOTP and passkey MFA enabled
+  .on(MfaEventOnReceived.SelectMfaType, () => {
+    const type = window.confirm('Verify with passkey? Click Cancel to use your authenticator app instead.')
+      ? 'passkey'
+      : 'totp';
+    handle.emit(MfaEventEmit.SelectedMfaType, type);
+  })
+
+  // Emitted when the passkey challenge is ready — the browser handles the WebAuthn prompt
+  .on(MfaEventOnReceived.MfaSentHandle, () => {
+    // No action required. Emit LostDevice if the user cannot access their passkey.
+    // handle.emit(MfaEventEmit.LostDevice);
+  })
+
+  // Recovery code flow (triggered after emitting LostDevice)
+  // Follows the same pattern as TOTP MFA recovery — see the MFA docs for full event handling
+
+  .on('done', (result) => {
+    console.log('OAuth login complete:', result);
   })
   .on('error', (err) => {
     console.error('Login failed:', err);
