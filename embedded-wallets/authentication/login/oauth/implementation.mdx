@@ -100,6 +100,10 @@ interface OAuthRedirectResult {
 The shape of `magic.userMetadata` (typed as `MagicUserMetadata`) differs by SDK version. On **SDK v30.0.0+**, wallet addresses are nested under a `wallets` object — access the Ethereum address via `result.magic.userMetadata.wallets?.ethereum?.publicAddress`. On **SDK v29.x and below**, the address is available as a flat field: `result.magic.userMetadata.publicAddress`. See the [`getInfo` SDK reference](/embedded-wallets/sdk/client-side/javascript#getinfo) for full response shapes and migration details.
 </Note>
 
+## Multi-factor Authentication
+
+Passkey MFA is supported in the OAuth flow. After the user returns from the OAuth redirect, Magic handles passkey verification automatically when using the default UI. For custom MFA handling, see [Passkey MFA](/embedded-wallets/authentication/features/passkey-mfa#oauth).
+
 ## Resources
 
 - [OAuth Demo](https://magic-oauth-v2-dun.vercel.app)
