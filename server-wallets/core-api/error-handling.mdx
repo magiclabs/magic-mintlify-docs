@@ -1,0 +1,74 @@
+---
+title: "Error Handling"
+description: "Error codes and troubleshooting for Core API"
+---
+
+## Error Handling
+
+Core API uses standard HTTP status codes and returns detailed error information to help you troubleshoot issues.
+
+### Common Error Responses
+
+#### 400 Bad Request
+
+**`INVALID_REQUEST_FIELDS`**
+- **Cause**: Missing or invalid required fields in the request body
+- **Solution**: Verify all required parameters are present and properly formatted
+
+**`MISSING_REQUIRED_HEADER`**
+- **Cause**: The `x-magic-secret-key` header is missing from the request
+- **Solution**: Include the header: `x-magic-secret-key: sk_live_XXXXXXXX`
+
+**`INVALID_API_KEY`**
+- **Cause**: The provided secret key is invalid or expired
+- **Solution**: Verify your secret key is correct and your application is allowlisted
+
+**`INVALID_USER_PASSCODE`**
+- **Cause**: The `encryption_context` or `access_key` is incorrect
+- **Solution**: Ensure the `encryption_context` matches what was used during wallet creation
+
+#### 403 Forbidden
+
+**`METHOD_NOT_AVAILABLE`**
+- **Cause**: The requested endpoint or method is not available for your application
+- **Solution**: Contact Magic support to enable the required functionality
+
+#### 408 Timeout
+
+**`REQUEST_TIMEOUT`**
+- **Cause**: The request took too long to process
+- **Solution**: Retry the request or contact support if the issue persists
+
+#### 500 Internal Server Error
+
+**`INTERNAL_SERVER_ERROR`**
+- **Cause**: An unexpected error occurred on Magic's servers
+- **Solution**: If this error persists, contact Magic support for assistance
+
+### Error Response Format
+
+All error responses follow this format:
+
+```json
+{
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable error description",
+    "details": "Additional context or troubleshooting information"
+  }
+}
+```
+
+### Best Practices
+
+<Tip>
+Always implement proper error handling in your application:
+- Check HTTP status codes before processing responses
+- Log error details for debugging
+- Implement retry logic for transient errors (5xx status codes)
+- Provide meaningful error messages to your users
+</Tip>
+
+<Warning>
+Never expose sensitive error details (like secret keys or encryption contexts) to end users. Log them securely for debugging purposes only.
+</Warning>

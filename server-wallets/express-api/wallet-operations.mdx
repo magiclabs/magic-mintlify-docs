@@ -10,7 +10,7 @@ description: "Create wallets and sign transactions using Express API endpoints f
 Get or create a wallet for the given chain and return its public address. If a wallet doesn't exist for the user and chain combination, one will be created automatically.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.express.magiclabs.com/v2/wallet' \
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
   -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
@@ -29,7 +29,7 @@ curl -X POST 'https://tee.express.magiclabs.com/v2/wallet' \
 #### Request Parameters
 
 <ParamField header="X-Magic-Chain" type="string" required post={["Header"]}>
-The blockchain to create the wallet for. Available values: `ETH`
+The blockchain to create the wallet for. Available values: `ETH`, `SOL`, `BTC`
 </ParamField>
 
 #### Response Fields
@@ -49,7 +49,7 @@ Each user can have one wallet per blockchain. Calling this endpoint multiple tim
 Sign a hash of arbitrary data using the wallet's private key. This is useful for signing transaction data, typed data, or any structured information.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.express.magiclabs.com/v2/wallet/sign/data' \
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
   -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
@@ -75,11 +75,11 @@ curl -X POST 'https://tee.express.magiclabs.com/v2/wallet/sign/data' \
 #### Request Parameters
 
 <ParamField header="X-Magic-Chain" type="string" required post={["Header"]}>
-The blockchain to sign for. Available values: `ETH`
+The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
 </ParamField>
 
 <ParamField body="raw_data_hash" type="string" required post={["Body"]}>
-The keccak256 hash of the data to sign (hex string with 0x prefix).
+The keccak256 hash of the data to sign (hex string with 0x postfix).
 </ParamField>
 
 #### Response Fields
@@ -169,7 +169,7 @@ The y-parity bit (`0` or `1`) used for EIP-7702 signature recovery.
 Sign an arbitrary message using the wallet's private key. Useful for authentication, off-chain verification, and personal signatures.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.express.magiclabs.com/v2/wallet/sign/message' \
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
   -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
@@ -194,7 +194,7 @@ curl -X POST 'https://tee.express.magiclabs.com/v2/wallet/sign/message' \
 #### Request Parameters
 
 <ParamField header="X-Magic-Chain" type="string" required post={["Header"]}>
-The blockchain to sign for. Available values: `ETH`
+The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
 </ParamField>
 
 <ParamField body="message_base64" type="string" required post={["Body"]}>

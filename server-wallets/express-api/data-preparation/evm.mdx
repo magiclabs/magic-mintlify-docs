@@ -15,7 +15,7 @@ const personalSign = async (data: string) => {
   const message = Buffer.from(data, 'utf-8').toString('base64');
   
   const body = { message_base64: message };
-  return await fetch('/v2/wallet/sign/message', { 
+  return await fetch('/v1/wallet/sign/message', { 
     method: 'POST', 
     headers: {
       'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ const signTypedDataV1 = async (data: TypedDataV1) => {
   const rawDataHash = typedSignatureHash(data);
   
   const body = { raw_data_hash: rawDataHash };
-  return await fetch('/v2/wallet/sign/data', { 
+  return await fetch('/v1/wallet/sign/data', { 
     method: 'POST', 
     headers: {
       'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ const signTypedDataV3 = async (data: TypedMessage<MessageTypes>) => {
   const rawDataHash = computeEip712Hash(data, SignTypedDataVersion.V3);
   
   const body = { raw_data_hash: rawDataHash };
-  return await fetch('/v2/wallet/sign/data', { 
+  return await fetch('/v1/wallet/sign/data', { 
     method: 'POST', 
     headers: {
       'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ const signTypedDataV4 = async (data: TypedMessage<MessageTypes>) => {
   const rawDataHash = computeEip712Hash(data, SignTypedDataVersion.V4);
   
   const body = { raw_data_hash: rawDataHash };
-  return await fetch('/v2/wallet/sign/data', { 
+  return await fetch('/v1/wallet/sign/data', { 
     method: 'POST', 
     headers: {
       'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ const signTransaction = async (tx: TransactionRequest) => {
   const btx = Transaction.from(txForSigning as TransactionLike);
   
   const body = { raw_data_hash: btx.unsignedHash };
-  const res = await fetch('/v2/wallet/sign/data', { 
+  const res = await fetch('/v1/wallet/sign/data', { 
     method: 'POST', 
     headers: {
       'Content-Type': 'application/json',
