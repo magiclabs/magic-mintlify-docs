@@ -13,7 +13,7 @@ description: "You can allow your users to sign up & log in to your web app with 
 * You will need to have the [Magic SDK installed](/embedded-wallets/sdk/overview) into your web app
 * You will need to have the [Magic SDK - OAuth Extension](/embedded-wallets/authentication/login/oauth/oauth-implementation) installed into your web app
 
-### GitHub Setup (v1 extension)
+### GitHub Setup
 
 After installing the OAuth extension, you can now enable GitHub Login for your Magic app:
 
@@ -22,34 +22,30 @@ After installing the OAuth extension, you can now enable GitHub Login for your M
 3.  Select the Magic app for which you’d like to enable GitHub Login, or create a new app
 4.  Navigate to **Social Login** from the sidebar
 5.  Click the toggle for **GitHub**
-6.  Copy the **Redirect URI** field from your Magic Dashboard
-7.  Return to your GitHub Dashboard and paste the **Redirect URI** you obtained from your Magic Dashboard into the **"Authorization callback URL"** field
+6.  Return to your GitHub Dashboard and add your **Redirect URI** in the **Authorization callback URL** field:
+    
+    Add the **Redirect URI** you are passing as the **redirectURI** argument to the **loginWithRedirect** method:
+    
+    ```javascript JavaScript icon="square-js"
+    await magic.oauth2.loginWithRedirect({
+      provider: 'github',
+      redirectURI: 'https://your-app.com/your/oauth/callback', // whitelist this with GitHub
+    });
+    ```
 
 <Frame>
-  <img src="/images/paste-redirect-uri.webp" alt=""/>
+  <img src="/images/paste-redirect-uri.webp" alt="GitHub OAuth application settings with Authorization callback URL input field"/>
 </Frame>
 
+7.  Click **Register App** to complete your GitHub OAuth app setup
+8.  On the next page, obtain the **Client ID** and **Client Secret**
 
-8.  Click **"Register App"** to complete your GitHub OAuth app setup.
-9.  On the next page, obtain the **"Client ID"** and **"Client Secret"**
 <Frame>
-  <img src="/images/obtain-client-credentials.webp" alt=""/>
+  <img src="/images/obtain-client-credentials.webp" alt="GitHub application showing Client ID and Client Secret credentials"/>
 </Frame>
 
-10. Return to your Magic Dashboard and input the **Client ID** and **Client Secret** for your GitHub OAuth app
-11. In Magic Dashboard, click **“Save”** – Done!
-
-### GitHub Setup (v2 extension)
-
-* Follow above steps, but disregard Magic's **Redirect URI** in step 6
-* In step 7, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
-
-```javascript JavaScript icon="square-js"
-await magic.oauth2.loginWithRedirect({
-  provider: 'github',
-  redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with GitHub
-});
-```
+9.  Return to your Magic Dashboard and input the **Client ID** and **Client Secret** for your GitHub OAuth app
+10. In Magic Dashboard, click **Save**
 
 ## Resources
 

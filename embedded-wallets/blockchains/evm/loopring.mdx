@@ -14,36 +14,41 @@ Magic interacts with the Loopring blockchain via Magic SDK and the `loopring-sd
 
 <CodeGroup>
 ```bash NPM icon="npm"
-npm install --save magic-sdk @loopring-web/loopring-sdk
+npm install --save magic-sdk @loopring-web/loopring-sdk ethers
 ```
 ```bash Yarn icon="yarn"
-yarn add magic-sdk @loopring-web/loopring-sdk
+yarn add magic-sdk @loopring-web/loopring-sdk ethers
 ```
 </CodeGroup>
+
+<Note>
+Some Loopring SDK APIs still use parameter names like `web3`. In this example, those parameters are passed an EIP-1193 compatible ethers `BrowserProvider`.
+</Note>
 
 ## Send Transaction
 
 ```js JavaScript icon="square-js"
 import { Magic } from "magic-sdk";
+import { BrowserProvider } from "ethers";
 import * as sdk from '@loopring-web/loopring-sdk';
-import {LOOPRING_EXPORTED_ACCOUNT, LoopringAPI, signatureKeyPairMock, TOKEN_INFO, web3} from "./Loopring";
+import { LOOPRING_EXPORTED_ACCOUNT, LoopringAPI, signatureKeyPairMock, TOKEN_INFO } from "./Loopring";
 
 const customNodeOptions = {
     // Your own ethereum node URL
-    rpcUrl: 'https://goerli.infura.io/v3/a06ed9c6b5424b61beafff27ecc3abf3',
+    rpcUrl: 'https://goerli.infura.io/v3/YOUR_INFURA_KEY',
     chainId: 5, // chainId
 };
 
-const magic = new Magic("YOUR API KEY", {network: customNodeOptions});
+const magic = new Magic("YOUR_API_KEY", {network: customNodeOptions});
 
-const web3 = new Web3(magic.rpcProvider)
+const provider = new BrowserProvider(magic.rpcProvider);
 
 // Step1. get account info payerAddress should be magic wallet public address
 const { accInfo } = await LoopringAPI.exchangeAPI.getAccount({owner: payerAddress});
 console.log("accInfo:", accInfo);
 
 // Step 2. eddsaKey
-const eddsaKey = await signatureKeyPairMock(accInfo, web3);
+const eddsaKey = await signatureKeyPairMock(accInfo, provider);
 console.log("eddsaKey:", eddsaKey.sk);
 // Step 3. get apikey
 const { apiKey } = await LoopringAPI.userAPI.getUserApiKey({
@@ -88,7 +93,7 @@ const request = {
 
 const transactionResult = await LoopringAPI.userAPI.submitInternalTransfer({
     request,
-    web3,
+    web3: provider,
     chainId: sdk.ChainId.GOERLI,
     walletType: sdk.ConnectorNames.Unknown,
     eddsaKey: eddsaKey.sk,

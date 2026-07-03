@@ -58,6 +58,18 @@ Currently, we support the following Sender Types:
 </Frame>
 2. Choose the **Phone Number** Sender Type. The account must have an SMS-capable Twilio number to use this sender type.
 
+### How to Add a Twilio Verify Service
+
+<Note>
+A Twilio Verify Service enables additional verification channels required to enable the [account recovery](embedded-wallets/authentication/features/account-recovery#account-recovery) feature.
+</Note>
+
+1. Navigate to **Verify → Services** in your Twilio Console and click **Create new**
+2. Enter a **Friendly Name** for your service (e.g., "My App Verification")
+3. Configure the verification channels (SMS, Email) for your service
+4. Click **Create** to create the service
+5. Copy the **Service SID** after creation
+
 ### How to Add a WhatsApp Number Sender
 
 <Note>

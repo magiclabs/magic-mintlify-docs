@@ -5,7 +5,7 @@ description: "With Magic, you can use OAuth as an authentication mechanism, givi
 
 ## Overview
 
-Applications can be integrated with the following social providers: [Google](/embedded-wallets/authentication/login/oauth/social-providers/google), [Facebook](/embedded-wallets/authentication/login/oauth/social-providers/facebook), [Twitter](/embedded-wallets/authentication/login/oauth/social-providers/twitter), [Apple](/embedded-wallets/authentication/login/oauth/social-providers/apple), [Discord](/embedded-wallets/authentication/login/oauth/social-providers/discord), [GitHub](/embedded-wallets/authentication/login/oauth/social-providers/github), [LinkedIn](/embedded-wallets/authentication/login/oauth/social-providers/linkedin), [Twitch](/embedded-wallets/authentication/login/oauth/social-providers/twitch), [Bitbucket](/embedded-wallets/authentication/login/oauth/social-providers/bitbucket) and [Microsoft](/embedded-wallets/authentication/login/oauth/social-providers/microsoft).
+Applications can be integrated with the following social providers: [Google](/embedded-wallets/authentication/login/oauth/social-providers/google), [Facebook](/embedded-wallets/authentication/login/oauth/social-providers/facebook), [Twitter](/embedded-wallets/authentication/login/oauth/social-providers/twitter), [Apple](/embedded-wallets/authentication/login/oauth/social-providers/apple), [Discord](/embedded-wallets/authentication/login/oauth/social-providers/discord), [GitHub](/embedded-wallets/authentication/login/oauth/social-providers/github), [LinkedIn](/embedded-wallets/authentication/login/oauth/social-providers/linkedin), [Twitch](/embedded-wallets/authentication/login/oauth/social-providers/twitch), [Bitbucket](/embedded-wallets/authentication/login/oauth/social-providers/bitbucket), [Microsoft](/embedded-wallets/authentication/login/oauth/social-providers/microsoft), and [Steam](/embedded-wallets/authentication/login/oauth/social-providers/steam).
 
 ### Compatibility
 
@@ -95,6 +95,14 @@ interface OAuthRedirectResult {
   }
 };
 ```
+
+<Note>
+The shape of `magic.userMetadata` (typed as `MagicUserMetadata`) differs by SDK version. On **SDK v30.0.0+**, wallet addresses are nested under a `wallets` object — access the Ethereum address via `result.magic.userMetadata.wallets?.ethereum?.publicAddress`. On **SDK v29.x and below**, the address is available as a flat field: `result.magic.userMetadata.publicAddress`. See the [`getInfo` SDK reference](/embedded-wallets/sdk/client-side/javascript#getinfo) for full response shapes and migration details.
+</Note>
+
+## Multi-factor Authentication
+
+Passkey MFA is supported in the OAuth flow. After the user returns from the OAuth redirect, Magic handles passkey verification automatically when using the default UI. For custom MFA handling, see [Passkey MFA](/embedded-wallets/authentication/features/passkey-mfa#oauth).
 
 ## Resources
 

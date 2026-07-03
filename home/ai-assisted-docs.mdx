@@ -1,0 +1,104 @@
+---
+title: "LLM & MCP Access"
+description: "Use AI tools to search, explore, and build with Magic's documentation"
+---
+
+## Overview
+
+Magic's documentation is designed to work with AI tools. You can connect your preferred AI assistant directly to our docs, enabling contextual searches, code generation, and troubleshooting without leaving your development environment.
+
+---
+
+## Chat With Any Page
+
+Every page in our docs includes options to open the content directly in an AI assistant. Look for the contextual menu on any page to:
+
+- Copy the page as Markdown
+- Open in Claude or ChatGPT with the page preloaded as context
+- Send to Cursor or VS Code for inline assistance
+
+This is useful when you want to ask follow-up questions about a specific API endpoint, debug an integration issue, or generate code based on a recipe.
+
+---
+
+## Connect the MCP Server
+
+Magic exposes a [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server that lets AI tools search our documentation directly. Once connected, your AI assistant can find relevant docs pages on its own — no copy-pasting required.
+
+<Tabs>
+  <Tab title="Claude">
+    <Steps>
+      <Step title="Add the connector">
+        1. Open [Claude Settings > Connectors](https://claude.ai/settings/connectors)
+        2. Select **Add custom connector**
+        3. Enter the following:
+           - **Name:** `Magic Docs`
+           - **URL:** `https://docs.magic.link/mcp`
+        4. Select **Add**
+      </Step>
+
+      <Step title="Use it in a conversation">
+        1. In any Claude conversation, select the attachments button (plus icon)
+        2. Select **Magic Docs**
+        3. Ask a question — Claude will search the docs automatically
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="Claude Code">
+    Add the MCP server from your terminal:
+
+    ```bash
+    claude mcp add --transport http magic-docs https://docs.magic.link/mcp
+    ```
+
+    Verify the connection:
+
+    ```bash
+    claude mcp list
+    ```
+
+    Claude Code will now search Magic's docs when relevant to your questions.
+  </Tab>
+
+  <Tab title="Cursor">
+    <Steps>
+      <Step title="Open MCP settings">
+        1. Open the command palette with <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> (or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> on Windows)
+        2. Search for **Open MCP settings**
+        3. This opens your `mcp.json` file
+      </Step>
+
+      <Step title="Add the server">
+        Add the following to `mcp.json`:
+
+        ```json
+        {
+          "mcpServers": {
+            "Magic Docs": {
+              "url": "https://docs.magic.link/mcp"
+            }
+          }
+        }
+        ```
+      </Step>
+
+      <Step title="Verify">
+        In Cursor's chat, ask "What tools do you have available?" — you should see the Magic Docs server listed.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+---
+
+## LLM Feed Files
+
+If you're building custom AI integrations or want to index Magic's docs in your own tools, we expose two continuously updated files:
+
+| File | URL | Best for |
+|------|-----|----------|
+| `llms.txt` | [docs.magic.link/llms.txt](https://docs.magic.link/llms.txt) | Quick context — a concise index of all docs pages |
+| `llms-full.txt` | [docs.magic.link/llms-full.txt](https://docs.magic.link/llms-full.txt) | Full indexing — includes all page content |
+
+These can be ingested into custom GPTs, RAG pipelines, or any LLM application that benefits from up-to-date Magic documentation.

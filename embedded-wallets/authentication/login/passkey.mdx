@@ -1,0 +1,283 @@
+---
+title: Passkey
+description: "With Magic, you can use passkeys as an authentication method, allowing users to register and sign in quickly and securely using their passkeys."
+---
+
+## Overview
+
+Passkeys enable passwordless authentication using biometric sensors (such as fingerprints or facial recognition), PINs, or patterns. Built on WebAuthn standards, passkeys provide a more secure and user-friendly alternative to traditional passwords by leveraging public key cryptography. Unlike passwords, passkeys are resistant to phishing, cannot be reused across sites, and never leave the user's device.
+
+### Compatibility
+
+<Note>
+Passkey authentication is supported on modern browsers and devices that support WebAuthn. Check browser compatibility for optimal user experience across desktop and mobile devices.
+</Note>
+
+Passkey SDK methods are available via the `Passkey` extension of the [Web client-side SDK](/embedded-wallets/sdk/client-side/javascript).
+
+## Use Cases
+
+* Passwordless authentication using device biometrics (fingerprint, Face ID)
+* Secure multi-device authentication with synced passkeys
+* Simplified login flow without remembering passwords
+* Enhanced security with phishing-resistant authentication
+
+## Usage
+
+### Installation
+
+Passkey login works as an extension to Magic SDK. To add Passkey authentication to your Magic integration, start by installing the **Passkey Extension**:
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install magic-sdk @magic-ext/passkey
+```
+```bash Yarn icon="yarn"
+yarn add magic-sdk @magic-ext/passkey
+```
+</CodeGroup>
+
+### Initialization
+
+Create your Magic SDK instance with the Passkey extension:
+
+```javascript JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { PasskeyExtension } from '@magic-ext/passkey';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [new PasskeyExtension()],
+});
+```
+
+### Register new users
+
+Register new users with the `registerNewUser` function in the `passkey` extension. You can optionally provide a `username` and `nickname`:
+
+- **username**: Used as a display name in the user's password manager or authenticator
+- **nickname**: Stored by Magic to help identify the passkey among other registered passkeys
+
+```javascript JavaScript icon="square-js"
+try {
+  const result = await magic.passkey.registerNewUser({
+    username: 'user@example.com',
+    nickname: 'My Laptop'
+  });
+
+  // Access the DID token
+  const idToken = result.idToken;
+
+  // Access device information
+  console.log('Device ID:', result.deviceInfo.id);
+  console.log('Device nickname:', result.deviceInfo.nickname);
+} catch (e) {
+  // Handle errors if required!
+  console.error('Registration failed:', e);
+}
+```
+
+### Authenticate users
+
+Authenticate users with the `login` method in the `passkey` extension. The browser will prompt the user to select and verify their passkey.
+
+Pass `showMfaModal: false` if you want to handle TOTP MFA verification yourself rather than using Magic's hosted UI. This is only relevant when users have [TOTP MFA](/embedded-wallets/authentication/features/mfa) enabled alongside passkey login.
+
+```javascript JavaScript icon="square-js"
+try {
+  const result = await magic.passkey.login({ username: 'user@example.com' });
+
+  // Access the DID token
+  const idToken = result.idToken;
+
+  // Access device information
+  console.log('Logged in with device:', result.deviceInfo.nickname);
+} catch (e) {
+  // Handle errors if required!
+  console.error('Login failed:', e);
+}
+```
+
+#### TOTP MFA event handling (`showMfaModal: false`)
+
+When a passkey user also has TOTP MFA enabled, set `showMfaModal: false` to handle the MFA step with your own UI. Use the event handle to listen for and respond to MFA prompts:
+
+```javascript JavaScript icon="square-js"
+import {
+  Magic,
+  PasskeyMFAEventEmit,
+  PasskeyMFAEventOnReceived,
+} from 'magic-sdk';
+import { PasskeyExtension } from '@magic-ext/passkey';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [new PasskeyExtension()],
+});
+
+const handle = magic.passkey.login({ username: 'user@example.com', showMfaModal: false });
+
+handle
+  // User has TOTP MFA — prompt for the authenticator code
+  .on(PasskeyMFAEventOnReceived.MfaSentHandle, () => {
+    const totp = window.prompt('Enter your authenticator code');
+    handle.emit(PasskeyMFAEventEmit.VerifyMFACode, totp);
+  })
+  .on(PasskeyMFAEventOnReceived.InvalidMfaOtp, () => {
+    // Invalid code — retry or cancel
+    // To trigger the recovery code flow instead: handle.emit(PasskeyMFAEventEmit.LostDevice)
+    handle.emit(PasskeyMFAEventEmit.Cancel);
+  })
+  // Recovery code flow (triggered after emitting LostDevice)
+  .on(PasskeyMFAEventOnReceived.RecoveryCodeSentHandle, () => {
+    const code = window.prompt('Enter your recovery code');
+    handle.emit(PasskeyMFAEventEmit.VerifyRecoveryCode, code);
+  })
+  .on(PasskeyMFAEventOnReceived.InvalidRecoveryCode, () => {
+    handle.emit(PasskeyMFAEventEmit.Cancel);
+  })
+  .on('done', () => {
+    console.log('Login complete');
+  })
+  .on('error', (err) => {
+    console.error(err);
+  });
+
+await handle;
+```
+
+**Event reference**
+
+| Event | Direction | Description |
+| --- | --- | --- |
+| `PasskeyMFAEventOnReceived.MfaSentHandle` | Received | TOTP MFA verification required |
+| `PasskeyMFAEventEmit.VerifyMFACode` | Emit | Send the TOTP code for verification |
+| `PasskeyMFAEventOnReceived.InvalidMfaOtp` | Received | The TOTP code was invalid |
+| `PasskeyMFAEventEmit.LostDevice` | Emit | Signal lost authenticator — initiates recovery code flow |
+| `PasskeyMFAEventOnReceived.RecoveryCodeSentHandle` | Received | Recovery code input is required |
+| `PasskeyMFAEventEmit.VerifyRecoveryCode` | Emit | Send the recovery code for verification |
+| `PasskeyMFAEventOnReceived.InvalidRecoveryCode` | Received | The recovery code was invalid |
+| `PasskeyMFAEventEmit.Cancel` | Emit | Cancel the login request |
+
+#### Return Type
+
+The `registerNewUser` and `login` methods return a `PasskeyResult` object:
+
+```typescript TypeScript icon="square-ts"
+interface PasskeyResult {
+  idToken: string;
+  deviceInfo: {
+    id: string;
+    nickname: string;
+    transport: string;
+    userAgent: string;
+  };
+}
+```
+
+### Get User Metadata
+
+Retrieve passkey-specific metadata with the `getMetadata` method in the `passkey` extension. The response includes information about all devices registered for the current user:
+
+```javascript JavaScript icon="square-js"
+try {
+  const metadata = await magic.passkey.getMetadata();
+
+  /* passkey metadata shape
+     {
+       "devicesInfo": [
+         {
+           "id": "device-id-string",
+           "nickname": "My Laptop",
+           "transport": "internal",
+           "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)..."
+         },
+         {
+           "id": "another-device-id",
+           "nickname": "My Phone",
+           "transport": "hybrid",
+           "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0)..."
+         }
+       ]
+     }
+  */
+
+  // List all registered devices
+  metadata.devicesInfo.forEach(device => {
+    console.log(`Device: ${device.nickname} (${device.transport})`);
+  });
+} catch (e) {
+  // Handle errors if required!
+  console.error('Failed to retrieve metadata:', e);
+}
+```
+
+### Add a passkey
+
+Add a new passkey to an existing user's account with `addPasskey`. The user must have an active session. This is useful for registering additional devices — for example, letting a user who originally signed up on desktop also register their phone.
+
+```javascript JavaScript icon="square-js"
+try {
+  const result = await magic.passkey.addPasskey({
+    username: 'user@example.com',
+    nickname: 'My Phone',
+  });
+
+  console.log('New passkey registered:', result.deviceInfo.id);
+} catch (e) {
+  console.error('Failed to add passkey:', e);
+}
+```
+
+**Arguments**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `username` | string | No | Display name shown in the browser's passkey picker |
+| `nickname` | string | No | Label stored by Magic to identify this passkey |
+
+### Update a passkey
+
+Update a passkey's nickname with `updatePasskey`. Use `getMetadata` to retrieve the `id` of the passkey you want to update.
+
+```javascript JavaScript icon="square-js"
+try {
+  await magic.passkey.updatePasskey({
+    passkeyId: 'device-id-string',
+    nickname: 'Work Laptop',
+  });
+
+  console.log('Passkey updated');
+} catch (e) {
+  console.error('Failed to update passkey:', e);
+}
+```
+
+**Arguments**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `passkeyId` | string | Yes | The `id` of the passkey to update, from `getMetadata` |
+| `nickname` | string | Yes | The new label for this passkey |
+
+### Remove a passkey
+
+Remove a passkey from the user's account with `removePasskey`. Use `getMetadata` to retrieve the `id` of the passkey you want to remove.
+
+```javascript JavaScript icon="square-js"
+try {
+  await magic.passkey.removePasskey({ passkeyId: 'device-id-string' });
+
+  console.log('Passkey removed');
+} catch (e) {
+  console.error('Failed to remove passkey:', e);
+}
+```
+
+**Arguments**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `passkeyId` | string | Yes | The `id` of the passkey to remove, from `getMetadata` |
+
+<Warning>
+  Removing a passkey that is the user's only registered passkey while [Passkey MFA](/embedded-wallets/authentication/features/passkey-mfa) is enabled will prevent them from completing login. Disable passkey MFA before removing the last passkey.
+</Warning>

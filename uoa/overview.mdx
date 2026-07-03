@@ -1,0 +1,135 @@
+---
+title: "Overview"
+description: "Unified Orchestration Accounts (UOA) provide multi-chain wallet management, perpetual DEX integration, and orchestrated fund transfers through a single API."
+---
+
+## What is Unified Orchestration Accounts?
+
+Unified Orchestration Accounts (UOA) is an orchestration layer built on top of Magic's Server Wallets. It provides a single API to manage user accounts across multiple blockchains and perpetual DEX venues, and plan and execute multi-step fund transfers.
+
+UOA handles the complexity of routing funds between wallets and trading venues so you can focus on building your application.
+
+### Key Benefits
+
+<CardGroup cols={2}>
+<Card title="Multi-Chain Wallets" icon="link">
+Automatically provision and manage wallets across Ethereum, Arbitrum, Polygon, Solana, and Ink from a single account.
+</Card>
+
+<Card title="Perp DEX Integration" icon="chart-line">
+Initialize and manage accounts on Extended, Hyperliquid, Paradex, Nado, and Polymarket with unified deposit, withdrawal, and balance APIs.
+</Card>
+
+<Card title="Transfer Orchestration" icon="route">
+Plan and execute multi-step transfers between wallets and DEX venues with automatic route planning, cost estimation, and fallback strategies.
+</Card>
+
+</CardGroup>
+
+## Supported Chains and Tokens
+
+### Chains
+
+| Chain | Code | Type |
+|-------|------|------|
+| Ethereum | `ETH` | EVM |
+| Arbitrum | `ARB` | EVM |
+| Polygon | `POL` | EVM |
+| Ink | `INK` | EVM |
+| Solana | `SOL` | Non-EVM |
+
+### Tokens
+
+| Token | Code | Description |
+|-------|------|-------------|
+| ETH | `ETH` | Native Ether |
+| USDC | `USDC` | USD Coin |
+| USDC.e | `USDC.E` | Bridged USDC |
+| POL | `POL` | Native Polygon token |
+| SOL | `SOL` | Native Solana token |
+
+## Supported DEX Venues
+
+| Venue | Code | Chain |
+|-------|------|-------|
+| Extended | `extended` | Arbitrum |
+| Hyperliquid | `hyperliquid` | Arbitrum |
+| Paradex | `paradex` | Arbitrum |
+| Nado | `nado` | Ink |
+| Polymarket | `polymarket` | Polygon |
+
+## Architecture
+
+UOA sits between your application and the blockchain, providing three layers of functionality:
+
+1. **Account layer** -- Creates and manages user accounts with wallet addresses for supported EVM and Solana chains.
+
+2. **DEX layer** -- Initializes and manages perp DEX venue accounts. Handles the venue-specific onboarding flows, credential management, and balance queries.
+
+3. **Transfer layer** -- Plans and executes multi-step transfer routes. A single transfer request (e.g., move USDC from Hyperliquid to Polymarket) is broken down into steps like withdrawal, routing, and deposit, executed asynchronously with checkpoint tracking.
+
+## Authentication
+
+All UOA endpoints require two authentication headers:
+
+<ParamField header="Authorization" type="string" required>
+Bearer token (JWT) issued by your application for end-user authentication. Format: `Bearer YOUR_JWT_TOKEN`
+</ParamField>
+
+<ParamField header="X-MAGIC-SECRET-KEY" type="string" required>
+Your Magic secret key for application-level authentication.
+</ParamField>
+
+The authentication flow works as follows:
+
+<Steps>
+<Step title="User authenticates with your app">
+Your application authenticates the user (e.g., via Magic Link, OAuth, or any identity provider) and issues a JWT.
+</Step>
+
+<Step title="Send authenticated requests">
+Include both the user's JWT (`Authorization: Bearer ...`) and your Magic secret key (`X-MAGIC-SECRET-KEY`) on every request.
+</Step>
+
+<Step title="UOA resolves the user">
+UOA validates the JWT, resolves the user by the `sub` claim scoped to your application, and processes the request.
+</Step>
+</Steps>
+
+## Transfer Execution Model
+
+Transfers are modeled as asynchronous tasks. When you create a transfer, UOA:
+
+1. **Plans the route** -- Determines the steps needed to move funds between wallets and venues
+2. **Creates a task** -- Returns a `task_id` immediately so you can track progress
+3. **Executes asynchronously** -- Runs each step in sequence, persisting progress at each checkpoint
+4. **Tracks progress** -- Each task records step-level progress and failure details
+
+### Transfer Step Types
+
+| Step | Description |
+|------|-------------|
+| `withdrawal` | Withdraw funds from a perp venue to the user's wallet |
+| `deposit` | Deposit funds into a perp venue |
+
+### Task Statuses
+
+| Status | Description |
+|--------|-------------|
+| `pending` | Task created, awaiting execution |
+| `in_progress` | Currently executing transfer steps |
+| `completed` | All steps finished successfully |
+| `failed` | A step failed |
+| `cancelled` | Task was cancelled |
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Getting Started" icon="rocket" href="/uoa/getting-started">
+Set up your first UOA integration with step-by-step instructions.
+</Card>
+
+<Card title="API Reference" icon="code" href="/uoa/api-reference/accounts">
+Explore the complete API surface for accounts, transfers, wallets, and more.
+</Card>
+</CardGroup>

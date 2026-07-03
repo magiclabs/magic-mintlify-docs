@@ -52,6 +52,10 @@ interface OAuthRedirectResult {
 };
 ```
 
+<Note>
+The shape of `magic.userMetadata` (typed as `MagicUserMetadata`) differs by SDK version. On **SDK v30.0.0+**, wallet addresses are nested under a `wallets` object — access the Ethereum address via `result.magic.userMetadata.wallets?.ethereum?.publicAddress`. On **SDK v29.x and below**, the address is available as a flat field: `result.magic.userMetadata.publicAddress`. See the [`getInfo` SDK reference](/embedded-wallets/sdk/client-side/javascript#getinfo) for full response shapes and migration details.
+</Note>
+
 <Warning>
 Keep your token secure and store it safely, it can be used by anyone to control your bot
 </Warning>

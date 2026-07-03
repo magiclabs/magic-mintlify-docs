@@ -1,7 +1,7 @@
 ---
 title: Facebook Social Login with Magic
 sidebarTitle: Facebook
-description: "You can allow your users to sign up & login into your web application with their Facebook account."
+description: "You can allow your users to sign up & log in to your web app with their Facebook account."
 ---
 
 ## Usage
@@ -9,61 +9,50 @@ description: "You can allow your users to sign up & login into your web applicat
 ### Prerequisites
 
 * You will need a [Facebook Developer](https://developers.facebook.com/) account
-* You will need to have the [Magic SDK installed](/embedded-wallets/sdk/overview) into your web application
-* You will need to have the [Magic SDK - OAuth Extension](/embedded-wallets/authentication/login/oauth/oauth-implementation) installed into your web application
+* You will need to have the [Magic SDK installed](/embedded-wallets/sdk/overview) into your web app
+* You will need to have the [Magic SDK - OAuth Extension](/embedded-wallets/authentication/login/oauth/oauth-implementation) installed into your web app
 
-### Facebook Setup (v1 extension)
+### Facebook Setup
 
-After installing the OAuth extension, you can now enable Facebook Login for your Magic application:
+After installing the OAuth extension, you can now enable Facebook Login for your Magic app:
 
-1.  Follow Facebook's instructions to [register a Facebook application](https://developers.facebook.com/docs/apps#register)
-2.  When creating your Facebook application, select **Authenticate and request data from users with Facebook Login**, click Next  and follow the prompts to add app information
+1.  Follow Facebook's instructions to [register a Facebook app](https://developers.facebook.com/docs/apps#register)
+2.  When creating your Facebook app, select **Authenticate and request data from users with Facebook Login**, click Next and follow the prompts to add app information
 
 <Frame>
-  <img src="/images/facebook-step-1.webp" alt="facebook-step-1.png"/>
+  <img src="/images/facebook-select-auth.png" alt="Facebook app creation screen with authentication option selected"/>
 </Frame>
 
+3.  Complete your Facebook app setup
+4.  In your Facebook app's Advanced Settings page, add your **Redirect URI** in the **Share Redirect Allow List** input:
 
-3.  On the next screen, you'll be presented with steps to customize your Facebook application. Click **Customize adding a Facebook Login button**.
 <Frame>
-  <img src="/images/facebook-step-2.webp" alt="facebook-step-2.png"/>
+  <img src="/images/facebook-share-redirect.png" alt="Facebook Advanced Settings showing Share Redirect Allow List input field"/>
 </Frame>
 
+    Add the **Redirect URI** you are passing as the **redirectURI** argument to the **loginWithRedirect** method:
+    
+    ```javascript JavaScript icon="square-js"
+    await magic.oauth2.loginWithRedirect({
+      provider: 'facebook',
+      redirectURI: 'https://your-app.com/your/oauth/callback', // whitelist this with Facebook
+    });
+    ```
 
-4.  Go to your [Magic Dashboard](https://dashboard.magic.link/login)
-5.  Select the Magic app for which you’d like to enable Facebook Login, or create a new application
-6.  Navigate to **Authentication ->** **Social Logins** from the sidebar
-7.  Click the toggle for **Facebook**
-8.  Copy the **Redirect URI** field from your Magic Dashboard
-9.  Back in your Facebook Login Settings, paste the Redirect URI in the **Valid OAuth Redirect URIs** input and save the changes
+5.  Save the changes in your Facebook settings
+6.  From the main Facebook dashboard, click on **App Settings -> Basic**
+7.  Copy the **App Id** and **App Secret**
+
 <Frame>
-  <img src="/images/facebook-step-4.webp" alt="facebook-step-4.png"/>
+  <img src="/images/facebook-client.png" alt="Facebook App Settings showing App ID and App Secret credentials"/>
 </Frame>
 
-
-10. From the main Facebook dashboard, click on **App Settings -> Basic**
-11. Copy the **App Id** and **App Secret**
-<Frame>
-  <img src="/images/facebook-step-5.webp" alt="facebook-step-5.png"/>
-</Frame>
-
-
-12. From the Magic Dashboard, add your **App Id** and **App Secret** to your Facebook Login configuration
-13. Click **Save**
-14. Click **Test Connection** to give your new Facebook OAuth flow a try!
-
-### Facebook Setup (v2 extension)
-
-* Follow above steps, but disregard Magic's **Redirect URI** in step 8
-* In step 9, paste the **Redirect URI** you are passing in as the **redirectURI** argument to the **loginWithRedirect** method
-
-
-```javascript JavaScript icon="square-js"
-await magic.oauth2.loginWithRedirect({
-  provider: 'facebook',
-  redirectURI: 'https://your-app.com/your/oauth/callback', // <== whitelist this with Facebook
-});
-```
+8.  Go to your [Magic Dashboard](https://dashboard.magic.link/login)
+9.  Select the Magic app for which you'd like to enable Facebook Login, or create a new app
+10. Navigate to **Social Login** from the sidebar
+11. Click the toggle for **Facebook**
+12. Input the **App Id** and **App Secret** from your Facebook app
+13. In Magic Dashboard, click **Save**
 
 ## Resources
 

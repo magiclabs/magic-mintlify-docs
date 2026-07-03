@@ -1,0 +1,410 @@
+---
+title: "Yield on Morpho"
+description: "Earn yield on USDC by depositing into Morpho Vaults with Magic Server Wallets on Base"
+---
+
+## Overview
+
+This guide shows how to use **Magic's Express Server Wallet** to deposit USDC into a Morpho Vault on Base and earn yield. The private key never leaves the TEE — your server builds transactions, signs them via the Express API, and broadcasts the result.
+
+Morpho Vaults implement the [ERC-4626](https://eips.ethereum.org/EIPS/eip-4626) tokenized vault standard. Users deposit an underlying asset (e.g., USDC), receive vault shares, and earn yield as the share price appreciates over time.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+1. A Magic **Secret Key** — from your [Magic Dashboard](https://dashboard.magic.link)
+2. An **OIDC Provider ID** — configured for your auth provider ([setup guide](/server-wallets/express-api/identity-provider))
+3. A Base RPC endpoint (e.g., from [Alchemy](https://www.alchemy.com/) or [QuickNode](https://www.quicknode.com/))
+4. A user JWT from your authentication provider
+
+### How It Works
+
+1. Your server authenticates the user and obtains a JWT
+2. JWT is sent to Magic's TEE to get (or create) the user's EOA
+3. Your server builds the transaction (approve, deposit, or redeem)
+4. Transaction hash is signed via the TEE's `/v1/wallet/sign/data` endpoint
+5. Signed transaction is broadcast to Base via your RPC provider
+
+<Info>
+The private key never leaves Magic's TEE. Your server only sees the public address and signed transaction output.
+</Info>
+
+---
+
+## TEE Request Helper
+
+All TEE calls use the same authentication headers. Create a reusable helper for your server-side code.
+
+```ts TypeScript icon="square-js"
+const TEE_BASE = "https://tee.express.magiclabs.com";
+
+async function teeRequest<T>(path: string, jwt: string, body: object): Promise<T> {
+  const res = await fetch(`${TEE_BASE}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+      "X-Magic-Secret-Key": "YOUR_SECRET_KEY",
+      "X-OIDC-Provider-ID": "YOUR_OIDC_PROVIDER_ID",
+      "X-Magic-Chain": "ETH",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`TEE error: ${res.status}`);
+  return res.json();
+}
+```
+
+---
+
+## Get or Create a Wallet
+
+Fetch the user's wallet address. If one doesn't exist, it will be created automatically.
+
+```ts TypeScript icon="square-js"
+const { public_address: eoaAddress } = await teeRequest<{ public_address: string }>(
+  "/v1/wallet", jwt, {}
+);
+```
+
+---
+
+## Sign and Broadcast Transactions
+
+Build the transaction locally, compute its unsigned hash, sign via the TEE, and broadcast. This example uses [viem](https://viem.sh) but you can use any EVM library that can serialize unsigned transactions and compute their keccak256 hash.
+
+```ts TypeScript icon="square-js"
+import {
+  createPublicClient,
+  http,
+  encodeFunctionData,
+  serializeTransaction,
+  keccak256,
+  parseSignature,
+  type TransactionSerializable,
+  type Hex,
+} from "viem";
+import { base } from "viem/chains";
+
+const publicClient = createPublicClient({
+  chain: base,
+  transport: http("YOUR_BASE_RPC_URL"),
+});
+
+async function signAndSend(jwt: string, tx: TransactionSerializable) {
+  // Serialize the unsigned transaction and hash it
+  const serialized = serializeTransaction(tx);
+  const hash = keccak256(serialized);
+
+  // Sign the hash via TEE
+  const { r, s, v } = await teeRequest<{ r: string; s: string; v: string }>(
+    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
+  );
+
+  // Serialize with signature and broadcast
+  const yParity = Number(v) >= 27 ? Number(v) - 27 : Number(v);
+  const signed = serializeTransaction(tx, {
+    r: r as Hex,
+    s: s as Hex,
+    yParity,
+  });
+  return await publicClient.sendRawTransaction({ serializedTransaction: signed });
+}
+```
+
+---
+
+## Depositing USDC
+
+Depositing requires two transactions: an ERC-20 approval followed by the vault deposit.
+
+```ts TypeScript icon="square-js"
+import { parseUnits, encodeFunctionData, type Address } from "viem";
+
+const USDC_ADDRESS: Address = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const VAULT_ADDRESS: Address = "0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61";
+
+const erc20Abi = [
+  {
+    name: "approve",
+    type: "function",
+    inputs: [
+      { name: "spender", type: "address" },
+      { name: "value", type: "uint256" },
+    ],
+    outputs: [{ type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+const vaultAbi = [
+  {
+    name: "deposit",
+    type: "function",
+    inputs: [
+      { name: "assets", type: "uint256" },
+      { name: "receiver", type: "address" },
+    ],
+    outputs: [{ name: "shares", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+async function depositToVault(jwt: string, eoaAddress: Address, amount: string) {
+  const depositAmount = parseUnits(amount, 6);
+  const nonce = await publicClient.getTransactionCount({ address: eoaAddress });
+  const fees = await publicClient.estimateFeesPerGas();
+
+  const txBase = {
+    chainId: 8453,
+    maxFeePerGas: fees.maxFeePerGas,
+    maxPriorityFeePerGas: fees.maxPriorityFeePerGas,
+  };
+
+  // Approve USDC
+  const approveData = encodeFunctionData({
+    abi: erc20Abi,
+    functionName: "approve",
+    args: [VAULT_ADDRESS, depositAmount],
+  });
+  const approveGas = await publicClient.estimateGas({
+    account: eoaAddress,
+    to: USDC_ADDRESS,
+    data: approveData,
+  });
+  await signAndSend(jwt, {
+    ...txBase,
+    to: USDC_ADDRESS,
+    nonce,
+    gas: approveGas,
+    data: approveData,
+  });
+
+  // Deposit into vault
+  const depositData = encodeFunctionData({
+    abi: vaultAbi,
+    functionName: "deposit",
+    args: [depositAmount, eoaAddress],
+  });
+  const depositGas = await publicClient.estimateGas({
+    account: eoaAddress,
+    to: VAULT_ADDRESS,
+    data: depositData,
+  });
+  const txHash = await signAndSend(jwt, {
+    ...txBase,
+    to: VAULT_ADDRESS,
+    nonce: nonce + 1,
+    gas: depositGas,
+    data: depositData,
+  });
+
+  return txHash;
+}
+```
+
+---
+
+## Checking Position
+
+Read the user's vault shares and convert to the underlying USDC value.
+
+```ts TypeScript icon="square-js"
+import { formatUnits } from "viem";
+
+const readAbi = [
+  {
+    name: "balanceOf",
+    type: "function",
+    inputs: [{ name: "account", type: "address" }],
+    outputs: [{ type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    name: "convertToAssets",
+    type: "function",
+    inputs: [{ name: "shares", type: "uint256" }],
+    outputs: [{ name: "assets", type: "uint256" }],
+    stateMutability: "view",
+  },
+] as const;
+
+async function getPosition(eoaAddress: Address) {
+  const shares = await publicClient.readContract({
+    address: VAULT_ADDRESS,
+    abi: readAbi,
+    functionName: "balanceOf",
+    args: [eoaAddress],
+  });
+
+  if (shares === 0n) return { shares: "0", value: "0" };
+
+  const assets = await publicClient.readContract({
+    address: VAULT_ADDRESS,
+    abi: readAbi,
+    functionName: "convertToAssets",
+    args: [shares],
+  });
+
+  return {
+    shares: shares.toString(),
+    value: formatUnits(assets, 6),
+  };
+}
+```
+
+---
+
+## Withdrawing
+
+Redeem all vault shares to withdraw USDC plus earned yield.
+
+```ts TypeScript icon="square-js"
+const redeemAbi = [
+  {
+    name: "redeem",
+    type: "function",
+    inputs: [
+      { name: "shares", type: "uint256" },
+      { name: "receiver", type: "address" },
+      { name: "owner", type: "address" },
+    ],
+    outputs: [{ name: "assets", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+async function withdrawAll(jwt: string, eoaAddress: Address) {
+  const shares = await publicClient.readContract({
+    address: VAULT_ADDRESS,
+    abi: readAbi,
+    functionName: "balanceOf",
+    args: [eoaAddress],
+  });
+
+  if (shares === 0n) throw new Error("No position to withdraw");
+
+  const nonce = await publicClient.getTransactionCount({ address: eoaAddress });
+  const fees = await publicClient.estimateFeesPerGas();
+
+  const redeemData = encodeFunctionData({
+    abi: redeemAbi,
+    functionName: "redeem",
+    args: [shares, eoaAddress, eoaAddress],
+  });
+  const redeemGas = await publicClient.estimateGas({
+    account: eoaAddress,
+    to: VAULT_ADDRESS,
+    data: redeemData,
+  });
+  const txHash = await signAndSend(jwt, {
+    chainId: 8453,
+    to: VAULT_ADDRESS,
+    nonce,
+    gas: redeemGas,
+    maxFeePerGas: fees.maxFeePerGas,
+    maxPriorityFeePerGas: fees.maxPriorityFeePerGas,
+    data: redeemData,
+  });
+
+  return txHash;
+}
+```
+
+---
+
+## Contract Addresses
+
+Key addresses on Base (chain ID 8453):
+
+```ts TypeScript icon="square-js"
+// USDC on Base
+const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+
+// Gauntlet USDC Prime vault (Morpho)
+const VAULT_ADDRESS = "0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61";
+```
+
+<Info>
+Individual vault addresses change as new vaults are deployed by curators. Use the [Morpho API](https://api.morpho.org/graphql) or browse [app.morpho.org](https://app.morpho.org) to find current vaults.
+</Info>
+
+---
+
+## TEE Endpoints Used
+
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /v1/wallet` | Get or create an EOA wallet |
+| `POST /v1/wallet/sign/data` | Sign a raw transaction hash |
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="TEE returns 401 or 403">
+**Symptoms:** Authentication errors when calling TEE endpoints.
+
+**Solutions:**
+- Verify the JWT token is valid and not expired
+- Check that `X-Magic-Secret-Key` matches your dashboard credentials
+- Ensure the OIDC Provider ID is correct
+- Confirm your domain is allowlisted in the Magic Dashboard
+</Accordion>
+
+<Accordion title="Transaction reverts on-chain">
+**Symptoms:** The signed transaction broadcasts but reverts.
+
+**Solutions:**
+- Check that the wallet has sufficient USDC balance on Base
+- Ensure the approval was confirmed before the deposit
+- Verify the vault address is correct and the vault is active
+- Some vaults have deposit caps — check if the vault is full
+</Accordion>
+
+<Accordion title="Nonce errors">
+**Symptoms:** Transaction fails with a nonce-related error.
+
+**Solutions:**
+- Ensure no concurrent transactions are being sent for the same wallet
+- If a previous transaction is pending, wait for it to confirm
+- Fetch the nonce with `"pending"` to account for in-flight transactions
+</Accordion>
+
+<Accordion title="Insufficient gas">
+**Symptoms:** Transaction fails with out-of-gas error.
+
+**Solutions:**
+- Ensure the wallet has ETH on Base for gas fees
+- The examples use `estimateGas` — if estimation fails, the transaction would likely revert on-chain too
+- Base gas fees are typically very low (fractions of a cent)
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Resources
+
+<CardGroup cols={2}>
+<Card title="Express API Docs" icon="brackets-curly" href="/server-wallets/express-api/overview">
+  Learn about Magic's Express Server Wallet API
+</Card>
+
+<Card title="EVM Data Preparation" icon="code" href="/server-wallets/express-api/data-preparation/evm">
+  Guide for preparing EVM transaction data for signing
+</Card>
+
+<Card title="Morpho Documentation" icon="book" href="https://docs.morpho.org/">
+  Official Morpho protocol documentation
+</Card>
+
+<Card title="ERC-4626 Standard" icon="file-lines" href="https://eips.ethereum.org/EIPS/eip-4626">
+  The tokenized vault standard used by Morpho Vaults
+</Card>
+</CardGroup>
+
+---

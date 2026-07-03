@@ -13,44 +13,62 @@ description: "You can allow your users to sign up & log in to your web app with 
 * You will need to have the [Magic SDK installed](/embedded-wallets/sdk/overview) into your web app
 * You will need to have the [Magic SDK - OAuth Extension](/embedded-wallets/authentication/login/oauth/oauth-implementation) installed into your web app
 
-### Apple Setup (v1 extension)
+### Apple Setup
 
-1.  Go to your [Magic Dashboard](https://dashboard.magic.link/login)
-2.  Select the Magic app for which you’d like to enable Sign in with Apple, or create a new app
-3.  Navigate to **Social Login** from the sidebar
-4.  Click the toggle for **Apple**. Looks like we'll need to collect a few important details from Apple first: a **Services ID**, **Key ID**, **Team ID**, and **Private Key**
-5.  Open a new tab, go to your [Apple developer dashboard](https://developer.apple.com/account)
-6.  Navigate to [**Membership details**](https://developer.apple.com/account/#/membership)
-7.  Find your **Team ID**. Copy/paste this to the setup form on Magic Dashboard
-8.  In Apple's dashboard, navigate to **Identifiers** under [**Certificates, IDs, & Profiles**](https://developer.apple.com/account/resources/identifiers/list/serviceId)
-9.  Add a new [**Services ID**](https://developer.apple.com/account/resources/identifiers/add/serviceId) for your Magic authentication connection. The **identifier** you select here should be added to the setup form on Magic Dashboard as your **Services ID**. Click **Continue**, then click **Register**.
-10.
-<Frame>
-  <img src="/images/add-services-id.webp" alt="add-services-id.png"/>
-</Frame>
+After installing the OAuth extension, you can now enable Sign in with Apple for your Magic app. You'll need to collect credentials from Apple first, then configure Magic.
 
-    You'll be returned to a list of Services IDs you've registered, including your new one for Magic authentication. Click your newly created Services ID to enable it for **Sign in with Apple**. Then, click **Configure**.
+**Step 1: Collect Apple Credentials**
+
+1.  Go to your [Apple developer dashboard](https://developer.apple.com/account)
+2.  Navigate to [Membership details](https://developer.apple.com/account/#/membership)
+3.  Find and copy your **Team ID** (you'll need this later for Magic Dashboard)
+4.  If you have not already created an Apple key, under **Certificates, IDs & Profiles** select **Keys**
+5.  On the Keys page, click the blue plus button to create a new key. Make sure to enable **Sign in with Apple**.
 
 <Frame>
-  <img src="/images/enable-sign-in-with-apple.webp" alt="enable-sign-in-with-apple.png"/>
+  <img src="/images/apple-key.png" alt="Apple developer portal Keys page showing blue plus button to create a new key"/>
 </Frame>
 
-11. A modal will show, allowing you to connect your Services ID to specific internet domains. In **Domains & Subdomains**, enter `**auth.magic.link**`. In **Return URLs**, you'll paste the **Redirect URI** listed on Magic Dashboard for your Apple Social Login connection. Once you've entered the correct information, you can save your **Services ID** by clicking **Continue**, then **Save**.
-12.
+6.  Complete the key setup and securely store your **Private Key** file and **Key ID** (you'll need both for Magic Dashboard)
+7.  In Apple's dashboard, navigate to **Identifiers** under [Certificates, IDs, & Profiles](https://developer.apple.com/account/resources/identifiers/list/serviceId)
+8.  Add a new [Services ID](https://developer.apple.com/account/resources/identifiers/add/serviceId) for your Magic authentication connection. Click **Continue**, then click **Register**
+
 <Frame>
-  <img src="/images/add-return-url.webp" alt="add-return-url.png"/>
+  <img src="/images/add-services-id.webp" alt="Apple developer portal showing Services ID creation form"/>
 </Frame>
 
-    Return to Magic Dashboard, you should have **Team ID** and **Services ID** populated by this step. Now you can paste your **Key ID** as well. Finally, you'll need to paste the contents of the **Private Key** file you downloaded from Apple's dashboard Click **“Save”** – Done!
+9.  Click your newly created Services ID to enable it for **Sign in with Apple**. Then, click **Configure**
 
-### Apple Setup (v2 extension)
+<Frame>
+  <img src="/images/enable-sign-in-with-apple.webp" alt="Apple Services ID settings with Sign in with Apple configuration option"/>
+</Frame>
 
-* In step 11, whitelist your app's domain in **Domains & Subdomains**, and paste the **Redirect URI** you will pass in as the **redirectURI** argument to the **loginWithRedirect** method
+10. In the configuration modal, whitelist your app's domain in **Domains & Subdomains**, and add your **Redirect URI** in the **Return URLs** field:
+    
+    Add the **Redirect URI** you are passing as the **redirectURI** argument to the **loginWithRedirect** method:
+    
+    ```javascript JavaScript icon="square-js"
+    await magic.oauth2.loginWithRedirect({
+      provider: 'apple',
+      redirectURI: 'https://your-app.com/your/oauth/callback', // whitelist this with Apple
+    });
+    ```
 
+<Frame>
+  <img src="/images/apple-redirect.png" alt="Apple Services ID configuration modal showing Domains and Return URLs input fields"/>
+</Frame>
 
-```javascript JavaScript icon="square-js"
-await magic.oauth2.loginWithRedirect({
- provider:  'apple',
- redirectURI:  'https://your-app.com/your/oauth/callback',  // <== whitelist this with Apple
-});
-```
+11. Click **Continue**, then **Save** to save your Services ID configuration
+
+**Step 2: Configure Magic Dashboard**
+
+12. Go to your [Magic Dashboard](https://dashboard.magic.link/login)
+13. Select the Magic app for which you'd like to enable Sign in with Apple, or create a new app
+14. Navigate to **Social Login** from the sidebar
+15. Click the toggle for **Apple**
+16. Input your Apple credentials: **Team ID**, **Services ID**, **Key ID**, and paste the contents of your **Private Key** file
+17. Click **Save**
+
+## Resources
+
+* [Apple Social Login Demo](https://magic-oauth-v2-nine.vercel.app/)

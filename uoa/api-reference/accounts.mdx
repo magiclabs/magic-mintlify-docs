@@ -1,0 +1,199 @@
+---
+title: "Accounts"
+description: "API reference for UOA account management."
+---
+
+## Authentication
+
+All endpoints require the following headers unless otherwise noted:
+
+<ParamField header="Authorization" type="string" required>
+Bearer token (JWT) for end-user authentication. Format: `Bearer YOUR_JWT_TOKEN`
+</ParamField>
+
+<ParamField header="X-MAGIC-SECRET-KEY" type="string" required>
+Your Magic secret key for application-level authentication.
+</ParamField>
+
+---
+
+## Create or Fetch Account
+
+Create a new account or return the existing one for the authenticated user. Wallet addresses are provisioned for supported EVM and Solana chains.
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/account' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+New accounts include a default `perp_dex_status` entry for every supported venue (lowercase keys: `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`). Each value is a JSON object; at minimum venues expose `initialized` (boolean) and may add venue-specific fields (addresses, keys, `trade_initialized`, etc.) as onboarding progresses.
+
+```json
+{
+  "success": true,
+  "app_user_id": "user-123",
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "public_address": {
+    "ETH": "0x1234567890abcdef1234567890abcdef12345678",
+    "SOL": "7nYB5F2xVT9hVjhxUoZ5HQxvPz2kTmSoQvGPmxfTjKN"
+  },
+  "perp_dex_status": {
+    "extended": {
+      "initialized": false,
+      "account_id": null,
+      "vault": null,
+      "stark_public_key": null,
+      "api_key": null
+    },
+    "hyperliquid": { "initialized": false, "account_address": null },
+    "paradex": {
+      "initialized": false,
+      "l2_address": null,
+      "l2_public_key": null
+    },
+    "nado": { "initialized": false, "account_address": null },
+    "polymarket": {
+      "initialized": false,
+      "proxy_wallet_address": null,
+      "magic_wallet_address": null
+    }
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="success" type="boolean">
+Whether the account was created or fetched successfully.
+</ResponseField>
+
+<ResponseField name="app_user_id" type="string">
+The user identifier from your application (JWT `sub` claim).
+</ResponseField>
+
+<ResponseField name="user_id" type="string">
+The UOA-internal user UUID.
+</ResponseField>
+
+<ResponseField name="public_address" type="object">
+Map of chain code to wallet address. Provisioning creates **ETH** (EVM) and **SOL** entries; the same EVM address is used for Arbitrum, Polygon, Ink, and Ethereum when resolving balances or transfers server-side.
+</ResponseField>
+
+<ResponseField name="perp_dex_status" type="object">
+Map of perp venue to stored status (keys match venue ids: `extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`). Shape is venue-specific; see the default example above for fields present on create.
+</ResponseField>
+
+---
+
+## Get Account Info
+
+Return the authenticated user's stored account state.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://uoa-server.magic.xyz/account' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+**Response:**
+
+Same top-level fields as create, except there is no `success` field. `perp_dex_status` always includes all venue keys; initialized venues gain non-null fields (e.g. Hyperliquid `account_address`, `trade_initialized` when applicable).
+
+```json
+{
+  "app_user_id": "user-123",
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "public_address": {
+    "ETH": "0x1234567890abcdef1234567890abcdef12345678",
+    "SOL": "7nYB5F2xVT9hVjhxUoZ5HQxvPz2kTmSoQvGPmxfTjKN"
+  },
+  "perp_dex_status": {
+    "extended": { "initialized": false, "account_id": null },
+    "hyperliquid": {
+      "initialized": true,
+      "account_address": "0x1234567890abcdef1234567890abcdef12345678"
+    },
+    "paradex": { "initialized": false, "l2_address": null },
+    "nado": { "initialized": false, "account_address": null },
+    "polymarket": { "initialized": false, "proxy_wallet_address": null }
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="app_user_id" type="string">
+The user identifier from your application.
+</ResponseField>
+
+<ResponseField name="user_id" type="string">
+The UOA-internal user UUID.
+</ResponseField>
+
+<ResponseField name="public_address" type="object">
+Map of chain code to wallet address (typically `ETH` and `SOL` as stored keys).
+</ResponseField>
+
+<ResponseField name="perp_dex_status" type="object">
+Map of venue id to JSON status for that venue (`extended`, `hyperliquid`, `paradex`, `nado`, `polymarket`). Exact keys per venue evolve with the product; treat as opaque except for documented init flows.
+</ResponseField>
+
+---
+
+## Demo: Get Wallet Balance
+
+Get on-chain wallet balances for one chain. This endpoint is for demo usage only.
+
+```bash cURL icon="square-terminal"
+curl -X GET 'https://uoa-server.magic.xyz/demo/wallet/balance?chain=ARB' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY'
+```
+
+<Warning>
+Do not use this endpoint as a production asset API. For production apps, use the EVM and Solana wallet addresses from `public_address` and fetch balances with your own RPC provider.
+</Warning>
+
+**Response:**
+
+```json
+{
+  "chain": "ARB",
+  "address": "0x1234...5678",
+  "assets": {
+    "ETH": "0.01",
+    "USDC": "250.00"
+  },
+  "public_address": {
+    "ETH": "0x1234...5678",
+    "SOL": "7nYB5F...TjKN"
+  }
+}
+```
+
+### Query Parameters
+
+<ParamField query="chain" type="string" required>
+The chain to fetch balances for. Values: `ETH`, `ARB`, `POL`, `INK`, `SOL`
+</ParamField>
+
+### Response Fields
+
+<ResponseField name="chain" type="string">
+The requested chain.
+</ResponseField>
+
+<ResponseField name="address" type="string | null">
+The wallet address used for the balance query (EVM chains use the stored ETH address; Solana uses the SOL address). May be `null` if no address exists for the requested chain.
+</ResponseField>
+
+<ResponseField name="assets" type="object">
+Map of token codes to decimal string balances for the requested chain.
+</ResponseField>
+
+<ResponseField name="public_address" type="object">
+Map of chain code to wallet address.
+</ResponseField>
