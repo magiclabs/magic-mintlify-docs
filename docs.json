@@ -69,24 +69,6 @@
               "api-wallets/express-api/error-handling"
             ]
           },
-          {
-            "group": "Core API",
-            "pages": [
-              "api-wallets/core-api/overview",
-              "api-wallets/core-api/getting-started",
-              "api-wallets/core-api/wallet-operations",
-              "api-wallets/core-api/signing-operations",
-              {
-                "group": "Wallet Management",
-                "pages": [
-                  "api-wallets/core-api/wallet-management/private-key-operations",
-                  "api-wallets/core-api/wallet-management/wallet-recovery"
-                ]
-              },
-              "api-wallets/core-api/architecture",
-              "api-wallets/core-api/error-handling"
-            ]
-          }
         ]
       },
       {
