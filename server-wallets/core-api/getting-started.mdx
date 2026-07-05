@@ -47,12 +47,26 @@ In addition to the secret key, v2 operations require a short-lived **operation J
 
 ### Wallet Creation
 
-When creating a wallet, pass `auth_jwt` — the user's JWT from your identity provider. The enclave cryptographically binds the new wallet to this identity at creation time via `binding_enc`.
+When creating a wallet, pass `auth_jwt` — the user's JWT from your identity provider. The enclave cryptographically binds the new wallet to this identity at creation time.
 
 ### Signing Operations
 
-Every sign or key-reveal request requires an `op_jwt`: a short-lived JWT (max 5 minutes) for the specific user. The Nitro Enclave verifies this JWT offline against JWKS baked into the enclave image, and matches the identity against the wallet's `binding_enc` before authorizing the operation.
+Every signing request requires an `op_jwt`: a short-lived JWT for the specific user. The Nitro Enclave verifies this JWT offline against JWKS baked into the enclave image, and confirms the caller's identity matches the wallet's owner before authorizing the operation.
 
-<Info>
-The `op_jwt` must be issued by the same identity provider configured for your application. Its expiry must be 5 minutes or less.
-</Info>
+### JWT Requirements
+
+Both `auth_jwt` (wallet creation) and `op_jwt` (signing) must satisfy the following:
+
+| Requirement | Details |
+|---|---|
+| **Issuer (`iss`)** | Required. Must match your configured identity provider. |
+| **Subject (`sub`)** | Required. Uniquely identifies the user — used to bind the wallet to their identity. |
+| **Expiry (`exp`)** | Required. Must be present and not expired. For `op_jwt`, keep expiry to 5 minutes or less. |
+| **Issued at (`iat`)** | Required. Must not be in the future. |
+| **Audience (`aud`)** | Required. Must match your application's configured audience. |
+| **Algorithm (`alg`)** | Must be an asymmetric algorithm (e.g. `RS256`, `ES256`). `none` and symmetric algorithms are rejected. |
+| **Key ID (`kid`)** | Required in the JWT header. Must resolve to a key in your IdP's JWKS. |
+
+<Warning>
+JWTs with `jku`, `x5u`, `x5c`, or `jwk` header parameters are rejected outright to prevent key confusion attacks.
+</Warning>

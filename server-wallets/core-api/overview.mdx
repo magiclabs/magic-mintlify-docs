@@ -25,9 +25,9 @@ In v2, every wallet is cryptographically bound to a user's JWT identity at creat
 Core API is designed for developers who need maximum control over their wallet infrastructure. It's ideal for applications requiring custom key management, compliance with specific regulations, or integration with existing backend systems.
 </Info>
 
-<Warning>
-Core API provides the tools for both custodial and non-custodial implementations. The choice depends on how you manage authorization tokens and key shards. Consult legal professionals about custodial vs non-custodial distinctions in your target markets.
-</Warning>
+<Info>
+Core API v2 is a non-custodial solution. Wallet access is tied to the authenticated user's JWT identity — your application cannot authorize operations on behalf of a user without their active participation.
+</Info>
 
 ## Use Cases
 

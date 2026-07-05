@@ -39,7 +39,7 @@ Returned to your application as `access_key`. Store securely in your database. R
 </Card>
 </CardGroup>
 
-In addition to the shards, the enclave produces `binding_enc` — a KMS-sealed blob that cryptographically ties the wallet's key material to the user's JWT identity. Every v2 operation must supply an `op_jwt` that the enclave verifies against `binding_enc` before authorizing the request.
+In addition to the shards, the enclave internally produces a sealed blob that cryptographically ties the wallet's key material to the user's JWT identity. Every v2 operation must supply an `op_jwt` that the enclave verifies before authorizing the request.
 
 #### Operation Flow
 
@@ -48,7 +48,7 @@ In addition to the shards, the enclave produces `binding_enc` — a KMS-sealed b
 1. Your server retrieves `wallet_id` and `access_key` from your database
 2. Your server obtains a short-lived `op_jwt` (max 5 min) for the user from your IdP
 3. Your server calls the TEE endpoint with `op_jwt`, `wallet_id`, and `access_key`
-4. The enclave verifies the JWT offline using baked-in JWKS, checks it against `binding_enc`, and authorizes the operation
+4. The enclave verifies the JWT offline using baked-in JWKS, confirms the caller's identity matches the wallet's owner, and authorizes the operation
 5. The enclave signs using the reconstructed private key; the signed result is returned
 
 **Signing (v1 wallet — migrate-on-use)**
@@ -56,24 +56,6 @@ In addition to the shards, the enclave produces `binding_enc` — a KMS-sealed b
 1. Same as above, but also include `encryption_context` (the original v1 value)
 2. The enclave re-keys the wallet to v2 JWT binding as a side effect
 3. Subsequent operations do not require `encryption_context`
-
-### Custodial vs Non-Custodial Implementation
-
-<Warning>
-Magic does not act as a custodian of your or your users' digital assets. Ownership and control remain entirely with you and your users. Consult legal professionals about custodial vs non-custodial distinctions in your target markets.
-</Warning>
-
-The implementation type depends on how you manage `op_jwt` issuance:
-
-**Non-Custodial Approach:**
-- The user authenticates directly with your IdP and receives a JWT
-- Your server uses that JWT as `op_jwt` without storing it
-- Your application cannot perform operations without active user consent
-
-**Custodial Approach:**
-- Your application manages JWT issuance on behalf of users
-- Your server can perform operations independently
-- Requires careful consideration of user consent and regulatory compliance
 
 ## Implementation Patterns
 
