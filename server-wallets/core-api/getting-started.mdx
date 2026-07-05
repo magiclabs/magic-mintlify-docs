@@ -1,6 +1,6 @@
 ---
 title: "Getting Started"
-description: "Set up Core API integration with step-by-step instructions for account creation, authentication configuration, and API key setup."
+description: "Set up Core API v2 integration with step-by-step instructions for account creation, authentication configuration, and API key setup."
 ---
 
 ## Base URL
@@ -31,12 +31,42 @@ Your `Secret Key` will be used for all calls to the Core API.
 
 ## Authentication
 
-Core API requires authentication using your Magic secret key:
+Core API requires authentication using your Magic secret key for all requests:
 
 <ParamField header="x-magic-secret-key" type="string" required>
 Your Magic secret key for service authentication. Format: `sk_live_XXXXXXXX`
 </ParamField>
 
 <Warning>
-This secret key should be treated as extremely sensitive, as it would allow anyone to trigger the creation of a wallet and return the access and recovery key.
+This secret key should be treated as extremely sensitive, as it would allow anyone to trigger the creation of a wallet.
+</Warning>
+
+## v2 Authorization Model
+
+In addition to the secret key, v2 operations require a short-lived **operation JWT** (`op_jwt`).
+
+### Wallet Creation
+
+When creating a wallet, pass `auth_jwt` — the user's JWT from your identity provider. The enclave cryptographically binds the new wallet to this identity at creation time.
+
+### Signing Operations
+
+Every signing request requires an `op_jwt`: a short-lived JWT for the specific user. The Nitro Enclave verifies this JWT offline against JWKS baked into the enclave image, and confirms the caller's identity matches the wallet's owner before authorizing the operation.
+
+### JWT Requirements
+
+Both `auth_jwt` (wallet creation) and `op_jwt` (signing) must satisfy the following:
+
+| Requirement | Details |
+|---|---|
+| **Issuer (`iss`)** | Required. Must match your configured identity provider. |
+| **Subject (`sub`)** | Required. Uniquely identifies the user — used to bind the wallet to their identity. |
+| **Expiry (`exp`)** | Required. Must be present and not expired. For `op_jwt`, keep expiry to 5 minutes or less. |
+| **Issued at (`iat`)** | Required. Must not be in the future. |
+| **Audience (`aud`)** | Required. Must match your application's configured audience. |
+| **Algorithm (`alg`)** | Must be an asymmetric algorithm (e.g. `RS256`, `ES256`). `none` and symmetric algorithms are rejected. |
+| **Key ID (`kid`)** | Required in the JWT header. Must resolve to a key in your IdP's JWKS. |
+
+<Warning>
+JWTs with `jku`, `x5u`, `x5c`, or `jwk` header parameters are rejected outright to prevent key confusion attacks.
 </Warning>

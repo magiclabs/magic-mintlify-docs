@@ -1,7 +1,9 @@
 ---
 title: "Signing Operations"
-description: "Sign transactions and messages for EVM, Solana, and Bitcoin networks using Core API"
+description: "Sign transactions and messages for EVM, Solana, and Bitcoin networks using Core API v2"
 ---
+
+All signing operations in v2 require an `op_jwt` — a short-lived JWT (max 5 minutes) for the user — along with the `access_key` returned at wallet creation. The Nitro Enclave verifies the JWT and matches the caller's identity against the wallet's binding before authorizing the operation.
 
 ## Transaction Signing
 
@@ -12,10 +14,13 @@ Sign transaction payloads for different blockchain networks. The payload format 
 Sign Ethereum and EVM-compatible chain transactions.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
+curl -X POST 'https://tee.magiclabs.com/v2/api/wallet/sign_transaction' \
   -H 'Content-Type: application/json' \
   -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
   -d '{
+    "op_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFiYzEyMyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2F1dGgueW91cmFwcC5jb20iLCJzdWIiOiJ1c2VyXzEyMzQ1NiIsImF1ZCI6Imh0dHBzOi8vdGVlLm1hZ2ljbGFicy5jb20iLCJpYXQiOjE3NTE2NzIwMDAsImV4cCI6MTc1MTY3MjMwMH0.SIGNATURE",
+    "wallet_id": "e982b4a3-14d3-4d66-a3ac-fadfc3xxxxxx",
+    "access_key": "key_shard",
     "payload": {
       "type": 2,
       "chainId": 888888,
@@ -25,10 +30,7 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
       "maxFeePerGas": 2000000000,
       "maxPriorityFeePerGas": 2000000000,
       "to": "0x0aA818d7952c0B6a56ee97581708866C154f63AD"
-    },
-    "encryption_context": "hashed_passcode",
-    "access_key": "key_shard",
-    "wallet_id": "wallet_id"
+    }
   }'
 ```
 
@@ -37,14 +39,14 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
 Sign Solana blockchain transactions.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
+curl -X POST 'https://tee.magiclabs.com/v2/api/wallet/sign_transaction' \
   -H 'Content-Type: application/json' \
   -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
   -d '{
-    "payload": "transaction_base64",
-    "encryption_context": "hashed_passcode",
+    "op_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFiYzEyMyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2F1dGgueW91cmFwcC5jb20iLCJzdWIiOiJ1c2VyXzEyMzQ1NiIsImF1ZCI6Imh0dHBzOi8vdGVlLm1hZ2ljbGFicy5jb20iLCJpYXQiOjE3NTE2NzIwMDAsImV4cCI6MTc1MTY3MjMwMH0.SIGNATURE",
+    "wallet_id": "e982b4a3-14d3-4d66-a3ac-fadfc3xxxxxx",
     "access_key": "key_shard",
-    "wallet_id": "wallet_id"
+    "payload": "transaction_base64"
   }'
 ```
 
@@ -53,10 +55,13 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
 Sign Bitcoin blockchain transactions.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
+curl -X POST 'https://tee.magiclabs.com/v2/api/wallet/sign_transaction' \
   -H 'Content-Type: application/json' \
   -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
   -d '{
+    "op_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFiYzEyMyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2F1dGgueW91cmFwcC5jb20iLCJzdWIiOiJ1c2VyXzEyMzQ1NiIsImF1ZCI6Imh0dHBzOi8vdGVlLm1hZ2ljbGFicy5jb20iLCJpYXQiOjE3NTE2NzIwMDAsImV4cCI6MTc1MTY3MjMwMH0.SIGNATURE",
+    "wallet_id": "e982b4a3-14d3-4d66-a3ac-fadfc3xxxxxx",
+    "access_key": "key_shard",
     "payload": {
       "inputs": [
         {
@@ -72,10 +77,7 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
           "value": 5
         }
       ]
-    },
-    "encryption_context": "hashed_passcode",
-    "access_key": "key_shard",
-    "wallet_id": "wallet_id"
+    }
   }'
 ```
 
@@ -92,23 +94,23 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_transaction' \
 
 ### Request Parameters
 
+<ParamField body="op_jwt" type="string" required post={["Body"]}>
+Short-lived JWT (max 5 minutes) for the user performing the operation. Verified inside the enclave against the wallet's identity binding.
+</ParamField>
+
+<ParamField body="wallet_id" type="string" required post={["Body"]}>
+The UUID of the wallet to sign with.
+</ParamField>
+
+<ParamField body="access_key" type="string" required post={["Body"]}>
+The access key returned from wallet creation. Retrieve from your database.
+</ParamField>
+
 <ParamField body="payload" type="object" required post={["Body"]}>
 Transaction payload to be signed. Format varies by network:
 - **EVM**: Standard Ethereum transaction object
 - **Solana**: Base64-encoded transaction string
 - **Bitcoin**: Object with inputs and outputs arrays
-</ParamField>
-
-<ParamField body="encryption_context" type="string" required post={["Body"]}>
-The context used to decrypt key shards. Should match the context used during wallet creation.
-</ParamField>
-
-<ParamField body="access_key" type="string" required post={["Body"]}>
-The access key shard for this wallet.
-</ParamField>
-
-<ParamField body="wallet_id" type="string" required post={["Body"]}>
-The UUID of the wallet to sign with.
 </ParamField>
 
 ### Response Fields
@@ -125,17 +127,17 @@ The transaction hash that will be generated when the transaction is submitted to
 
 ### Sign Data
 
-Sign arbitrary data using keccak256 hash.
+Sign arbitrary data using keccak256 hash (EVM only).
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_data' \
+curl -X POST 'https://tee.magiclabs.com/v2/api/wallet/sign_data' \
   -H 'Content-Type: application/json' \
   -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
   -d '{
-    "raw_data_hash": "keccak256_string_hash",
-    "encryption_context": "hashed_passcode",
+    "op_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFiYzEyMyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2F1dGgueW91cmFwcC5jb20iLCJzdWIiOiJ1c2VyXzEyMzQ1NiIsImF1ZCI6Imh0dHBzOi8vdGVlLm1hZ2ljbGFicy5jb20iLCJpYXQiOjE3NTE2NzIwMDAsImV4cCI6MTc1MTY3MjMwMH0.SIGNATURE",
+    "wallet_id": "e982b4a3-14d3-4d66-a3ac-fadfc3xxxxxx",
     "access_key": "key_shard",
-    "wallet_id": "wallet_id"
+    "raw_data_hash": "keccak256_string_hash"
   }'
 ```
 
@@ -155,42 +157,42 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_data' \
 
 #### Request Parameters
 
-<ParamField body="raw_data_hash" type="string" required post={["Body"]}>
-The keccak256 hash of the data to sign
-</ParamField>
-
-<ParamField body="encryption_context" type="string" required post={["Body"]}>
-The context used to decrypt key shards. Should match the context used during wallet creation.
-</ParamField>
-
-<ParamField body="access_key" type="string" required post={["Body"]}>
-The access key shard for this wallet.
+<ParamField body="op_jwt" type="string" required post={["Body"]}>
+Short-lived JWT (max 5 minutes) for the user performing the operation.
 </ParamField>
 
 <ParamField body="wallet_id" type="string" required post={["Body"]}>
 The UUID of the wallet to sign with.
 </ParamField>
 
+<ParamField body="access_key" type="string" required post={["Body"]}>
+The access key returned from wallet creation. Retrieve from your database.
+</ParamField>
+
+<ParamField body="raw_data_hash" type="string" required post={["Body"]}>
+The keccak256 hash of the data to sign.
+</ParamField>
+
 #### Response Fields
 
 <ResponseField name="data.messageHash" type="string">
-The hash that was signed
+The hash that was signed.
 </ResponseField>
 
 <ResponseField name="data.signature" type="string">
-The complete signature in hex format
+The complete signature in hex format.
 </ResponseField>
 
 <ResponseField name="data.r" type="string">
-The r component of the ECDSA signature
+The r component of the ECDSA signature.
 </ResponseField>
 
 <ResponseField name="data.s" type="string">
-The s component of the ECDSA signature
+The s component of the ECDSA signature.
 </ResponseField>
 
 <ResponseField name="data.v" type="string">
-The recovery parameter of the ECDSA signature
+The recovery parameter of the ECDSA signature.
 </ResponseField>
 
 ### Sign Message (Solana)
@@ -198,14 +200,14 @@ The recovery parameter of the ECDSA signature
 Sign an arbitrary message using a Solana wallet.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/svm/sign_message' \
+curl -X POST 'https://tee.magiclabs.com/v2/api/wallet/sign_message' \
   -H 'Content-Type: application/json' \
   -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
   -d '{
-    "message_base64": "base64_string_hash",
-    "encryption_context": "hashed_passcode",
+    "op_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFiYzEyMyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2F1dGgueW91cmFwcC5jb20iLCJzdWIiOiJ1c2VyXzEyMzQ1NiIsImF1ZCI6Imh0dHBzOi8vdGVlLm1hZ2ljbGFicy5jb20iLCJpYXQiOjE3NTE2NzIwMDAsImV4cCI6MTc1MTY3MjMwMH0.SIGNATURE",
+    "wallet_id": "e982b4a3-14d3-4d66-a3ac-fadfc3xxxxxx",
     "access_key": "key_shard",
-    "wallet_id": "wallet_id"
+    "message_base64": "base64_string_hash"
   }'
 ```
 
@@ -221,24 +223,36 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/svm/sign_message' \
 
 #### Request Parameters
 
-<ParamField body="message_base64" type="string" required post={["Body"]}>
-The message to be signed, encoded in base64
-</ParamField>
-
-<ParamField body="encryption_context" type="string" required post={["Body"]}>
-The context used to decrypt key shards. Should match the context used during wallet creation.
-</ParamField>
-
-<ParamField body="access_key" type="string" required post={["Body"]}>
-The access key shard for this wallet.
+<ParamField body="op_jwt" type="string" required post={["Body"]}>
+Short-lived JWT (max 5 minutes) for the user performing the operation.
 </ParamField>
 
 <ParamField body="wallet_id" type="string" required post={["Body"]}>
 The UUID of the wallet to sign with.
 </ParamField>
 
+<ParamField body="access_key" type="string" required post={["Body"]}>
+The access key returned from wallet creation. Retrieve from your database.
+</ParamField>
+
+<ParamField body="message_base64" type="string" required post={["Body"]}>
+The message to be signed, encoded in base64.
+</ParamField>
+
 #### Response Fields
 
 <ResponseField name="data.signature" type="string">
-The signature in base64 format
+The signature in base64 format.
 </ResponseField>
+
+## v1 Wallet Migration
+
+If you have existing v1 wallets, they are migrated to v2 on first use. Include `encryption_context` alongside `op_jwt` and `access_key` on the first v2 operation for that wallet. The enclave will re-key the wallet to v2 JWT binding as a side effect, and subsequent operations will not require `encryption_context`.
+
+<ParamField body="encryption_context" type="string" post={["Body"]}>
+Required only when migrating a v1 wallet on first v2 use. The original encryption context used during v1 wallet creation.
+</ParamField>
+
+<Info>
+After the first successful v2 operation, the wallet is permanently migrated and `encryption_context` is no longer accepted or needed.
+</Info>

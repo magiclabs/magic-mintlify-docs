@@ -1,0 +1,128 @@
+---
+title: "Migrating from v1 to v2"
+description: "Step-by-step guide for upgrading Core API integrations from v1 to v2 JWT-bound wallets"
+---
+
+<Warning>
+**Core API v1 will be retired on July 31, 2026.** After that date, `encryption_context`-based wallet access and `recovery_key` will no longer be supported, and v1 requests will stop working. Wallets that have not been migrated to v2 by that date will be permanently inaccessible.
+</Warning>
+
+## What Changed
+
+The key difference between v1 and v2 is how operations are authorized:
+
+| | v1 | v2 |
+|---|---|---|
+| Wallet creation | `encryption_context` (user secret) | `auth_jwt` (user's IdP JWT) |
+| Signing / operations | `encryption_context` + `access_key` | `op_jwt` + `access_key` |
+| Recovery | `recovery_key` stored in your DB | Handled by your identity provider |
+| Wallet binding | Passphrase-derived secret | Cryptographic JWT identity binding |
+
+In v2, the Nitro Enclave verifies the `op_jwt` offline against JWKS baked into the enclave image. No long-lived secret is transmitted per request.
+
+## Migration Steps
+
+<Steps>
+<Step title="Update wallet creation">
+Replace `encryption_context` with `auth_jwt` — the user's JWT from your identity provider.
+
+**v1:**
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "encryption_context": "hashed_passcode",
+    "network": "eth_mainnet",
+    "wallet_group_id": "58a08494-3c83-439a-8a07-551f20xxxxxx"
+  }'
+```
+
+**v2:**
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.magiclabs.com/v2/api/wallet' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "auth_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFiYzEyMyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2F1dGgueW91cmFwcC5jb20iLCJzdWIiOiJ1c2VyXzEyMzQ1NiIsImF1ZCI6Imh0dHBzOi8vdGVlLm1hZ2ljbGFicy5jb20iLCJpYXQiOjE3NTE2NzIwMDAsImV4cCI6MTc1MTY3MjMwMH0.SIGNATURE",
+    "network": "eth_mainnet",
+    "wallet_group_id": "58a08494-3c83-439a-8a07-551f20xxxxxx"
+  }'
+```
+
+<Warning>
+v2 wallet creation no longer returns a `recovery_key`. You only need to store `wallet_id` and `access_key`.
+</Warning>
+</Step>
+
+<Step title="Update signing operations">
+Replace `encryption_context` with `op_jwt`. The `access_key` and `wallet_id` remain the same.
+
+**v1:**
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.magiclabs.com/v1/api/wallet/sign_data' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "encryption_context": "hashed_passcode",
+    "raw_data_hash": "0xabc...",
+    "access_key": "access_key",
+    "wallet_id": "e982b4a3-14d3-4d66-a3ac-fadfc3xxxxxx"
+  }'
+```
+
+**v2:**
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.magiclabs.com/v2/api/wallet/sign_data' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "op_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFiYzEyMyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2F1dGgueW91cmFwcC5jb20iLCJzdWIiOiJ1c2VyXzEyMzQ1NiIsImF1ZCI6Imh0dHBzOi8vdGVlLm1hZ2ljbGFicy5jb20iLCJpYXQiOjE3NTE2NzIwMDAsImV4cCI6MTc1MTY3MjMwMH0.SIGNATURE",
+    "raw_data_hash": "0xabc...",
+    "access_key": "access_key",
+    "wallet_id": "e982b4a3-14d3-4d66-a3ac-fadfc3xxxxxx"
+  }'
+```
+
+The same pattern applies to `sign_message` and `sign_transaction` — swap `encryption_context` for `op_jwt` and update the path from `/v1/` to `/v2/`.
+</Step>
+
+<Step title="Issue op_jwt tokens">
+Add a mechanism to issue short-lived `op_jwt` tokens (max 5 minutes) for your users from your identity provider. The JWT must be issued by the same IdP configured for your Magic application.
+
+<Info>
+Generate `op_jwt` as close to the signing call as possible to minimize its validity window.
+</Info>
+</Step>
+
+<Step title="Update database schema">
+Stop storing `recovery_key` for new v2 wallets. You only need `wallet_id` and `access_key`.
+
+Existing `recovery_key` values for v1 wallets should be retained until those wallets are migrated (see below).
+</Step>
+</Steps>
+
+## Migrating Existing v1 Wallets
+
+Existing v1 wallets are migrated to v2 **on first use** — no bulk migration is needed. On the first v2 signing call for a v1 wallet, include `encryption_context` alongside `op_jwt` and `access_key`:
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.magiclabs.com/v2/api/wallet/sign_data' \
+  -H 'Content-Type: application/json' \
+  -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
+  -d '{
+    "op_jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFiYzEyMyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2F1dGgueW91cmFwcC5jb20iLCJzdWIiOiJ1c2VyXzEyMzQ1NiIsImF1ZCI6Imh0dHBzOi8vdGVlLm1hZ2ljbGFicy5jb20iLCJpYXQiOjE3NTE2NzIwMDAsImV4cCI6MTc1MTY3MjMwMH0.SIGNATURE",
+    "raw_data_hash": "0xabc...",
+    "access_key": "access_key",
+    "wallet_id": "e982b4a3-14d3-4d66-a3ac-fadfc3xxxxxx",
+    "encryption_context": "hashed_passcode"
+  }'
+```
+
+The enclave will re-key the wallet to v2 JWT binding as a side effect. After the first successful v2 operation, `encryption_context` is no longer required or accepted for that wallet.
+
+<Warning>
+If you call a v2 endpoint on a v1 wallet without `encryption_context`, the request will fail with `MIGRATION_REQUIRED`. You must provide it on the first v2 call.
+</Warning>
+
+Once all v1 wallets for a user have been migrated, you can stop passing `encryption_context` and remove `recovery_key` from your database.

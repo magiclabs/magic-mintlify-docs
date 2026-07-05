@@ -1,33 +1,39 @@
 ---
 title: "Overview"
-description: "Introduction to Magic's Core API - server-side wallet management with AWS Nitro TEE security"
+description: "Introduction to Magic's Core API v2 - JWT-bound server-side wallet management with AWS Nitro TEE security"
 ---
+
+<Warning>
+**Core API v1 will be retired on July 31, 2026.** After that date, `encryption_context`-based wallet access and `recovery_key` will no longer be supported. Requests to v1 endpoints will stop working, and wallets that have not been migrated will be permanently inaccessible. We strongly recommend migrating to v2 before that date. See the [v1 to v2 migration guide](/server-wallets/core-api/v1-to-v2-migration) to get started.
+</Warning>
 
 ## Overview
 
 Magic's Core API is a server-side wallet management solution that provides enterprise-grade security through AWS Nitro Trusted Execution Environment (TEE). Unlike traditional wallet solutions, Core API operates entirely server-side, giving you complete control over your wallet infrastructure while maintaining the highest security standards.
+
+In v2, every wallet is cryptographically bound to a user's JWT identity at creation time. All signing operations require a short-lived operation JWT (`op_jwt`) that is verified inside the Nitro Enclave — no long-lived secrets are transmitted per-request.
 
 ### Key Benefits
 
 - **Server-side only**: No client-side dependencies, iframes, or local sessions
 - **Multi-chain support**: EVM chains, Solana, and Bitcoin
 - **Enterprise security**: AWS Nitro TEE protection for all key operations
+- **JWT-bound authorization**: Every operation verified against the user's identity inside the enclave
 - **Flexible architecture**: Integrate with any tech stack
-- **Key sharding**: Advanced cryptographic key management
 
 <Info>
 Core API is designed for developers who need maximum control over their wallet infrastructure. It's ideal for applications requiring custom key management, compliance with specific regulations, or integration with existing backend systems.
 </Info>
 
-<Warning>
-Core API provides the tools for both custodial and non-custodial implementations. The choice depends on how you manage the encryption context and key shards. Consult legal professionals about custodial vs non-custodial distinctions in your target markets.
-</Warning>
+<Info>
+Core API v2 is a non-custodial solution. Wallet access is tied to the authenticated user's JWT identity — your application cannot authorize operations on behalf of a user without their active participation.
+</Info>
 
 ## Use Cases
 
 <CardGroup cols={2}>
 <Card title="DeFi Applications" icon="coins">
-Create wallets for users to interact with DeFi protocols. Users maintain control through passphrase-based `encryption_context`.
+Create wallets for users to interact with DeFi protocols with JWT-gated signing operations.
 </Card>
 
 <Card title="NFT Marketplaces" icon="image">
