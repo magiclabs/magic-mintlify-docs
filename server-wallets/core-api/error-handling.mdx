@@ -28,12 +28,8 @@ Core API uses standard HTTP status codes and returns detailed error information 
 - **Solution**: Verify the wallet ID is correct and was created by your application
 
 **`UNSUPPORTED_OPERATION`**
-- **Cause**: The requested operation is not supported for the wallet's network (e.g., `sign_data` on Solana)
+- **Cause**: The requested operation is not supported for the wallet's network (e.g., `sign_data` on Solana, `reveal_pk` on Bitcoin)
 - **Solution**: Check which operations are supported for your wallet's chain
-
-**`MIGRATION_REQUIRED`**
-- **Cause**: The wallet is a v1 wallet and `encryption_context` was not provided
-- **Solution**: Include `encryption_context` (the original v1 value) alongside `op_jwt` and `access_key` to migrate the wallet to v2 on first use
 
 #### 403 Forbidden
 
