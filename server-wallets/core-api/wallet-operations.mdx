@@ -93,14 +93,14 @@ Array of wallet group objects, each containing the same fields as the create res
 
 ### Create Wallet
 
-Create a new wallet for a user. Returns the `recovery_key`, `access_key`, and wallet `uuid` for future operations.
+Create a new wallet for a user. In v2, the wallet is cryptographically bound to the user's identity via `auth_jwt`. Returns an `access_key` that you must store securely for all subsequent operations.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.magiclabs.com/v1/api/wallet' \
+curl -X POST 'https://tee.magiclabs.com/v2/api/wallet' \
   -H 'Content-Type: application/json' \
   -H 'x-magic-secret-key: sk_live_XXXXXXXX' \
   -d '{
-    "encryption_context": "hashed_passcode",
+    "auth_jwt": "user_identity_jwt",
     "network": "mainnet",
     "wallet_group_id": "58a08494-3c83-439a-8a07-551f2022c3fc",
     "metadata": {
@@ -124,20 +124,21 @@ curl -X POST 'https://tee.magiclabs.com/v1/api/wallet' \
     },
     "key_type": "CORE",
     "public_address": "0x797063FB2e3C31a8b9a10D7EDF6dE612d6aE7Fde",
-    "recovery_key": "3130cc5b8fb4c5a835067f8c1aba3872",
     "access_key": "ebf0e16c5c22cd734083c803562b5dc0"
-  }
+  },
+  "wallet_id": "e982b4a3-14d3-4d66-a3ac-fadfc3ae1875",
+  "wallet_address": "0x797063FB2e3C31a8b9a10D7EDF6dE612d6aE7Fde"
 }
 ```
 
 #### Request Parameters
 
-<ParamField body="encryption_context" type="string" required post={["Body"]}>
-The context used to encrypt key shards. Should be derived from user input (e.g., hashed passphrase).
+<ParamField body="auth_jwt" type="string" required post={["Body"]}>
+The user's JWT from your identity provider. The enclave binds the wallet to this identity at creation time.
 </ParamField>
 
 <ParamField body="network" type="string" required post={["Body"]}>
-Target blockchain network. Values: `BTC_MAINNET`, `BTC_TESTNET`, `BTC_REGTEST` for Bitcoin; `SOL_MAINNET`, `SOL_TESTNET` for Solana; all other values create EVM wallet.
+Target blockchain network. Values: `BTC_MAINNET`, `BTC_TESTNET`, `BTC_REGTEST` for Bitcoin; `SOL_MAINNET`, `SOL_TESTNET` for Solana; all other values create an EVM wallet.
 </ParamField>
 
 <ParamField body="wallet_group_id" type="string" post={["Body"]}>
@@ -151,21 +152,17 @@ Optional identifier for the wallet (e.g., user ID, customer ID).
 #### Response Fields
 
 <ResponseField name="data.uuid" type="string">
-Unique wallet identifier. Use this for all subsequent operations.
+Unique wallet identifier. Use this as `wallet_id` for all subsequent operations.
 </ResponseField>
 
 <ResponseField name="data.public_address" type="string">
 The wallet's public address on the specified network.
 </ResponseField>
 
-<ResponseField name="data.recovery_key" type="string">
-Key shard for wallet recovery. Store securely in your database.
-</ResponseField>
-
 <ResponseField name="data.access_key" type="string">
-Key shard for non-recovery operations. Store securely in your database.
+Key shard required for all signing and key-reveal operations. Store securely in your database.
 </ResponseField>
 
 <Warning>
-Store both `recovery_key` and `access_key` securely in your database. These are required for wallet operations and recovery.
+Store `access_key` securely in your database. Unlike v1, v2 wallets do not have a `recovery_key` — recovery is handled via your identity provider's JWT.
 </Warning>

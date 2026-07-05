@@ -23,9 +23,17 @@ Core API uses standard HTTP status codes and returns detailed error information 
 - **Cause**: The provided secret key is invalid or expired
 - **Solution**: Verify your secret key is correct and your application is allowlisted
 
-**`INVALID_USER_PASSCODE`**
-- **Cause**: The `encryption_context` or `access_key` is incorrect
-- **Solution**: Ensure the `encryption_context` matches what was used during wallet creation
+**`UNKNOWN_WALLET`**
+- **Cause**: The `wallet_id` does not exist or does not belong to your application
+- **Solution**: Verify the wallet ID is correct and was created by your application
+
+**`UNSUPPORTED_OPERATION`**
+- **Cause**: The requested operation is not supported for the wallet's network (e.g., `sign_data` on Solana)
+- **Solution**: Check which operations are supported for your wallet's chain
+
+**`MIGRATION_REQUIRED`**
+- **Cause**: The wallet is a v1 wallet and `encryption_context` was not provided
+- **Solution**: Include `encryption_context` (the original v1 value) alongside `op_jwt` and `access_key` to migrate the wallet to v2 on first use
 
 #### 403 Forbidden
 
@@ -70,5 +78,5 @@ Always implement proper error handling in your application:
 </Tip>
 
 <Warning>
-Never expose sensitive error details (like secret keys or encryption contexts) to end users. Log them securely for debugging purposes only.
+Never expose sensitive error details (like secret keys or `op_jwt` tokens) to end users. Log them securely for debugging purposes only.
 </Warning>
