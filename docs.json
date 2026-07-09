@@ -426,6 +426,10 @@
       "destination": "/embedded-wallets/wallets/features/multichain"
     },
     {
+      "source": "/server-wallets/express-api/mws-migration",
+      "destination": "/server-wallets/express-api/migration"
+    },
+    {
       "source": "/server-wallets/uoa/overview",
       "destination": "/uoa/overview"
     },
