@@ -66,7 +66,7 @@
             "pages": [
               "server-wallets/express-api/overview",
               "server-wallets/express-api/getting-started",
-              "server-wallets/express-api/mws-migration",
+              "server-wallets/express-api/migration",
               "server-wallets/express-api/identity-provider",
               "server-wallets/express-api/wallet-operations",
               "server-wallets/express-api/eip-7702",
@@ -89,7 +89,6 @@
               "server-wallets/core-api/v1-to-v2-migration",
               "server-wallets/core-api/wallet-operations",
               "server-wallets/core-api/signing-operations",
-
               "server-wallets/core-api/error-handling"
             ]
           }
@@ -308,19 +307,9 @@
               {
                 "group": "Non-EVM",
                 "pages": [
-                  "embedded-wallets/blockchains/non-evm/algorand",
-                  "embedded-wallets/blockchains/non-evm/aptos",
-                  "embedded-wallets/blockchains/non-evm/avalanche",
                   "embedded-wallets/blockchains/non-evm/bitcoin",
                   "embedded-wallets/blockchains/non-evm/cosmos",
-                  "embedded-wallets/blockchains/non-evm/flow",
-                  "embedded-wallets/blockchains/non-evm/icon",
-                  "embedded-wallets/blockchains/non-evm/kadena",
-                  "embedded-wallets/blockchains/non-evm/near",
-                  "embedded-wallets/blockchains/non-evm/polkadot",
-                  "embedded-wallets/blockchains/non-evm/solana",
-                  "embedded-wallets/blockchains/non-evm/tezos",
-                  "embedded-wallets/blockchains/non-evm/zilliqa"
+                  "embedded-wallets/blockchains/non-evm/solana"
                 ]
               }
             ]
@@ -435,6 +424,10 @@
     {
       "source": "/embedded-wallets/blockchains/multichain",
       "destination": "/embedded-wallets/wallets/features/multichain"
+    },
+    {
+      "source": "/server-wallets/express-api/mws-migration",
+      "destination": "/server-wallets/express-api/migration"
     },
     {
       "source": "/server-wallets/uoa/overview",

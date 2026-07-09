@@ -59,6 +59,76 @@ You can allow users to add MFA via one of several SDK method options
 
 Calling the SDK method [`magic.user.getInfo()`](/embedded-wallets/sdk/client-side/javascript#getinfo) will return whether the user has MFA enabled or not. This can be used to progressively introduce MFA to users via a banner reminding them to enable it or similar.
 
+### iOS (Headless)
+
+If you are building a custom native iOS UI instead of using Magic's modal, pass `showUI: false` when calling `loginWithEmailOTP`. The SDK returns a `MagicEventPromise<String>` that emits MFA events you handle in your own UI.
+
+**Received events**
+
+| Event | Raw value | Meaning |
+| --- | --- | --- |
+| `mfaSentHandle` | `mfa-sent-handle` | User has MFA enabled — prompt for their authenticator app code |
+| `invalidMfaOTP` | `invalid-mfa-otp` | Code was invalid — re-prompt or switch to recovery flow |
+| `recoveryCodeSentHandle` | `recovery-code-sent-handle` | Prompt for the user's MFA recovery code |
+| `invalidRecoveryCode` | `invalid-recovery-code` | Recovery code was invalid — re-prompt or cancel |
+| `recoveryCodeSuccess` | `recovery-code-success` | Recovery code accepted — login completes via `.done` |
+
+**Emitted events**
+
+| Event | Raw value | When to emit |
+| --- | --- | --- |
+| `verifyMFACode` | `verify-mfa-code` | Emit with the authenticator code the user entered |
+| `lostDevice` | `lost-device` | Emit to switch from MFA code to recovery-code flow |
+| `verifyRecoveryCode` | `verify-recovery-code` | Emit with the recovery code the user entered |
+| `cancel` | `cancel` | Emit to abort the in-progress MFA challenge |
+
+**Example**
+
+```swift Swift icon="swift"
+import MagicSDK
+
+class LoginViewController: UIViewController {
+    let magic = Magic.shared
+    private var loginHandle: MagicEventPromise<String>?
+
+    func loginHeadless(email: String) {
+        guard let magic = magic else { return }
+
+        let configuration = LoginWithEmailOTPConfiguration(email: email, showUI: false)
+        loginHandle = magic.auth.loginWithEmailOTP(configuration)
+
+            // email OTP events — handle emailOTPSent, invalidEmailOTP, etc. as normal
+
+            // MFA events
+            .on(eventName: AuthModule.MFAEventOnReceived.mfaSentHandle.rawValue) { [weak self] in
+                // User has MFA enabled — collect authenticator code from your UI, then:
+                let code = "123456"
+                self?.loginHandle?.emit(eventType: AuthModule.MFAEventEmit.verifyMFACode.rawValue, arg: code)
+            }
+            .onPersistent(eventName: AuthModule.MFAEventOnReceived.invalidMfaOTP.rawValue) { [weak self] in
+                // Wrong code — re-prompt or fall back to recovery code
+                self?.loginHandle?.emit(eventType: AuthModule.MFAEventEmit.lostDevice.rawValue)
+            }
+            .on(eventName: AuthModule.MFAEventOnReceived.recoveryCodeSentHandle.rawValue) { [weak self] in
+                // Collect recovery code from your UI, then:
+                let code = "RECOVERY-CODE"
+                self?.loginHandle?.emit(eventType: AuthModule.MFAEventEmit.verifyRecoveryCode.rawValue, arg: code)
+            }
+            .onPersistent(eventName: AuthModule.MFAEventOnReceived.invalidRecoveryCode.rawValue) { [weak self] in
+                self?.loginHandle?.emit(eventType: AuthModule.MFAEventEmit.cancel.rawValue)
+            }
+
+        loginHandle?
+            .done { didToken in print("Logged in:", didToken) }
+            .catch { error in print("Error:", error) }
+    }
+}
+```
+
+<Note>
+  For the full headless example including email OTP and device-verification events, see [iOS SDK Reference](/embedded-wallets/sdk/client-side/ios#headless-email-otp-showui-false).
+</Note>
+
 ### Disabling MFA
 
 To disable MFA, remove any settings implementation for the Magic SDK or Login Form. Existing users with MFA enabled will still be able to use their second factor to login.

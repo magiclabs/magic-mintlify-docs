@@ -1,16 +1,20 @@
 ---
 title: "Wallet Operations"
-description: "Create wallets and sign transactions using Express API endpoints for wallet management and signing operations."
+description: "Create wallets and sign transactions using Express API v2 endpoints for wallet management and signing operations."
 ---
+
+<Warning>
+**Express API v1 will be retired on July 31, 2026.** After that date, `/v1/` endpoints will stop working. Wallets that have not been migrated to v2 by that date will be permanently inaccessible. See the [migration guide](/server-wallets/express-api/migration).
+</Warning>
 
 ## Wallet Management
 
 ### Get or Create Wallet
 
-Get or create a wallet for the given chain and return its public address. If a wallet doesn't exist for the user and chain combination, one will be created automatically.
+Get or create a wallet for the authenticated user and return its public address. If a wallet doesn't exist for the user, one is created automatically and cryptographically bound to the user's JWT identity.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
+curl -X POST 'https://tee.express.magiclabs.com/v2/wallet' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
   -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
@@ -44,12 +48,14 @@ Each user can have one wallet per blockchain. Calling this endpoint multiple tim
 
 ## Signing Operations
 
+All signing operations use the `Authorization: Bearer` JWT as the operation JWT (`op_jwt`). The Nitro Enclave verifies this JWT offline against JWKS baked into the enclave image and confirms the caller's identity matches the wallet's owner before authorizing the operation.
+
 ### Sign Data
 
-Sign a hash of arbitrary data using the wallet's private key. This is useful for signing transaction data, typed data, or any structured information.
+Sign a hash of arbitrary data using the wallet's private key. Useful for signing transaction data, typed data, or any structured information.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
+curl -X POST 'https://tee.express.magiclabs.com/v2/wallet/sign/data' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
   -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
@@ -79,7 +85,7 @@ The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
 </ParamField>
 
 <ParamField body="raw_data_hash" type="string" required post={["Body"]}>
-The keccak256 hash of the data to sign (hex string with 0x postfix).
+The keccak256 hash of the data to sign (hex string with 0x prefix).
 </ParamField>
 
 #### Response Fields
@@ -109,7 +115,7 @@ The recovery parameter of the ECDSA signature.
 Sign an [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) authorization that delegates an EOA to a smart contract implementation. This is used to temporarily upgrade an EOA into a smart wallet for a transaction bundle, enabling features like batched calls and gas sponsorship.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/eip7702' \
+curl -X POST 'https://tee.express.magiclabs.com/v2/wallet/sign/eip7702' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
   -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
@@ -135,7 +141,7 @@ curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/eip7702' \
 #### Request Parameters
 
 <ParamField header="X-Magic-Chain" type="string" required post={["Header"]}>
-The blockchain to sign for. Available values: `ETH`
+The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
 </ParamField>
 
 <ParamField body="chain_id" type="number" required post={["Body"]}>
@@ -169,7 +175,7 @@ The y-parity bit (`0` or `1`) used for EIP-7702 signature recovery.
 Sign an arbitrary message using the wallet's private key. Useful for authentication, off-chain verification, and personal signatures.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/message' \
+curl -X POST 'https://tee.express.magiclabs.com/v2/wallet/sign/message' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
   -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \

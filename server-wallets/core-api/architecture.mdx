@@ -1,6 +1,6 @@
 ---
 title: "Architecture"
-description: "Deep dive into Core API v2's security architecture, JWT-bound key scheme, and implementation patterns"
+description: "Deep dive into Core API's security architecture, JWT-bound key scheme, and implementation patterns"
 ---
 
 ## Security Architecture
@@ -13,13 +13,13 @@ Core API leverages AWS Nitro TEE to provide hardware-level security for all cryp
 - All cryptographic operations happen in an isolated, tamper-proof environment
 - Even Magic cannot access your private keys without proper authorization
 
-### v2 JWT-Bound Key Scheme
+### JWT-Bound Key Scheme
 
-In v2, every wallet is cryptographically bound to a user's JWT identity at creation time. The Nitro Enclave bakes JWKS from your identity provider into the enclave image (measured in PCR0). This means JWT verification happens entirely offline inside the enclave — no external network call is needed during a signing operation.
+Every wallet is cryptographically bound to a user's JWT identity at creation time. The Nitro Enclave bakes JWKS from your identity provider into the enclave image (measured in PCR0). This means JWT verification happens entirely offline inside the enclave — no external network call is needed during a signing operation.
 
 #### Key Material
 
-When a v2 wallet is created, the private key is split using a **2-of-3 Shamir's Secret Sharing** scheme:
+When a wallet is created, the private key is split using a **2-of-3 Shamir's Secret Sharing** scheme:
 
 <CardGroup cols={2}>
 <Card title="Shard A (Magic)" icon="shield">
@@ -27,7 +27,7 @@ Stored encrypted in Magic's secure infrastructure. Available for all key operati
 </Card>
 
 <Card title="Shard B (Discarded)" icon="trash">
-Generated during wallet creation but immediately discarded. Not stored or returned. In v2, recovery is handled via your identity provider's JWT rather than a recovery key.
+Generated during wallet creation but immediately discarded. Not stored or returned. Recovery is handled via your identity provider's JWT.
 </Card>
 
 <Card title="Shard C1 (Magic)" icon="shield">
@@ -39,23 +39,17 @@ Returned to your application as `access_key`. Store securely in your database. R
 </Card>
 </CardGroup>
 
-In addition to the shards, the enclave internally produces a sealed blob that cryptographically ties the wallet's key material to the user's JWT identity. Every v2 operation must supply an `op_jwt` that the enclave verifies before authorizing the request.
+In addition to the shards, the enclave internally produces a sealed blob that cryptographically ties the wallet's key material to the user's JWT identity. Every operation must supply an `op_jwt` that the enclave verifies before authorizing the request.
 
 #### Operation Flow
 
-**Signing / Key Reveal (v2 wallet)**
+**Signing / Key Reveal**
 
 1. Your server retrieves `wallet_id` and `access_key` from your database
 2. Your server obtains a short-lived `op_jwt` (max 5 min) for the user from your IdP
 3. Your server calls the TEE endpoint with `op_jwt`, `wallet_id`, and `access_key`
 4. The enclave verifies the JWT offline using baked-in JWKS, confirms the caller's identity matches the wallet's owner, and authorizes the operation
 5. The enclave signs using the reconstructed private key; the signed result is returned
-
-**Signing (v1 wallet — migrate-on-use)**
-
-1. Same as above, but also include `encryption_context` (the original v1 value)
-2. The enclave re-keys the wallet to v2 JWT binding as a side effect
-3. Subsequent operations do not require `encryption_context`
 
 ## Implementation Patterns
 

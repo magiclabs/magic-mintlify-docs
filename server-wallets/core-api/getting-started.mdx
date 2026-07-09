@@ -47,26 +47,47 @@ In addition to the secret key, v2 operations require a short-lived **operation J
 
 ### Wallet Creation
 
-When creating a wallet, pass `auth_jwt` — the user's JWT from your identity provider. The enclave cryptographically binds the new wallet to this identity at creation time.
+When creating a wallet, pass `auth_jwt` — a JWT from your identity provider identifying the user. The enclave cryptographically binds the new wallet to this identity at creation time.
 
 ### Signing Operations
 
-Every signing request requires an `op_jwt`: a short-lived JWT for the specific user. The Nitro Enclave verifies this JWT offline against JWKS baked into the enclave image, and confirms the caller's identity matches the wallet's owner before authorizing the operation.
+Every signing request requires an `op_jwt`: a short-lived JWT for the specific user. The Nitro Enclave verifies this JWT offline against JWKS baked into the enclave image, confirms `iss` and `sub` exactly match the wallet's binding, and authorizes the operation.
+
+### Supported Identity Providers
+
+The enclave's trust store is baked into the image at build time. The following provider families are supported:
+
+- **Google** (`https://accounts.google.com`)
+- **Google Firebase** (`https://securetoken.google.com/<project>`)
+- **Auth0** (any tenant, e.g. `https://<tenant>.us.auth0.com/`)
+- **AWS Cognito** (any user pool, e.g. `https://cognito-idp.<region>.amazonaws.com/<pool-id>`)
+- **Supabase** (any project, e.g. `https://<project>.supabase.co/auth/v1`)
+- **Stytch** (any project)
+
+To add support for your identity provider, contact Magic.
+
+<Warning>
+You must use a third-party identity provider. Self-issued or self-managed JWT issuers are not supported.
+</Warning>
 
 ### JWT Requirements
 
 Both `auth_jwt` (wallet creation) and `op_jwt` (signing) must satisfy the following:
 
-| Requirement | Details |
-|---|---|
-| **Issuer (`iss`)** | Required. Must match your configured identity provider. |
-| **Subject (`sub`)** | Required. Uniquely identifies the user — used to bind the wallet to their identity. |
-| **Expiry (`exp`)** | Required. Must be present and not expired. For `op_jwt`, keep expiry to 5 minutes or less. |
-| **Issued at (`iat`)** | Required. Must not be in the future. |
-| **Audience (`aud`)** | Required. Must match your application's configured audience. |
-| **Algorithm (`alg`)** | Must be an asymmetric algorithm (e.g. `RS256`, `ES256`). `none` and symmetric algorithms are rejected. |
-| **Key ID (`kid`)** | Required in the JWT header. Must resolve to a key in your IdP's JWKS. |
+| Claim / Header | Required | Details |
+|---|---|---|
+| **Issuer (`iss`)** | Yes | Must match a trusted issuer baked into the enclave. Captured at wallet creation and strictly matched on every signing call. |
+| **Subject (`sub`)** | Yes | Must be present and non-empty. Captured at wallet creation — must be byte-identical on every subsequent signing call for that wallet. |
+| **Expiry (`exp`)** | Yes | Must be present and not expired. For `op_jwt`, keep expiry to 5 minutes or less. |
+| **Issued at (`iat`)** | Yes | Must be present and must not be in the future. |
+| **Audience (`aud`)** | Yes | Must be present. Captured at wallet creation and matched on signing. |
+| **Algorithm (`alg`)** | Yes | Must be `RS256` or `ES256`. `none` and symmetric algorithms are rejected. |
+| **Key ID (`kid`)** | Yes | Required in the JWT header. Must resolve to a key in the enclave's baked-in JWKS for that issuer. |
 
 <Warning>
 JWTs with `jku`, `x5u`, `x5c`, or `jwk` header parameters are rejected outright to prevent key confusion attacks.
+</Warning>
+
+<Warning>
+`iss` and `sub` are permanently captured at wallet creation. If either value changes in future tokens, all signing operations for that wallet will fail with a binding mismatch error.
 </Warning>

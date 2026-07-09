@@ -3,7 +3,11 @@ title: "Signing Operations"
 description: "Sign transactions and messages for EVM, Solana, and Bitcoin networks using Core API v2"
 ---
 
-All signing operations in v2 require an `op_jwt` — a short-lived JWT (max 5 minutes) for the user — along with the `access_key` returned at wallet creation. The Nitro Enclave verifies the JWT and matches the caller's identity against the wallet's binding before authorizing the operation.
+All signing operations in v2 require an `op_jwt` — a short-lived JWT (max 5 minutes) — along with the `access_key` returned at wallet creation. The Nitro Enclave verifies the JWT offline, then strictly matches `iss` and `sub` against the wallet's identity binding before authorizing the operation.
+
+<Info>
+`sign_data` and `sign_transaction` are for EVM wallets. `sign_message` accepts a raw base64-encoded message and is designed for Solana wallets. There is no `personal_sign` or `sign_typed_data` endpoint — for EVM typed-data signing, pre-hash with keccak256 and use `sign_data`.
+</Info>
 
 ## Transaction Signing
 
