@@ -4,7 +4,7 @@ description: "Step-by-step guide for upgrading Core API integrations from v1 to 
 ---
 
 <Warning>
-**Core API v1 will be retired on July 31, 2026.** After that date, `encryption_context`-based wallet access and `recovery_key` will no longer be supported, and v1 requests will stop working. Wallets that have not been migrated to v2 by that date will be permanently inaccessible.
+**Core API v1 will be retired on July 31, 2026.** After that date, `encryption_context`-based wallet access and `recovery_key` will no longer be supported, and v1 requests will stop working.
 </Warning>
 
 ## What Changed
@@ -125,4 +125,4 @@ The enclave will re-key the wallet to v2 JWT binding as a side effect. After the
 If you call a v2 endpoint on a v1 wallet without `encryption_context`, the request will fail with `MIGRATION_REQUIRED`. You must provide it on the first v2 call.
 </Warning>
 
-Once all v1 wallets for a user have been migrated, you can stop passing `encryption_context` and remove `recovery_key` from your database.
+Once a wallet is migrated, its `recovery_key` is permanently invalidated — recovery is handled by your identity provider going forward. Once all v1 wallets for a user have been migrated, you can stop passing `encryption_context` and safely delete stored `recovery_key` values from your database.

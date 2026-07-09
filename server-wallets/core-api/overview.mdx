@@ -4,7 +4,7 @@ description: "Introduction to Magic's Core API v2 - JWT-bound server-side wallet
 ---
 
 <Warning>
-**Core API v1 will be retired on July 31, 2026.** After that date, `encryption_context`-based wallet access and `recovery_key` will no longer be supported. Requests to v1 endpoints will stop working, and wallets that have not been migrated will be permanently inaccessible. We strongly recommend migrating to v2 before that date. See the [v1 to v2 migration guide](/server-wallets/core-api/v1-to-v2-migration) to get started.
+**Core API v1 will be retired on July 31, 2026.** After that date, `encryption_context`-based wallet access and `recovery_key` will no longer be supported, and v1 requests will stop working. We strongly recommend migrating to v2 before that date. See the [v1 to v2 migration guide](/server-wallets/core-api/v1-to-v2-migration) to get started.
 </Warning>
 
 ## Overview
@@ -26,7 +26,7 @@ Core API is designed for developers who need maximum control over their wallet i
 </Info>
 
 <Info>
-Core API v2 is a non-custodial solution. Wallet access is tied to the authenticated user's JWT identity — your application cannot authorize operations on behalf of a user without their active participation.
+Core API v2 is a non-custodial solution. Wallet access is cryptographically tied to the JWT identity presented at wallet creation (`iss` + `sub`). Operations cannot be authorized without a valid JWT from the same identity.
 </Info>
 
 ## Use Cases

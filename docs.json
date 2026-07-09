@@ -66,6 +66,7 @@
             "pages": [
               "server-wallets/express-api/overview",
               "server-wallets/express-api/getting-started",
+              "server-wallets/express-api/v1-to-v2-migration",
               "server-wallets/express-api/mws-migration",
               "server-wallets/express-api/identity-provider",
               "server-wallets/express-api/wallet-operations",
@@ -89,7 +90,7 @@
               "server-wallets/core-api/v1-to-v2-migration",
               "server-wallets/core-api/wallet-operations",
               "server-wallets/core-api/signing-operations",
-
+              "server-wallets/core-api/architecture",
               "server-wallets/core-api/error-handling"
             ]
           }

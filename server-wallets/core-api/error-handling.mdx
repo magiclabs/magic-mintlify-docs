@@ -5,74 +5,71 @@ description: "Error codes and troubleshooting for Core API"
 
 ## Error Handling
 
-Core API uses standard HTTP status codes and returns detailed error information to help you troubleshoot issues.
+Core API uses standard HTTP status codes. Error responses have this shape:
 
-### Common Error Responses
+```json
+{
+  "error": "ERROR_CODE",
+  "message": "Human-readable description"
+}
+```
+
+### Error Reference
 
 #### 400 Bad Request
 
 **`INVALID_REQUEST_FIELDS`**
-- **Cause**: Missing or invalid required fields in the request body
-- **Solution**: Verify all required parameters are present and properly formatted
+- **Cause**: Missing or malformed required fields in the request body
+- **Solution**: Verify all required parameters are present and correctly formatted
 
-**`MISSING_REQUIRED_HEADER`**
-- **Cause**: The `x-magic-secret-key` header is missing from the request
-- **Solution**: Include the header: `x-magic-secret-key: sk_live_XXXXXXXX`
+**`MIGRATION_REQUIRED`**
+- **Cause**: A v2 signing endpoint was called for a v1 wallet without supplying `encryption_context`
+- **Solution**: Include `encryption_context` on the first v2 call for that wallet. See the [migration guide](/server-wallets/core-api/v1-to-v2-migration)
 
-**`INVALID_API_KEY`**
-- **Cause**: The provided secret key is invalid or expired
-- **Solution**: Verify your secret key is correct and your application is allowlisted
+#### 401 Unauthorized
 
-**`UNKNOWN_WALLET`**
-- **Cause**: The `wallet_id` does not exist or does not belong to your application
-- **Solution**: Verify the wallet ID is correct and was created by your application
-
-**`UNSUPPORTED_OPERATION`**
-- **Cause**: The requested operation is not supported for the wallet's network (e.g., `sign_data` on Solana, `reveal_pk` on Bitcoin)
-- **Solution**: Check which operations are supported for your wallet's chain
+**`INVALID_CREDENTIALS`**
+- **Cause**: The `access_key` or `op_jwt` is invalid, or `iss`/`sub` in the `op_jwt` does not match the wallet's identity binding
+- **Solution**: Verify `access_key` is the value returned at wallet creation. Ensure the JWT is signed by the same identity that created the wallet — `iss` and `sub` must be byte-identical
 
 #### 403 Forbidden
 
-**`METHOD_NOT_AVAILABLE`**
-- **Cause**: The requested endpoint or method is not available for your application
-- **Solution**: Contact Magic support to enable the required functionality
+**`MISSING_REQUIRED_HEADER`** (HTTP 403)
+- **Cause**: The `x-magic-secret-key` header is missing
+- **Solution**: Include `x-magic-secret-key: sk_live_XXXXXXXX` on every request
 
-#### 408 Timeout
+**`INVALID_API_KEY`** (HTTP 403)
+- **Cause**: The secret key is invalid or does not match a known application
+- **Solution**: Verify your secret key in the Magic Dashboard
 
-**`REQUEST_TIMEOUT`**
-- **Cause**: The request took too long to process
-- **Solution**: Retry the request or contact support if the issue persists
+#### 404 Not Found
+
+**`NOT_FOUND`**
+- **Cause**: The `wallet_id` does not exist or does not belong to your application
+- **Solution**: Verify the wallet ID was created by your application
+
+#### 429 Too Many Requests
+
+**`RATE_LIMITED`**
+- **Cause**: Exceeded the rate limit of 25 requests/second
+- **Solution**: Back off and retry. Implement exponential backoff for bursts
 
 #### 500 Internal Server Error
 
-**`INTERNAL_SERVER_ERROR`**
-- **Cause**: An unexpected error occurred on Magic's servers
-- **Solution**: If this error persists, contact Magic support for assistance
+**`INTERNAL_ERROR`**
+- **Cause**: An unexpected error occurred, including JWT validation failures inside the enclave (expired token, unknown `kid`, forbidden header parameter, binding mismatch)
+- **Solution**: Check that your `op_jwt` is not expired, uses a supported issuer, and has `kid` in the header. If the issue persists, contact Magic support
 
-### Error Response Format
+#### 503 Service Unavailable
 
-All error responses follow this format:
-
-```json
-{
-  "error": {
-    "code": "ERROR_CODE",
-    "message": "Human-readable error description",
-    "details": "Additional context or troubleshooting information"
-  }
-}
-```
+**`SERVICE_UNAVAILABLE`**
+- **Cause**: The enclave pool is overloaded
+- **Solution**: Retry with exponential backoff
 
 ### Best Practices
 
 <Tip>
-Always implement proper error handling in your application:
-- Check HTTP status codes before processing responses
-- Log error details for debugging
-- Implement retry logic for transient errors (5xx status codes)
-- Provide meaningful error messages to your users
+- Implement exponential backoff for `429` and `503` responses
+- Generate `op_jwt` as close to the request as possible — tokens expire quickly
+- Never log `op_jwt` or `access_key` values
 </Tip>
-
-<Warning>
-Never expose sensitive error details (like secret keys or `op_jwt` tokens) to end users. Log them securely for debugging purposes only.
-</Warning>

@@ -1,0 +1,113 @@
+---
+title: "Migrating from v1 to v2"
+description: "Step-by-step guide for upgrading Express API integrations from v1 to v2 JWT-bound wallets"
+---
+
+<Warning>
+**Express API v1 will be retired on July 31, 2026.** After that date, v1 endpoints will stop working. Wallets that have not been migrated to v2 by that date will be permanently inaccessible.
+</Warning>
+
+## What Changed
+
+The key difference between v1 and v2 is how wallet authorization works under the hood. The request interface is nearly identical — only the URL paths change.
+
+| | v1 | v2 |
+|---|---|---|
+| Wallet endpoint | `POST /v1/wallet` | `POST /v2/wallet` |
+| Sign endpoints | `/v1/wallet/sign/*` | `/v2/wallet/sign/*` |
+| Wallet binding | Passphrase-derived secret (internal) | Cryptographic JWT identity binding |
+| Recovery | Passphrase-based (internal) | Handled by your identity provider |
+
+In v2, the Nitro Enclave verifies your user's JWT offline against JWKS baked into the enclave image. This means the wallet is cryptographically bound to the user's JWT identity at creation time.
+
+## Migration Steps
+
+<Steps>
+<Step title="Update wallet creation">
+Change the URL from `/v1/wallet` to `/v2/wallet`. All headers remain the same.
+
+**v1:**
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
+  -H 'X-OIDC-Provider-ID: YOUR_OIDC_PROVIDER_ID' \
+  -H 'X-Magic-Chain: ETH'
+```
+
+**v2:**
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.express.magiclabs.com/v2/wallet' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
+  -H 'X-OIDC-Provider-ID: YOUR_OIDC_PROVIDER_ID' \
+  -H 'X-Magic-Chain: ETH'
+```
+</Step>
+
+<Step title="Update signing operations">
+Change all signing endpoint URLs from `/v1/wallet/sign/*` to `/v2/wallet/sign/*`. All headers and request bodies remain the same.
+
+**v1:**
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/data' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
+  -H 'X-OIDC-Provider-ID: YOUR_OIDC_PROVIDER_ID' \
+  -H 'X-Magic-Chain: ETH' \
+  -d '{
+    "raw_data_hash": "0xabc..."
+  }'
+```
+
+**v2:**
+```bash cURL icon="square-terminal"
+curl -X POST 'https://tee.express.magiclabs.com/v2/wallet/sign/data' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
+  -H 'X-OIDC-Provider-ID: YOUR_OIDC_PROVIDER_ID' \
+  -H 'X-Magic-Chain: ETH' \
+  -d '{
+    "raw_data_hash": "0xabc..."
+  }'
+```
+
+The same pattern applies to `sign/message` and `sign/eip7702` — just update the path from `/v1/` to `/v2/`.
+</Step>
+
+<Step title="Verify JWT requirements">
+Express API v2 enforces stricter JWT validation. Ensure your JWTs satisfy the following:
+
+| Claim / Header | Required | Details |
+|---|---|---|
+| **Issuer (`iss`)** | Yes | Must be present. Matched against the wallet's identity binding on sign operations. |
+| **Subject (`sub`)** | Yes | Must be present. Uniquely identifies the user. |
+| **Expiry (`exp`)** | Yes | Must be present and not expired. |
+| **Issued at (`iat`)** | Yes | Must be present and must not be in the future. |
+| **Audience (`aud`)** | Yes | Must be present. Validated against your application's configured audience. |
+| **Algorithm (`alg`)** | Yes | Must be asymmetric (e.g. `RS256`, `ES256`). `none` and symmetric algorithms are rejected. |
+| **Key ID (`kid`)** | Yes | Required in the JWT header. Must resolve to a key in your IdP's JWKS. |
+
+<Warning>
+JWTs with `jku`, `x5u`, `x5c`, or `jwk` header parameters are rejected outright to prevent key confusion attacks.
+</Warning>
+</Step>
+</Steps>
+
+## Migrating Existing v1 Wallets
+
+Existing v1 wallets are migrated to v2 **on first use** — no bulk migration or data changes are needed. When you call a v2 endpoint for the first time with a user who has a v1 wallet, the enclave automatically re-keys the wallet to v2 JWT binding as a side effect. Subsequent calls use the v2 binding.
+
+From your application's perspective, you simply update the URL from `/v1/` to `/v2/` and the migration happens transparently.
+
+<Info>
+You do not need to do anything special to trigger migration for existing users. The first v2 request from each user migrates their wallet automatically.
+</Info>
+
+<Warning>
+After migration, the wallet is permanently bound to the user's JWT `iss` + `sub`. Ensure your identity provider configuration is stable before migrating users to v2.
+</Warning>
