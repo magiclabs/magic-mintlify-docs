@@ -5,11 +5,9 @@ description: "How Core API v1 requests are handled going forward and how to migr
 
 ## What's Happening
 
-Existing v1 wallets will continue to work — **v1 signing requests are automatically routed to the v2 path** with no action required on your part.
+**Core API v1 endpoints will be shut down on July 31, 2026.** After that date, all v1 requests will be rejected and v1 wallets that have not been migrated will be inaccessible. There is no automatic routing — v1 and v2 are distinct paths and you must update your integration explicitly.
 
-However, **new applications cannot use v1 endpoints**. If your app was created after the v2 launch, v1 requests will be rejected.
-
-We recommend migrating to v2 explicitly. The v2 API is more secure, removes the need to manage `encryption_context` and `recovery_key`, and ties wallet access directly to your users' JWT identities.
+We recommend migrating before the deadline. The v2 API is more secure, removes the need to manage `encryption_context` and `recovery_key`, and ties wallet access directly to your users' JWT identities.
 
 ## What Changed
 

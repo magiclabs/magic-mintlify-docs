@@ -18,7 +18,7 @@ const personalSign = async (data: string | Uint8Array) => {
   const message = Buffer.from(messageUint8).toString('base64');
   
   const body = { message_base64: message };
-  return await fetch('/v1/wallet/sign/message', { 
+  return await fetch('/v2/wallet/sign/message', { 
     method: 'POST', 
     headers: {
       'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ const signLegacyTransaction = async (tx: Transaction) => {
   const rawDataBase64 = Buffer.from(messageBytes).toString('base64');
   
   const body = { message_base64: rawDataBase64 };
-  const res = await fetch('/v1/wallet/sign/message', { 
+  const res = await fetch('/v2/wallet/sign/message', { 
     method: 'POST', 
     headers: {
       'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ const signVersionedTransaction = async (tx: VersionedTransaction) => {
   const rawDataBase64 = Buffer.from(messageBytes).toString('base64');
   
   const body = { message_base64: rawDataBase64 };
-  const res = await fetch('/v1/wallet/sign/message', { 
+  const res = await fetch('/v2/wallet/sign/message', { 
     method: 'POST', 
     headers: {
       'Content-Type': 'application/json',
@@ -125,7 +125,7 @@ const partialSignTransaction = async (serializedTx: Uint8Array, type: string, se
   const rawDataBase64 = Buffer.from(messageBytes).toString('base64');
   
   const body = { message_base64: rawDataBase64 };
-  const res = await fetch('/v1/wallet/sign/message', { 
+  const res = await fetch('/v2/wallet/sign/message', { 
     method: 'POST', 
     headers: {
       'Content-Type': 'application/json',

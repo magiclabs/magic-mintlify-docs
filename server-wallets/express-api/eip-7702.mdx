@@ -20,10 +20,10 @@ description: "Sign EIP-7702 authorizations to delegate EOA capabilities to smart
 
 ## Sign an EIP-7702 Authorization
 
-Send a `POST` request to `/v1/wallet/sign/eip7702` with the delegation parameters.
+Send a `POST` request to `/v2/wallet/sign/eip7702` with the delegation parameters.
 
 ```bash cURL icon="square-terminal"
-curl -X POST 'https://tee.express.magiclabs.com/v1/wallet/sign/eip7702' \
+curl -X POST 'https://tee.express.magiclabs.com/v2/wallet/sign/eip7702' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
   -H 'X-Magic-API-Key: YOUR_MAGIC_API_KEY' \
@@ -99,7 +99,7 @@ const signEip7702Authorization = async (
     nonce,
   };
 
-  const res = await fetch('https://tee.express.magiclabs.com/v1/wallet/sign/eip7702', {
+  const res = await fetch('https://tee.express.magiclabs.com/v2/wallet/sign/eip7702', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
