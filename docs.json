@@ -307,7 +307,6 @@
               {
                 "group": "Non-EVM",
                 "pages": [
-                  "embedded-wallets/blockchains/non-evm/bitcoin",
                   "embedded-wallets/blockchains/non-evm/cosmos",
                   "embedded-wallets/blockchains/non-evm/solana"
                 ]
@@ -379,19 +378,9 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Guides",
-          "href": "https://magic.link/guides",
-          "icon": "book-open-cover"
-        },
-        {
           "anchor": "Community",
           "href": "https://discord.gg/magiclabs",
           "icon": "discord"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://magic.link/blogs",
-          "icon": "newspaper"
         }
       ]
     }
