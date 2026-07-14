@@ -374,16 +374,7 @@
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Community",
-          "href": "https://discord.gg/magiclabs",
-          "icon": "discord"
-        }
-      ]
-    }
+    ]
   },
   "redirects": [
     {
