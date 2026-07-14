@@ -836,7 +836,7 @@ The response structure depends on your SDK version:
   - `isMfaEnabled` (Boolean): Whether or not multi-factor authentication is enabled for the user
   - `recoveryFactors` (Array): Any recovery methods that have been enabled (ex. `[{ type: 'phone_number', value: '+99999999' }]`)
   - `wallets` (Object): Organized wallet addresses by blockchain and network:
-      - `[chainName]` (Object): Each supported blockchain (e.g., `ethereum`, `solana`, `bitcoin`, `hedera`)
+      - `[chainName]` (Object): Each supported blockchain (e.g., `ethereum`, `solana`, `cosmos`, `hedera`)
           - `publicAddress` (String | null): The mainnet public address for this chain, or `null` if no mainnet wallet exists
           - `subAccounts` (Array): Additional network addresses for this chain
               - `name` (String): Network name (e.g., `testnet`)
@@ -864,12 +864,12 @@ The response structure depends on your SDK version:
       "publicAddress": "DRiP2Pn2K6fuMLKQmt5rZWxa91wRx1jRhTdY5L6kh5Kp",
       "subAccounts": []
     },
-    "bitcoin": {
+    "cosmos": {
       "publicAddress": null,
       "subAccounts": [
         {
           "name": "testnet", 
-          "publicAddress": "tb1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+          "publicAddress": "cosmos10wljxpl03053h9690apmyeakly3ylhejxgve8g"
         }
       ]
     }
@@ -1261,7 +1261,6 @@ Magic SDK provides blockchain-specific modules for various networks through exte
 
 ### Available Blockchain Extensions
 
-- **[Bitcoin](/embedded-wallets/blockchains/non-evm/bitcoin)**: `@magic-ext/bitcoin`
 - **[Cosmos](/embedded-wallets/blockchains/non-evm/cosmos)**: `@magic-ext/cosmos`
 - **[Hedera](/embedded-wallets/blockchains/evm/hedera)**: `@magic-ext/hedera`
 - **[Solana](/embedded-wallets/blockchains/non-evm/solana)**: `@magic-ext/solana`
@@ -1288,16 +1287,16 @@ Retrieves the public address for the specific blockchain network.
 // Bare React Native
 import { Magic } from '@magic-sdk/react-native-bare';
 import { SolanaExtension } from '@magic-ext/solana';
-import { BitcoinExtension } from '@magic-ext/bitcoin';
+import { CosmosExtension } from '@magic-ext/cosmos';
 // Expo React Native
 import { Magic } from '@magic-sdk/react-native-expo';
 import { SolanaExtension } from '@magic-ext/solana';
-import { BitcoinExtension } from '@magic-ext/bitcoin';
+import { CosmosExtension } from '@magic-ext/cosmos';
 
 const magic = new Magic('YOUR_API_KEY', {
   extensions: [
     new SolanaExtension({ rpcUrl: 'SOLANA_RPC_NODE_URL' }),
-    new BitcoinExtension({ rpcUrl: 'BITCOIN_RPC_NODE_URL', network: 'testnet' }),
+    new CosmosExtension({ rpcUrl: 'COSMOS_RPC_NODE_URL' }),
   ],
 });
 
@@ -1305,9 +1304,9 @@ const magic = new Magic('YOUR_API_KEY', {
 const solanaAddress = await magic.solana.getPublicAddress();
 console.log(solanaAddress); // => "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
 
-// Get Bitcoin public address
-const bitcoinAddress = await magic.bitcoin.getPublicAddress();
-console.log(bitcoinAddress); // => "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+// Get Cosmos public address
+const cosmosAddress = await magic.cosmos.getPublicAddress();
+console.log(cosmosAddress); // => "cosmos10wljxpl03053h9690apmyeakly3ylhejxgve8g"
 ```
 
 #### `revealPrivateKey`
@@ -1328,8 +1327,8 @@ Displays an iframe revealing the private key for the specific blockchain network
 // Reveal Solana private key
 await magic.solana.revealPrivateKey();
 
-// Reveal Bitcoin private key
-await magic.bitcoin.revealPrivateKey();
+// Reveal Cosmos private key
+await magic.cosmos.revealPrivateKey();
 
 // Reveal Hedera private key
 await magic.hedera.revealPrivateKey();
