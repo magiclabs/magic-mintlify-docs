@@ -47,12 +47,12 @@ For non-EVM chains, use the specific extension's `revealPrivateKey` method:
 ```javascript JavaScript icon=square-js
 import { Magic } from "magic-sdk";
 import { SolanaExtension } from "@magic-ext/solana";
-import { BitcoinExtension } from "@magic-ext/bitcoin";
+import { CosmosExtension } from "@magic-ext/cosmos";
 
 const magic = new Magic('PUBLISHABLE_API_KEY', {
   extensions: [
     new SolanaExtension({ rpcUrl: 'SOLANA_RPC_NODE_URL' }),
-    new BitcoinExtension({ rpcUrl: 'BITCOIN_RPC_NODE_URL', network: 'testnet' }),
+    new CosmosExtension({ rpcUrl: 'COSMOS_RPC_NODE_URL' }),
   ],
 });
 
@@ -63,9 +63,9 @@ try {
   // Handle errors if required!
 }
 
-// Reveal Bitcoin private key
+// Reveal Cosmos private key
 try {
-  await magic.bitcoin.revealPrivateKey();
+  await magic.cosmos.revealPrivateKey();
 } catch {
   // Handle errors if required!
 }
