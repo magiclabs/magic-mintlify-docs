@@ -11,7 +11,7 @@ This feature is currently only available to customers who request access. Please
 
 Magic offers Wallet PreGen, a feature that allows you to create non-custodial EVM wallets programmatically without requiring end users to start or complete an authentication flow. After the wallet is generated, a user can claim their PreGen wallet by authenticating through your application.
 
-**The data key protecting the wallet's private key is split via Shamir's Secret Sharing so that no single party — Magic or the developer — holds a complete data key on their own; the end user's authentication is required to reconstruct it and use the wallet after claiming.**
+**No single party — Magic or the developer — holds a complete, usable private key on their own; the end user's authentication is required to unlock and use the wallet after claiming.**
 
 <Warning>
 Wallet PreGen is currently only available for EVM-compatible blockchains.
