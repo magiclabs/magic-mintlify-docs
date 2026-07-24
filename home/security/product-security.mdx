@@ -42,7 +42,7 @@ With this public–private key-pair approach, it is critical to ensure that user
 
 ## How does TKMS work?
 
-Magic provides infrastructure that manages sharded private keys instead of a single encrypted key. The key is split using Shamir’s Secret Sharing (SSS) across Magic, or optionally the Dapp/Developer depending on the security requirements. Each shard is additionally encrypted and secured in Trusted Execution Environments (TEEs) with AWS KMS, preventing human access to key material.
+Magic provides infrastructure that manages sharded private keys instead of a single encrypted key. The key is split using Shamir’s Secret Sharing (SSS) across Magic, or optionally the Dapp/Developer depending on the security requirements. Each shard is additionally encrypted and secured in Trusted Execution Environments (TEEs) with AWS KMS, so no single party — including Magic — holds the complete data key material needed to derive a usable private key outside the enclave.
 
 When an operation like signing is requested, shards are retrieved and securely recombined inside the TEE, never leaving hardware isolation. The private key only exists ephemerally in the TEE enclave's protected memory space for the operation, and only the signed result is returned.
 
@@ -54,4 +54,4 @@ The TEE Key Management System requires an additional authentication layer beyond
 
 The system generates and manages secure secrets stored in cloud infrastructure, with each user's identity cryptographically bound to their wallet through secure hashing. Every API request to the TEE service must include proper authentication credentials, which the backend service validates before processing requests. The secure enclave uses these credentials for both authentication and key decryption, ensuring that only authenticated users can access their specific private keys.
 
-This authentication layer provides identity-based access control where each user can only access their own wallets and private keys. This multi-layer protection works in combination with KMS attestation and external shards to create a comprehensive security framework that prevents unauthorized access even if the TEE system is compromised.
+This authentication layer provides identity-based access control where each user can only access their own wallets and private keys. This multi-layer protection works in combination with KMS attestation and external shards to create a comprehensive security framework that significantly raises the bar against unauthorized access, even in the event of a partial TEE system compromise.
