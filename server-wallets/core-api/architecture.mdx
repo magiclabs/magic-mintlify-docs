@@ -10,7 +10,7 @@ description: "Deep dive into Core API's security architecture, JWT-bound key sch
 Core API leverages AWS Nitro TEE to provide hardware-level security for all cryptographic operations. This ensures that:
 
 - Private keys are never exposed in plaintext outside the enclave
-- All cryptographic operations happen in an isolated environment, verifiable via AWS Nitro's PCR measurements
+- All cryptographic operations happen in an isolated environment
 - Every key operation requires a valid, identity-bound authorization from your application before it can proceed
 
 ### JWT-Bound Key Scheme
