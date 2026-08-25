@@ -289,7 +289,7 @@ import { Magic, RPCError, RPCErrorCode } from '@magic-sdk/react-native-expo';
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-  await magic.auth.loginWithEmailOTP({ email: 'hello@example.com' });
+  await magic.auth.loginWithEmailOTP({ email: 'hello@example.com', showUI: false });
 } catch (err) {
   if (err instanceof RPCError) {
     switch (err.code) {
@@ -311,6 +311,7 @@ Authenticate a user passwordlessly using a one-time code sent to the specified p
 **Arguments**
 
 * `phoneNumber` (String): E.164 formatted phone number
+* `showUI?` (Boolean): If `true`, show Magic's out-of-the-box UI for OTP entry and error states. Defaults to `true`. Set to `false` for a fully white-labeled flow, in which errors are rejected back to you to handle.
 
 **Returns**
 
@@ -349,14 +350,19 @@ import { Magic, RPCError, RPCErrorCode } from '@magic-sdk/react-native-expo';
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-  await magic.auth.loginWithSMS({ phoneNumber: "+14151231234" });
+  await magic.auth.loginWithSMS({ phoneNumber: "+14151231234", showUI: false });
 } catch (err) {
   if (err instanceof RPCError) {
     switch (err.code) {
-      case RPCErrorCode.AccessDeniedToUser:
-      case RPCErrorCode.MagicLinkRateLimited:
-      case RPCErrorCode.UserAlreadyLoggedIn:
-        // Handle errors accordingly
+      case RPCErrorCode.InvalidRecaptcha:
+        // reCAPTCHA verification failed. Safe to retry.
+        break;
+      case RPCErrorCode.InvalidParams:
+        // Invalid phone number.
+        break;
+      default:
+        // Other failures (e.g. SMS not enabled for the client, misconfiguration).
+        // Inspect err.rawMessage for the server-provided reason.
         break;
     }
   }
