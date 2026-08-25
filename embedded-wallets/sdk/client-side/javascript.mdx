@@ -281,11 +281,11 @@ import { Magic, RPCError, RPCErrorCode } from "magic-sdk";
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-  await magic.auth.loginWithEmailOTP({ email: 'hello@example.com' });
+  await magic.auth.loginWithEmailOTP({ email: 'hello@example.com', showUI: false });
 } catch (err) {
   if (err instanceof RPCError) {
     switch (err.code) {
-      case RPCErrorCode.MagicLinkExpired
+      case RPCErrorCode.MagicLinkExpired:
       case RPCErrorCode.UserAlreadyLoggedIn:
       // Handle errors accordingly
       break;
@@ -308,6 +308,7 @@ Authenticate a user passwordlessly using a one-time code sent to the specified p
 
 * `phoneNumber` (String): E.164 formatted phone number
 * `lifespan?` (Number): Set the lifespan of the resolved Decentralize ID token. Defaults to 900s (15 mins)
+* `showUI?` (Boolean): If `true`, show Magic's out-of-the-box UI for OTP entry and error states. Defaults to `true`. Set to `false` for a fully white-labeled flow, in which errors are rejected back to you to handle.
 
 **Returns**
 
@@ -340,15 +341,20 @@ import { Magic, RPCError, RPCErrorCode } from "magic-sdk";
 const magic = new Magic('PUBLISHABLE_API_KEY');
 
 try {
-  await magic.auth.loginWithSMS({ phoneNumber: "+14151231234" });
+  await magic.auth.loginWithSMS({ phoneNumber: "+14151231234", showUI: false });
 } catch (err) {
   if (err instanceof RPCError) {
     switch (err.code) {
-      case RPCErrorCode.AccessDeniedToUser:
-      case RPCErrorCode.MagicLinkRateLimited:
-      case RPCErrorCode.UserAlreadyLoggedIn:
-      // Handle errors accordingly
-      break;
+      case RPCErrorCode.InvalidRecaptcha:
+        // reCAPTCHA verification failed. Safe to retry.
+        break;
+      case RPCErrorCode.InvalidParams:
+        // Invalid phone number.
+        break;
+      default:
+        // Other failures (e.g. SMS not enabled for the client, misconfiguration).
+        // Inspect err.rawMessage for the server-provided reason.
+        break;
     }
   }
 }
