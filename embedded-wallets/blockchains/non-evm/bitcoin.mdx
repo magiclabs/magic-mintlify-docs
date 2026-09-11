@@ -1,0 +1,135 @@
+---
+title: Bitcoin
+description: "Sign Bitcoin transactions with a Magic embedded wallet using the @magic-ext/bitcoin extension."
+---
+
+## Installation
+
+Magic interacts with the Bitcoin blockchain via Magic's extension NPM package [`@magic-ext/bitcoin`](https://www.npmjs.com/package/@magic-ext/bitcoin).
+
+<Note>
+**NOTE**
+
+Bitcoin support requires `@magic-ext/bitcoin` **v29.0.0 or higher**. Bitcoin keys are held in Magic's TEE, and the signing API changed in v29.0.0. Earlier versions are no longer supported.
+</Note>
+
+<CodeGroup>
+```bash NPM icon="npm"
+npm install @magic-ext/bitcoin
+```
+
+```bash Yarn icon="yarn"
+yarn add @magic-ext/bitcoin
+```
+</CodeGroup>
+
+## Initialization
+
+```js JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { BitcoinExtension } from '@magic-ext/bitcoin';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new BitcoinExtension({
+      rpcUrl: 'BTC_RPC_NODE_URL',
+      network: 'testnet', // testnet or mainnet
+    }),
+  ],
+});
+```
+
+Magic issues native SegWit (bech32) addresses. Wallets on `mainnet` are prefixed with `bc1`, and wallets on `testnet` are prefixed with `tb1`. Each network has its own wallet, so a user's testnet address is not the same as their mainnet address.
+
+## Common Methods
+
+### Get Public Address
+
+Retrieves the user's Bitcoin address for the network the extension is configured with.
+
+```js JavaScript icon="square-js"
+const publicAddress = await magic.bitcoin.getPublicAddress();
+
+console.log(publicAddress); // => "tb1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+```
+
+### Sign Transaction
+
+Signs a Bitcoin transaction inside Magic's TEE and resolves with a broadcast-ready transaction.
+
+You supply fully-formed inputs (the UTXOs to spend) and outputs. **Coin selection, fees, and change are your responsibility** — Magic signs exactly what you pass. The fee is the difference between the total input value and the total output value, so any amount you do not send back to your own address as change is paid to miners.
+
+Magic does not broadcast the transaction. Submit the returned `signedTransaction` to the network yourself via your Bitcoin node or a broadcast API.
+
+**Arguments**
+
+* `inputs` (Array): The UTXOs to spend. Each input requires:
+  * `txid` (String): The transaction ID of the transaction that created the UTXO
+  * `tx_num` (Number): The output index (`vout`) of the UTXO within that transaction
+  * `value` (Number): The value of the UTXO **in BTC**, not satoshis. This is required — the TEE needs each input's value to compute its SegWit (BIP143) sighash
+  * `address` (String, optional): The address the UTXO is locked to
+* `outputs` (Array): The outputs to create. Each output requires:
+  * `address` (String): The recipient address
+  * `value` (Number): The amount to send **in BTC**, not satoshis
+
+**Returns**
+
+* `Promise<BitcoinSignedTransaction>`
+  * `signedTransaction` (String): The fully-signed, broadcast-ready transaction as hex
+  * `transactionHash` (String): The transaction hash (txid)
+
+If you're using TypeScript, `@magic-ext/bitcoin` exports these types directly: `BitcoinTransactionInput`, `BitcoinTransactionOutput`, `BitcoinSignedTransaction`, and `BitcoinConfig`.
+
+```javascript JavaScript icon="square-js"
+import { Magic } from 'magic-sdk';
+import { BitcoinExtension } from '@magic-ext/bitcoin';
+
+const magic = new Magic('YOUR_API_KEY', {
+  extensions: [
+    new BitcoinExtension({
+      rpcUrl: 'BTC_RPC_NODE_URL',
+      network: 'testnet', // testnet or mainnet
+    }),
+  ],
+});
+
+const publicAddress = await magic.bitcoin.getPublicAddress();
+
+const { signedTransaction, transactionHash } = await magic.bitcoin.signTransaction(
+  [
+    {
+      txid: 'fde789dad13b52e33229baed29b11d3e6f6dd306eb159865957dce13219bf85c',
+      tx_num: 0,
+      value: 0.002,
+    },
+  ],
+  [
+    {
+      address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+      value: 0.0015,
+    },
+    {
+      // Send the remainder back to yourself as change
+      address: publicAddress,
+      value: 0.00049,
+    },
+  ],
+);
+
+// Total in (0.002) - total out (0.00199) = 0.00001 BTC paid as the miner fee
+
+console.log('signed transaction', signedTransaction);
+console.log('transaction hash', transactionHash);
+```
+
+### Reveal Private Key
+
+Displays an iframe revealing the user's Bitcoin private key. See [Key Export](/embedded-wallets/wallets/features/key-export) for more detail.
+
+```js JavaScript icon="square-js"
+await magic.bitcoin.revealPrivateKey();
+```
+
+## Resources
+
+* [Bitcoin Developer Site](https://developer.bitcoin.org)
