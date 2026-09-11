@@ -78,6 +78,8 @@ Magic does not broadcast the transaction. Submit the returned `signedTransaction
   * `signedTransaction` (String): The fully-signed, broadcast-ready transaction as hex
   * `transactionHash` (String): The transaction hash (txid)
 
+If you're using TypeScript, `@magic-ext/bitcoin` exports these types directly: `BitcoinTransactionInput`, `BitcoinTransactionOutput`, `BitcoinSignedTransaction`, and `BitcoinConfig`.
+
 ```javascript JavaScript icon="square-js"
 import { Magic } from 'magic-sdk';
 import { BitcoinExtension } from '@magic-ext/bitcoin';
