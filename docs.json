@@ -287,7 +287,6 @@
                   "embedded-wallets/blockchains/evm/etherlink",
                   "embedded-wallets/blockchains/evm/fantom",
                   "embedded-wallets/blockchains/evm/flare",
-                  "embedded-wallets/blockchains/evm/harmony",
                   "embedded-wallets/blockchains/evm/hedera",
                   "embedded-wallets/blockchains/evm/horizen-eon",
                   "embedded-wallets/blockchains/evm/loopring",
@@ -463,5 +462,55 @@
       "linkedin": "https://www.linkedin.com/company/magiclabs-inc/",
       "youtube": "https://www.youtube.com/channel/UCe9Itc4HfUnqXO4wJk9mo3Q/"
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/embedded-wallets/blockchains/evm/harmony",
+      "destination": "/embedded-wallets/blockchains/overview"
+    },
+    {
+      "source": "/embedded-wallets/blockchains/evm/astar-zkevm",
+      "destination": "/embedded-wallets/blockchains/overview"
+    },
+    {
+      "source": "/embedded-wallets/blockchains/non-evm/algorand",
+      "destination": "/embedded-wallets/blockchains/overview"
+    },
+    {
+      "source": "/embedded-wallets/blockchains/non-evm/aptos",
+      "destination": "/embedded-wallets/blockchains/overview"
+    },
+    {
+      "source": "/embedded-wallets/blockchains/non-evm/avalanche",
+      "destination": "/embedded-wallets/blockchains/overview"
+    },
+    {
+      "source": "/embedded-wallets/blockchains/non-evm/flow",
+      "destination": "/embedded-wallets/blockchains/overview"
+    },
+    {
+      "source": "/embedded-wallets/blockchains/non-evm/icon",
+      "destination": "/embedded-wallets/blockchains/overview"
+    },
+    {
+      "source": "/embedded-wallets/blockchains/non-evm/kadena",
+      "destination": "/embedded-wallets/blockchains/overview"
+    },
+    {
+      "source": "/embedded-wallets/blockchains/non-evm/near",
+      "destination": "/embedded-wallets/blockchains/overview"
+    },
+    {
+      "source": "/embedded-wallets/blockchains/non-evm/polkadot",
+      "destination": "/embedded-wallets/blockchains/overview"
+    },
+    {
+      "source": "/embedded-wallets/blockchains/non-evm/tezos",
+      "destination": "/embedded-wallets/blockchains/overview"
+    },
+    {
+      "source": "/embedded-wallets/blockchains/non-evm/zilliqa",
+      "destination": "/embedded-wallets/blockchains/overview"
+    }
+  ]
 }
