@@ -420,50 +420,7 @@
     {
       "source": "/server-wallets/uoa/api-reference",
       "destination": "/uoa/api-reference/accounts"
-    }
-  ],
-  "logo": {
-    "light": "/logo/magic-logo-dark.svg",
-    "dark": "/logo/magic-logo-light.svg",
-    "href": "https://magic.link"
-  },
-  "integrations": {
-    "intercom": {
-      "appId": "boaw5c39"
-    }
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Log In",
-        "href": "https://dashboard.magic.link/login"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Start now",
-      "href": "https://dashboard.magic.link/signup"
-    }
-  },
-  "seo": {
-    "metatags": {
-      "og:title": "Developer Docs | Magic",
-      "og:description": "Get started in minutes with Magic's Server Wallets and Embedded Wallets. High-performance Web3 infrastructure with multi-chain support and enterprise-grade security.",
-      "og:url": "https://docs.magic.link",
-      "og:type": "website",
-      "og:image": "https://assets.magiclabs.com/assets/og-img.png"
-    }
-  },
-  "footer": {
-    "socials": {
-      "x": "https://twitter.com/magic_labs",
-      "discord": "https://discord.gg/magiclabs",
-      "github": "https://github.com/MagicLabs",
-      "linkedin": "https://www.linkedin.com/company/magiclabs-inc/",
-      "youtube": "https://www.youtube.com/channel/UCe9Itc4HfUnqXO4wJk9mo3Q/"
-    }
-  },
-  "redirects": [
+    },
     {
       "source": "/embedded-wallets/blockchains/evm/harmony",
       "destination": "/embedded-wallets/blockchains/overview"
@@ -512,5 +469,46 @@
       "source": "/embedded-wallets/blockchains/non-evm/zilliqa",
       "destination": "/embedded-wallets/blockchains/overview"
     }
-  ]
+  ],
+  "logo": {
+    "light": "/logo/magic-logo-dark.svg",
+    "dark": "/logo/magic-logo-light.svg",
+    "href": "https://magic.link"
+  },
+  "integrations": {
+    "intercom": {
+      "appId": "boaw5c39"
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Log In",
+        "href": "https://dashboard.magic.link/login"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Start now",
+      "href": "https://dashboard.magic.link/signup"
+    }
+  },
+  "seo": {
+    "metatags": {
+      "og:title": "Developer Docs | Magic",
+      "og:description": "Get started in minutes with Magic's Server Wallets and Embedded Wallets. High-performance Web3 infrastructure with multi-chain support and enterprise-grade security.",
+      "og:url": "https://docs.magic.link",
+      "og:type": "website",
+      "og:image": "https://assets.magiclabs.com/assets/og-img.png"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://twitter.com/magic_labs",
+      "discord": "https://discord.gg/magiclabs",
+      "github": "https://github.com/MagicLabs",
+      "linkedin": "https://www.linkedin.com/company/magiclabs-inc/",
+      "youtube": "https://www.youtube.com/channel/UCe9Itc4HfUnqXO4wJk9mo3Q/"
+    }
+  }
 }
