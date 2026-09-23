@@ -64,7 +64,7 @@ You supply fully-formed inputs (the UTXOs to spend) and outputs. **Coin selectio
 
 `fee = sum(inputs.value) - sum(outputs.value)`
 
-Include every output, including change. Values must be non-negative BTC amounts with at most eight decimal places; fractional satoshis are rejected. Calculate amounts in integer satoshis, then divide by `100_000_000` when passing them to this API. Check the resulting fee before signing, since any value left over becomes the miner fee.
+Include every output, including change. Values must be non-negative BTC amounts representing whole satoshis (at most eight decimal places). Tiny floating-point arithmetic errors of up to **0.001 satoshi** are tolerated; larger fractional-satoshi amounts are rejected. Calculate amounts in integer satoshis, then divide by `100_000_000` when passing them to this API. Check the resulting fee before signing, since any value left over becomes the miner fee.
 
 Use a fee estimate in **sats per virtual byte (sats/vB)** for your desired confirmation target. Relay and dust policies depend on the broadcasting node and output script type. Zero-fee, low-fee, or dust-output transactions can be signed but may be rejected by nodes or remain unconfirmed. Successful signing does not verify that the supplied UTXOs exist, are unspent, or have the claimed values. Your node's `testmempoolaccept` RPC can check acceptance before broadcasting.
 </Note>
