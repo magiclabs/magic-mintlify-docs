@@ -59,6 +59,16 @@ Signs a Bitcoin transaction inside Magic's TEE and resolves with a broadcast-rea
 
 You supply fully-formed inputs (the UTXOs to spend) and outputs. **Coin selection, fees, and change are your responsibility** — Magic signs exactly what you pass. The fee is the difference between the total input value and the total output value, so any amount you do not send back to your own address as change is paid to miners.
 
+<Note>
+**You choose the fee.** Signing does not enforce a minimum or maximum transaction fee, or a dust threshold. It rejects transactions whose total output value exceeds their total input value. All input and output `value` fields are in BTC:
+
+`fee = sum(inputs.value) - sum(outputs.value)`
+
+Include every output, including change. Values must be non-negative BTC amounts representing whole satoshis (at most eight decimal places). Tiny floating-point arithmetic errors of up to **0.001 satoshi** are tolerated; larger fractional-satoshi amounts are rejected. Calculate amounts in integer satoshis, then divide by `100_000_000` when passing them to this API. Check the resulting fee before signing, since any value left over becomes the miner fee.
+
+Use a fee estimate in **sats per virtual byte (sats/vB)** for your desired confirmation target. Relay and dust policies depend on the broadcasting node and output script type. Zero-fee, low-fee, or dust-output transactions can be signed but may be rejected by nodes or remain unconfirmed. Successful signing does not verify that the supplied UTXOs exist, are unspent, or have the claimed values. Your node's `testmempoolaccept` RPC can check acceptance before broadcasting.
+</Note>
+
 Magic does not broadcast the transaction. Submit the returned `signedTransaction` to the network yourself via your Bitcoin node or a broadcast API.
 
 **Arguments**
@@ -95,28 +105,34 @@ const magic = new Magic('YOUR_API_KEY', {
 
 const publicAddress = await magic.bitcoin.getPublicAddress();
 
+// Example amounts only: choose the fee using current estimates and transaction size.
+const inputSats = 200_000;
+const recipientSats = 150_000;
+const feeSats = 261;
+const changeSats = inputSats - recipientSats - feeSats;
+
 const { signedTransaction, transactionHash } = await magic.bitcoin.signTransaction(
   [
     {
       txid: 'fde789dad13b52e33229baed29b11d3e6f6dd306eb159865957dce13219bf85c',
       tx_num: 0,
-      value: 0.002,
+      value: inputSats / 100_000_000,
     },
   ],
   [
     {
       address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
-      value: 0.0015,
+      value: recipientSats / 100_000_000,
     },
     {
       // Send the remainder back to yourself as change
       address: publicAddress,
-      value: 0.00049,
+      value: changeSats / 100_000_000,
     },
   ],
 );
 
-// Total in (0.002) - total out (0.00199) = 0.00001 BTC paid as the miner fee
+// Total in (0.002) - total out (0.00199739) = 0.00000261 BTC (261 sats) in fees
 
 console.log('signed transaction', signedTransaction);
 console.log('transaction hash', transactionHash);
