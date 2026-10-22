@@ -78,30 +78,46 @@ The Hyperliquid SDK expects a wallet with a `signTypedData` method. Create a cus
 
 ```ts TypeScript icon="square-js"
 import { toAccount } from "viem/accounts";
-import { hashTypedData, hashMessage, serializeSignature, type Address, type Hex } from "viem";
+import {
+  bytesToHex, getTypesForEIP712Domain, hashMessage, hashTypedData,
+  serializeSignature, stringToHex, type Address, type Hex,
+} from "viem";
 
 function createTeeAccount(jwt: string, address: Address) {
   return toAccount({
     address,
     signMessage: async ({ message }) => {
-      const hash = typeof message === "string"
-        ? hashMessage(message)
-        : hashMessage({ raw: message as Hex });
-      return signHashViaTee(jwt, hash);
+      // Send the message bytes as hex so Magic can recompute the EIP-191 hash.
+      const data =
+        typeof message === "string" ? stringToHex(message)
+        : typeof message.raw === "string" ? message.raw
+        : bytesToHex(message.raw);
+      return signViaTee(jwt, hashMessage(message), { method: "eth_sign", data });
     },
     signTransaction: async () => {
       throw new Error("Use signAndSend for transactions");
     },
-    signTypedData: async ({ domain, types, primaryType, message }) => {
-      const hash = hashTypedData({ domain, types, primaryType, message });
-      return signHashViaTee(jwt, hash);
+    signTypedData: async (typedData) => {
+      // Send the typed data with the domain type viem hashed it with.
+      // Integers go as decimal strings, since JSON can't carry bigints.
+      const domain = typedData.domain ?? {};
+      const types = { EIP712Domain: getTypesForEIP712Domain({ domain }), ...typedData.types };
+      return signViaTee(jwt, hashTypedData(typedData), {
+        method: "eth_signTypedData_v4",
+        typedData: JSON.parse(
+          JSON.stringify({ ...typedData, domain, types }, (_, v) =>
+            typeof v === "bigint" ? v.toString() : v
+          )
+        ),
+      });
     },
   });
 }
 
-async function signHashViaTee(jwt: string, hash: Hex): Promise<Hex> {
+// Signs a hash together with the content it was computed from, which Magic checks.
+async function signViaTee(jwt: string, hash: Hex, transactionData: object): Promise<Hex> {
   const { r, s, v } = await teeRequest<{ r: string; s: string; v: string }>(
-    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
+    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, transaction_data: transactionData }
   );
   return serializeSignature({ r: r as Hex, s: s as Hex, yParity: Number(v) - 27 });
 }
@@ -152,12 +168,27 @@ const arbClient = createPublicClient({
   transport: http("https://arb1.arbitrum.io/rpc"),
 });
 
+// The transaction's fields, so Magic can recompute the hash before signing.
+// Integers go as decimal strings, since JSON can't carry bigints.
+const transactionData = (tx: TransactionSerializable) => ({
+  method: "eth_signTransaction",
+  to: tx.to,
+  value: (tx.value ?? 0n).toString(),
+  data: tx.data ?? "0x",
+  chainId: tx.chainId,
+  nonce: tx.nonce,
+  gasLimit: tx.gas?.toString(),
+  maxFeePerGas: tx.maxFeePerGas?.toString(),
+  maxPriorityFeePerGas: tx.maxPriorityFeePerGas?.toString(),
+  gasPrice: tx.gasPrice?.toString(),
+});
+
 async function signAndSend(jwt: string, tx: TransactionSerializable) {
   const serialized = serializeTransaction(tx);
   const hash = keccak256(serialized);
 
   const { r, s, v } = await teeRequest<{ r: string; s: string; v: string }>(
-    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
+    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, transaction_data: transactionData(tx) }
   );
 
   const yParity = Number(v) >= 27 ? Number(v) - 27 : Number(v);
@@ -389,7 +420,7 @@ Asset indices can change between testnet and mainnet. In production, use `info.m
 | Endpoint | Purpose |
 |----------|---------|
 | `POST /v1/wallet` | Get or create an EOA wallet |
-| `POST /v1/wallet/sign/data` | Sign a raw data hash (EIP-712 typed data hash) |
+| `POST /v1/wallet/sign/data` | Sign a hash, sent with the typed data or message as `transaction_data` |
 
 ---
 
@@ -410,7 +441,7 @@ Asset indices can change between testnet and mainnet. In production, use `info.m
 **Symptoms:** Hyperliquid rejects the order with a signature error.
 
 **Solutions:**
-- Verify the `signHashViaTee` function correctly reconstructs the signature from r, s, v components
+- Verify the `signViaTee` function correctly reconstructs the signature from r, s, v components
 - Ensure the TEE account address matches the address that deposited USDC on Hyperliquid
 - Check that `serializeSignature` is imported from `viem`
 </Accordion>

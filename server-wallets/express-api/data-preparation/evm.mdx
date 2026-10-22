@@ -31,7 +31,7 @@ const personalSign = async (data: string) => {
 
 ## Data Signing
 
-For signing transaction data or other structured data, provide a keccak256 hash:
+For `/v2/wallet/sign/data`, send the hash together with `transaction_data`, the content it was computed from. Magic recomputes the hash and rejects the request with `400 INVALID_SIGNING_PARAMS` if they don't match.
 
 <CodeGroup>
 ```typescript Typed Data V1
@@ -41,7 +41,10 @@ const signTypedDataV1 = async (data: TypedDataV1) => {
   // Compute hash for typed data V1
   const rawDataHash = typedSignatureHash(data);
   
-  const body = { raw_data_hash: rawDataHash };
+  const body = {
+    raw_data_hash: rawDataHash,
+    transaction_data: { method: 'eth_signTypedData', typedData: data },
+  };
   return await fetch('/v2/wallet/sign/data', { 
     method: 'POST', 
     headers: {
@@ -76,7 +79,10 @@ const signTypedDataV3 = async (data: TypedMessage<MessageTypes>) => {
   // Compute EIP-712 hash for typed data V3
   const rawDataHash = computeEip712Hash(data, SignTypedDataVersion.V3);
   
-  const body = { raw_data_hash: rawDataHash };
+  const body = {
+    raw_data_hash: rawDataHash,
+    transaction_data: { method: 'eth_signTypedData_v3', typedData: data },
+  };
   return await fetch('/v2/wallet/sign/data', { 
     method: 'POST', 
     headers: {
@@ -94,7 +100,10 @@ const signTypedDataV4 = async (data: TypedMessage<MessageTypes>) => {
   // Compute EIP-712 hash for typed data V4
   const rawDataHash = computeEip712Hash(data, SignTypedDataVersion.V4);
   
-  const body = { raw_data_hash: rawDataHash };
+  const body = {
+    raw_data_hash: rawDataHash,
+    transaction_data: { method: 'eth_signTypedData_v4', typedData: data },
+  };
   return await fetch('/v2/wallet/sign/data', { 
     method: 'POST', 
     headers: {
@@ -120,8 +129,26 @@ const signTransaction = async (tx: TransactionRequest) => {
 
   // Create transaction object and get unsigned hash
   const btx = Transaction.from(txForSigning as TransactionLike);
-  
-  const body = { raw_data_hash: btx.unsignedHash };
+
+  // The transaction's fields, so Magic can recompute the unsigned hash.
+  // Integers go as decimal strings, since JSON can't carry bigints.
+  const transaction_data = {
+    method: 'eth_signTransaction',
+    to: btx.to,
+    value: btx.value.toString(),
+    data: btx.data,
+    chainId: Number(btx.chainId),
+    nonce: btx.nonce,
+    gasLimit: btx.gasLimit.toString(),
+    ...(btx.maxFeePerGas != null
+      ? {
+          maxFeePerGas: btx.maxFeePerGas.toString(),
+          maxPriorityFeePerGas: btx.maxPriorityFeePerGas!.toString(),
+        }
+      : { gasPrice: btx.gasPrice!.toString() }),
+  };
+
+  const body = { raw_data_hash: btx.unsignedHash, transaction_data };
   const res = await fetch('/v2/wallet/sign/data', { 
     method: 'POST', 
     headers: {
@@ -141,4 +168,33 @@ const signTransaction = async (tx: TransactionRequest) => {
   return btx.serialized;
 };
 ```
+
+```typescript eth_sign
+import { getBytes, hashMessage, isHexString } from 'ethers';
+
+const ethSign = async (message: string) => {
+  // EIP-191 hash: hex strings are signed as bytes, anything else as text.
+  const rawDataHash = hashMessage(isHexString(message) ? getBytes(message) : message);
+
+  const body = {
+    raw_data_hash: rawDataHash,
+    transaction_data: { method: 'eth_sign', data: message },
+  };
+  return await fetch('/v2/wallet/sign/data', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${YOUR_JWT_TOKEN}`,
+      'X-Magic-API-Key': 'YOUR_MAGIC_API_KEY',
+      'X-OIDC-Provider-ID': 'YOUR_OIDC_PROVIDER_ID',
+      'X-Magic-Chain': 'ETH'
+    },
+    body: JSON.stringify(body)
+  });
+};
+```
 </CodeGroup>
+
+<Note>
+Transactions with an access list, blobs or an authorization list can't be described in `transaction_data` yet. To sign an EIP-7702 authorization, use [Sign EIP-7702 Authorization](/server-wallets/express-api/wallet-operations#sign-eip-7702-authorization), which computes the hash for you.
+</Note>

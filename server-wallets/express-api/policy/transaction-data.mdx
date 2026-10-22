@@ -8,7 +8,7 @@ description: "Learn how to structure and pass transaction data for policy evalua
 When using policies with Express API, you need to provide transaction data so that policy conditions can be evaluated. This data is used to check whether transactions meet your policy rules before signing occurs.
 
 <Info>
-Transaction data is required when policy evaluation is enabled for your application. It must match the raw transaction data being signed to ensure policy conditions evaluate correctly.
+Transaction data is required on every EVM `sign/data` request, whether or not policy evaluation is enabled. Magic recomputes `raw_data_hash` from it and rejects the request with `400 INVALID_SIGNING_PARAMS` if they don't match, so policy conditions always evaluate what is actually signed.
 </Info>
 
 ## Transaction Data Structure
@@ -38,12 +38,13 @@ The `TransactionData` object contains information about the transaction or messa
 
 <ResponseField name="method" type="string" required>
 The signing method being used. Valid values:
-- `eth_signTransaction` - Sign an Ethereum transaction
-- `personal_sign` - Sign a message using personal_sign
-- `eth_signTypedData` - Sign EIP-712 typed data (legacy)
+- `eth_signTransaction`, `eth_sendTransaction` - Sign an Ethereum transaction
+- `eth_signTypedData` - Sign typed data (v1, legacy)
 - `eth_signTypedData_v3` - Sign EIP-712 typed data v3
 - `eth_signTypedData_v4` - Sign EIP-712 typed data v4
-- `eth_signMessage` - Sign fringe message format
+- `eth_sign` - Sign a message, sent in `data`
+- `eth_sign7702Authorization` - Sign an EIP-7702 authorization, with `chainId`, `address` and `nonce`
+- `personal_sign` - Evaluated by policy on [Sign Message](/server-wallets/express-api/wallet-operations#sign-message); not accepted on `sign/data`
 </ResponseField>
 
 <ResponseField name="to" type="string" required={false}>
@@ -80,6 +81,10 @@ Maximum priority fee per gas unit (EIP-1559 transactions). Can be provided as de
 
 <ResponseField name="gasPrice" type="string" required={false}>
 Gas price for legacy transactions. Can be provided as decimal string or hex string.
+</ResponseField>
+
+<ResponseField name="address" type="string" required={false}>
+The EIP-7702 delegate contract. Required for `eth_sign7702Authorization`, together with `chainId` and `nonce`.
 </ResponseField>
 
 <ResponseField name="typedData" type="object" required={false}>

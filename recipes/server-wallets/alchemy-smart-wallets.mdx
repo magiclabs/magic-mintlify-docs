@@ -102,26 +102,45 @@ const { public_address: eoaAddress } = await walletRes.json();
 
     The signer needs three methods:
 
-    **`signMessage`** — hash the message locally with `hashMessage()` (EIP-191), then send the raw hash to the TEE's `sign/data` endpoint:
+    **`signMessage`** — hash the message locally with `hashMessage()` (EIP-191), then send the hash and the message to the TEE's `sign/data` endpoint, which checks that they match:
 
 ```ts TypeScript icon="square-js"
-import { hashMessage, hashTypedData, serializeSignature } from "viem";
+import {
+  bytesToHex, getTypesForEIP712Domain, hashMessage, hashTypedData, serializeSignature,
+  stringToHex, type Hex, type SignableMessage, type TypedDataDefinition,
+} from "viem";
 
 // Helper: convert TEE's decimal r/s values to 0x-prefixed hex
 const decToHex = (dec: string): Hex =>
   `0x${BigInt(dec).toString(16).padStart(64, "0")}` as Hex;
 
-// Sign a raw hash via TEE and return a serialized signature
-const signRawHash = async (hash: Hex): Promise<Hex> => {
+// The message bytes as hex, so Magic can recompute the EIP-191 hash.
+const messageHex = (message: SignableMessage): Hex =>
+  typeof message === "string" ? stringToHex(message)
+  : typeof message.raw === "string" ? message.raw
+  : bytesToHex(message.raw);
+
+// The typed data with the domain type viem hashed it with.
+// Integers go as decimal strings, since JSON can't carry bigints.
+const typedDataJson = (params: TypedDataDefinition) => {
+  const domain = params.domain ?? {};
+  const types = { EIP712Domain: getTypesForEIP712Domain({ domain }), ...params.types };
+  return JSON.parse(
+    JSON.stringify({ ...params, domain, types }, (_, v) => (typeof v === "bigint" ? v.toString() : v))
+  );
+};
+
+// Sign a hash via TEE, with the content it was computed from, and return a serialized signature
+const signViaTee = async (hash: Hex, transactionData: object): Promise<Hex> => {
   const res = await teeRequest<{ r: string; s: string; v: number }>(
-    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
+    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, transaction_data: transactionData }
   );
   const yParity = Number(res.v) >= 27 ? Number(res.v) - 27 : Number(res.v);
   return serializeSignature({ r: decToHex(res.r), s: decToHex(res.s), yParity });
 };
 ```
 
-    **`signTypedData`** — same pattern, using `hashTypedData()` for EIP-712 structured data.
+    **`signTypedData`** — same pattern, using `hashTypedData()` for EIP-712 structured data and sending the typed data with it.
 
     **`signAuthorization`** — for EIP-7702 delegation, call the TEE's dedicated `sign/eip7702` endpoint:
 
@@ -154,8 +173,13 @@ const signer = {
   signerType: "magic-tee",
   inner: {},
   getAddress: async () => eoaAddress,
-  signMessage: async (message) => signRawHash(hashMessage(message)),
-  signTypedData: async (params) => signRawHash(hashTypedData(params)),
+  signMessage: async (message) =>
+    signViaTee(hashMessage(message), { method: "eth_sign", data: messageHex(message) }),
+  signTypedData: async (params) =>
+    signViaTee(hashTypedData(params), {
+      method: "eth_signTypedData_v4",
+      typedData: typedDataJson(params),
+    }),
   signAuthorization: async (unsignedAuth) => {
     // ... EIP-7702 signing as shown above
   },
@@ -216,8 +240,26 @@ import { alchemy, baseSepolia } from "@account-kit/infra";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { hashMessage, hashTypedData, serializeSignature } from "viem";
-import type { Address, Hex, SignedAuthorization } from "viem";
+import {
+  bytesToHex, getTypesForEIP712Domain, hashMessage, hashTypedData, serializeSignature, stringToHex,
+} from "viem";
+import type { Address, Hex, SignableMessage, SignedAuthorization, TypedDataDefinition } from "viem";
+
+// The message bytes as hex, so Magic can recompute the EIP-191 hash.
+const messageHex = (message: SignableMessage): Hex =>
+  typeof message === "string" ? stringToHex(message)
+  : typeof message.raw === "string" ? message.raw
+  : bytesToHex(message.raw);
+
+// The typed data with the domain type viem hashed it with.
+// Integers go as decimal strings, since JSON can't carry bigints.
+const typedDataJson = (params: TypedDataDefinition) => {
+  const domain = params.domain ?? {};
+  const types = { EIP712Domain: getTypesForEIP712Domain({ domain }), ...params.types };
+  return JSON.parse(
+    JSON.stringify({ ...params, domain, types }, (_, v) => (typeof v === "bigint" ? v.toString() : v))
+  );
+};
 
 const TEE_BASE = "https://tee.express.magiclabs.com";
 
@@ -255,9 +297,9 @@ export async function POST(req: Request) {
   const decToHex = (dec: string): Hex =>
     `0x${BigInt(dec).toString(16).padStart(64, "0")}` as Hex;
 
-  const signRawHash = async (hash: Hex): Promise<Hex> => {
+  const signViaTee = async (hash: Hex, transactionData: object): Promise<Hex> => {
     const res = await teeRequest<{ r: string; s: string; v: number }>(
-      "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
+      "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, transaction_data: transactionData }
     );
     const yParity = Number(res.v) >= 27 ? Number(res.v) - 27 : Number(res.v);
     return serializeSignature({ r: decToHex(res.r), s: decToHex(res.s), yParity });
@@ -267,8 +309,13 @@ export async function POST(req: Request) {
     signerType: "magic-tee",
     inner: {},
     getAddress: async (): Promise<Address> => eoaAddress as Address,
-    signMessage: async (message: any) => signRawHash(hashMessage(message)),
-    signTypedData: async (params: any) => signRawHash(hashTypedData(params)),
+    signMessage: async (message: any) =>
+      signViaTee(hashMessage(message), { method: "eth_sign", data: messageHex(message) }),
+    signTypedData: async (params: any) =>
+      signViaTee(hashTypedData(params), {
+        method: "eth_signTypedData_v4",
+        typedData: typedDataJson(params),
+      }),
     signAuthorization: async (unsignedAuth: any): Promise<SignedAuthorization<number>> => {
       const res = await teeRequest<{ r: string; s: string; y_parity: number }>(
         "/v1/wallet/sign/eip7702", jwt, {
