@@ -87,6 +87,21 @@ const publicClient = createPublicClient({
   transport: http("YOUR_BASE_RPC_URL"),
 });
 
+// The transaction's fields, so Magic can recompute the hash before signing.
+// Integers go as decimal strings, since JSON can't carry bigints.
+const transactionData = (tx: TransactionSerializable) => ({
+  method: "eth_signTransaction",
+  to: tx.to,
+  value: (tx.value ?? 0n).toString(),
+  data: tx.data ?? "0x",
+  chainId: tx.chainId,
+  nonce: tx.nonce,
+  gasLimit: tx.gas?.toString(),
+  maxFeePerGas: tx.maxFeePerGas?.toString(),
+  maxPriorityFeePerGas: tx.maxPriorityFeePerGas?.toString(),
+  gasPrice: tx.gasPrice?.toString(),
+});
+
 async function signAndSend(jwt: string, tx: TransactionSerializable) {
   // Serialize the unsigned transaction and hash it
   const serialized = serializeTransaction(tx);
@@ -94,7 +109,7 @@ async function signAndSend(jwt: string, tx: TransactionSerializable) {
 
   // Sign the hash via TEE
   const { r, s, v } = await teeRequest<{ r: string; s: string; v: string }>(
-    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, chain: "ETH" }
+    "/v1/wallet/sign/data", jwt, { raw_data_hash: hash, transaction_data: transactionData(tx) }
   );
 
   // Serialize with signature and broadcast
@@ -218,7 +233,7 @@ Base has both native USDC (`0x8335...`) and bridged USDbC (`0xd9aA...`). This gu
 | Endpoint | Purpose |
 |----------|---------|
 | `POST /v1/wallet` | Get or create an EOA wallet |
-| `POST /v1/wallet/sign/data` | Sign a raw transaction hash |
+| `POST /v1/wallet/sign/data` | Sign a transaction hash, sent with its fields as `transaction_data` |
 
 ---
 

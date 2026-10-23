@@ -52,7 +52,7 @@ All signing operations use the `Authorization: Bearer` JWT as the operation JWT 
 
 ### Sign Data
 
-Sign a hash of arbitrary data using the wallet's private key. Useful for signing transaction data, typed data, or any structured information.
+Sign a hash with the wallet's private key. Send the hash together with `transaction_data`, the content it was computed from. Magic recomputes the hash from that content and signs only when they match.
 
 ```bash cURL icon="square-terminal"
 curl -X POST 'https://tee.express.magiclabs.com/v2/wallet/sign/data' \
@@ -62,7 +62,11 @@ curl -X POST 'https://tee.express.magiclabs.com/v2/wallet/sign/data' \
   -H 'X-OIDC-Provider-ID: YOUR_OIDC_PROVIDER_ID' \
   -H 'X-Magic-Chain: ETH' \
   -d '{
-    "raw_data_hash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+    "raw_data_hash": "0x50b2c43fd39106bafbba0da34fc430e1f91e3c96ea2acee2bc34119f92b37750",
+    "transaction_data": {
+      "method": "eth_sign",
+      "data": "0x68656c6c6f"
+    }
   }'
 ```
 
@@ -85,8 +89,26 @@ The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
 </ParamField>
 
 <ParamField body="raw_data_hash" type="string" required post={["Body"]}>
-The keccak256 hash of the data to sign (hex string with 0x prefix).
+The hash to sign (hex string with 0x prefix), computed from `transaction_data` as described below.
 </ParamField>
+
+<ParamField body="transaction_data" type="object" required post={["Body"]}>
+What you're signing. Required for `ETH`. Set `method` and the fields for it:
+
+| `method` | Fields | `raw_data_hash` |
+| --- | --- | --- |
+| `eth_signTransaction`, `eth_sendTransaction` | `to`, `value`, `data`, `chainId`, `nonce`, `gasLimit`, and `maxFeePerGas` + `maxPriorityFeePerGas` (EIP-1559) or `gasPrice` (legacy) | The unsigned transaction hash |
+| `eth_signTypedData_v4`, `eth_signTypedData_v3` | `typedData`: the full EIP-712 JSON (`types`, `primaryType`, `domain`, `message`) | The EIP-712 hash |
+| `eth_signTypedData` | `typedData`: the v1 typed data array | eth-sig-util `typedSignatureHash` |
+| `eth_sign` | `data`: the message, as `0x`-prefixed hex bytes or plain text | The EIP-191 hash |
+| `eth_sign7702Authorization` | `chainId`, `address` (the delegate contract), `nonce` | keccak256(0x05 ‖ rlp([chainId, address, nonce])) |
+
+See [EVM data preparation](/server-wallets/express-api/data-preparation/evm) for code that builds each one. Transactions with an access list, blobs or an authorization list are not supported here.
+</ParamField>
+
+<Warning>
+`raw_data_hash` without matching `transaction_data` is rejected with `400 INVALID_SIGNING_PARAMS`. To sign a plain message without hashing it yourself, use [Sign Message](#sign-message); for an EIP-7702 authorization, use [Sign EIP-7702 Authorization](#sign-eip-7702-authorization).
+</Warning>
 
 #### Response Fields
 
