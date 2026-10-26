@@ -85,7 +85,7 @@ curl -X POST 'https://tee.express.magiclabs.com/v2/wallet/sign/data' \
 #### Request Parameters
 
 <ParamField header="X-Magic-Chain" type="string" required post={["Header"]}>
-The blockchain to sign for. Available values: `ETH`, `SOL`, `BTC`
+The blockchain to sign for. Only `ETH` is supported: other chains have no `transaction_data` to check the hash against, so their requests are rejected. For Solana, use [Sign Message](#sign-message) with the serialized transaction message.
 </ParamField>
 
 <ParamField body="raw_data_hash" type="string" required post={["Body"]}>
