@@ -29,6 +29,7 @@ The following is a list of variables that can be used when creating a custom ema
 - `login.device.browser`: Browser of the user receiving the login email. Example: Chrome
 - `login.device.os`: Operating system of the user receiving the login email. Example: MacOS
 - `login.timestamp`: Timestamp of when email was requested
+- `login.origin`: Origin of the site where the login started, for example `https://app.example.com`. Available in both one-time passcode and email-link templates. Set only when that origin matches one of the domains in your project's allowlist. It is empty for native/mobile SDKs, for origins that are not allowlisted, and when no domain allowlist is configured. Wrap it in a conditional: `{% if login.origin %}…{% endif %}`.
 
 ## Localization
 
@@ -147,7 +148,7 @@ When editing your template in the Magic Dashboard, you can preview how your emai
 
 ### Testing
 
-Once a template has been created, you can use the **Send Test** button at the bottom of the customization page to send an email to the account that is currently logged in. Note that test emails will contain placeholder values for `otp` and `magic_link`.
+Once a template has been created, you can use the **Send Test** button at the bottom of the customization page to send an email to the account that is currently logged in. Note that test emails will contain placeholder values for `otp`, `magic_link`, and `login.origin` (`https://example.com`).
 
 You can also view a live preview of your email in a separate browser window by selecting **Preview** from the overflow menu at the top of the page.
 
