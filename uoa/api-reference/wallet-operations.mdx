@@ -44,16 +44,12 @@ curl -X POST 'https://uoa-server.magic.xyz/wallet/sign' \
 
 ### Request Parameters
 
-<ParamField body="raw_data_hash" type="string">
-A `0x`-prefixed hex hash to sign directly. Provide either this or `message`.
-</ParamField>
-
-<ParamField body="message" type="string">
-A plain text message to hash (keccak256) and sign. Provide either this or `raw_data_hash`.
+<ParamField body="message" type="string" required>
+A plain text message to sign. It is signed as an EIP-191 (`personal_sign`) message over its UTF-8 bytes, so you can verify it with standard tools such as ethers' `verifyMessage`.
 </ParamField>
 
 <Warning>
-You must provide `raw_data_hash` or `message`. If both are provided, `raw_data_hash` is signed.
+Signing a bare hash is not supported. A request with `raw_data_hash` and no `message` returns `400`.
 </Warning>
 
 ### Response Fields
@@ -67,7 +63,7 @@ The hex-encoded signature.
 </ResponseField>
 
 <ResponseField name="raw_data_hash" type="string">
-The hash that was signed.
+The EIP-191 hash of `message` that was signed.
 </ResponseField>
 
 <ResponseField name="app_user_id" type="string">
