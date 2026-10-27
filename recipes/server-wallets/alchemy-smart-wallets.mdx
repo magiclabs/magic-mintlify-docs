@@ -395,7 +395,7 @@ Since the private key lives inside Magic's TEE (Trusted Execution Environment), 
 | Endpoint | Purpose |
 |----------|---------|
 | `POST /v1/wallet` | Get or create an EOA wallet |
-| `POST /v1/wallet/sign/data` | Sign a raw hash (used for EIP-191 and EIP-712) |
+| `POST /v1/wallet/sign/data` | Sign a hash, sent with its message or typed data as `transaction_data` (used for EIP-191 and EIP-712) |
 | `POST /v1/wallet/sign/eip7702` | Sign an EIP-7702 authorization |
 
 ***
