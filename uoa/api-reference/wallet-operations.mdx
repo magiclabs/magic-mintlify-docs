@@ -31,6 +31,44 @@ curl -X POST 'https://uoa-server.magic.xyz/wallet/sign' \
   }'
 ```
 
+To sign EIP-712 typed data, send it as `transaction_data` instead of `message`:
+
+```bash cURL icon="square-terminal"
+curl -X POST 'https://uoa-server.magic.xyz/wallet/sign' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer USER_JWT_TOKEN' \
+  -H 'X-MAGIC-SECRET-KEY: YOUR_MAGIC_SECRET_KEY' \
+  -d '{
+    "raw_data_hash": "0xe8290d5c9c62619dfbd74f495ab122e6375312f767a4ff983d4e2d55a94078b9",
+    "transaction_data": {
+      "method": "eth_signTypedData_v4",
+      "typedData": {
+        "types": {
+          "EIP712Domain": [
+            { "name": "name", "type": "string" },
+            { "name": "version", "type": "string" },
+            { "name": "chainId", "type": "uint256" }
+          ],
+          "ClobAuth": [
+            { "name": "address", "type": "address" },
+            { "name": "timestamp", "type": "string" },
+            { "name": "nonce", "type": "uint256" },
+            { "name": "message", "type": "string" }
+          ]
+        },
+        "primaryType": "ClobAuth",
+        "domain": { "name": "ClobAuthDomain", "version": "1", "chainId": "137" },
+        "message": {
+          "address": "0x1111111111111111111111111111111111111111",
+          "timestamp": "1762700000",
+          "nonce": "0",
+          "message": "This message attests that I control the given wallet"
+        }
+      }
+    }
+  }'
+```
+
 **Response:**
 
 ```json
@@ -44,12 +82,22 @@ curl -X POST 'https://uoa-server.magic.xyz/wallet/sign' \
 
 ### Request Parameters
 
-<ParamField body="message" type="string" required>
+Provide either `message` or `transaction_data`.
+
+<ParamField body="message" type="string">
 A plain text message to sign. It is signed as an EIP-191 (`personal_sign`) message over its UTF-8 bytes, so you can verify it with standard tools such as ethers' `verifyMessage`.
 </ParamField>
 
+<ParamField body="transaction_data" type="object">
+EIP-712 typed data to sign, as `{"method": "eth_signTypedData_v4", "typedData": {...}}`. `typedData` has `types` (including `EIP712Domain`), `primaryType`, `domain` and `message`, as passed to `eth_signTypedData_v4`. The signature is over the typed data's EIP-712 digest, so it verifies with ethers' `verifyTypedData` (pass `types` without `EIP712Domain`).
+</ParamField>
+
+<ParamField body="raw_data_hash" type="string">
+With `transaction_data`, the EIP-712 digest you computed for it. Optional; if you send it and it doesn't match the typed data, the request returns `400`.
+</ParamField>
+
 <Warning>
-Signing a bare hash is not supported. A request with `raw_data_hash` and no `message` returns `400`.
+Signing a bare hash is not supported. A request with `raw_data_hash` and neither `message` nor `transaction_data` returns `400`. `transaction_data` accepts only `eth_signTypedData_v4`.
 </Warning>
 
 ### Response Fields
@@ -63,7 +111,7 @@ The hex-encoded signature.
 </ResponseField>
 
 <ResponseField name="raw_data_hash" type="string">
-The EIP-191 hash of `message` that was signed.
+The hash that was signed: the EIP-191 hash of `message`, or the EIP-712 digest of `transaction_data.typedData`.
 </ResponseField>
 
 <ResponseField name="app_user_id" type="string">
