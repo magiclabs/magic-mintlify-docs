@@ -100,7 +100,7 @@ What you're signing. Required for `ETH`. Set `method` and the fields for it:
 | `eth_signTransaction`, `eth_sendTransaction` | `to`, `value`, `data`, `chainId`, `nonce`, `gasLimit`, and `maxFeePerGas` + `maxPriorityFeePerGas` (EIP-1559) or `gasPrice` (legacy) | The unsigned transaction hash |
 | `eth_signTypedData_v4`, `eth_signTypedData_v3` | `typedData`: the full EIP-712 JSON (`types`, `primaryType`, `domain`, `message`) | The EIP-712 hash |
 | `eth_signTypedData` | `typedData`: the v1 typed data array | eth-sig-util `typedSignatureHash` |
-| `eth_sign` | `data`: the message, as `0x`-prefixed hex bytes or plain text | The EIP-191 hash |
+| `eth_sign` | `data`: the message, as `0x`-prefixed hex bytes or plain text. To sign an EIP-712 hash this way (a Safe transaction for a relayer, for example), also send `typedData`: `data` must then be its EIP-712 hash, and the typed data is screened as signed | The EIP-191 hash of `data` |
 | `eth_sign7702Authorization` | `chainId`, `address` (the delegate contract), `nonce` | keccak256(0x05 ‖ rlp([chainId, address, nonce])) |
 
 See [EVM data preparation](/server-wallets/express-api/data-preparation/evm) for code that builds each one. Transactions with an access list, blobs or an authorization list are not supported here.
