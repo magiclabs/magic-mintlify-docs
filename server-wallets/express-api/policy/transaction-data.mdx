@@ -42,7 +42,7 @@ The signing method being used. Valid values:
 - `eth_signTypedData` - Sign typed data (v1, legacy)
 - `eth_signTypedData_v3` - Sign EIP-712 typed data v3
 - `eth_signTypedData_v4` - Sign EIP-712 typed data v4
-- `eth_sign` - Sign a message, sent in `data`
+- `eth_sign` - Sign a message, sent in `data`. With `typedData`, `data` must be that typed data's EIP-712 hash
 - `eth_sign7702Authorization` - Sign an EIP-7702 authorization, with `chainId`, `address` and `nonce`
 - `personal_sign` - Evaluated by policy on [Sign Message](/server-wallets/express-api/wallet-operations#sign-message); not accepted on `sign/data`
 </ResponseField>
@@ -88,7 +88,7 @@ The EIP-7702 delegate contract. Required for `eth_sign7702Authorization`, togeth
 </ResponseField>
 
 <ResponseField name="typedData" type="object" required={false}>
-EIP-712 typed data structure. Required for `eth_signTypedData_v3` and `eth_signTypedData_v4` methods.
+EIP-712 typed data structure. Required for `eth_signTypedData_v3` and `eth_signTypedData_v4` methods. Optional for `eth_sign`, where it is the typed data whose EIP-712 hash is `data`.
 
 <Expandable title="Typed Data Structure">
 Follows the following structure:

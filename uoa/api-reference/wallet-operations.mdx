@@ -89,16 +89,76 @@ A plain text message to sign. It is signed as an EIP-191 (`personal_sign`) messa
 </ParamField>
 
 <ParamField body="transaction_data" type="object">
-EIP-712 typed data to sign, as `{"method": "eth_signTypedData_v4", "typedData": {...}}`. `typedData` has `types` (including `EIP712Domain`), `primaryType`, `domain` and `message`, as passed to `eth_signTypedData_v4`. The signature is over the typed data's EIP-712 digest, so it verifies with ethers' `verifyTypedData` (pass `types` without `EIP712Domain`).
+What to sign, in one of two forms:
+
+- **EIP-712 typed data:** `{"method": "eth_signTypedData_v4", "typedData": {...}}`. `typedData` has `types` (including `EIP712Domain`), `primaryType`, `domain` and `message`, as passed to `eth_signTypedData_v4`. The signature is over the typed data's EIP-712 digest, so it verifies with ethers' `verifyTypedData` (pass `types` without `EIP712Domain`).
+- **A Polymarket Safe transaction:** `{"method": "eth_sign", "data": "<SafeTx hash>", "safeTxTypedData": {...}}`. See [Polymarket Safe transactions](#polymarket-safe-transactions).
 </ParamField>
 
 <ParamField body="raw_data_hash" type="string">
-With `transaction_data`, the EIP-712 digest you computed for it. Optional; if you send it and it doesn't match the typed data, the request returns `400`.
+With `transaction_data`, the hash you computed: the EIP-712 digest of `typedData`, or for a Safe transaction the EIP-191 hash of the SafeTx hash. Optional; if you send it and it doesn't match, the request returns `400`.
 </ParamField>
 
 <Warning>
-Signing a bare hash is not supported. A request with `raw_data_hash` and neither `message` nor `transaction_data` returns `400`. `transaction_data` accepts only `eth_signTypedData_v4`.
+Signing a bare hash is not supported. A request with `raw_data_hash` and neither `message` nor `transaction_data` returns `400`. `transaction_data` accepts only `eth_signTypedData_v4` typed data and Polymarket Safe transactions.
 </Warning>
+
+### Polymarket Safe transactions
+
+Polymarket's relayer only accepts Safe signatures in the `eth_sign` style: EIP-191 over the 32-byte SafeTx hash. To get one, send the SafeTx hash as `data` and the SafeTx it was computed from as `safeTxTypedData`:
+
+```json
+{
+  "raw_data_hash": "<EIP-191 hash of the SafeTx hash>",
+  "transaction_data": {
+    "method": "eth_sign",
+    "data": "<SafeTx hash>",
+    "safeTxTypedData": {
+      "types": {
+        "EIP712Domain": [
+          { "name": "chainId", "type": "uint256" },
+          { "name": "verifyingContract", "type": "address" }
+        ],
+        "SafeTx": [
+          { "name": "to", "type": "address" },
+          { "name": "value", "type": "uint256" },
+          { "name": "data", "type": "bytes" },
+          { "name": "operation", "type": "uint8" },
+          { "name": "safeTxGas", "type": "uint256" },
+          { "name": "baseGas", "type": "uint256" },
+          { "name": "gasPrice", "type": "uint256" },
+          { "name": "gasToken", "type": "address" },
+          { "name": "refundReceiver", "type": "address" },
+          { "name": "nonce", "type": "uint256" }
+        ]
+      },
+      "primaryType": "SafeTx",
+      "domain": { "chainId": "137", "verifyingContract": "<the user's Polymarket Safe>" },
+      "message": {
+        "to": "<contract address>",
+        "value": "0",
+        "data": "<0x-prefixed calldata>",
+        "operation": "0",
+        "safeTxGas": "0",
+        "baseGas": "0",
+        "gasPrice": "0",
+        "gasToken": "0x0000000000000000000000000000000000000000",
+        "refundReceiver": "0x0000000000000000000000000000000000000000",
+        "nonce": "<the Safe's current nonce>"
+      }
+    }
+  }
+}
+```
+
+The SafeTx is checked before anything is signed. The request returns `400` unless:
+
+- `safeTxTypedData` is a SafeTx with exactly the types above, and `data` is its EIP-712 hash
+- `chainId` is `137` and `verifyingContract` is the user's own Polymarket Safe, the one Polymarket's relayer derives from the user's wallet address
+- a `delegatecall` (`operation: 1`) goes only to Polymarket's MultiSend, and every transaction batched inside it is a plain call
+- no call, top-level or batched, is made to the Safe itself
+
+The returned `signature` is a plain ECDSA signature over the EIP-191 hash. Before submitting it to the relayer, pack it as Safe expects for `eth_sign` signatures: `r`, `s`, then a `v` of 31 or 32 (add 4 to a `v` of 27 or 28, or 31 to a `v` of 0 or 1).
 
 ### Response Fields
 
